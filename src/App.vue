@@ -1,19 +1,7 @@
 <template>
   <ion-app>
-    <side-menu></side-menu>
-    <div class="ion-page" id="main-content">
-      <ion-header :translucent="true">
-        <ion-toolbar>
-            <ion-buttons slot="start">
-              <ion-menu-button></ion-menu-button>
-            </ion-buttons>
-            <ion-buttons slot="end">
-                <user-icon v-bind:user="user"></user-icon>
-            </ion-buttons>
-        </ion-toolbar>
-      </ion-header>
+      <user-icon v-bind:user="user"></user-icon>
       <ion-router-outlet />
-    </div>
   </ion-app>
 </template>
 
@@ -42,12 +30,12 @@ export default defineComponent({
   components: {
     IonApp,
     IonRouterOutlet,
-    IonHeader,
-    IonMenuButton,
+    // IonHeader,
+    // IonMenuButton,
     UserIcon,
-    SideMenu,
-    IonToolbar,
-    IonButtons,
+    // SideMenu,
+    // IonToolbar,
+    // IonButtons,
   },
   data() {
     return {
