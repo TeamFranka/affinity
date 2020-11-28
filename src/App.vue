@@ -19,9 +19,8 @@
 
 <script lang="ts">
 import {
-  IonApp, IonRouterOutlet, IonHeader, IonContent, IonToolbar, IonIcon, IonButtons,
-  IonList, IonMenu, IonMenuButton, IonAvatar,
-  getPlatforms
+  IonApp, IonRouterOutlet, IonHeader, IonToolbar, IonButtons,
+  IonMenuButton,  getPlatforms
 } from '@ionic/vue';
 import { defineComponent } from 'vue';
 import Parse from 'parse';
@@ -33,6 +32,9 @@ Parse.initialize("pJ63XHNU3C14XQpdLVYDbQR3mSU4aye4LQhxap3R", "73v5ZKTHd2Wxl71zJv
 Parse.serverURL = 'https://parseapi.back4app.com/';
 Parse.enableEncryptedUser();
 Parse.enableLocalDatastore();
+
+const __VERSION = "0.0.1";
+const __DEFAULT_COMMUNITY = "Hl37IXIrXm";
 
 
 export default defineComponent({
@@ -66,20 +68,23 @@ export default defineComponent({
       this.user = {avatar: "https://gravatar.com/avatar/dba6bae8c566f9d4041fb9cd9ada7741?d=identicon&f=y" };
     });
 
-    const install = new Parse.Installation();
-    install.set("deviceType", getPlatforms().toString());
+    // const install = new Parse.Installation();
+    // install.set("deviceType", getPlatforms().toString());
+    // install.set("appName", "affinity");
+    // install.set("appVersion", __VERSION);
+    // // install.set("parseVersion", Parse.version);
 
-    install.save(null, {
-      success: (install: any) => {
-        // Execute any logic that should take place after the object is saved.
-        console.log('New object created with objectId: ' + install.id);
-      },
-      error: (install: any, error: any) => {
-        // Execute any logic that should take place if the save fails.
-        // error is a Parse.Error with an error code and message.
-        console.log('Failed to create new object, with error code:' + error.message.toString());
-      }
-    });
+    // install.save(null, {
+    //   success: (install: any) => {
+    //     // Execute any logic that should take place after the object is saved.
+    //     console.log('New object created with objectId: ' + install.id);
+    //   },
+    //   error: (install: any, error: any) => {
+    //     // Execute any logic that should take place if the save fails.
+    //     // error is a Parse.Error with an error code and message.
+    //     console.log('Failed to create new object, with error code:' + error.message.toString());
+    //   }
+    // });
     console.log("mounted");
   }
 });
