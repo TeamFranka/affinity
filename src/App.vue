@@ -1,19 +1,25 @@
 <template>
   <ion-app>
-      <user-icon v-bind:user="user"></user-icon>
+    <user-icon v-bind:user="user"></user-icon>
+    <ion-content>
       <ion-router-outlet />
+    </ion-content>
+    <ion-footer>
+      <ion-progress-bar color="secondary" type="indeterminate"></ion-progress-bar>
+      <footer-menu />
+    </ion-footer>
   </ion-app>
 </template>
 
 <script lang="ts">
 import {
-  IonApp, IonRouterOutlet, IonHeader, IonToolbar, IonButtons,
-  IonMenuButton,  getPlatforms
+  IonApp, IonRouterOutlet, IonTabs, IonFooter, IonContent, IonProgressBar, getPlatforms
 } from '@ionic/vue';
 import { defineComponent } from 'vue';
 import Parse from 'parse';
 
 import SideMenu from './components/side-menu.vue';
+import FooterMenu from './components/footer-menu.vue';
 import UserIcon from './components/user-icon.vue';
 
 Parse.initialize("pJ63XHNU3C14XQpdLVYDbQR3mSU4aye4LQhxap3R", "73v5ZKTHd2Wxl71zJv7NiWXLbZlZXwnESZhCUtcH");
@@ -30,9 +36,11 @@ export default defineComponent({
   components: {
     IonApp,
     IonRouterOutlet,
-    // IonHeader,
-    // IonMenuButton,
+    IonProgressBar,
+    IonFooter,
     UserIcon,
+    IonContent,
+    FooterMenu,
     // SideMenu,
     // IonToolbar,
     // IonButtons,

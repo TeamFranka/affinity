@@ -1,22 +1,22 @@
 <template>
-    <ion-fab vertical="top" horizontal="end" slot="fixed">
-        <ion-fab-button  color="light">
-            <ion-avatar>
-                <img v-bind:src="user.avatar" />
-            </ion-avatar>
-        </ion-fab-button>
-        <ion-fab-list>
-          <ion-fab-button color="success">
-            <ion-icon :icon="logIn"></ion-icon>
-          </ion-fab-button>
-          <ion-fab-button color="light">
-            <ion-icon name="logo-twitter"></ion-icon>
-          </ion-fab-button>
-          <ion-fab-button color="danger">
-            <ion-icon :icon="logOut"></ion-icon>
-          </ion-fab-button>
-        </ion-fab-list>
-    </ion-fab>
+  <ion-fab vertical="top" horizontal="end" slot="fixed">
+    <ion-fab-button  color="light">
+        <ion-avatar>
+            <img v-bind:src="user.avatar" />
+        </ion-avatar>
+    </ion-fab-button>
+    <ion-fab-list>
+      <ion-fab-button color="success">
+        <ion-icon :icon="logIn"></ion-icon>
+      </ion-fab-button>
+      <ion-fab-button color="light">
+        <ion-icon name="logo-twitter"></ion-icon>
+      </ion-fab-button>
+      <ion-fab-button color="danger">
+        <ion-icon :icon="logOut"></ion-icon>
+      </ion-fab-button>
+    </ion-fab-list>
+  </ion-fab>
 </template>
 
 

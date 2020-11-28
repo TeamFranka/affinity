@@ -1,53 +1,64 @@
 <template>
   <ion-page>
     <ion-content>
-      <div id="container">
-        <strong>Ready to create an app?</strong>
-        <p>Start with Ionic <a target="_blank" rel="noopener noreferrer" href="https://ionicframework.com/docs/components">UI Components</a></p>
-      </div>
+      <ion-slides :options="{direction: 'vertical', navigation: true}">
+
+        <ion-slide>
+          <div class="slide">
+            <img src="../statics/franka1.png"/>
+            <h2>Welcome</h2>
+            <p>The <b>ionic conference app</b> is a practical preview of the ionic framework in action, and a demonstration of proper code use.</p>
+          </div>
+        </ion-slide>
+
+        <ion-slide>
+          <div class="slide">
+            <img src="../statics/franka1.png"/>
+            <h2>What is Ionic?</h2>
+            <p><b>Ionic Framework</b> is an open source SDK that enables developers to build high quality mobile apps with web technologies like HTML, CSS, and JavaScript.</p>
+          </div>
+        </ion-slide>
+
+        <ion-slide>
+          <div class="slide">
+            <img src="../statics/franka1.png"/>
+            <h2>What is Ionic Appflow?</h2>
+            <p><b>Ionic Appflow</b> is a powerful set of services and features built on top of Ionic Framework that brings a totally new level of app development agility to mobile dev teams.</p>
+          </div>
+        </ion-slide>
+
+        <ion-slide>
+          <div class="slide">
+            <img src="../statics/franka1.png"/>
+            <h2>Ready to Play?</h2>
+            <ion-button fill="clear">Continue <ion-icon slot="end" name="arrow-forward"></ion-icon></ion-button>
+          </div>
+        </ion-slide>
+
+      </ion-slides>
     </ion-content>
   </ion-page>
 </template>
 
 <script lang="ts">
-import { IonContent, IonHeader, IonPage, IonTitle, IonToolbar } from '@ionic/vue';
+import { IonContent, IonSlide, IonPage, IonSlides } from '@ionic/vue';
+import { chatbubbles, logoWhatsapp } from 'ionicons/icons';
 import { defineComponent } from 'vue';
 
 export default defineComponent({
   name: 'Home',
+  setup() {
+    return {
+      chatbubbles, logoWhatsapp,
+    }
+  },
   components: {
     IonContent,
+    IonSlide,
+    IonSlides,
     IonPage,
   }
 });
 </script>
-
 <style scoped>
-#container {
-  text-align: center;
-
-  position: absolute;
-  left: 0;
-  right: 0;
-  top: 50%;
-  transform: translateY(-50%);
-}
-
-#container strong {
-  font-size: 20px;
-  line-height: 26px;
-}
-
-#container p {
-  font-size: 16px;
-  line-height: 22px;
-
-  color: #8c8c8c;
-
-  margin: 0;
-}
-
-#container a {
-  text-decoration: none;
-}
 </style>
