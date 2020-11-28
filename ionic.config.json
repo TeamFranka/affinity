@@ -1,0 +1,7 @@
+{
+  "name": "affinity",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "vue"
+}
