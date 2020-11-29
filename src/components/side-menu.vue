@@ -1,5 +1,5 @@
 <template>
-  <ion-menu side="start" content-id="main-content">
+  <ion-menu side="end" content-id="main-content">
     <ion-header>
       <ion-toolbar translucent>
         <ion-title>Affinity</ion-title>

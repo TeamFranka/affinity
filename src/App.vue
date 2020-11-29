@@ -1,11 +1,11 @@
 <template>
   <ion-app>
-    <user-icon v-bind:user="user"></user-icon>
+    <ion-progress-bar color="secondary" type="indeterminate"></ion-progress-bar>
     <ion-content>
+      <user-icon v-bind:user="user"></user-icon>
       <ion-router-outlet />
     </ion-content>
     <ion-footer>
-      <ion-progress-bar color="secondary" type="indeterminate"></ion-progress-bar>
       <footer-menu />
     </ion-footer>
   </ion-app>

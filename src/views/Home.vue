@@ -1,8 +1,7 @@
 <template>
   <ion-page>
-    <ion-content>
-      <ion-slides :options="{direction: 'vertical', navigation: true}">
-
+    <ion-content fullscreen class="ion-padding" scroll-y="false">
+      <ion-slides :options="{direction: 'vertical'}">
         <ion-slide>
           <div class="slide">
             <img src="../statics/franka1.png"/>
@@ -61,4 +60,10 @@ export default defineComponent({
 });
 </script>
 <style scoped>
+.slide {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  height: 100vh;
+}
 </style>
