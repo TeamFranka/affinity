@@ -60,7 +60,7 @@ export default defineComponent({
         this.user = { avatar: "https://gnunicorn.org/assets/images/ben.png" };
       }
     }, err => {
-      console.log('Error getting logged user');
+      console.log('Error getting logged user', err);
       this.user = {avatar: "https://gravatar.com/avatar/dba6bae8c566f9d4041fb9cd9ada7741?d=identicon&f=y" };
     });
 

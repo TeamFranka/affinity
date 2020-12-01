@@ -4,12 +4,18 @@
     <ion-tab-bar>
       <ion-tab-button tab="home" href="/home">
           <ion-icon :icon="homeIcon" />
+          <ion-badge color="primary"></ion-badge>
+      </ion-tab-button>
+      <ion-tab-button tab="faq" href="/faq">
+          <ion-icon :icon="faqIcon" />
       </ion-tab-button>
       <ion-tab-button tab="feed" href="/feed">
           <ion-icon :icon="feedIcon" />
       </ion-tab-button>
-      <ion-tab-button tab="faq" href="/faq">
-          <ion-icon :icon="faqIcon" />
+      <ion-tab-button tab="chat" href="/chat">
+          <ion-icon :icon="chatIcon" />
+          <ion-badge color="danger">6</ion-badge>
+          <ion-badge color="success" slot="end">8</ion-badge>
       </ion-tab-button>
       <ion-tab-button tab="donations" href="/donate">
           <ion-icon :icon="donationsIcon" />
@@ -24,7 +30,7 @@
         </ion-col>
         <ion-col size="6">
             <ion-button fill="outline" shape="round" expand="block" size="default" color="secondary">
-              <ion-icon :icon="chatIcon" /> New Chat
+              <ion-icon :icon="newChatIcon" /> New Chat
             </ion-button>
         </ion-col>
       </ion-row>
@@ -35,11 +41,12 @@
 
 <script lang="ts">
 import {
-  IonIcon, IonTabBar, IonTabButton, IonButton, IonGrid, IonRow, IonCol
+  IonIcon, IonTabBar, IonTabButton, IonButton, IonGrid, IonRow, IonCol, IonBadge
 } from '@ionic/vue';
 import { createGesture } from "@ionic/core";
 import {
   planetOutline, addCircleOutline, chatbubbleEllipsesOutline,
+  fileTrayFullOutline,
   listOutline, peopleCircleOutline, walletOutline
 } from 'ionicons/icons';
 import { defineComponent } from 'vue';
@@ -55,7 +62,8 @@ export default defineComponent({
           donationsIcon: walletOutline,
           faqIcon: listOutline,
           postIcon: addCircleOutline,
-          chatIcon: chatbubbleEllipsesOutline,
+          chatIcon: fileTrayFullOutline,
+          newChatIcon: chatbubbleEllipsesOutline,
       }
   },
   components: {
@@ -66,6 +74,7 @@ export default defineComponent({
     IonGrid,
     IonRow,
     IonCol,
+    IonBadge,
   },
   methods: {
     toggleDrawer() {
