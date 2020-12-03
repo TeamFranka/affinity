@@ -16,7 +16,6 @@
 import {
   IonCard, IonCardHeader, IonCardSubtitle, IonCardTitle, IonCardContent,
 } from '@ionic/vue';
-import { logIn, logOut } from 'ionicons/icons';
 import { defineComponent } from 'vue';
 
 export default defineComponent({

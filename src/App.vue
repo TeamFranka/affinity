@@ -18,7 +18,7 @@ import {
 import { defineComponent } from 'vue';
 import Parse from 'parse';
 
-import SideMenu from './components/side-menu.vue';
+// import SideMenu from './components/side-menu.vue';
 import FooterMenu from './components/footer-menu.vue';
 import UserIcon from './components/user-icon.vue';
 

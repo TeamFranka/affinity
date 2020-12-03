@@ -2,14 +2,14 @@
   <ion-page>
     <ion-content fullscreen>
         <ion-searchbar></ion-searchbar>
-        <faq-entry v-for="e in content" v-bind:title="e.title" v-bind:key="e.title" v-bind:topic="e.topic">{{e.content}}</faq-entry>>
+        <faq-entry v-for="e in content" v-bind:title="e.title" v-bind:key="e.title" v-bind:topic="e.topic">{{e.content}}</faq-entry>
     </ion-content>
   </ion-page>
 </template>
 
 <script lang="ts">
 import FaqEntry from '../components/faq-entry.vue';
-import { IonContent, IonSearchbar } from '@ionic/vue';
+import { IonContent, IonSearchbar, IonPage, } from '@ionic/vue';
 import { chatbubbles, logoWhatsapp } from 'ionicons/icons';
 import { defineComponent } from 'vue';
 
@@ -44,6 +44,7 @@ export default defineComponent({
     }
   },
   components: {
+    IonPage,
     IonContent,
     IonSearchbar,
     FaqEntry,

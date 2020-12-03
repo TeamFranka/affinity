@@ -4,7 +4,7 @@
     <ion-tab-bar>
       <ion-tab-button tab="home" href="/home">
           <ion-icon :icon="homeIcon" />
-          <ion-badge color="primary"></ion-badge>
+          <ion-badge color="danger"></ion-badge>
       </ion-tab-button>
       <ion-tab-button tab="faq" href="/faq">
           <ion-icon :icon="faqIcon" />
@@ -12,10 +12,9 @@
       <ion-tab-button tab="feed" href="/feed">
           <ion-icon :icon="feedIcon" />
       </ion-tab-button>
-      <ion-tab-button tab="chat" href="/chat">
+      <ion-tab-button tab="inbox" href="/inbox">
           <ion-icon :icon="chatIcon" />
-          <ion-badge color="danger">6</ion-badge>
-          <ion-badge color="success" slot="end">8</ion-badge>
+          <ion-badge color="danger">3</ion-badge>
       </ion-tab-button>
       <ion-tab-button tab="donations" href="/donate">
           <ion-icon :icon="donationsIcon" />
@@ -118,7 +117,7 @@ export default defineComponent({
        *
        * if not we just reset the drawer state to closed
        */
-      onEnd: event => {
+      onEnd: () => {
         const curHeight = c.clientHeight;
         const scHeight = c.scrollHeight;
         if (curHeight > (scHeight / 2)) {

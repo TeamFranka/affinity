@@ -40,7 +40,7 @@
 </template>
 
 <script lang="ts">
-import { IonContent, IonSlide, IonPage, IonSlides } from '@ionic/vue';
+import { IonContent, IonSlide, IonPage, IonButton, IonIcon, IonSlides } from '@ionic/vue';
 import { chatbubbles, logoWhatsapp } from 'ionicons/icons';
 import { defineComponent } from 'vue';
 
@@ -56,6 +56,8 @@ export default defineComponent({
     IonSlide,
     IonSlides,
     IonPage,
+    IonButton,
+    IonIcon,
   }
 });
 </script>
