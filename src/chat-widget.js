@@ -1,4 +1,6 @@
 import { createApp } from 'vue'
+
+import wrap from '@vue/web-component-wrapper';
 import Widget from './config/Widget.vue'
 
 import { IonicVue } from '@ionic/vue';
@@ -25,5 +27,6 @@ import './theme/variables.css';
 
 const app = createApp(Widget)
   .use(IonicVue);
+const CustomElement = wrap(app, Widget);
 
-app.mount("#affinity-widget");
+window.customElements.define('affinity-chat-widget', CustomElement);
