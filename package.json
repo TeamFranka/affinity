@@ -5,6 +5,8 @@
   "scripts": {
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
+    "test": "which vue-cli-service",
+    "build:widget": "vue-cli-service build --target wc --inline-vue --name affinity-chat ./src/components/config/Widget.vue",
     "test:unit": "vue-cli-service test:unit",
     "test:e2e": "vue-cli-service test:e2e",
     "lint": "vue-cli-service lint",

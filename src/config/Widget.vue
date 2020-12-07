@@ -1,13 +1,8 @@
 <template>
   <ion-app>
-    <ion-progress-bar color="secondary" type="indeterminate"></ion-progress-bar>
     <ion-content>
-      <user-icon v-bind:user="user"></user-icon>
-      <ion-router-outlet />
+      <h1>Hello</h1>
     </ion-content>
-    <ion-footer>
-      <footer-menu />
-    </ion-footer>
   </ion-app>
 </template>
 
@@ -16,34 +11,14 @@ import {
   IonApp, IonRouterOutlet, IonTabs, IonFooter, IonContent, IonProgressBar, getPlatforms
 } from '@ionic/vue';
 import { defineComponent } from 'vue';
-import Parse from 'parse';
 
-// import SideMenu from './components/side-menu.vue';
-import FooterMenu from './components/footer-menu.vue';
-import UserIcon from './components/user-icon.vue';
-
-Parse.initialize("pJ63XHNU3C14XQpdLVYDbQR3mSU4aye4LQhxap3R", "73v5ZKTHd2Wxl71zJv7NiWXLbZlZXwnESZhCUtcH");
-Parse.serverURL = 'https://parseapi.back4app.com/';
-Parse.enableEncryptedUser();
-Parse.enableLocalDatastore();
-
-const __VERSION = "0.0.1";
-const __DEFAULT_COMMUNITY = "Hl37IXIrXm";
-
+// import SideMenu from '../components/side-menu.vue';
+import { Parse } from "./Consts";
 
 export default defineComponent({
-  name: 'App',
+  name: 'Widget',
   components: {
     IonApp,
-    IonRouterOutlet,
-    IonProgressBar,
-    IonFooter,
-    UserIcon,
-    IonContent,
-    FooterMenu,
-    // SideMenu,
-    // IonToolbar,
-    // IonButtons,
   },
   data() {
     return {
@@ -85,3 +60,10 @@ export default defineComponent({
   }
 });
 </script>
+<style scoped>
+  affinity-chat-widget {
+    position: absolute;
+    bottom: 1em;
+    right: 1em;
+  }
+</style>
