@@ -13,7 +13,7 @@ Change Date:          Two years after first publication (also via Github)
                       of the specific version
 
 Change License:       GNU AFFERO GENERAL PUBLIC LICENSE, Version 3.0
-                      see LICENSE-AGPL
+                      see LICENSE-AGPL.txt
 
 Notice
 
