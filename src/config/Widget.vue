@@ -1,25 +1,17 @@
 <template>
-  <ion-app>
-    <ion-content>
-      <h1>Hello</h1>
-    </ion-content>
-  </ion-app>
+  <div class="chat-widget">
+    <h1>Hello</h1>
+  </div>
 </template>
 
 <script lang="ts">
-import {
-  IonApp, IonRouterOutlet, IonTabs, IonFooter, IonContent, IonProgressBar, getPlatforms
-} from '@ionic/vue';
 import { defineComponent } from 'vue';
 
 // import SideMenu from '../components/side-menu.vue';
 import { Parse } from "./Consts";
 
 export default defineComponent({
-  name: 'Widget',
-  components: {
-    IonApp,
-  },
+  name: 'x-affinity-chat-widget',
   data() {
     return {
       result: "loading",
@@ -61,7 +53,7 @@ export default defineComponent({
 });
 </script>
 <style scoped>
-  affinity-chat-widget {
+  .chat-widget {
     position: absolute;
     bottom: 1em;
     right: 1em;

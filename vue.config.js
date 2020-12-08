@@ -1,15 +1,20 @@
 module.exports = {
     pages: {
-        app: "src/main.ts",
+        app: {
+            entry: "src/main.ts",
+            template: "src/templates/app.html",
+            filename: "index.html",
+        },
         widget: {
             entry: "src/chat-widget.js",
-            filename: "widget.html",
+            template: "src/templates/chat-widget.html",
+            filename: "chat-example.html",
         }
     },
     configureWebpack: {
         output: {
             filename: (chunkData) => {
-                return chunkData.chunk.name === 'widget'
+                return (chunkData.noChunkHash || chunkData.chunk.name === 'widget')
                     ? '[name].js'
                     : '[name].[chunkhash:8].js';
             }

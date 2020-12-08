@@ -1,9 +1,6 @@
 import { createApp } from 'vue'
-
-import wrap from '@vue/web-component-wrapper';
-import Widget from './config/Widget.vue'
-
 import { IonicVue } from '@ionic/vue';
+import Widget from './config/Widget.vue';
 
 /* Core CSS required for Ionic components to work properly */
 import '@ionic/vue/css/core.css';
@@ -24,9 +21,15 @@ import '@ionic/vue/css/typography.css';
 /* Theme variables */
 import './theme/variables.css';
 
-
 const app = createApp(Widget)
   .use(IonicVue);
-const CustomElement = wrap(app, Widget);
 
-window.customElements.define('affinity-chat-widget', CustomElement);
+const widgetId = "affinity-chat-widget-" + Math.floor((Math.random() * 100000) + 1);
+
+const elemDiv = document.createElement('div');
+elemDiv.id = widgetId;
+document.body.appendChild(elemDiv)
+
+document.addEventListener("DOMContentLoaded", () => {
+  app.mount('#' + widgetId);
+});
