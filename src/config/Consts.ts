@@ -9,6 +9,11 @@ Parse.enableLocalDatastore();
 const VERSION = "0.0.1";
 const DEFAULT_COMMUNITY = "Hl37IXIrXm";
 
+const Team = Parse.Object.extend("Team");
+const Conversation = Parse.Object.extend("Conversation");
+
 export {
-    Parse, VERSION, DEFAULT_COMMUNITY
+    Parse, VERSION, DEFAULT_COMMUNITY,
+    // models
+    Team, Conversation,
 }

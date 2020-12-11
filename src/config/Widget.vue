@@ -6,7 +6,9 @@
           :is="currentComponent"
           @user-update="userUpdated($event)"
           @route="route($event)"
-          v-bind:user="user"
+          :user="user"
+          :convos="convos"
+          :loadingConvos="loadingConvos"
         ></component>
       </div>
     </transition>
@@ -43,13 +45,15 @@ import Login from '../views/Login.vue';
 import { defineComponent } from 'vue';
 
 // import SideMenu from '../components/side-menu.vue';
-import { Parse } from "./Consts";
+import { Parse, Conversation } from "./Consts";
 
 export default defineComponent({
   name: 'x-affinity-chat-widget',
   data() {
     return {
       currentComponent: "Home",
+      loadingConvos: false,
+      convos: [],
       user: {},
       open: false
     }
@@ -80,12 +84,17 @@ export default defineComponent({
       console.log('Logged user', user);
       if (user) {
         this.user = user;
+        this.loadingConvos = true;
+        const query = (new Parse.Query(Conversation)).addDescending("updatedAt");
+        query.find().then((convos:  any) => {
+          this.convos = convos;
+          this.loadingConvos = false;
+        });
       } else {
-        this.user = { avatar: "https://gnunicorn.org/assets/images/ben.png" };
+        this.loadingConvos = false;
       }
     }, err => {
       console.log('Error getting logged user', err);
-      this.user = { avatar: "https://gravatar.com/avatar/dba6bae8c566f9d4041fb9cd9ada7741?d=identicon&f=y" };
     });
 
     // const install = new Parse.Installation();

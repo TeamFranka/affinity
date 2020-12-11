@@ -11,18 +11,25 @@
       <ion-loading
         :is-open="loading"
         message="Please wait..."
-        :duration="timeout"
         @onDidDismiss="setOpen(false)"
       />
     </section>
     <section v-if="user">
       <h1>Willkommen zurück {{user.id}} 👋!</h1>
+
+      <div>
+        <div v-for="convo in convos" v-bind:key="convo.id">
+          {{convo.id}}
+        </div>
+      </div>
+
+      <ion-spinner v-if="loadingConvos" name="crescent"></ion-spinner>
     </section>
     <footer><input style="text"/></footer>
 </template>
 
 <script lang="ts">
-import { IonButton, IonLoading } from '@ionic/vue';
+import { IonButton, IonLoading, IonSpinner } from '@ionic/vue';
 import { defineComponent } from 'vue';
 import { AnonymousUtils } from 'parse';
 
@@ -31,7 +38,9 @@ export default defineComponent({
   name: 'ChatHome',
   emits: ['route', 'user-updated'],
   props: {
-    user: Object
+    user: Object,
+    convos: Array,
+    loadingConvos: Boolean,
   },
   data() {
     return {
