@@ -16,6 +16,14 @@ ionic serve
 
 ```
 
+### For local Development
+
+```
+docker-compose run
+```
+
+
+
 
 ## License
 

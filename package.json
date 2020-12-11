@@ -10,7 +10,8 @@
     "test:unit": "vue-cli-service test:unit",
     "test:e2e": "vue-cli-service test:e2e",
     "lint": "vue-cli-service lint",
-    "deploy:web": "ionic build --engine browser && cd backend && b4a deploy"
+    "deploy:web": "ionic build --engine browser && cd backend && b4a deploy",
+    "deploy:b4a": "cd backend && b4a deploy"
   },
   "dependencies": {
     "@capacitor/core": "2.4.3",
