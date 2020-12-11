@@ -1,0 +1,22 @@
+version: '3.5'
+
+services:
+  mongo:
+    image: mongo
+
+  parse:
+    image: parseplatform/parse-server
+    command: "--mount-playground --appId APPLICATION_ID --masterKey MASTER_KEY --databaseURI mongodb://mongo/test"
+    volumes:
+      - ./backend/cloud:/parse-server/cloud
+    ports:
+      - 1337:1337
+    links:
+      - mongo
+  dashboard:
+    image: parseplatform/parse-dashboard
+    command: --dev --appId APPLICATION_ID --masterKey MASTER_KEY --serverURL "http://localhost:1337/parse" --appName affinity
+    ports:
+      - 4040:4040
+    links:
+      - parse
