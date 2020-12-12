@@ -1,6 +1,6 @@
 <template>
     <header>
-    <h3>Chatte mit uns</h3>
+      <h3><avatar :profile="community" />Chatte mit uns</h3>
     </header>
     <section v-if="!user">
       <h1>Hi 👋!</h1>
@@ -21,14 +21,17 @@
         <div v-for="convo in convos" v-bind:key="convo.id">
           {{convo.id}}
         </div>
+        <div v-if="!convos.length">
+          starte conversation mit uns!
+        </div>
       </div>
 
       <ion-spinner v-if="loadingConvos" name="crescent"></ion-spinner>
     </section>
-    <footer><input style="text"/></footer>
 </template>
 
 <script lang="ts">
+import Avatar from "../components/avatar.vue";
 import { IonButton, IonLoading, IonSpinner } from '@ionic/vue';
 import { defineComponent } from 'vue';
 import { AnonymousUtils } from 'parse';
@@ -41,6 +44,7 @@ export default defineComponent({
     user: Object,
     convos: Array,
     loadingConvos: Boolean,
+    community: Object,
   },
   data() {
     return {
@@ -48,6 +52,7 @@ export default defineComponent({
     }
   },
   components: {
+    Avatar,
     IonButton,
     IonLoading,
   },

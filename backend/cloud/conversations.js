@@ -11,13 +11,14 @@ Parse.Cloud.define("newPublicInboxConversation", async (request) => {
   const team = await (new Parse.Query(Group))
     .get(request.params.groupId);
   const user = request.user;
-  if (team.get("sub_of")) {
+  if (team.get("subOf")) {
     throw "Sub Team Inbox not supported at yet."
   }
 
   const query = new Parse.Query(Conversation);
-  query.equalTo("type", "sharedInbox")
-  query.containsAll("participants", [team.get("id"), user.get("id")]);
+  query.equalTo("type", "sharedInbox");
+  query.equalTo("team", team);
+  query.containsAll("participants", user.get("id"));
   const alreadyThere = await query.first({ useMasterKey: true});
   if (alreadyThere) {
     return alreadyThere
@@ -25,7 +26,8 @@ Parse.Cloud.define("newPublicInboxConversation", async (request) => {
 
   const newConvo = new Conversation({
     "type": "sharedInbox",
-    "participants": [team.get("id"), user.get("id")]
+    "team": team,
+    "participants": [user.get("id")]
   });
 
   newConvo.save(null, {useMasterKey: true})
@@ -44,10 +46,11 @@ Parse.Cloud.beforeSave("Conversation", async (request) => {
 
   if (request.object.get("type") == "sharedInbox") {
     const participants = request.object.get("participants");
-    const group = await (new Parse.Query(Group).get(participants[0], ));
+    const group = await (new Parse.Query(Group)
+      .include("agents")
+      .get(request.object.get("team"), { useMasterKey: true }));
     const agents = group.get("agents");
-    await agents.fetch({ useMasterKey: true });
-    const user = await (new Parse.Query(Parse.User).get(participants[1]));
+    const user = await (new Parse.Query(Parse.User).get(participants[0]));
 
     const conversationAcl = new Parse.ACL(user);
     conversationAcl.setRoleReadAccess(agents, true);

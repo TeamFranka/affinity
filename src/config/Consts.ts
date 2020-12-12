@@ -7,7 +7,7 @@ Parse.serverURL = 'https://parseapi.back4app.com/';
 Parse.enableLocalDatastore();
 
 const VERSION = "0.0.1";
-const DEFAULT_COMMUNITY = "Hl37IXIrXm";
+const DEFAULT_COMMUNITY = "US2YJKbs7U";
 
 const Team = Parse.Object.extend("Team");
 const Conversation = Parse.Object.extend("Conversation");

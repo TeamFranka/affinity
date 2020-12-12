@@ -9,6 +9,7 @@
           :user="user"
           :convos="convos"
           :loadingConvos="loadingConvos"
+          :community="community"
         ></component>
       </div>
     </transition>
@@ -45,13 +46,17 @@ import Login from '../views/Login.vue';
 import { defineComponent } from 'vue';
 
 // import SideMenu from '../components/side-menu.vue';
-import { Parse, Conversation } from "./Consts";
+import { Parse, Conversation, Team, DEFAULT_COMMUNITY } from "./Consts";
 
 export default defineComponent({
   name: 'x-affinity-chat-widget',
+  props: {
+    defaultCommunity: String,
+  },
   data() {
     return {
       currentComponent: "Home",
+      community: {},
       loadingConvos: false,
       convos: [],
       user: {},
@@ -80,6 +85,10 @@ export default defineComponent({
     }
   },
   mounted() {
+    (new Parse.Query(Team)).get(this.defaultCommunity || DEFAULT_COMMUNITY).then(com => {
+      console.log(com, com.toJSON());
+      this.community = com.toJSON();
+    });
     Parse.User.currentAsync().then(user => {
       console.log('Logged user', user);
       if (user) {
