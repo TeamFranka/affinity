@@ -11,6 +11,7 @@ Parse.Cloud.define("newPublicInboxConversation", async (request) => {
   const team = await (new Parse.Query(Group))
     .get(request.params.groupId);
   const user = request.user;
+  const userPtr = user.toPointer();
   if (team.get("subOf")) {
     throw "Sub Team Inbox not supported at yet."
   }
@@ -18,7 +19,7 @@ Parse.Cloud.define("newPublicInboxConversation", async (request) => {
   const query = new Parse.Query(Conversation);
   query.equalTo("type", "sharedInbox");
   query.equalTo("team", team);
-  query.containsAll("participants", user.get("id"));
+  query.containsAll("participants", [userPtr]);
   const alreadyThere = await query.first({ useMasterKey: true});
   if (alreadyThere) {
     return alreadyThere
@@ -27,7 +28,7 @@ Parse.Cloud.define("newPublicInboxConversation", async (request) => {
   const newConvo = new Conversation({
     "type": "sharedInbox",
     "team": team,
-    "participants": [user.get("id")]
+    "participants": [userPtr]
   });
 
   newConvo.save(null, {useMasterKey: true})
@@ -45,16 +46,27 @@ Parse.Cloud.beforeSave("Conversation", async (request) => {
   }
 
   if (request.object.get("type") == "sharedInbox") {
+    console.log("in shared");
     const participants = request.object.get("participants");
+    console.log("participants", participants, request.object.get("team").id);
     const group = await (new Parse.Query(Group)
       .include("agents")
-      .get(request.object.get("team"), { useMasterKey: true }));
+      .get(request.object.get("team").id, { useMasterKey: true }));
     const agents = group.get("agents");
-    const user = await (new Parse.Query(Parse.User).get(participants[0]));
+    console.log("agents", agents);
 
-    const conversationAcl = new Parse.ACL(user);
+    const conversationAcl = new Parse.ACL();
     conversationAcl.setRoleReadAccess(agents, true);
     conversationAcl.setRoleWriteAccess(agents, true);
+    console.log("set acl");
+
+    participants.forEach((p) => {
+      console.log("set acl for ", p, p.id);
+      conversationAcl.setReadAccess(p.id, true);
+      conversationAcl.setWriteAccess(p.id, true);
+    });
+
+    console.log("save acl");
     request.object.setACL(conversationAcl);
   } else {
     throw "Not supported"

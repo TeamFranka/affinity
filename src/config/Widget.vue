@@ -1,11 +1,12 @@
 <template>
-  <div  class="chat-widget">
+  <div class="chat-widget">
     <transition name="fade">
       <div v-if="open" class="chat-window">
         <component
           :is="currentComponent"
           @user-update="userUpdated($event)"
           @route="route($event)"
+          @select-chat="selectChat($event)"
           :user="user"
           :convos="convos"
           :loadingConvos="loadingConvos"
@@ -59,8 +60,9 @@ export default defineComponent({
       community: {},
       loadingConvos: false,
       convos: [],
+      selectedChatId: "",
       user: {},
-      open: false
+      open: false,
     }
   },
    components: {
@@ -76,26 +78,29 @@ export default defineComponent({
       logoTelegram: paperPlaneOutline, close: closeOutline
     }
   },
+  async created() {
+    const community = await (new Parse.Query(Team)).get(this.defaultCommunity || DEFAULT_COMMUNITY);
+    this.community = community;
+  },
   methods: {
     route(path: string) {
       this.currentComponent = path;
     },
     userUpdated(user: any) {
       this.user = user;
+    },
+    selectChat(chat: any) {
+      console.log("selecting", chat);
     }
   },
   mounted() {
-    (new Parse.Query(Team)).get(this.defaultCommunity || DEFAULT_COMMUNITY).then(com => {
-      console.log(com, com.toJSON());
-      this.community = com.toJSON();
-    });
     Parse.User.currentAsync().then(user => {
       console.log('Logged user', user);
       if (user) {
         this.user = user;
         this.loadingConvos = true;
         const query = (new Parse.Query(Conversation)).addDescending("updatedAt");
-        query.find().then((convos:  any) => {
+        query.find().then((convos: any) => {
           this.convos = convos;
           this.loadingConvos = false;
         });

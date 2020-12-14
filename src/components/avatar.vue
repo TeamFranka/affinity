@@ -3,6 +3,7 @@
     <img v-bind:src="profile.avatar"  />
   </ion-avatar>
   <span class="letter-avatar" v-if="!profile.avatar" :style="style">{{letter}}</span>
+  <span v-if="withName">{{profile.name || profile.username || profile.id}}</span>
 </template>
 
 
@@ -15,7 +16,8 @@ import { defineComponent } from 'vue';
 export default defineComponent({
   name: 'Avatar',
   props: {
-    profile: Object
+    profile: Object,
+    withName: Boolean,
   },
   computed: {
     letter(): string {
@@ -23,10 +25,10 @@ export default defineComponent({
       if (text.length > 0) {
         return text[0].toUpperCase()
       }
-      return "O"
+      return "👤"
     },
     style(): string {
-      const text = (this.profile && (this.profile.name || this.profile.username)) || "";
+      const text = (this.profile && (this.profile.name || this.profile.username || this.profile.id )) || "";
       const vals = [0, 0, 0];
       let curIdx = 0;
       for (let i = 0; i < text.length; i++) {
