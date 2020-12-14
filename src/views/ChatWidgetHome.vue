@@ -2,20 +2,22 @@
     <ion-loading
       :is-open="loading"
       message="Please wait..."
-      @onDidDismiss="setOpen(false)"
+      @onDidDismiss="loading = false"
     />
     <div v-if="!loading">
-      <header v-if="!user">
-        <h3><avatar :profile="community" />Chatte mit uns</h3>
-      </header>
-      <section v-if="!user">
-        <h1>Hi 👋!</h1>
-        <p>Du hast eine Frage, brauchst Hilfe oder hast eine Anfrage? Schick uns einfach eine kurze Nachricht. Das kannst du direkt hier oder über einen der unten stehenden Messenger</p>
-        <ion-button color="primary" @click="$emit('route', 'Login')">Einloggen</ion-button> <ion-button color="secondary">Registrieren</ion-button><br>
-        <a @click="anonymousLogin()">mit temporärem Account fortfahren</a>
+      <div v-if="!isAuthenticated">
+        <header>
+          <h3><avatar :profile="community" />Chatte mit uns</h3>
+        </header>
+        <section>
+          <h1>Hi 👋!</h1>
+          <p>Du hast eine Frage, brauchst Hilfe oder hast eine Anfrage? Schick uns einfach eine kurze Nachricht. Das kannst du direkt hier oder über einen der unten stehenden Messenger</p>
+          <ion-button color="primary" @click="$emit('route', 'Login')">Einloggen</ion-button> <ion-button color="secondary">Registrieren</ion-button><br>
+          <a @click="anonymousLogin()">mit temporärem Account fortfahren</a>
 
-      </section>
-      <section v-if="user">
+        </section>
+      </div>
+      <section v-if="isAuthenticated">
         <div v-if="!convos.length" class="new-box">
           <h3>Willkommen <avatar :profile="user" with-name=true /> 👋!</h3>
           <ion-button @click="startNewChat"><avatar :profile="community" /> Jetzt chat starten!</ion-button>
@@ -43,7 +45,10 @@ export default defineComponent({
   name: 'ChatHome',
   emits: ['route', 'user-updated', 'select-chat'],
   props: {
-    user: Object,
+    user: {
+      type: Object,
+      required: true
+    },
     convos: Array,
     loadingConvos: Boolean,
     community: {
@@ -62,10 +67,16 @@ export default defineComponent({
     IonLoading,
     IonSpinner,
   },
+  computed: {
+    isAuthenticated(): boolean {
+      return this.user.id
+    }
+  },
   methods: {
     anonymousLogin() {
       this.loading = true;
       Parse.AnonymousUtils.logIn({}).then((data: any) => {
+        console.log("updated user", data);
         this.$emit("user-updated", data);
         this.loading = false
       });
