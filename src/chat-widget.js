@@ -31,5 +31,9 @@ elemDiv.id = widgetId;
 document.body.appendChild(elemDiv)
 
 document.addEventListener("DOMContentLoaded", () => {
-  app.mount('#' + widgetId);
+  if (window.AFFINITY_CHAT_WIDGET) {
+    app.mount('#' + widgetId);
+  } else {
+    console.error("You must define window.AFFINITY_CHAT_WIDGET to load the widget")
+  }
 });

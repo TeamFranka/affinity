@@ -23,7 +23,7 @@
           <ion-button @click="startNewChat"><avatar :profile="community" /> Jetzt chat starten!</ion-button>
         </div>
         <div v-if="convos.length" >
-          <h3>Willkommen zurück <avatar :profile="user" with-name="true" /> 👋!</h3>
+          <h3>Willkommen zurück <avatar :profile="user" with-name=true /> 👋!</h3>
           <div @click="$emit('select-chat', convo)" v-for="convo in convos" v-bind:key="convo.id">
             {{convo.id}}
           </div>

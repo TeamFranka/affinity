@@ -10,10 +10,11 @@ const VERSION = "0.0.1";
 const DEFAULT_COMMUNITY = "US2YJKbs7U";
 
 const Team = Parse.Object.extend("Team");
+const ChatWidgetSettings = Parse.Object.extend("ChatWidget");
 const Conversation = Parse.Object.extend("Conversation");
 
 export {
     Parse, VERSION, DEFAULT_COMMUNITY,
     // models
-    Team, Conversation,
+    Team, Conversation, ChatWidgetSettings
 }
