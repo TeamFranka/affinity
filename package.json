@@ -10,6 +10,7 @@
     "test:unit": "vue-cli-service test:unit",
     "test:e2e": "vue-cli-service test:e2e",
     "lint": "vue-cli-service lint",
+    "deploy:db": "npx node bin/update-db.js",
     "deploy:web": "ionic build --engine browser && cd backend && b4a deploy",
     "deploy:b4a": "cd backend && b4a deploy"
   },
@@ -22,9 +23,11 @@
     "ionicons": "^5.2.3",
     "parse": "^2.18.0",
     "vue": "^3.0.4",
-    "vue-router": "^4.0.1"
+    "vue-router": "^4.0.1",
+    "vuex": "^4.0.0-rc.2"
   },
   "devDependencies": {
+    "@babel/preset-flow": "^7.12.1",
     "@capacitor/cli": "2.4.3",
     "@types/jest": "^24.0.19",
     "@typescript-eslint/eslint-plugin": "^2.33.0",
@@ -41,6 +44,7 @@
     "@vue/test-utils": "^2.0.0-0",
     "eslint": "^6.7.2",
     "eslint-plugin-vue": "^7.0.0-0",
+    "ts-node": "^9.1.1",
     "typescript": "~3.9.3",
     "vue-jest": "^5.0.0-0",
     "webpack-chain": "^6.5.1"
