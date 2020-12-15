@@ -36,7 +36,9 @@ export const Post = {
         get: {
             '*': true
         },
-        create: {},
+        create: {
+            requiresAuthentication: true
+        },
         update: {},
         delete: {},
         addField: {},

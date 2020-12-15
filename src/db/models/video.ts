@@ -37,7 +37,9 @@ export const Video = {
         get: {
             '*': true
         },
-        create: {},
+        create: {
+            requiresAuthentication: true
+        },
         update: {},
         delete: {},
         addField: {},

@@ -40,7 +40,9 @@ export const Comment = {
         get: {
             '*': true
         },
-        create: {},
+        create: {
+            requiresAuthentication: true
+        },
         update: {},
         delete: {},
         addField: {},

@@ -38,7 +38,9 @@ export const Picture = {
         get: {
             '*': true
         },
-        create: {},
+        create: {
+            requiresAuthentication: true
+        },
         update: {},
         delete: {},
         addField: {},

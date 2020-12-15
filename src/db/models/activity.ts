@@ -34,7 +34,9 @@ export const Activity = {
         get: {
             '*': true
         },
-        create: {},
+        create: {
+            requiresAuthentication: true
+        },
         update: {},
         delete: {},
         addField: {},

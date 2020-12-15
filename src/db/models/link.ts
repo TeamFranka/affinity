@@ -42,7 +42,9 @@ export const Link = {
         get: {
             '*': true
         },
-        create: {},
+        create: {
+
+        },
         update: {},
         delete: {},
         addField: {},
