@@ -13,6 +13,7 @@ Thumbs.db
 UserInterfaceState.xcuserstate
 $RECYCLE.BIN/
 /backend/.parse.*
+*.local
 
 *.log
 log.txt
@@ -20,6 +21,7 @@ npm-debug.log*
 
 /.idea
 /.ionic
+/.envs
 /.sass-cache
 /.sourcemaps
 /.versions

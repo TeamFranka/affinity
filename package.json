@@ -10,7 +10,8 @@
     "test:unit": "vue-cli-service test:unit",
     "test:e2e": "vue-cli-service test:e2e",
     "lint": "vue-cli-service lint",
-    "deploy:db": "npx node bin/update-db.js",
+    "dev:db": "node -r dotenv/config bin/update-db.js dotenv_config_path=.env.development",
+    "deploy:db": "node -r dotenv/config bin/update-db.js dotenv_config_path=.env.production.local",
     "deploy:web": "ionic build --engine browser && cd backend && b4a deploy",
     "deploy:b4a": "cd backend && b4a deploy"
   },
@@ -42,6 +43,7 @@
     "@vue/compiler-sfc": "^3.0.0-0",
     "@vue/eslint-config-typescript": "^5.0.2",
     "@vue/test-utils": "^2.0.0-0",
+    "dotenv": "^8.2.0",
     "eslint": "^6.7.2",
     "eslint-plugin-vue": "^7.0.0-0",
     "ts-node": "^9.1.1",

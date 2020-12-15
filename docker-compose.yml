@@ -6,7 +6,7 @@ services:
 
   parse:
     image: parseplatform/parse-server
-    command: "--mount-playground --appId APPLICATION_ID --masterKey MASTER_KEY --databaseURI mongodb://mongo/test"
+    command: "--appId APPLICATION_ID --masterKey MASTER_KEY --databaseURI mongodb://mongo/dev"
     volumes:
       - ./backend/cloud:/parse-server/cloud
     ports:

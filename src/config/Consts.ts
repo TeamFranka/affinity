@@ -1,13 +1,16 @@
 
 import Parse from 'parse';
 
-Parse.initialize("pJ63XHNU3C14XQpdLVYDbQR3mSU4aye4LQhxap3R", "73v5ZKTHd2Wxl71zJv7NiWXLbZlZXwnESZhCUtcH");
-Parse.serverURL = 'https://parseapi.back4app.com/';
+Parse.initialize(
+    process.env.VUE_APP_PARSE_APP_ID || "",
+    process.env.VUE_APP_PARSE_JS_KEY
+);
+Parse.serverURL = process.env.VUE_APP_PARSE_URL || "http://localhost:1337/parse";
 // Parse.enableEncryptedUser();
 Parse.enableLocalDatastore();
 
 const VERSION = "0.0.1";
-const DEFAULT_COMMUNITY = "US2YJKbs7U";
+const DEFAULT_COMMUNITY = process.env.VUE_APP_DEFAULT_TEAM;
 
 const Team = Parse.Object.extend("Team");
 const ChatWidgetSettings = Parse.Object.extend("ChatWidget");
