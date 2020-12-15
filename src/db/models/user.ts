@@ -1,22 +1,22 @@
 // Follow the JSON structure from REST API https://docs.parseplatform.org/rest/guide/#schema
+import { CommonFields } from './common';
+
 export const User = {
 	className: '_User',
-	fields: {
-		objectId: { type: 'String' },
-		createdAt: {
-			type: 'Date',
-		},
-		updatedAt: {
-			type: 'Date',
-		},
-		ACL: { type: 'ACL' },
-		email: { type: 'String' },
-		authData: { type: 'Object' },
-		password: { type: 'String' },
-		username: { type: 'String' },
-		name: { type: 'String' },
-		avatar: { type: 'File' },
-	},
+	fields: Object.assign(
+        {},
+        CommonFields,
+        {
+            email: { type: 'String' },
+            authData: { type: 'Object' },
+            password: { type: 'String' },
+            username: {
+                type: 'String',
+                required: true
+            },
+            name: { type: 'String' },
+            avatar: { type: 'File' },
+        }),
 	indexes: {
         username_1: {
             username: 1
@@ -35,9 +35,7 @@ export const User = {
         find: {
             requiresAuthentication: true
         },
-        count: {
-            requiresAuthentication: true
-        },
+        count: { },
         get: {
             requiresAuthentication: true
         },

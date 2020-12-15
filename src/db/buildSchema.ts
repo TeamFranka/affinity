@@ -172,6 +172,9 @@ export const lib = {
 	},
 
 	isNativeIndex: (className: string, indexName: string) => {
+		if (indexName === 'objectId'){
+			return true
+		}
 		if (className === '_User') {
 			switch (indexName) {
 				case 'case_insensitive_username':
