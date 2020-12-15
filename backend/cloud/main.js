@@ -2,6 +2,7 @@
 
 require("./teams.js");
 require("./conversations.js");
+require("./objects.js");
 
 // Use Parse.Cloud.define to define as many cloud functions as you want.
 // For example:
