@@ -45,7 +45,7 @@ import {
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import * as Icons from 'ionicons/icons';
 import Home from '../views/ChatWidgetHome.vue';
-import Login from '../views/Login.vue';
+import Login from '../components/login.vue';
 import { defineComponent } from 'vue';
 
 // import SideMenu from '../components/side-menu.vue';

@@ -17,8 +17,8 @@
   },
   "dependencies": {
     "@capacitor/core": "2.4.3",
-    "@ionic/vue": "^5.5.1",
-    "@ionic/vue-router": "^5.5.1",
+    "@ionic/vue": "^5.5.2",
+    "@ionic/vue-router": "^5.5.2",
     "@types/parse": "file:../DefinitelyTyped/types/parse",
     "core-js": "^3.6.5",
     "ionicons": "^5.2.3",

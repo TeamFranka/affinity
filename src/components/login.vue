@@ -1,6 +1,6 @@
 <template>
   <div style="padding: 0.5em;">
-    <h4><button @click="$emit('route', 'Home')">test</button>Einloggen</h4>
+    <h4><button @click="$emit('route', 'Home')"></button>Einloggen</h4>
 
     <ion-item>
       <ion-input type="text" required name="username" v-model="input.username" placeholder="E-Mail / Username" />
