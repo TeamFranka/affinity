@@ -11,6 +11,8 @@
     "test:e2e": "vue-cli-service test:e2e",
     "lint": "vue-cli-service lint",
     "dev:db": "node -r dotenv/config bin/update-db.js dotenv_config_path=.env.development",
+    "dev:run-parse": "docker-compose pull && docker-compose up -d",
+    "dev:restart-parse": "docker-compose stop parse && docker-compose up -d",
     "deploy:db": "node -r dotenv/config bin/update-db.js dotenv_config_path=.env.production.local",
     "deploy:web": "ionic build --engine browser && cd backend && b4a deploy",
     "deploy:b4a": "cd backend && b4a deploy"
