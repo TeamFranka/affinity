@@ -26,9 +26,9 @@ import './theme/variables.css';
 
 
 const app = createApp(App)
+  .use(store, key)
   .use(IonicVue)
-  .use(router)
-  .use(store, key);
+  .use(router);
 
 router.isReady().then(() => {
   app.mount('#app');

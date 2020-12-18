@@ -12,12 +12,15 @@
       <ion-tab-button tab="feed" href="/feed">
           <ion-icon :icon="feedIcon" />
       </ion-tab-button>
-      <ion-tab-button tab="inbox" href="/inbox">
+      <ion-tab-button v-if="isLoggedIn" tab="inbox" href="/inbox">
           <ion-icon :icon="chatIcon" />
           <ion-badge color="danger">3</ion-badge>
       </ion-tab-button>
-      <ion-tab-button tab="donations" href="/donate">
+      <ion-tab-button v-if="!isLoggedIn" tab="donations" href="/donate">
           <ion-icon :icon="donationsIcon" />
+      </ion-tab-button>
+      <ion-tab-button v-show="isLoggedIn" tab="me" href="/me">
+          <ion-icon :icon="meIcon" />
       </ion-tab-button>
     </ion-tab-bar>
     <ion-grid>
@@ -45,25 +48,29 @@ import {
 import { createGesture } from "@ionic/core";
 import {
   planetOutline, addCircleOutline, chatbubbleEllipsesOutline,
-  fileTrayFullOutline,
+  fileTrayFullOutline, personCircleOutline,
   listOutline, peopleCircleOutline, walletOutline
 } from 'ionicons/icons';
-import { defineComponent } from 'vue';
+import { defineComponent, computed } from 'vue';
+import { useStore } from '../stores/';
 
 const SMALL_HEIGHT = 60;
 
 export default defineComponent({
   name: 'FooterMenu',
   setup() {
-      return {
-          homeIcon: planetOutline,
-          feedIcon: peopleCircleOutline,
-          donationsIcon: walletOutline,
-          faqIcon: listOutline,
-          postIcon: addCircleOutline,
-          chatIcon: fileTrayFullOutline,
-          newChatIcon: chatbubbleEllipsesOutline,
-      }
+    const store = useStore();
+    return {
+      isLoggedIn: computed(() => !!store.state.auth.user),
+      homeIcon: planetOutline,
+      feedIcon: peopleCircleOutline,
+      donationsIcon: walletOutline,
+      faqIcon: listOutline,
+      postIcon: addCircleOutline,
+      chatIcon: fileTrayFullOutline,
+      newChatIcon: chatbubbleEllipsesOutline,
+      meIcon: personCircleOutline,
+    }
   },
   components: {
     IonIcon,

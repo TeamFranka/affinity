@@ -1,5 +1,5 @@
 
-import { Parse } from '../config/Consts';
+import { DEFAULT_COMMUNITY, Parse } from '../config/Consts';
 
 export interface AuthStateT {
   wantsToLogin: boolean;
@@ -21,7 +21,7 @@ export const AuthState = {
     setWantsToLogin(state: AuthStateT, wanna: boolean) {
       console.log("wants to login");
       state.wantsToLogin = wanna;
-    }
+    },
   },
   actions: {
     dismissLogin(context: any) {
@@ -37,6 +37,14 @@ export const AuthState = {
       }, err => {
         console.error('Error getting user', err);
       });
+    },
+    async setAvatar(context: any, f: Parse.File)  {
+      await f.save();
+      const user = context.state.user;
+      user.set("avatar", f);
+      await user.save();
+      context.commit("setUser", user);
+
     }
   }
 }

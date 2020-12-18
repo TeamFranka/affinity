@@ -51,7 +51,7 @@ export default defineComponent({
         console.log("called");
         return store.state.auth.wantsToLogin
       }),
-      loading: computed(() => false),
+      loading: computed(() => store.state.global.loading),
       closeLoginModal: () => store.dispatch("auth/dismissLogin"),
       // openLoginModal: () => store.dispatch("auth/openLogin"),
       fetchUser: () => store.dispatch("auth/fetchUser")

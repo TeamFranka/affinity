@@ -1,9 +1,11 @@
 import { InjectionKey } from 'vue'
 import { createStore, Store, useStore as baseUseStore } from 'vuex'
 
+import { GlobalStateT, GlobalState } from './globals';
 import { AuthStateT, AuthState } from './auth';
 
 export interface State {
+  global: GlobalStateT;
   auth: AuthStateT;
 }
 
@@ -12,6 +14,7 @@ export const key: InjectionKey<Store<State>> = Symbol()
 
 export const store = createStore<State>({
   modules:{
+    global: GlobalState,
     auth: AuthState
   }
 })

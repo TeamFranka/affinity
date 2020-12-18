@@ -42,7 +42,9 @@ export const User = {
         create: {
             '*': true
         },
-        update: {},
+        update: {
+            requiresAuthentication: true
+        },
         delete: {},
         addField: {},
         protectedFields: {
