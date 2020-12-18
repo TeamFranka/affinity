@@ -14,7 +14,9 @@ export const AuthState = {
     wantsToLogin: false,
     user: null
   }),
-  getters: {},
+  getters: {
+    myTeams: (state: AuthStateT) => state.teams,
+  },
   mutations: {
     setUser(state: AuthStateT, newUser: Parse.User|null) {
       console.debug("Setting user to", newUser);
@@ -37,16 +39,13 @@ export const AuthState = {
     openLogin(context: any) {
       context.commit("setWantsToLogin", true);
     },
-    fetchUser(context: any) {
-      Parse.User.currentAsync().then(user => {
-        console.log('User object found', user);
-        context.commit("setUser", user);
-        Parse.Cloud.run("myTeams").then(resp => {
-          context.commit("setTeams", resp);
-        })
-      }, err => {
-        console.error('Error getting user', err);
-      });
+    async fetchUser(context: any) {
+      const user = await Parse.User.currentAsync();
+      console.log('User object found', user);
+      await context.commit("setUser", user);
+      const resp = await Parse.Cloud.run("myTeams");
+      await context.commit("setTeams", resp);
+      context.dispatch("refreshRoot", null, { root:true });
     },
     async setAvatar(context: any, f: Parse.File)  {
       await f.save();

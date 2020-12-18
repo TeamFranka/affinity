@@ -13,11 +13,16 @@ const VERSION = "0.0.1";
 const DEFAULT_COMMUNITY = process.env.VUE_APP_DEFAULT_TEAM;
 
 const Team = Parse.Object.extend("Team");
+const Activity = Parse.Object.extend("Activity");
 const ChatWidgetSettings = Parse.Object.extend("ChatWidget");
 const Conversation = Parse.Object.extend("Conversation");
+
+export interface ModelT {
+    id: string;
+  }
 
 export {
     Parse, VERSION, DEFAULT_COMMUNITY,
     // models
-    Team, Conversation, ChatWidgetSettings
+    Team, Activity, Conversation, ChatWidgetSettings
 }

@@ -1,14 +1,7 @@
 <template>
   <ion-page>
     <ion-content fullscreen>
-      <ion-segment value="conversation">
-          <ion-segment-button value="conversation">
-            <ion-label>Posts</ion-label>
-          </ion-segment-button>
-            <ion-segment-button value="activities">
-            <ion-label>All activities</ion-label>
-          </ion-segment-button>
-      </ion-segment>
+      <ion-toggle color="light">Posts only</ion-toggle>
 
       <ion-card>
         <ion-card-header>
@@ -135,7 +128,8 @@
 
 <script lang="ts">
 import {
-  IonPage, IonContent, IonSegment, IonCard,IonCardContent, IonCardHeader, IonImg, IonSegmentButton, IonIcon, IonAvatar, IonLabel, IonNote,
+  IonPage, IonContent, IonCard,IonCardContent, IonCardHeader, IonImg,
+  IonToggle, IonIcon, IonAvatar, IonLabel, IonNote,
 } from '@ionic/vue';
 import { chatbubbles, heartOutline, addOutline, mailOutline, caretForwardOutline } from 'ionicons/icons';
 import { defineComponent } from 'vue';
@@ -150,8 +144,8 @@ export default defineComponent({
     }
   },
   components: {
-    IonContent, IonPage, IonAvatar, IonCard,IonCardContent, IonCardHeader, IonImg,
-    IonSegment, IonSegmentButton, IonLabel, IonIcon, IonNote
+    IonContent, IonPage, IonAvatar, IonCard, IonCardContent, IonCardHeader, IonImg,
+    IonToggle, IonLabel, IonIcon, IonNote,
   }
 });
 </script>
