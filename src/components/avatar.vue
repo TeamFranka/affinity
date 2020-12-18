@@ -8,9 +8,6 @@
       <text text-anchor="middle" y="75" x="50" font-size="60">{{letter}}</text>
     </svg>
   </span>
-  <ion-chip v-if="canEdit" @click="$emit('edit')">
-    <ion-icon :icon="uploadIcon"></ion-icon>
-  </ion-chip>
 </div>
   <span v-if="withName">{{profile.name || profile.username || profile.id}}</span>
 </template>
@@ -18,32 +15,21 @@
 
 <script lang="ts">
 import {
-  IonAvatar, IonIcon, IonChip,
+  IonAvatar,
 } from '@ionic/vue';
-import { cloudUploadOutline } from 'ionicons/icons';
 import { defineComponent } from 'vue';
 
 export default defineComponent({
   name: 'Avatar',
-  emits: ["edit"],
   props: {
     profile: {
       type: Object,
       required: true
     },
-    canEdit: Boolean,
     withName: Boolean,
   },
   components: {
     IonAvatar,
-    IonChip,
-    IonIcon,
-  },
-  setup(props) {
-    console.log(props.profile, props.profile.get("username"));
-    return {
-      uploadIcon: cloudUploadOutline
-    }
   },
   computed: {
     avatarUrl(): string | null {

@@ -2,7 +2,10 @@
   <ion-page>
     <ion-content fullscreen>
         <div class="ion-text-center">
-            <avatar :profile="user" canEdit @edit="selectNewAvatar(user.id)" />
+            <avatar :profile="user"  />
+            <ion-chip @click="selectNewAvatar(user.id)">
+              <ion-icon :icon="uploadIcon"></ion-icon>
+            </ion-chip>
         </div>
     </ion-content>
   </ion-page>
@@ -10,8 +13,8 @@
 
 <script lang="ts">
 import Avatar from '../components/avatar.vue';
-import { IonContent, IonPage, } from '@ionic/vue';
-import { chatbubbles, logoWhatsapp } from 'ionicons/icons';
+import { IonContent, IonPage,  IonIcon, IonChip,} from '@ionic/vue';
+import { chatbubbles, logoWhatsapp, cloudUploadOutline } from 'ionicons/icons';
 import { defineComponent, computed } from 'vue';
 import { useStore } from '../stores/';
 import { Plugins, CameraResultType } from '@capacitor/core';
@@ -38,7 +41,7 @@ export default defineComponent({
     return {
       user: computed(() => store.state.auth.user ),
       setUserAvatar: (f: Parse.File) => store.dispatch("auth/setAvatar", f),
-      chatbubbles, logoWhatsapp
+      chatbubbles, logoWhatsapp, uploadIcon: cloudUploadOutline
     }
   },
   methods: {
@@ -54,6 +57,13 @@ export default defineComponent({
     Avatar,
     IonPage,
     IonContent,
+    IonIcon,
+    IonChip,
   }
 });
 </script>
+<style scoped>
+ion-chip ion-icon {
+  margin: 0
+}
+</style>
