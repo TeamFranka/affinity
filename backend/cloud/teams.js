@@ -31,6 +31,7 @@ Parse.Cloud.define("newRootTeam", async (request) => {
   console.log("pre save");
   newTeam = await newTeam.save(null, { useMasterKey: true });
   console.log("post save");
+  newTeam.get("members").getUsers().add(admin).save(null, { useMasterKey: true });
   newTeam.get("leaders").getUsers().add(admin).save(null, { useMasterKey: true });
   console.log("post leaders");
   return newTeam
@@ -84,6 +85,7 @@ Parse.Cloud.beforeSave(Team, async (request) => {
   const name = request.object.get("name");
 
   const leaders = new Parse.Role(name + " Leaders", (new Parse.ACL()));
+  leaders.set("type", "leaders");
   if (parentTeam) {
       leaders.getRoles().add(parentTeam.leaders);
   }
@@ -95,6 +97,12 @@ Parse.Cloud.beforeSave(Team, async (request) => {
   const agents = new Parse.Role(name + " Agents", (new Parse.ACL()));
   const publishers = new Parse.Role(name + " Publishers", (new Parse.ACL()));
   const members = new Parse.Role(name + " Members", (new Parse.ACL()));
+
+
+  mods.set("type", "mods");
+  agents.set("type", "agents");
+  publishers.set("type", "publishers");
+  members.set("type", "members");
 
   agents.getRoles().add(leaders);
   publishers.getRoles().add(leaders);

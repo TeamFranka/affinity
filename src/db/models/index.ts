@@ -1,4 +1,5 @@
 import { User } from './user';
+import { Role } from './role';
 import { Team } from './team';
 import { Document } from './document';
 import { Link } from './link';
@@ -9,5 +10,5 @@ import { Comment } from './comment';
 import { Activity } from './activity';
 
 export const All = [
-    User, Team, Document, Post, Comment, Picture, Video, Link, Activity,
+    User, Role, Team, Document, Post, Comment, Picture, Video, Link, Activity,
 ]

@@ -1,9 +1,11 @@
 
-import { DEFAULT_COMMUNITY, Parse } from '../config/Consts';
+import { DEFAULT_COMMUNITY, Team, Parse } from '../config/Consts';
 
 export interface AuthStateT {
   wantsToLogin: boolean;
   user: Parse.User | null;
+  teams: Array<any>;
+  teamPermissions: object;
 }
 
 export const AuthState = {
@@ -22,6 +24,11 @@ export const AuthState = {
       console.log("wants to login");
       state.wantsToLogin = wanna;
     },
+    setTeams(state: AuthStateT, resp: any) {
+      console.log("setting teams:", resp);
+      state.teams = resp.teams;
+      state.teamPermissions = resp.permissions;
+    }
   },
   actions: {
     dismissLogin(context: any) {
@@ -34,6 +41,9 @@ export const AuthState = {
       Parse.User.currentAsync().then(user => {
         console.log('User object found', user);
         context.commit("setUser", user);
+        Parse.Cloud.run("myTeams").then(resp => {
+          context.commit("setTeams", resp);
+        })
       }, err => {
         console.error('Error getting user', err);
       });
