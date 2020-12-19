@@ -3,7 +3,7 @@
     <ion-content fullscreen>
       <ion-toggle color="light">Posts only</ion-toggle>
       <new-post :teams="canPostInTeams" @submit="submitPost($event)" v-if="canPost" />
-      <activity v-for="a in activities" :activity="a" :key="a.id" />
+      <post v-for="a in latestPosts" :post="a" :key="a.id" />
     </ion-content>
   </ion-page>
 </template>
@@ -15,7 +15,7 @@ import {
 import { chatbubbles, heartOutline, addOutline, mailOutline, caretForwardOutline } from 'ionicons/icons';
 import { defineComponent, computed } from 'vue';
 import { useStore } from '../stores/';
-import Activity from "../components/activity.vue";
+import Post from "../components/post.vue";
 import NewPost from "../components/new-post.vue";
 
 
@@ -26,13 +26,13 @@ export default defineComponent({
     return {
       canPostInTeams: computed(() => store.getters["auth/postableTeams"]),
       canPost: computed(() => store.getters["auth/postableTeams"].length > 0),
-      activities: computed(() => store.getters["feed/activities"]),
+      latestPosts: computed(() => store.getters["feed/latestPosts"]),
       chatbubbles, like: heartOutline, mail: mailOutline, plus: addOutline,
       teamSplitter: caretForwardOutline,
     }
   },
   components: {
-    IonContent, IonPage, IonToggle, NewPost, Activity
+    IonContent, IonPage, IonToggle, NewPost, Post
   }
 });
 </script>

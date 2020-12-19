@@ -25,7 +25,7 @@ export const News = {
         .descending("createdAt")
         .find();
 
-      await context.commit("addActivities", news, { root: true });
+      await context.dispatch("addItems", { items: news, key: "objects" }, { root: true });
       context.commit("setNews", news.map((a) => a.id))
 
       // FIXME: add live query support to stay up to date;

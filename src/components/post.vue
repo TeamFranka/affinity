@@ -3,23 +3,28 @@
   <ion-card-header>
     <avatar :profile="author"/>
     <ion-label>
-      <h2>{{authorName}} {{verbified}}<span v-if="showTeam"><ion-icon :icon="teamSplitter" /> <a href="">TeamFranka</a></span></h2>
-    <ion-note color="medium">{{activity.createdAt}}</ion-note>
+      <h2>{{authorName}}<span v-if="showTeam"><ion-icon :icon="teamSplitter" /> <a href="">TeamFranka</a></span></h2>
+    <ion-note color="medium">{{post.createdAt}}</ion-note>
     </ion-label>
   </ion-card-header>
+  <ion-card-content>
+    {{ text }}
+  </ion-card-content>
   <!-- FIX Rendering of items -->
   <ion-card-content v-for="obj in objects" :key="obj.id">
       <div v-if="obj.className == 'Post'">
-        {{obj.get('text')}}
+        {{obj.text}}
       </div>
       <div  v-if="obj.className == 'Picture'">
         <ion-img :src="obj.get('file').url()" />
       </div>
-      <ion-icon :icon="chatbubbles" /> {{obj.comments || 0}}
-      <ion-icon :icon="share" /> {{obj.sharesCount || 0}}
-      <ion-icon :icon="like" /> {{obj.likesCount || 0}}
-      <ion-icon :icon="plus" />
   </ion-card-content>
+  <div>
+      <ion-icon :icon="chatbubbles" /> {{post.commentsCount || 0}}
+      <ion-icon :icon="share" /> {{post.sharesCount || 0}}
+      <ion-icon :icon="like" /> {{post.likesCount || 0}}
+      <ion-icon :icon="plus" />
+  </div>
 </ion-card>
 </template>
 
@@ -37,9 +42,9 @@ import { defineComponent, computed } from 'vue';
 import { useStore } from '../stores/';
 
 export default defineComponent({
-  name: 'Activity',
+  name: 'Post',
   props: {
-    activity: {
+    post: {
       type: Parse.Object,
       required: true
     },
@@ -50,28 +55,27 @@ export default defineComponent({
     const store = useStore();
     return {
       objs: computed(() => store.getters.objectsMap),
-      chatbubbles, like: heartOutline, share: arrowRedoOutline, plus: addOutline
+      chatbubbles,
+      teamSplitter: arrowRedoOutline,
+      like: heartOutline,
+      share: arrowRedoOutline,
+      plus: addOutline
     }
   },
   computed: {
     author(): Parse.Object {
-      const author = this.activity.get("author");
+      const author = this.post.get("author");
       if (author.isDataAvailable()) {
         return author;
       }
       return this.objs[author.id]
     },
-    verbified(): string {
-      return this.activity.get("verb")
+    text(): string {
+        return this.post.get("text") || ""
     },
     objects(): Parse.Object {
-      return this.activity.get("objects").map((o: Parse.Object) => {
-        console.log(o);
-        if (o.isDataAvailable()) {
-          return o;
-        }
-        return this.objs[o.id]
-      })
+      return (this.post.get("attachments") || []).map(
+            (o: Parse.Object) => this.objs[o.id])
     },
     authorName(): string {
       const author = this.author;
