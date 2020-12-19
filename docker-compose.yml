@@ -5,7 +5,7 @@ services:
     image: mongo
 
   parse:
-    image: parseplatform/parse-server
+    image: "parseplatform/parse-server:4.5.0"
     command: "--appId APPLICATION_ID --masterKey MASTER_KEY --databaseURI mongodb://mongo/dev --cloud /parse-server/cloud/main.js"
     volumes:
       - ./backend/cloud:/parse-server/cloud

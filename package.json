@@ -11,8 +11,8 @@
     "test:e2e": "vue-cli-service test:e2e",
     "lint": "vue-cli-service lint",
     "dev:db": "node -r dotenv/config bin/update-db.js dotenv_config_path=.env.development",
-    "dev:run-parse": "docker-compose pull && docker-compose up -d",
-    "dev:restart-parse": "docker-compose stop parse && docker-compose up -d",
+    "dev:run-parse": "docker-compose pull && docker-compose up -d && docker-compose logs -f --tail 10 parse",
+    "dev:restart-parse": "docker-compose stop parse && docker-compose up -d && docker-compose logs -f --tail 10 parse",
     "deploy:db": "node -r dotenv/config bin/update-db.js dotenv_config_path=.env.production.local",
     "deploy:web": "ionic build --engine browser && cd backend && b4a deploy",
     "deploy:b4a": "cd backend && b4a deploy"
@@ -24,7 +24,7 @@
     "@types/parse": "file:../DefinitelyTyped/types/parse",
     "core-js": "^3.6.5",
     "ionicons": "^5.2.3",
-    "parse": "^2.18.0",
+    "parse": "^2.19.0",
     "vue": "^3.0.4",
     "vue-router": "^4.0.1",
     "vuex": "^4.0.0-rc.2"
