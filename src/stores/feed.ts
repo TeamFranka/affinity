@@ -9,7 +9,13 @@ export const Feed = {
   state: () => ({
     latest: [],
   }),
-  getters: {},
+  getters: {
+    activities(state: FeedT, getters: any, rootState: any, rootGetters: any) {
+      const objs = rootGetters["objectsMap"];
+
+      return state.latest.map((id) => objs[id])
+    }
+  },
   mutations: {
     setFeed(state: FeedT, items: Array<string>) {
       state.latest = items;

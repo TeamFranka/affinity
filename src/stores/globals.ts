@@ -11,7 +11,11 @@ export const GlobalState = {
     loading: false,
     objects: {},
   }),
-  getters: {},
+  getters: {
+    objectsMap(state: GlobalStateT) {
+      return state.objects;
+    }
+  },
   mutations: {
     addActivities(state: GlobalStateT, items: Array<Parse.Object>){
       console.log("items", items);

@@ -77,7 +77,7 @@ export default defineComponent({
         store.dispatch("draft/submit");
       },
       canSubmit: computed(() => store.getters["draft/canSubmit"]),
-      showTeamSelector: computed(() => store.getters["auth/postableTeams"].length > 1),
+      showTeamSelector: computed(() => store.getters["auth/hasManyTeams"]),
       imageIcon, sendIcon
     }
   },

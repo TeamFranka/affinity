@@ -18,13 +18,15 @@ export const AuthState = {
   namespaced: true,
   state: () => ({
     wantsToLogin: false,
-    user: null
+    user: null,
+    teams: [],
   }),
   getters: {
     defaultTeam: (state: AuthStateT) => state.teams[0],
     user: (state: AuthStateT) => state.user,
     userPtr: (state: AuthStateT) => state.user?.toPointer(),
     myTeams: (state: AuthStateT) => state.teams,
+    hasManyTeams: (state: AuthStateT) => state.teams.length > 1,
     postableTeams: (state: AuthStateT) => state.teams?.filter(t => state.teamPermissions[t.id].canPost) || [],
   },
   mutations: {

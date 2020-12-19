@@ -86,9 +86,9 @@ export const Draft = {
         return
       }
 
-      console.log("objs saved", objects);
-
       await (new Activity({ verb: "post", team, author, objects })).save();
+
+      context.commit("clear");
     }
   }
 };
