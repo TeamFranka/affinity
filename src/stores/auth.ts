@@ -1,21 +1,31 @@
 
-import { DEFAULT_COMMUNITY, Team, Parse } from '../config/Consts';
+import { State } from 'ionicons/dist/types/stencil-public-runtime';
+import { Parse } from '../config/Consts';
+
+export interface TeamPermission {
+  isAdmin: boolean;
+  canPost: boolean;
+}
 
 export interface AuthStateT {
   wantsToLogin: boolean;
   user: Parse.User | null;
-  teams: Array<any>;
-  teamPermissions: object;
+  teams: Array<Parse.Object>;
+  teamPermissions: Record<string, TeamPermission>;
 }
 
 export const AuthState = {
   namespaced: true,
-  setup: () => ({
+  state: () => ({
     wantsToLogin: false,
     user: null
   }),
   getters: {
+    defaultTeam: (state: AuthStateT) => state.teams[0],
+    user: (state: AuthStateT) => state.user,
+    userPtr: (state: AuthStateT) => state.user?.toPointer(),
     myTeams: (state: AuthStateT) => state.teams,
+    postableTeams: (state: AuthStateT) => state.teams?.filter(t => state.teamPermissions[t.id].canPost) || [],
   },
   mutations: {
     setUser(state: AuthStateT, newUser: Parse.User|null) {
@@ -48,12 +58,13 @@ export const AuthState = {
       context.dispatch("refreshRoot", null, { root:true });
     },
     async setAvatar(context: any, f: Parse.File)  {
+      console.log("about to set", f);
       await f.save();
+      console.log("saved and setting", f);
       const user = context.state.user;
       user.set("avatar", f);
       await user.save();
       context.commit("setUser", user);
-
     }
   }
 }

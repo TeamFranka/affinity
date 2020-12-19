@@ -22,7 +22,6 @@ export const Post = {
             },
             attachments: { // any other object
                 type: "Array",
-                required: true
             }
         },
         Interactable,

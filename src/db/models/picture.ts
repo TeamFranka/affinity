@@ -16,10 +16,6 @@ export const Picture = {
                 targetClass: "Team",
                 required: true
             },
-            title: {
-                type: "String",
-                required: true
-            },
             file: {
                 type: "File",
             },

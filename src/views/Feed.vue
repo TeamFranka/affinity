@@ -2,6 +2,7 @@
   <ion-page>
     <ion-content fullscreen>
       <ion-toggle color="light">Posts only</ion-toggle>
+      <new-post :teams="canPostInTeams" @submit="submitPost($event)" v-if="canPost" />
 
       <ion-card>
         <ion-card-header>
@@ -132,20 +133,28 @@ import {
   IonToggle, IonIcon, IonAvatar, IonLabel, IonNote,
 } from '@ionic/vue';
 import { chatbubbles, heartOutline, addOutline, mailOutline, caretForwardOutline } from 'ionicons/icons';
-import { defineComponent } from 'vue';
+import { defineComponent, computed } from 'vue';
+import { useStore } from '../stores/';
+import NewPost from "../components/new-post.vue";
 
 
 export default defineComponent({
-  name: 'Inbox',
+  name: 'Feed',
   setup() {
+    const store = useStore();
     return {
+      canPostInTeams: computed(() => store.getters["auth/postableTeams"]),
+      canPost: computed(() => store.getters["auth/postableTeams"].length > 0),
+      submitPost(model: any) {
+        store.dispatch("submitPost", model);
+      },
       chatbubbles, like: heartOutline, mail: mailOutline, plus: addOutline,
       teamSplitter: caretForwardOutline,
     }
   },
   components: {
     IonContent, IonPage, IonAvatar, IonCard, IonCardContent, IonCardHeader, IonImg,
-    IonToggle, IonLabel, IonIcon, IonNote,
+    IonToggle, IonLabel, IonIcon, IonNote, NewPost,
   }
 });
 </script>

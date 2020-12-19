@@ -6,7 +6,7 @@ export interface NewsT {
 
 export const News = {
   namespaced: true,
-  setup: () => ({
+  state: () => ({
     latest: [],
   }),
   getters: {},

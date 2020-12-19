@@ -17,21 +17,8 @@ import { IonContent, IonPage,  IonIcon, IonChip,} from '@ionic/vue';
 import { chatbubbles, logoWhatsapp, cloudUploadOutline } from 'ionicons/icons';
 import { defineComponent, computed } from 'vue';
 import { useStore } from '../stores/';
-import { Plugins, CameraResultType } from '@capacitor/core';
 import Parse from 'parse';
-
-const { Camera, CameraPhoto } = Plugins;
-
-const takePicture = async () => {
-  const image = await Camera.getPhoto({
-    quality: 90,
-    allowEditing: true,
-    resultType: CameraResultType.DataUrl
-  });
-  return image
-}
-
-
+import { takePicture, CameraPhoto } from '../utils/camera';
 
 export default defineComponent({
   name: 'Me',

@@ -1,5 +1,5 @@
 
-import Parse from "parse";
+import { Parse } from "../config/Consts";
 
 export interface GlobalStateT {
   loading: boolean;
@@ -7,22 +7,22 @@ export interface GlobalStateT {
 }
 
 export const GlobalState = {
-  setup: () => ({
-    loading: true,
+  state: () => ({
+    loading: false,
     objects: {},
   }),
   getters: {},
   mutations: {
     addActivities(state: GlobalStateT, items: Array<Parse.Object>){
-        console.log("items", items);
-        items.forEach(i => {
-            (i.get("objects") || []).forEach((m: Parse.Object) => {
-                if (m.isDataAvailable()) {
-                    state.objects[m.id] = m;
-                }
-            });
-            state.objects[i.id] = i;
+      console.log("items", items);
+      items.forEach(i => {
+        (i.get("objects") || []).forEach((m: Parse.Object) => {
+            if (m.isDataAvailable()) {
+                state.objects[m.id] = m;
+            }
         });
+        state.objects[i.id] = i;
+      });
     },
     setLoading(state: GlobalStateT, s: boolean) {
       state.loading = s;
@@ -38,7 +38,7 @@ export const GlobalState = {
     },
     routingEnd(context: any) {
         context.commit("setLoading", false);
-    }
+    },
   }
 }
 

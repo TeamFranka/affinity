@@ -6,7 +6,7 @@ export interface FeedT {
 
 export const Feed = {
   namespaced: true,
-  setup: () => ({
+  state: () => ({
     latest: [],
   }),
   getters: {},

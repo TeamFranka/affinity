@@ -26,7 +26,6 @@ export const Comment = {
             },
             attachments: { // any other object
                 type: "Array",
-                required: true
             }
         },
         Interactable,

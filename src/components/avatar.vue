@@ -9,7 +9,7 @@
     </svg>
   </span>
 </div>
-  <span v-if="withName">{{profile.name || profile.username || profile.id}}</span>
+  <span v-if="withName">{{name}}</span>
 </template>
 
 
@@ -17,13 +17,14 @@
 import {
   IonAvatar,
 } from '@ionic/vue';
+import Parse from "parse";
 import { defineComponent } from 'vue';
 
 export default defineComponent({
   name: 'Avatar',
   props: {
     profile: {
-      type: Object,
+      type: Parse.Object,
       required: true
     },
     withName: Boolean,
@@ -38,6 +39,9 @@ export default defineComponent({
         return avatar.url()
       }
       return null;
+    },
+    name(): string {
+      return this.profile.get("name") || this.profile.get("username") || this.profile.get("slug") || this.profile.id;
     },
     letter(): string {
       const text = (this.profile && (this.profile.get("name") || this.profile.get("username"))) || "";
