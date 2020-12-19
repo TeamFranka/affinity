@@ -3,14 +3,18 @@
     <ion-content fullscreen>
       <ion-toggle color="light">Posts only</ion-toggle>
       <new-post :teams="canPostInTeams" @submit="submitPost($event)" v-if="canPost" />
-      <post v-for="a in latestPosts" :post="a" :key="a.id" />
+      <ion-spinner v-if="loading" name="dots"></ion-spinner>
+
+      <transition-group name="list">
+        <post v-for="a in latestPosts" :post="a" :key="a.id" />
+      </transition-group>
     </ion-content>
   </ion-page>
 </template>
 
 <script lang="ts">
 import {
-  IonPage, IonContent, IonToggle,
+  IonPage, IonContent, IonToggle, IonSpinner
 } from '@ionic/vue';
 import { chatbubbles, heartOutline, addOutline, mailOutline, caretForwardOutline } from 'ionicons/icons';
 import { defineComponent, computed } from 'vue';
@@ -26,13 +30,15 @@ export default defineComponent({
     return {
       canPostInTeams: computed(() => store.getters["auth/postableTeams"]),
       canPost: computed(() => store.getters["auth/postableTeams"].length > 0),
+      loading: computed(() => store.state.feed.loading),
       latestPosts: computed(() => store.getters["feed/latestPosts"]),
       chatbubbles, like: heartOutline, mail: mailOutline, plus: addOutline,
       teamSplitter: caretForwardOutline,
     }
   },
   components: {
-    IonContent, IonPage, IonToggle, NewPost, Post
+    IonContent, IonPage, IonToggle, IonSpinner,
+    NewPost, Post
   }
 });
 </script>

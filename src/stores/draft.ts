@@ -1,6 +1,5 @@
-import { Parse, Picture, Post, Activity } from "../config/Consts";
+import { Parse, Picture, Post } from "../config/Consts";
 import { takePicture, CameraPhoto } from '../utils/camera';
-
 
 export interface Image {
   description: string | null;
@@ -52,13 +51,7 @@ export const Draft = {
       const state =  context.state;
       const team = state.team || context.rootGetters["auth/defaultTeam"];
       console.log("author", author, "team", team);
-      const objects: any[] = [];
-
-      if (state.text.length > 0) {
-        const post = new Post({text: state.text, author, team});
-        await post.save();
-        objects.push(post.toPointer());
-      }
+      const attachments: Parse.Object[] = [];
 
       if (state.images.length > 0) {
 
@@ -78,17 +71,15 @@ export const Draft = {
           });
           console.log("picture", picture, picture.get("file"));
           await picture.save();
-          objects.push(picture.toPointer());
+          attachments.push(picture.toPointer());
         }
       }
-      if (!objects.length) {
-        console.log("nice try, nothing to do");
-        return
-      }
 
-      await (new Activity({ verb: "post", team, author, objects })).save();
+      const post = new Post({text: state.text, author, team, attachments});
+      await post.save();
 
       context.commit("clear");
+      context.dispatch("feed/refresh", null, {root: true});
     }
   }
 };

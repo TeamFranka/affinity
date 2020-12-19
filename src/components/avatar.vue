@@ -74,8 +74,6 @@ export default defineComponent({
 <style scoped>
 .letter-avatar, ion-avatar {
   display: inline-block;
-  width: 10vw;
-  height: 10vw;
   border-radius: 100%;
   border: 2px solid #aaa;
 }

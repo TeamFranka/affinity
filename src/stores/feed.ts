@@ -1,12 +1,14 @@
 import { Parse, Post } from "../config/Consts";
 
 export interface FeedT {
+  loading: boolean;
   latestPosts: Array<string>;
 }
 
 export const Feed = {
   namespaced: true,
   state: () => ({
+    loading: true,
     latestPosts: [],
   }),
   getters: {
@@ -22,10 +24,14 @@ export const Feed = {
     },
     addItem(state: FeedT, item: string) {
       state.latestPosts.unshift(item);
+    },
+    setLoading(state: FeedT, value: boolean) {
+      state.loading = value;
     }
   },
   actions: {
     async refresh(context: any) {
+      context.commit("setLoading", true);
       const teams = context.rootGetters["auth/myTeams"];
       const query = (new Parse.Query(Post))
         .containedIn("team", teams)
@@ -35,16 +41,7 @@ export const Feed = {
 
       await context.dispatch("addItems", {key: "attachments", items: feed}, { root: true });
       context.commit("setFeed", feed.map((a) => a.id))
-
-      // const subscription = await query.subscribe();
-      // subscription.on('create', async (o) => {
-      //   context.commit("addActivities", [o], { root: true });
-      //   context.commit("addItem", o.id)
-      // });
-      // subscription.on('enter', async (o) => {
-      //   context.commit("addActivities", [o], { root: true });
-      //   context.commit("addItem", o.id)
-      // });
+      context.commit("setLoading", false);
 
       // FIXME: add live query support to stay up to date;
       // https://docs.parseplatform.org/js/guide/#live-queries

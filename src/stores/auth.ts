@@ -1,5 +1,3 @@
-
-import { State } from 'ionicons/dist/types/stencil-public-runtime';
 import { Parse } from '../config/Consts';
 
 export interface TeamPermission {

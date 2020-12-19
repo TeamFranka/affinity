@@ -1,5 +1,9 @@
 
 import Parse from 'parse';
+import dayjs from 'dayjs';
+import relativeTime from 'dayjs/plugin/relativeTime';
+
+dayjs.extend(relativeTime);
 
 Parse.initialize(
     process.env.VUE_APP_PARSE_APP_ID || "",
@@ -24,7 +28,7 @@ export interface ModelT {
   }
 
 export {
-    Parse, VERSION, DEFAULT_COMMUNITY,
+    Parse, dayjs, VERSION, DEFAULT_COMMUNITY,
     // models
     Team, Activity, Picture, Post, Conversation, ChatWidgetSettings
 }
