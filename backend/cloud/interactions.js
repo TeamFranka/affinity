@@ -1,34 +1,24 @@
 /* global Parse */
 
-const fetchModel = require('./common').fetchModel;
-
-const GenericObjectParams = {
-    fields: {
-        className: {
-            required: true,
-            type: String,
-        },
-        id: {
-            required: true,
-            type: String,
-        }
-    },
-    requiredUser: true
-}
+const common = require('./common');
+const fetchModel = common.fetchModel;
+const GenericObjectParams = common.GenericObjectParams;
 
 const ReactionsParams = {
-    fields: Object.assign({
-            reaction: {
-                required: true,
-                type: String,
-                options: (val) => {
-                    // checking for emoji only strings
-                    // includes modifiers
-                    return !!val.match(/^\p{Emoji}+$/u)
-                }
-            }
-        }, GenericObjectParams.fields),
-    requiredUser: true
+  fields:Object.assign({
+      reaction: {
+        required: true,
+        type: String,
+        options: (val) => {
+          // checking for emoji only strings
+          // includes modifiers
+          return !!val.match(/^\p{Emoji}+$/u)
+        }
+      }
+    },
+    GenericObjectParams.fields
+  ),
+  requiredUser: true
 };
 
 const F_LIKED_BY = "likedBy";

@@ -20,6 +20,8 @@ export const AuthState = {
     teams: [],
   }),
   getters: {
+    isLoggedIn: (state: AuthStateT) => !!state.user,
+    myId: (state: AuthStateT) => state.user?.id,
     defaultTeam: (state: AuthStateT) => state.teams[0],
     user: (state: AuthStateT) => state.user,
     userPtr: (state: AuthStateT) => state.user?.toPointer(),
@@ -65,7 +67,23 @@ export const AuthState = {
       user.set("avatar", f);
       await user.save();
       context.commit("setUser", user);
-    }
+    },
+    async like(context: any, params: any) {
+      const obj = await Parse.Cloud.run("like", params);
+      await context.commit("setItem", obj, { root:true });
+    },
+    async unlike(context: any, params: any) {
+      const obj = await Parse.Cloud.run("unlike", params);
+      await context.commit("setItem", obj, { root:true });
+    },
+    async react(context: any, params: any) {
+      const obj = await Parse.Cloud.run("react", params);
+      await context.commit("setItem", obj, { root:true });
+    },
+    async unreact(context: any, params: any) {
+      const obj = await Parse.Cloud.run("unreact", params);
+      await context.commit("setItem", obj, { root:true });
+    },
   }
 }
 

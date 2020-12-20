@@ -24,15 +24,19 @@
   <div class="ion-padding-top ion-padding-start">
     <ion-chip outline color="light">
       <ion-icon :icon="comments" size="small" />
-      <ion-label>{{post.commentsCount || 0}}</ion-label>
+      <ion-label>{{post.get("commentsCount")}}</ion-label>
     </ion-chip>
     <ion-chip outline color="light">
       <ion-icon :icon="share" size="small"/>
-      <ion-label>{{post.sharesCount || 0}}</ion-label>
+      <ion-label>{{post.get("sharesCount")}}</ion-label>
     </ion-chip>
-    <ion-chip outline color="light">
+    <ion-chip @click="toggleLike" outline :color="likedColor">
       <ion-icon :icon="like" size="small"/>
-      <ion-label>{{post.likesCount || 0}}</ion-label>
+      <ion-label>{{post.get("likesCount") }}</ion-label>
+    </ion-chip>
+    <ion-chip outline v-for="r in reactions" :key="r.key">
+      <ion-label slot="">{{r.key}}</ion-label>
+      <ion-label>{{r.count}}</ion-label>
     </ion-chip>
     <ion-chip outline color="light">
       <ion-icon :icon="plus" size="small"/>
@@ -68,6 +72,7 @@ export default defineComponent({
     const store = useStore();
     return {
       objs: computed(() => store.getters.objectsMap),
+      store,
       comments: chatbubblesOutline,
       teamSplitter: arrowRedoOutline,
       like: heartOutline,
@@ -76,6 +81,10 @@ export default defineComponent({
     }
   },
   computed: {
+    hasLiked(): boolean {
+      if (!this.store.getters["auth/isLoggedIn"]) return false;
+      return (this.post.get("likedBy") || []).indexOf(this.store.getters["auth/myId"]) !== -1;
+    },
     author(): Parse.Object {
       const author = this.post.get("author");
       if (author.isDataAvailable()) {
@@ -93,9 +102,31 @@ export default defineComponent({
       return (this.post.get("attachments") || []).map(
             (o: Parse.Object) => this.objs[o.id])
     },
+    likedColor(): string {
+      return this.hasLiked ? "danger" : "light"
+    },
     authorName(): string {
       const author = this.author;
       return author.get("name") || author.get("username")
+    },
+    reactions(): Array<any> {
+      return Object.keys(this.post.get("reactions") || {}).map((key) => {
+        const reactors = this.post.get("reactions")[key];
+        return {
+          key,
+          color: reactors.indexOf(this.store.getters["auth/myId"]) === -1 ? "light" : "dark",
+          count: reactors.length
+        }
+      })
+    }
+  },
+  methods: {
+    toggleLike() {
+      if (this.hasLiked){
+        this.store.dispatch("auth/unlike", Object.assign({}, this.post.toPointer()));
+      } else {
+        this.store.dispatch("auth/like", Object.assign({}, this.post.toPointer()));
+      }
     }
   },
   components: {

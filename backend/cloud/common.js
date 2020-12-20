@@ -23,14 +23,27 @@ const setTeamAcl = async (request) => {
     console.assert(request.object.setACL(newAcl), "setting ACL failed");
 }
 
+const GenericObjectParams = {
+  fields: {
+    className: {
+      required: true,
+      type: String,
+    },
+    objectId: {
+      required: true,
+      type: String,
+    }
+  },
+  requiredUser: true
+}
+
 const fetchModel = async(request) => {
-  const sessionToken = request.headers["x-parse-session-token"];
-  const model = await (new Parse.Query(request.params.className))
-      .get(request.params.id, {sessionToken: sessionToken});
-  return model
+  return await (new Parse.Query(request.params.className))
+      .get(request.params.objectId, {sessionToken: request.user.getSessionToken()});
 }
 
 module.exports = {
+  GenericObjectParams: GenericObjectParams,
   fetchModel: fetchModel,
   setTeamAcl: setTeamAcl,
 }
