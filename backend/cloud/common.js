@@ -1,11 +1,10 @@
 /* global Parse */
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
-const CONSTS = require("./consts.js");
-const Team = CONSTS.Team;
+const Team = require("./consts.js").Team;
 
 const setTeamAcl = async (request) => {
-    if (!request.original) {
+    if (request.original) {
       return // an update not a create, ignore
     }
 
@@ -18,8 +17,10 @@ const setTeamAcl = async (request) => {
     const members = team.get("members");
     const newAcl = new Parse.ACL();
     newAcl.setRoleReadAccess(members, true);
+    // FIXME: well, should depend.
+    newAcl.setPublicReadAccess(false);
 
-    request.object.setAcl(newAcl);
+    console.assert(request.object.setACL(newAcl), "setting ACL failed");
 }
 
 module.exports = {

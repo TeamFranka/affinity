@@ -18,7 +18,6 @@ export const Post = {
             },
             text: {
                 type: "String",
-                required: true
             },
             attachments: { // any other object
                 type: "Array",
