@@ -1,20 +1,28 @@
 <template>
   <ion-page>
-    <ion-content fullscreen>
-      <ion-toggle color="light">Posts only</ion-toggle>
-      <new-post :teams="canPostInTeams" @submit="submitPost($event)" v-if="canPost" />
-      <ion-spinner v-if="loading" name="dots"></ion-spinner>
+    <ion-content>
+      <div class="wrap">
+        <ion-card>
+          <ion-card-content>
+            <new-post :teams="canPostInTeams" @submit="submitPost($event)" v-if="canPost" />
+          </ion-card-content>
+        </ion-card>
 
-      <transition-group name="list">
-        <activity v-for="a in latestPosts" :activity="a" :key="a.id" />
-      </transition-group>
+        <ion-toggle color="light">Posts only</ion-toggle>
+
+        <ion-spinner v-if="loading" name="dots"></ion-spinner>
+
+        <transition-group name="list">
+          <activity v-for="a in latestPosts" :activity="a" :key="a.id" />
+        </transition-group>
+      </div>
     </ion-content>
   </ion-page>
 </template>
 
 <script lang="ts">
 import {
-  IonPage, IonContent, IonToggle, IonSpinner
+  IonPage, IonContent, IonToggle, IonSpinner, IonCard, IonCardContent
 } from '@ionic/vue';
 import { chatbubbles, heartOutline, addOutline, mailOutline, caretForwardOutline } from 'ionicons/icons';
 import { defineComponent, computed } from 'vue';
@@ -37,7 +45,7 @@ export default defineComponent({
     }
   },
   components: {
-    IonContent, IonPage, IonToggle, IonSpinner,
+    IonContent, IonPage, IonToggle, IonSpinner, IonCard, IonCardContent,
     NewPost, Activity
   }
 });

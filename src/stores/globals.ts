@@ -2,18 +2,22 @@
 import { Parse } from "../config/Consts";
 
 export interface GlobalStateT {
-  loading: boolean;
+  loadingCounter: number;
+  defaultTeam: Parse.Object | null;
   objects: Record<string, Parse.Object>;
 }
 
 export const GlobalState = {
   state: () => ({
-    loading: false,
+    loadingCounter: 0,
     objects: {},
   }),
   getters: {
     objectsMap(state: GlobalStateT) {
       return state.objects;
+    },
+    isLoading(state: GlobalStateT) {
+      return state.loadingCounter < 1
     }
   },
   mutations: {
@@ -25,20 +29,37 @@ export const GlobalState = {
     setItem(state: GlobalStateT, item: Parse.Object) {
       state.objects[item.id] = item;
     },
-    setLoading(state: GlobalStateT, s: boolean) {
-      state.loading = s;
-    }
+    setGlobalTeam(state: GlobalStateT, team: Parse.Object) {
+      state.defaultTeam = team;
+      state.objects[team.id] = team;
+    },
+    startLoading(state: GlobalStateT) {
+      state.loadingCounter += 1;
+    },
+    doneLoading(state: GlobalStateT) {
+      state.loadingCounter -= 1;
+    },
   },
   actions: {
+    fetchDefaultTeam(context: any, teamId: string) {
+      context.commit("startLoading");
+      (new Parse.Query("Team")).get(teamId).then((resp)=>{
+        context.commit("setGlobalTeam", resp)
+        context.commit("doneLoading");
+      }, (err)=> {
+        console.error("fetching default team failed", err);
+        context.commit("doneLoading");
+      });
+    },
     refreshRoot(context: any) {
       context.dispatch("news/refresh");
       context.dispatch("feed/refresh");
     },
     routingStart(context: any) {
-        context.commit("setLoading", true);
+        context.commit("startLoading");
     },
     routingEnd(context: any) {
-        context.commit("setLoading", false);
+        context.commit("doneLoading");
     },
     addItems(context: any, inp: any) {
       const { items, key } = inp;

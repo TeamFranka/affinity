@@ -3,29 +3,41 @@
     <ion-progress-bar v-if="loading" color="secondary" type="indeterminate"></ion-progress-bar>
     <ion-fab v-if="!user" vertical="bottom" horizontal="end" slot="fixed">
       <ion-fab-button @click="openLoginModal">
-          <ion-icon name="log-in"/>
+          <ion-icon :ion="logInIcon"/>
       </ion-fab-button>
     </ion-fab>
+    <ion-header class="ion-hide-lg-down">
+      <ion-toolbar>
+        <ion-title slot="start">{{title}}</ion-title>
+        <div slot="end">
+          <a href="/faq">faq</a>
+          <avatar v-if="user" :profile="user" />
+        </div>
+      </ion-toolbar>
+    </ion-header>
     <!-- FIXME: animation is broken -->
     <ion-content>
       <ion-router-outlet />
     </ion-content>
-    <ion-footer>
-      <footer-menu />
+    <ion-footer >
+      <footer-menu class="ion-hide-lg-up" />
     </ion-footer>
   </ion-app>
 </template>
 
 <script lang="ts">
 import {
-  IonApp, IonRouterOutlet, IonFooter, IonContent, IonProgressBar, IonFab, IonIcon,
-  IonFabButton, modalController
+  IonApp, IonRouterOutlet, IonFooter, IonProgressBar, IonFab, IonIcon,
+  IonFabButton, modalController, isPlatform, IonSplitPane, IonList, IonItem,
+  IonMenu, IonToolbar, IonHeader, IonTitle,
 } from '@ionic/vue';
+import { logInOutline as logInIcon } from 'ionicons/icons';
 import { defineComponent, computed } from 'vue'
 
 // import SideMenu from '../components/side-menu.vue';
 import FooterMenu from '../components/footer-menu.vue';
 import Login from '../components/login.vue';
+import Avatar from '../components/avatar.vue';
 import { useStore } from '../stores/';
 
 
@@ -39,19 +51,26 @@ export default defineComponent({
     IonFab,
     IonFabButton,
     IonIcon,
-    IonContent,
     FooterMenu,
+    IonToolbar,
+    IonHeader,
+    IonTitle,
+    Avatar,
     // Login,
   },
   setup() {
     const store = useStore();
+    store.dispatch("fetchDefaultTeam", (window as any).AFFINITY_DEFAULT_TEAM);
     return {
+      logInIcon,
+      onDesktop: isPlatform("desktop"),
+      title: computed(() => store.state.global.defaultTeam?.get("name") || "affinity"),
       user: computed(() => store.state.auth.user),
       loginModalOpened: computed(() => {
         console.log("called");
         return store.state.auth.wantsToLogin
       }),
-      loading: computed(() => store.state.global.loading),
+      loading: store.getters.isLoading,
       closeLoginModal: () => store.dispatch("auth/dismissLogin"),
       // openLoginModal: () => store.dispatch("auth/openLogin"),
       fetchUser: () => store.dispatch("auth/fetchUser")
@@ -75,3 +94,15 @@ export default defineComponent({
   }
 });
 </script>
+<style>
+ion-app {
+  align-items: center;
+}
+.wrap {
+  max-width: 860px;
+}
+ion-content {
+  display: flex;
+  align-items: center;
+}
+</style>

@@ -1,7 +1,9 @@
 import { createRouter, createWebHistory } from '@ionic/vue-router';
 import { RouteRecordRaw } from 'vue-router';
-import Home from '../views/Home.vue';
+import { isPlatform } from '@ionic/core';
+import News from '../views/Home.vue';
 import Inbox from '../views/Inbox.vue';
+import CommunityOutlet from '../views/CommunityOutlet.vue';
 import Feed from '../views/Feed.vue';
 import Faq from '../views/FAQ.vue';
 import Me from '../views/Me.vue';
@@ -10,18 +12,9 @@ import Donations from '../views/Donations.vue';
 
 const routes: Array<RouteRecordRaw> = [
   {
-    path: '/',
-    redirect: '/home'
-  },
-  {
-    path: '/home',
-    name: 'Home',
-    component: Home
-  },
-  {
-    path: '/feed',
-    name: 'Feed',
-    component: Feed
+    path: '/news',
+    name: 'News',
+    component: News
   },
   {
     path: '/inbox',
@@ -42,6 +35,22 @@ const routes: Array<RouteRecordRaw> = [
     path: '/donate',
     name: 'Donations',
     component: Donations
+  },
+  {
+    path: '/',
+    name: "CommunityOutlet",
+    component: CommunityOutlet,
+    children: [
+      {
+        path: 'feed',
+        name: 'Feed',
+        component: Feed
+      },
+      {
+        path: '/',
+        redirect: isPlatform('desktop') ? "/feed" : "/home"
+      },
+    ]
   }
 ]
 
