@@ -19,6 +19,7 @@ export const DEFAULT_COMMUNITY = process.env.VUE_APP_DEFAULT_TEAM;
 export const Team = Parse.Object.extend("Team");
 export const Activity = Parse.Object.extend("Activity");
 export const Picture = Parse.Object.extend("Picture");
+export const Comment = Parse.Object.extend("Comment");
 export const ChatWidgetSettings = Parse.Object.extend("ChatWidget");
 export const Conversation = Parse.Object.extend("Conversation");
 

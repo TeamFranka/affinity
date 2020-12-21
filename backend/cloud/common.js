@@ -37,9 +37,10 @@ const GenericObjectParams = {
   requiredUser: true
 }
 
-const fetchModel = async(request) => {
-  return await (new Parse.Query(request.params.className))
-      .get(request.params.objectId, {sessionToken: request.user.getSessionToken()});
+const fetchModel = async(request, pointer) => {
+  console.log("fething", pointer);
+  return await (new Parse.Query(pointer ? pointer.className : request.params.className))
+      .get(pointer ? pointer.objectId : request.params.objectId, {sessionToken: request.user.getSessionToken()});
 }
 
 module.exports = {

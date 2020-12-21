@@ -18,7 +18,6 @@ export const Comment = {
             replyTo: {
                 type: "Pointer",
                 targetClass: "Comment",
-                required: true
             },
             text: {
                 type: "String",

@@ -24,7 +24,7 @@
     </div>
   </div>
   <div class="ion-padding-top ion-padding-start">
-    <ion-chip outline color="light">
+    <ion-chip @click="openComments()" outline :color="showComments ? 'dark':'light'">
       <ion-icon :icon="commentsIcon" size="small" />
       <ion-label>{{activity.get("commentsCount")}}</ion-label>
     </ion-chip>
@@ -44,14 +44,23 @@
       <ion-icon :icon="plusIcon" size="small"/>
     </ion-chip>
   </div>
+  <div v-if="showComments">
+    <ion-spinner v-if="commentsLoading" />
+    <div v-for="c in comments" :key="c.id">
+      {{c.get("text")}}
+    </div>
+    <form @submit.prevent="submitComment()">
+      <ion-input v-model="comment" enterkeyhint="enter" />
+    </form>
+  </div>
 </ion-card>
 </template>
 
 
 <script lang="ts">
 import {
-  IonCard, IonImg, IonLabel, IonCardHeader,
-  IonIcon, IonNote, IonChip,
+  IonCard, IonImg, IonLabel, IonCardHeader, IonSpinner,
+  IonIcon, IonNote, IonChip, IonInput,
 } from '@ionic/vue';
 import { chatbubblesOutline, heartOutline, addOutline, arrowRedoOutline } from 'ionicons/icons';
 import { createGesture } from "@ionic/core";
@@ -59,7 +68,7 @@ import { createGesture } from "@ionic/core";
 import Avatar from "./avatar.vue";
 import { useStore } from '../stores/';
 import { defineComponent, computed } from 'vue';
-import { Parse, dayjs } from "../config/Consts";
+import { Parse, Comment, dayjs } from "../config/Consts";
 
 const DOUBLE_CLICK_THRESHOLD = 500;
 
@@ -72,7 +81,12 @@ export default defineComponent({
     },
     showTeam: Boolean,
   },
-
+  data() {
+    return {
+      showComments: false,
+      comment: ""
+    }
+  },
   setup() {
     const store = useStore();
     return {
@@ -107,6 +121,20 @@ export default defineComponent({
       return (this.activity.get("objects") || []).map(
             (o: Parse.Object) => this.objs[o.id])
     },
+    commentsLoading(): boolean {
+      const s = this.store.state.comments.comments[this.activity.id];
+      if (s) {
+        return s.loading
+      }
+      return false
+    },
+    comments(): Array<Parse.Object> {
+      const s = this.store.state.comments.comments[this.activity.id];
+      if (s) {
+        return s.comments.map((x) => this.store.getters["objectsMap"][x.objectId]);
+      }
+      return []
+    },
     likedColor(): string {
       return this.hasLiked ? "danger" : "light"
     },
@@ -126,6 +154,24 @@ export default defineComponent({
     }
   },
   methods: {
+    async openComments() {
+      if (this.showComments) { return }
+      await this.store.dispatch("comments/loadComments", this.activity.toPointer());
+      this.showComments = true;
+    },
+    submitComment(){
+      const text = this.comment;
+      console.log("submitting", text);
+      if (text.length <=3 ){ return }
+
+      new Comment({
+        text,
+        on: {
+          className: "Activity",
+          objectId: this.activity.id
+        },
+      }).save()
+    },
     like() {
       this.store.dispatch("auth/like", Object.assign({}, this.activity.toPointer()));
     },
@@ -144,7 +190,7 @@ export default defineComponent({
     },
   },
   components: {
-    IonCard, IonImg, IonChip, IonLabel, IonCardHeader,
+    IonCard, IonImg, IonChip, IonLabel, IonCardHeader, IonSpinner, IonInput,
     IonIcon, IonNote, Avatar
   },
   mounted() {
