@@ -1,4 +1,4 @@
-import { Parse, Post } from "../config/Consts";
+import { Parse, Activity, Verb } from "../config/Consts";
 
 export interface FeedT {
   loading: boolean;
@@ -33,13 +33,14 @@ export const Feed = {
     async refresh(context: any) {
       context.commit("setLoading", true);
       const teams = context.rootGetters["auth/myTeams"];
-      const query = (new Parse.Query(Post))
+      const query = (new Parse.Query(Activity))
         .containedIn("team", teams)
-        .include("attachments")
+        .containedIn("verb", [Verb.Post, Verb.Announce])
+        .include("objects")
         .descending("createdAt");
       const feed = await query.find();
 
-      await context.dispatch("addItems", {key: "attachments", items: feed}, { root: true });
+      await context.dispatch("addItems", {key: "objects", items: feed}, { root: true });
       context.commit("setFeed", feed.map((a) => a.id))
       context.commit("setLoading", false);
 

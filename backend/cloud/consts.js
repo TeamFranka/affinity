@@ -7,7 +7,6 @@ const Document = Parse.Object.extend("Document");
 const Team = Parse.Object.extend("Team");
 const Link = Parse.Object.extend("Link");
 const Picture = Parse.Object.extend("Picture");
-const Post = Parse.Object.extend("Post");
 const Video = Parse.Object.extend("Video");
 const User = Parse.User;
 const Role = Parse.Role;
@@ -17,7 +16,6 @@ const Objects = [
     Document,
     Link,
     Picture,
-    Post,
     Video,
 ];
 
@@ -31,7 +29,6 @@ module.exports = {
     Document: Document,
     Comment: Comment,
     Link: Link,
-    Post: Post,
     Picture: Picture,
     Video: Video,
     Objects: Objects,

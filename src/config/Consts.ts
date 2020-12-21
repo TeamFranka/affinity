@@ -13,22 +13,24 @@ Parse.serverURL = process.env.VUE_APP_PARSE_URL || "http://localhost:1337/parse"
 // Parse.enableEncryptedUser();
 Parse.enableLocalDatastore();
 
-const VERSION = "0.0.1";
-const DEFAULT_COMMUNITY = process.env.VUE_APP_DEFAULT_TEAM;
+export const VERSION = "0.0.1";
+export const DEFAULT_COMMUNITY = process.env.VUE_APP_DEFAULT_TEAM;
 
-const Team = Parse.Object.extend("Team");
-const Activity = Parse.Object.extend("Activity");
-const Picture = Parse.Object.extend("Picture");
-const Post = Parse.Object.extend("Post");
-const ChatWidgetSettings = Parse.Object.extend("ChatWidget");
-const Conversation = Parse.Object.extend("Conversation");
+export const Team = Parse.Object.extend("Team");
+export const Activity = Parse.Object.extend("Activity");
+export const Picture = Parse.Object.extend("Picture");
+export const ChatWidgetSettings = Parse.Object.extend("ChatWidget");
+export const Conversation = Parse.Object.extend("Conversation");
+
+export enum Verb {
+    Post = "post",
+    Announce = "announce",
+}
 
 export interface ModelT {
     id: string;
   }
 
 export {
-    Parse, dayjs, VERSION, DEFAULT_COMMUNITY,
-    // models
-    Team, Activity, Picture, Post, Conversation, ChatWidgetSettings
+    Parse, dayjs,
 }

@@ -6,7 +6,7 @@
       <ion-spinner v-if="loading" name="dots"></ion-spinner>
 
       <transition-group name="list">
-        <post v-for="a in latestPosts" :post="a" :key="a.id" />
+        <activity v-for="a in latestPosts" :activity="a" :key="a.id" />
       </transition-group>
     </ion-content>
   </ion-page>
@@ -19,7 +19,7 @@ import {
 import { chatbubbles, heartOutline, addOutline, mailOutline, caretForwardOutline } from 'ionicons/icons';
 import { defineComponent, computed } from 'vue';
 import { useStore } from '../stores/';
-import Post from "../components/post.vue";
+import Activity from "../components/activity.vue";
 import NewPost from "../components/new-post.vue";
 
 
@@ -38,7 +38,7 @@ export default defineComponent({
   },
   components: {
     IonContent, IonPage, IonToggle, IonSpinner,
-    NewPost, Post
+    NewPost, Activity
   }
 });
 </script>

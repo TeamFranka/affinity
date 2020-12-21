@@ -20,11 +20,17 @@ export const Activity = {
                 type: "String",
                 required: true
             },
+            text: { // posts are directly on here
+                type: "String",
+                required: false,
+            },
             objects: { // any Post, Picture,
                 type: "Array",
                 required: true
-            }
+            },
         },
+        Interactable,
+        ViewTracking,
     ),
     classLevelPermissions: {
         find: {
