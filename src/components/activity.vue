@@ -47,11 +47,16 @@
   <div v-if="showComments">
     <ion-spinner v-if="commentsLoading" />
     <ion-grid>
-      <comment v-for="c in comments"  :commentId="c.id" :key="c.id">
-      </comment>
+      <comment
+        v-for="c in comments"
+        :commentId="c.objectId"
+        :key="c.oobjectId"
+        :children="c.comments"
+        :object="pointer"
+      />
     </ion-grid>
     <form @submit.prevent="submitComment()">
-      <ion-input v-model="comment" enterkeyhint="enter" />
+      <ion-input @change="setDraft($event.target.value)" :value="draft" placeholder="comment here" enterkeyhint="enter" />
     </form>
   </div>
 </ion-card>
@@ -123,6 +128,16 @@ export default defineComponent({
       return (this.activity.get("objects") || []).map(
             (o: Parse.Object) => this.objs[o.id])
     },
+    pointer(): Parse.Pointer {
+      return this.activity.toPointer()
+    },
+    draft(): string {
+      const d = this.store.state.comments.drafts[this.activity.id];
+      if (d) {
+        return d[""]
+      }
+      return ""
+    },
     commentsLoading(): boolean {
       const s = this.store.state.comments.comments[this.activity.id];
       if (s) {
@@ -130,10 +145,10 @@ export default defineComponent({
       }
       return false
     },
-    comments(): Array<Parse.Object> {
+    comments(): Array<any> {
       const s = this.store.state.comments.comments[this.activity.id];
       if (s) {
-        return s.comments.map((x) => this.store.getters["objectsMap"][x.objectId]);
+        return s.comments
       }
       return []
     },
@@ -161,18 +176,19 @@ export default defineComponent({
       await this.store.dispatch("comments/loadComments", this.activity.toPointer());
       this.showComments = true;
     },
+    setDraft(text: string) {
+      this.store.commit("comments/setDraft", {
+        objectId: this.activity.id,
+        text
+      });
+    },
     submitComment(){
       const text = this.comment;
       console.log("submitting", text);
-      if (text.length <=3 ){ return }
-
-      new CommentModel({
-        text,
-        on: {
-          className: "Activity",
-          objectId: this.activity.id
-        },
-      }).save()
+      this.store.dispatch("comments/submitDraft", {
+        ptr: this.activity.toPointer(),
+        text
+      });
     },
     like() {
       this.store.dispatch("auth/like", Object.assign({}, this.activity.toPointer()));

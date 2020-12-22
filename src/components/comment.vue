@@ -1,32 +1,46 @@
 <template>
-    <ion-row ref="doubleTapRef">
-        <ion-col size="1">
-            <avatar :profile="author"/>
-        </ion-col>
-        <ion-col size="11">
-            <div> {{authorName}} <ion-note color="medium">{{since}}</ion-note>
-            </div>
-            <div>
-                {{ text }}
-            </div>
-            <div>
-                <ion-chip @click="toggleLike" outline size="small" :color="likedColor">
-                    <ion-icon :icon="likeIcon" size="small"/>
-                    <ion-label>{{comment.get("likesCount") }}</ion-label>
-                </ion-chip>
-                <ion-chip outline v-for="r in reactions" :key="r.key" @click="unreact(r.key)">
-                    <ion-label>{{r.key}}</ion-label>
-                    <ion-label>{{r.count}}</ion-label>
-                </ion-chip>
-                    <ion-chip outline color="light">
-                    <ion-icon :icon="plusIcon" size="small"/>
-                </ion-chip>
-            </div>
-        </ion-col>
-        <ion-col size="1" />
-        <ion-col size="11">
-        </ion-col>
-    </ion-row>
+  <ion-row ref="doubleTapRef">
+    <ion-col size="1">
+      <avatar :profile="author"/>
+    </ion-col>
+    <ion-col size="10">
+      <div> {{authorName}} <ion-note color="medium">{{since}}</ion-note>
+      </div>
+      <div>
+          {{ text }}
+      </div>
+      <div>
+        <ion-chip @click="toggleLike" outline size="small" :color="likedColor">
+          <ion-icon :icon="likeIcon" size="small"/>
+          <ion-label>{{comment.get("likesCount") }}</ion-label>
+        </ion-chip>
+        <ion-chip outline v-for="r in reactions" :key="r.key" @click="unreact(r.key)">
+          <ion-label>{{r.key}}</ion-label>
+          <ion-label>{{r.count}}</ion-label>
+        </ion-chip>
+        <ion-chip outline color="light">
+          <ion-icon :icon="plusIcon" size="small"/>
+        </ion-chip>
+      </div>
+    </ion-col>
+    <ion-col size="1">
+      <ion-chip @click="showInput = !showInput" outline color="light">
+        <ion-icon :icon="replyIcon" size="small"/>
+      </ion-chip>
+    </ion-col>
+    <ion-col offset="1" size="11">
+      <form v-if="showInput" @submit.prevent="submitComment()">
+        <ion-input @keyup="setDraft($event.target.value)" :value="draft" placeholder="comment here" enterkeyhint="enter" />
+      </form>
+      <comment
+        v-for="c in children"
+        :children="c.comments"
+        :key="c.objectId"
+        :commentId="c.objectId"
+        :object="object"
+      />
+    </ion-col>
+  </ion-row>
 </template>
 
 
@@ -35,22 +49,30 @@ import {
   IonCol, IonRow, IonImg, IonLabel, IonSpinner,
   IonIcon, IonNote, IonChip, IonInput,
 } from '@ionic/vue';
-import { chatbubblesOutline, heartOutline, addOutline, arrowRedoOutline } from 'ionicons/icons';
+import {
+  chatbubblesOutline, heartOutline, addOutline, arrowRedoOutline, arrowUndoOutline
+} from 'ionicons/icons';
 import { createGesture } from "@ionic/core";
 
 import Avatar from "./avatar.vue";
 import { useStore } from '../stores/';
 import { defineComponent, computed } from 'vue';
-import { Parse, CommentModel, dayjs } from "../config/Consts";
-
-const DOUBLE_CLICK_THRESHOLD = 500;
+import { Parse, dayjs } from "../config/Consts";
 
 export default defineComponent({
   name: 'Comment',
   props: {
+    object:  {
+      type: Parse.Pointer,
+      required: true
+    },
     commentId: {
       type: String,
       required: true
+    },
+    inset: Boolean,
+    children: {
+      type: Array
     },
   },
   data() {
@@ -68,7 +90,8 @@ export default defineComponent({
       teamSplitterIcon: arrowRedoOutline,
       likeIcon: heartOutline,
       shareIcon: arrowRedoOutline,
-      plusIcon: addOutline
+      plusIcon: addOutline,
+      replyIcon: arrowUndoOutline,
     }
   },
   computed: {
@@ -88,6 +111,13 @@ export default defineComponent({
     },
     text(): string {
         return this.comment.get("text") || ""
+    },
+    draft(): string {
+      const d = this.store.state.comments.drafts[this.object.objectId];
+      if (d) {
+        return d[this.commentId]
+      }
+      return ""
     },
     objects(): Parse.Object {
       return (this.comment.get("attachments") || []).map(
@@ -112,15 +142,19 @@ export default defineComponent({
     }
   },
   methods: {
+    setDraft(text: string) {
+      console.log("setting draft", text);
+      this.store.commit("comments/setDraft", {
+        objectId: this.object.objectId,
+        replyTo: this.commentId,
+        text
+      });
+    },
     submitComment(){
-    //   const text = this.comment;
-    //   console.log("submitting", text);
-    //   if (text.length <=3 ){ return }
-
-    //   new Comment({
-    //     text,
-    //     on: this.object.,
-    //   }).save()
+      this.store.dispatch("comments/submitDraft", {
+        ptr: this.object,
+        replyTo: this.comment.toPointer(),
+      });
     },
     like() {
       this.store.dispatch("auth/like", Object.assign({}, this.comment.toPointer()));
@@ -140,34 +174,9 @@ export default defineComponent({
     },
   },
   components: {
-    IonRow, IonChip, IonLabel, IonCol, //IonInput,
+    IonRow, IonChip, IonLabel, IonCol, IonInput,
     IonIcon, IonNote, Avatar
   },
-  mounted() {
-    return
-    // const c: any = this.$refs.doubleTapRef;
-
-    // let lastOnStart = 0;
-
-    // const gesture = createGesture({
-    //   el: c,
-    //   gestureName: "double-tap-like",
-    //   threshold: 0,
-    //   onStart: () => {
-    //     const now = Date.now();
-
-    //     if (Math.abs(now - lastOnStart) <= DOUBLE_CLICK_THRESHOLD) {
-    //       this.like()
-    //       lastOnStart = 0;
-    //     } else {
-    //       lastOnStart = now;
-    //     }
-    //   }
-    // });
-
-    // gesture.enable();
-
-  }
 });
 </script>
 <style scoped>

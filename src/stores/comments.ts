@@ -5,7 +5,6 @@ export interface CommentT {
   comments: Array<CommentT>;
 }
 
-
 export interface CommentsState {
   loading: boolean;
   comments: Array<CommentT>;
@@ -44,6 +43,23 @@ export const Comments = {
     },
   },
   actions: {
+    async submitDraft(context: any, res: any) {
+      const ptr = res.ptr;
+      const replyTo = res.replyTo;
+      const text = context.state.drafts[ptr.objectId][replyTo ? replyTo.objectId : ""];
+      console.log(ptr, replyTo, text);
+      if (!text || text.length <=3 ){ return }
+
+      await new Comment({text, replyTo, on:{
+        className: ptr.className,
+        objectId: ptr.objectId,
+      }}).save();
+      context.commit("setDraft", {
+        objectId: ptr.objectId,
+        replyTo: replyTo ? replyTo.objectId : ""
+      });
+      await context.dispatch("loadComments", ptr);
+    },
     async loadComments(context: any, ptr: Parse.Pointer) {
       console.log("fetching", ptr.objectId);
       context.commit("loadingComments", ptr.objectId);
@@ -68,7 +84,7 @@ export const Comments = {
 
       comments.forEach((c: Parse.Object) => {
         const id: string = c.id
-        const replyTo: Parse.Pointer = c.get("replyTo");
+        const replyTo: Parse.Object = c.get("replyTo");
         const author: Parse.Object = c.get("author");
 
         objsToAdd[id] = c;
@@ -76,10 +92,12 @@ export const Comments = {
         (c.get("attachments") || []).forEach((a: any) => objsToAdd[a.id] = a);
 
         if (replyTo) {
-          const l = byParent[replyTo.objectId] || [];
+          console.log(replyTo, id);
+          const l = byParent[replyTo.id] || [];
           l.push(id);
-          byParent[replyTo.objectId] = l;
+          byParent[replyTo.id] = l;
         } else {
+          console.log("no reply")
           tl.push(id);
         }
       });
