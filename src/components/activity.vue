@@ -1,7 +1,9 @@
 <template>
 <ion-card>
   <ion-card-header>
-    <avatar :profile="author"/>
+    <div class="avatar-wrap">
+      <avatar :profile="author"/>
+    </div>
     <div class="ion-padding-start">
       <div>
         {{authorName}}<span v-if="showTeam"><ion-icon :icon="teamSplitterIcon" /> <a href="">TeamFranka</a></span>
@@ -37,7 +39,7 @@
       <ion-label>{{activity.get("likesCount") }}</ion-label>
     </ion-chip>
     <ion-chip outline v-for="r in reactions" :key="r.key" @click="unreact(r.key)">
-      <ion-label slot="">{{r.key}}</ion-label>
+      <ion-label>{{r.key}}</ion-label>
       <ion-label>{{r.count}}</ion-label>
     </ion-chip>
     <ion-chip outline color="light">
@@ -249,5 +251,8 @@ export default defineComponent({
 ion-card-header {
   display: flex;
   align-items: center;
+}
+.avatar-wrap {
+  width: 5em;
 }
 </style>
