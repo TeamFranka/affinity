@@ -1,11 +1,13 @@
 <template>
   <ion-page>
-    <ion-content fullscreen>
+    <ion-content>
         <div class="ion-text-center">
+          <div class="profile-img">
             <avatar :profile="user"  />
-            <ion-chip @click="selectNewAvatar(user.id)">
-              <ion-icon :icon="uploadIcon"></ion-icon>
-            </ion-chip>
+          </div>
+          <ion-chip @click="selectNewAvatar(user.id)">
+            <ion-icon :icon="uploadIcon"></ion-icon>
+          </ion-chip>
         </div>
     </ion-content>
   </ion-page>
@@ -52,5 +54,8 @@ export default defineComponent({
 <style scoped>
 ion-chip ion-icon {
   margin: 0
+}
+.profile-img {
+  width: 50%;
 }
 </style>

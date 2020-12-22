@@ -72,9 +72,19 @@ export default defineComponent({
 });
 </script>
 <style scoped>
+.profile-wrap {
+  width: 100%;
+  padding-bottom: 100%;
+  position: relative;
+}
 .letter-avatar, ion-avatar {
   display: inline-block;
   border-radius: 100%;
   border: 2px solid #aaa;
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 100%;
+  height: 100%;
 }
 </style>
