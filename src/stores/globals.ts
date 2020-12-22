@@ -13,10 +13,10 @@ export const GlobalState = {
     objects: {},
   }),
   getters: {
-    objectsMap(state: GlobalStateT) {
+    objectsMap(state: GlobalStateT): Record<string, Parse.Object> {
       return state.objects;
     },
-    isLoading(state: GlobalStateT) {
+    isLoading(state: GlobalStateT): boolean {
       return state.loadingCounter < 1
     }
   },
@@ -62,7 +62,7 @@ export const GlobalState = {
         context.commit("doneLoading");
     },
     addItems(context: any, inp: any) {
-      const { items, key } = inp;
+      const { items, key, keys } = inp;
       console.log("items", items);
       const found: Array<Parse.Object> = [];
       const toLookUp: Record<string, Array<string>> = {};
@@ -81,7 +81,8 @@ export const GlobalState = {
       };
       items.forEach((i: Parse.Object) => {
         sort(i);
-        key && (i.get(key) || []).forEach(sort)
+        key && (i.get(key) || []).forEach(sort);
+        keys && (keys.forEach((key: string) => (i.get(key) || []).forEach(sort)));
       });
 
       if (found.length > 0) {
@@ -95,7 +96,25 @@ export const GlobalState = {
           context.commit("setItems", resp)
         });
       });
-    }
+    },
+    async fetchModel(context: any, info: any) {
+      const { className, objectId, includes } = info;
+      const query = (new Parse.Query(className));
+      (includes || []).forEach((k: string) => query.include(k));
+      const model = await query.get(objectId);
+      let items = [model];
+      (includes || []).forEach((k: string) => {
+        const m = model.get(k)
+        if (!m) return;
+        if (Array.isArray(m)) {
+          items = items.concat(m);
+        } else {
+          items.push(m);
+        }
+      });
+
+      context.commit("setItems", items);
+    },
   }
 }
 

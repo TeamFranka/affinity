@@ -8,7 +8,7 @@
       <div>
         {{authorName}}<span v-if="showTeam"><ion-icon :icon="teamSplitterIcon" /> <a href="">TeamFranka</a></span>
       </div>
-      <ion-note color="medium">{{since}}</ion-note>
+      <a :href="'/a/' + activity.id"><ion-note color="medium">{{since}}</ion-note></a>
     </div>
   </ion-card-header>
   <div ref="doubleTapRef">
@@ -94,10 +94,11 @@ export default defineComponent({
       required: true
     },
     showTeam: Boolean,
+    startCommentsOpen: Boolean,
   },
-  data() {
+  data(props) {
     return {
-      showComments: false,
+      showComments: props.startCommentsOpen,
       comment: ""
     }
   },

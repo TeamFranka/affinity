@@ -69,7 +69,7 @@ export default defineComponent({
   name: 'Comment',
   props: {
     object:  {
-      type: Parse.Pointer,
+      type: Object,
       required: true
     },
     commentId: {

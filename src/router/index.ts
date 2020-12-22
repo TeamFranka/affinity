@@ -8,6 +8,7 @@ import Feed from '../views/Feed.vue';
 import Faq from '../views/FAQ.vue';
 import Me from '../views/Me.vue';
 import Donations from '../views/Donations.vue';
+import ViewActivity from '../views/ViewActivity.vue';
 // import { useStore } from '../stores/';
 
 const routes: Array<RouteRecordRaw> = [
@@ -41,6 +42,11 @@ const routes: Array<RouteRecordRaw> = [
     name: "CommunityOutlet",
     component: CommunityOutlet,
     children: [
+      {
+        path: 'a/:activityId',
+        name: 'ViewActivity',
+        component: ViewActivity
+      },
       {
         path: 'feed',
         name: 'Feed',
