@@ -24,7 +24,7 @@
     </div>
   </div>
   <div class="ion-padding-top ion-padding-start">
-    <ion-chip @click="openComments()" outline :color="showComments ? 'dark':'light'">
+    <ion-chip @click="toggleComments()" outline :color="showComments ? 'dark':'light'">
       <ion-icon :icon="commentsIcon" size="small" />
       <ion-label>{{activity.get("commentsCount")}}</ion-label>
     </ion-chip>
@@ -46,6 +46,13 @@
   </div>
   <div v-if="showComments">
     <ion-spinner v-if="commentsLoading" />
+    <inline-text
+      :value="draft"
+      :canSubmit="!!(draft && draft.length >= 3)"
+      placeholder="comment here"
+      @submit="submitComment()"
+      @changed="setDraft($event)"
+    />
     <ion-grid>
       <comment
         v-for="c in comments"
@@ -55,9 +62,6 @@
         :object="pointer"
       />
     </ion-grid>
-    <form @submit.prevent="submitComment()">
-      <ion-input @change="setDraft($event.target.value)" :value="draft" placeholder="comment here" enterkeyhint="enter" />
-    </form>
   </div>
 </ion-card>
 </template>
@@ -66,12 +70,13 @@
 <script lang="ts">
 import {
   IonCard, IonImg, IonLabel, IonCardHeader, IonSpinner,
-  IonIcon, IonNote, IonChip, IonInput,
+  IonIcon, IonNote, IonChip, IonGrid,
 } from '@ionic/vue';
 import { chatbubblesOutline, heartOutline, addOutline, arrowRedoOutline } from 'ionicons/icons';
 import { createGesture } from "@ionic/core";
 
 import Avatar from "./avatar.vue";
+import InlineText from "./inline-text.vue";
 import Comment from "./comment.vue";
 import { useStore } from '../stores/';
 import { defineComponent, computed } from 'vue';
@@ -171,8 +176,11 @@ export default defineComponent({
     }
   },
   methods: {
-    async openComments() {
-      if (this.showComments) { return }
+    async toggleComments() {
+      if (this.showComments) {
+        this.showComments = false;
+        return
+      }
       await this.store.dispatch("comments/loadComments", this.activity.toPointer());
       this.showComments = true;
     },
@@ -209,7 +217,7 @@ export default defineComponent({
   },
   components: {
     IonCard, IonImg, IonChip, IonLabel, IonCardHeader, IonSpinner, Comment,
-    IonIcon, IonNote, Avatar
+    IonIcon, IonNote, Avatar, IonGrid, InlineText,
   },
   mounted() {
     const c: any = this.$refs.doubleTapRef;

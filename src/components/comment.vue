@@ -29,9 +29,14 @@
       </ion-chip>
     </ion-col>
     <ion-col offset="1" size="11">
-      <form v-if="showInput" @submit.prevent="submitComment()">
-        <ion-input @keyup="setDraft($event.target.value)" :value="draft" placeholder="comment here" enterkeyhint="enter" />
-      </form>
+      <inline-text
+        v-if="showInput"
+        :value="draft"
+        :canSubmit="!!(draft && draft.length >= 3)"
+        placeholder="comment here"
+        @submit="submitComment()"
+        @changed="setDraft($event)"
+      />
       <comment
         v-for="c in children"
         :children="c.comments"
@@ -47,7 +52,7 @@
 <script lang="ts">
 import {
   IonCol, IonRow, IonImg, IonLabel, IonSpinner,
-  IonIcon, IonNote, IonChip, IonInput,
+  IonIcon, IonNote, IonChip,
 } from '@ionic/vue';
 import {
   chatbubblesOutline, heartOutline, addOutline, arrowRedoOutline, arrowUndoOutline
@@ -58,6 +63,7 @@ import Avatar from "./avatar.vue";
 import { useStore } from '../stores/';
 import { defineComponent, computed } from 'vue';
 import { Parse, dayjs } from "../config/Consts";
+import InlineText from './inline-text.vue';
 
 export default defineComponent({
   name: 'Comment',
@@ -174,8 +180,8 @@ export default defineComponent({
     },
   },
   components: {
-    IonRow, IonChip, IonLabel, IonCol, IonInput,
-    IonIcon, IonNote, Avatar
+    IonRow, IonChip, IonLabel, IonCol, InlineText,
+    IonIcon, IonNote, Avatar,
   },
 });
 </script>
