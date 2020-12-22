@@ -84,6 +84,10 @@ export const AuthState = {
       const obj = await Parse.Cloud.run("unreact", params);
       await context.commit("setItem", obj, { root:true });
     },
+    async logShared(context: any, params: any) {
+      const obj = await Parse.Cloud.run("logShared", params);
+      await context.commit("setItem", obj, { root:true });
+    },
   }
 }
 

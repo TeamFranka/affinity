@@ -32,10 +32,11 @@
       <ion-icon :icon="commentsIcon" size="small" />
       <ion-label>{{activity.get("commentsCount")}}</ion-label>
     </ion-chip>
-    <ion-chip outline color="light">
-      <ion-icon :icon="shareIcon" size="small"/>
-      <ion-label>{{activity.get("sharesCount")}}</ion-label>
-    </ion-chip>
+    <share-button
+      :link="fullLink"
+      :pointer="pointer"
+      :counter="activity.get('sharesCount') || 0"
+    />
     <ion-chip @click="toggleLike" outline :color="likedColor">
       <ion-icon :icon="likeIcon" size="small"/>
       <ion-label>{{activity.get("likesCount") }}</ion-label>
@@ -69,8 +70,6 @@
   </div>
 </ion-card>
 </template>
-
-
 <script lang="ts">
 import {
   IonCard, IonImg, IonLabel, IonCardHeader, IonSpinner,
@@ -81,10 +80,11 @@ import { createGesture } from "@ionic/core";
 
 import Avatar from "./avatar.vue";
 import InlineText from "./inline-text.vue";
+import ShareButton from "./share-button.vue";
 import Comment from "./comment.vue";
 import { useStore } from '../stores/';
 import { defineComponent, computed } from 'vue';
-import { Parse, Comment as CommentModel, dayjs } from "../config/Consts";
+import { Parse, dayjs } from "../config/Consts";
 
 const DOUBLE_CLICK_THRESHOLD = 500;
 
@@ -130,7 +130,6 @@ export default defineComponent({
         return team;
       }
       return this.objs[team.id]
-
     },
     author(): Parse.Object {
       const author = this.activity.get("author");
@@ -233,11 +232,10 @@ export default defineComponent({
   },
   components: {
     IonCard, IonImg, IonChip, IonLabel, IonCardHeader, IonSpinner, Comment,
-    IonIcon, IonNote, Avatar, IonGrid, InlineText,
+    IonIcon, IonNote, Avatar, IonGrid, InlineText, ShareButton,
   },
   mounted() {
     const c: any = this.$refs.doubleTapRef;
-
     let lastOnStart = 0;
 
     const gesture = createGesture({
