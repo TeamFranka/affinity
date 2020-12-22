@@ -8,7 +8,9 @@
       <div>
         {{authorName}}<span v-if="showTeam"><ion-icon :icon="teamSplitterIcon" /> <a href="">TeamFranka</a></span>
       </div>
-      <a :href="'/a/' + activity.id"><ion-note color="medium">{{since}}</ion-note></a>
+      <router-link :to="link">
+          <ion-note color="medium">{{since}}</ion-note>
+        </router-link>
     </div>
   </ion-card-header>
   <div ref="doubleTapRef">
@@ -115,9 +117,20 @@ export default defineComponent({
     }
   },
   computed: {
+    link(): string {
+      return '/a/' + this.activity.id
+    },
     hasLiked(): boolean {
       if (!this.store.getters["auth/isLoggedIn"]) return false;
       return (this.activity.get("likedBy") || []).indexOf(this.store.getters["auth/myId"]) !== -1;
+    },
+    team(): Parse.Object {
+      const team = this.activity.get("team");
+      if (team.isDataAvailable()) {
+        return team;
+      }
+      return this.objs[team.id]
+
     },
     author(): Parse.Object {
       const author = this.activity.get("author");
