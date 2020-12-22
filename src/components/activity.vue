@@ -46,9 +46,10 @@
   </div>
   <div v-if="showComments">
     <ion-spinner v-if="commentsLoading" />
-    <div v-for="c in comments" :key="c.id">
-      {{c.get("text")}}
-    </div>
+    <ion-grid>
+      <comment v-for="c in comments"  :commentId="c.id" :key="c.id">
+      </comment>
+    </ion-grid>
     <form @submit.prevent="submitComment()">
       <ion-input v-model="comment" enterkeyhint="enter" />
     </form>
@@ -66,9 +67,10 @@ import { chatbubblesOutline, heartOutline, addOutline, arrowRedoOutline } from '
 import { createGesture } from "@ionic/core";
 
 import Avatar from "./avatar.vue";
+import Comment from "./comment.vue";
 import { useStore } from '../stores/';
 import { defineComponent, computed } from 'vue';
-import { Parse, Comment, dayjs } from "../config/Consts";
+import { Parse, Comment as CommentModel, dayjs } from "../config/Consts";
 
 const DOUBLE_CLICK_THRESHOLD = 500;
 
@@ -164,7 +166,7 @@ export default defineComponent({
       console.log("submitting", text);
       if (text.length <=3 ){ return }
 
-      new Comment({
+      new CommentModel({
         text,
         on: {
           className: "Activity",
@@ -190,7 +192,7 @@ export default defineComponent({
     },
   },
   components: {
-    IonCard, IonImg, IonChip, IonLabel, IonCardHeader, IonSpinner, IonInput,
+    IonCard, IonImg, IonChip, IonLabel, IonCardHeader, IonSpinner, Comment,
     IonIcon, IonNote, Avatar
   },
   mounted() {

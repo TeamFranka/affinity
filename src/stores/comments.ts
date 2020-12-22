@@ -5,6 +5,7 @@ export interface CommentT {
   comments: Array<CommentT>;
 }
 
+
 export interface CommentsState {
   loading: boolean;
   comments: Array<CommentT>;
@@ -12,7 +13,7 @@ export interface CommentsState {
 
 export interface CommentsT {
   comments: Record<string, CommentsState>;
-  drafs: Record<string, string>;
+  drafts: Record<string, Record<string, string>>;
 }
 
 export const Comments = {
@@ -32,6 +33,14 @@ export const Comments = {
       const comments = res.comments;
       console.log("comments", objectId, comments);
       state.comments[objectId] = {comments, loading: false};
+    },
+    setDraft(state: CommentsT, res: any) {
+      const objectId = res.objectId;
+      const text = res.text;
+      const replyTo = res.replyTo || "";
+      const perObj = state.drafts[objectId] || {};
+      perObj[replyTo] = text;
+      state.drafts[objectId] = perObj;
     },
   },
   actions: {
