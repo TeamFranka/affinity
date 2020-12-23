@@ -22,9 +22,7 @@ export default defineComponent({
     const store = useStore();
     const route = useRoute();
     const objectId: any = route.params.activityId;
-    console.log("routed to", objectId);
     const loading = ref(true);
-    store.commit("startLoading");
     const loaders = [
         store.dispatch("comments/loadComments", {
             "__type": "Pointer",

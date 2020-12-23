@@ -3,7 +3,7 @@
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const CONSTS = require("./consts.js");
 const Team = CONSTS.Team;
-const TeamSettings =
+const TeamSettings = require("./models/team-settings").TeamSettings;
 
 // Use Parse.Cloud.define to define as many cloud functions as you want.
 // For example:
@@ -29,7 +29,7 @@ Parse.Cloud.define("newRootTeam", async (request) => {
   newTeam.get("leaders").getUsers().add(admin).save(null, { useMasterKey: true });
   return newTeam
 
-},{
+}, {
   fields: {
     name: {
       required: true,
@@ -53,6 +53,96 @@ Parse.Cloud.define("newRootTeam", async (request) => {
   validateMasterKey: true,
   requireMaster: true,
 });
+
+Parse.Cloud.define("myTeams", async (request) => {
+    const user = request.user;
+    const roles = await (new Parse.Query(Parse.Role))
+        .equalTo("users", user).find({ useMasterKey: true });
+
+    const roleIds = roles.map(r =>r.id);
+    const teams = await ((new Parse.Query(Team))
+        .include("settings")
+        .containedIn("members", roles)
+        .find({ useMasterKey: true }));
+
+    const permissions = {};
+    const cfgDefaults = TeamSettings.getDefaults();
+
+    for (let idx = 0; idx < teams.length; idx++) {
+        const team = teams[idx];
+        const settings = team.get("settings") || cfgDefaults;
+        const isLeader = roleIds.includes(team.get("leaders").id);
+        const isMod = roleIds.includes(team.get("mods").id);
+        const isAgent = roleIds.includes(team.get("agents").id);
+
+        permissions[team.id] = Object.assign({
+            isMember: true,
+            isLeader: isLeader,
+            isMod: isMod,
+            isAgent: isAgent,
+          },
+          settings.genPermissions(isLeader, isMod, isAgent, true)
+        );
+    }
+
+    return {
+      teams: teams,
+      permissions: permissions,
+    }
+}, {
+  requireUser: true
+});
+
+
+Parse.Cloud.define("getTeam", async (request) => {
+  const user = request.user;
+  const slug = request.params.slug;
+  const team = await ((new Parse.Query(Team))
+        .equalTo("slug", slug)
+        .include("settings")
+      .first({ useMasterKey: true }));
+
+  const roles = await (new Parse.Query(Parse.Role))
+      .equalTo("users", user).find({ useMasterKey: true });
+
+  const roleIds = roles.map(r =>r.id);
+
+  const permissions = {};
+  const cfgDefaults = TeamSettings.getDefaults();
+
+  const settings = team.get("settings") || cfgDefaults;
+  const isMember = roleIds.includes(team.get("members").id);
+  const isLeader = roleIds.includes(team.get("leaders").id);
+  const isMod = roleIds.includes(team.get("mods").id);
+  const isAgent = roleIds.includes(team.get("agents").id);
+  permissions[team.id] = Object.assign({
+      isMember: isMember,
+      isLeader: isLeader,
+      isMod: isMod,
+      isAgent: isAgent,
+    },
+    settings.genPermissions(isLeader, isMod, isAgent, isMember)
+  );
+
+  return {
+    teams: [team],
+    permissions: permissions,
+  }
+
+}, {
+  fields: {
+    slug: {
+      required: true,
+      type: String,
+      options: val => {
+        return val.length > 7 && !!val.match(CONSTS.SLUG_MATCH)
+      },
+    },
+  },
+  requireUser: true,
+});
+
+
 
 // Ensure the ACL are set correctly when created
 Parse.Cloud.beforeSave(Team, async (request) => {

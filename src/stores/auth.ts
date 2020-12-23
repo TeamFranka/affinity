@@ -1,15 +1,15 @@
 import { Parse } from '../config/Consts';
 
-export interface TeamPermission {
-  isAdmin: boolean;
-  canPost: boolean;
-}
+// export interface TeamPermission {
+//   isAdmin: boolean;
+//   canPost: boolean;
+// }
 
 export interface AuthStateT {
   wantsToLogin: boolean;
   user: Parse.User | null;
   teams: Array<Parse.Object>;
-  teamPermissions: Record<string, TeamPermission>;
+  teamPermissions: Record<string, any>;
 }
 
 export const AuthState = {
@@ -18,6 +18,7 @@ export const AuthState = {
     wantsToLogin: false,
     user: null,
     teams: [],
+    teamPermissions: {}
   }),
   getters: {
     isLoggedIn: (state: AuthStateT) => !!state.user,
@@ -26,6 +27,7 @@ export const AuthState = {
     user: (state: AuthStateT) => state.user,
     userPtr: (state: AuthStateT) => state.user?.toPointer(),
     myTeams: (state: AuthStateT) => state.teams,
+    teamPermissions: (state: AuthStateT) => state.teamPermissions,
     hasManyTeams: (state: AuthStateT) => state.teams.length > 1,
     postableTeams: (state: AuthStateT) => state.teams?.filter(t => state.teamPermissions[t.id].canPost) || [],
   },
@@ -41,7 +43,10 @@ export const AuthState = {
     setTeams(state: AuthStateT, resp: any) {
       console.log("setting teams:", resp);
       state.teams = resp.teams;
-      state.teamPermissions = resp.permissions;
+      state.teamPermissions = Object.assign(state.teamPermissions, resp.permissions);
+    },
+    addPermissions(state: AuthStateT, resp: any) {
+      state.teamPermissions = Object.assign(state.teamPermissions, resp.permissions);
     }
   },
   actions: {
@@ -57,6 +62,9 @@ export const AuthState = {
       await context.commit("setUser", user);
       const resp = await Parse.Cloud.run("myTeams");
       await context.commit("setTeams", resp);
+      const items: any[] = [];
+      resp.teams.forEach( (t: Parse.Object)  => { items.push(t); items.push(t.get("settings")) });
+      await context.commit("setItems", items, {root: true});
       context.dispatch("refreshRoot", null, { root:true });
     },
     async setAvatar(context: any, f: Parse.File)  {

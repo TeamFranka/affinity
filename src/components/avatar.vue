@@ -9,7 +9,7 @@
     </svg>
   </span>
 </div>
-  <span v-if="withName">{{name}}</span>
+  <span v-if="withName">{{shownName}}</span>
 </template>
 
 
@@ -27,6 +27,7 @@ export default defineComponent({
       type: Parse.Object,
       required: true
     },
+    name: String,
     withName: Boolean,
   },
   components: {
@@ -40,18 +41,18 @@ export default defineComponent({
       }
       return null;
     },
-    name(): string {
-      return this.profile.get("name") || this.profile.get("username") || this.profile.get("slug") || this.profile.id;
+    shownName(): string {
+      return this.name || this.profile.get("name") || this.profile.get("username") || this.profile.get("slug") || this.profile.id;
     },
     letter(): string {
-      const text = (this.profile && (this.profile.get("name") || this.profile.get("username"))) || "";
+      const text = this.shownName;
       if (text.length > 0) {
         return text[0].toUpperCase()
       }
       return "👤"
     },
     style(): string {
-      const text = (this.profile && (this.profile.get("name") || this.profile.get("username") || this.profile.get("id") )) || "";
+      const text = this.shownName;
       const vals = [0, 0, 0];
       let curIdx = 0;
       for (let i = 0; i < text.length; i++) {

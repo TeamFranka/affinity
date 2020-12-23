@@ -8,9 +8,9 @@
     </ion-fab>
     <ion-header class="ion-hide-lg-down">
       <ion-toolbar>
-        <ion-title slot="start">{{title}}</ion-title>
+        <ion-title slot="start"><router-link :to="titleLink">{{title}}</router-link></ion-title>
         <div slot="end">
-          <a href="/faq">faq</a>
+          <router-link to="/faq">faq</router-link>
           <avatar v-if="user" :profile="user" />
         </div>
       </ion-toolbar>
@@ -64,6 +64,7 @@ export default defineComponent({
     return {
       logInIcon,
       onDesktop: isPlatform("desktop"),
+      titleLink: computed(() => "/t/" + store.state.global.defaultTeam?.get("slug")),
       title: computed(() => store.state.global.defaultTeam?.get("name") || "affinity"),
       user: computed(() => store.state.auth.user),
       loginModalOpened: computed(() => {

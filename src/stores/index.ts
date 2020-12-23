@@ -5,6 +5,7 @@ import { GlobalStateT, GlobalState } from './globals';
 import { AuthStateT, AuthState } from './auth';
 import { FeedT, Feed } from './feed';
 import { NewsT, News } from './news';
+import { TeamsT, Teams } from './teams';
 import { CommentsT, Comments } from './comments';
 import { DraftT, Draft } from './draft';
 
@@ -13,6 +14,7 @@ export interface State {
   comments: CommentsT;
   auth: AuthStateT;
   news: NewsT;
+  teams: TeamsT;
   draft: DraftT;
   feed: FeedT;
 }
@@ -25,6 +27,7 @@ export const store = createStore<State>({
     global: GlobalState,
     comments: Comments,
     news: News,
+    teams: Teams,
     feed: Feed,
     draft: Draft,
     auth: AuthState,

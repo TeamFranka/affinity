@@ -11,6 +11,9 @@ export const TeamSettings = {
             avatar: {
                 type: 'File'
             },
+            background: {
+                type: 'File'
+            },
             canPost: {
                 type: 'String',
                 required: true,
@@ -26,6 +29,12 @@ export const TeamSettings = {
                 required: true,
                 default: TeamSettingsDefaults.canLike,
             },
+            socialLinks: {
+                type: 'Array',
+            },
+            footerLinks: {
+                type: 'Array',
+            }
         }
     ),
     classLevelPermissions: {
@@ -35,7 +44,9 @@ export const TeamSettings = {
             '*': true
         },
         create: { },
-        update: {},
+        update: {
+            requiresAuthentication: true
+        },
         delete: {},
         addField: {},
         protectedFields: {}

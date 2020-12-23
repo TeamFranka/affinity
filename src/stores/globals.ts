@@ -5,16 +5,21 @@ export interface GlobalStateT {
   loadingCounter: number;
   defaultTeam: Parse.Object | null;
   objects: Record<string, Parse.Object>;
+  teamsBySlug: Record<string, string>;
 }
 
 export const GlobalState = {
   state: () => ({
     loadingCounter: 0,
     objects: {},
+    teamsBySlug: {},
   }),
   getters: {
     objectsMap(state: GlobalStateT): Record<string, Parse.Object> {
       return state.objects;
+    },
+    teamsBySlug(state: GlobalStateT) {
+      return state.teamsBySlug
     },
     isLoading(state: GlobalStateT): boolean {
       return state.loadingCounter < 1
@@ -24,6 +29,9 @@ export const GlobalState = {
     setItems(state: GlobalStateT, items: Array<Parse.Object>) {
       items.forEach((item) => {
         state.objects[item.id] = item;
+        if (item.className == "Team") {
+          state.teamsBySlug[item.get("slug")] = item.id;
+        }
       })
     },
     setItem(state: GlobalStateT, item: Parse.Object) {
