@@ -1,5 +1,6 @@
 // Follow the JSON structure from REST API https://docs.parseplatform.org/rest/guide/#schema
 import { CommonFields } from './common';
+import { TeamSettingsDefaults } from '../models/team-settings';
 
 export const TeamSettings = {
     className: "TeamSettings",
@@ -10,10 +11,20 @@ export const TeamSettings = {
             avatar: {
                 type: 'File'
             },
-            can_post: {
+            canPost: {
                 type: 'String',
                 required: true,
-                default: 'members',
+                default: TeamSettingsDefaults.canPost,
+            },
+            canComment: {
+                type: 'String',
+                required: true,
+                default: TeamSettingsDefaults.canComment,
+            },
+            canLike: {
+                type: 'String',
+                required: true,
+                default: TeamSettingsDefaults.canLike,
             },
         }
     ),
