@@ -2,6 +2,7 @@
 import Parse from 'parse';
 import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
+import * as Models from "../db/models/";
 
 dayjs.extend(relativeTime);
 
@@ -16,12 +17,12 @@ Parse.enableLocalDatastore();
 export const VERSION = "0.0.1";
 export const DEFAULT_COMMUNITY = process.env.VUE_APP_DEFAULT_TEAM;
 
-export const Team = Parse.Object.extend("Team");
-export const Activity = Parse.Object.extend("Activity");
-export const Picture = Parse.Object.extend("Picture");
-export const Comment = Parse.Object.extend("Comment");
-export const ChatWidgetSettings = Parse.Object.extend("ChatWidget");
-export const Conversation = Parse.Object.extend("Conversation");
+export const Team = Models.Team;
+export const Activity = Models.Activity;
+export const Picture = Models.Picture;
+export const Comment = Models.Comment;
+export const ChatWidgetSettings = Models.ChatWidgetSettings;
+export const Conversation = Models.Conversation;
 
 export enum Verb {
     Post = "post",

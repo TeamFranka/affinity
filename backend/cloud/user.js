@@ -1,6 +1,8 @@
 /* global Parse */
 
-const Team = require("./consts.js").Group;
+const Consts = require("./consts.js");
+const Team = Consts.Team;
+const TeamSettings = Consts.TeamSettings;
 
 // Use Parse.Cloud.define to define as many cloud functions as you want.
 // For example:
@@ -11,7 +13,9 @@ Parse.Cloud.define("myTeams", async (request) => {
 
     const roleIds = roles.map(r =>r.id);
     const teams = await ((new Parse.Query(Team))
-        .containedIn("members", roles).find({ useMasterKey: true }));
+        .include("settings")
+        .containedIn("members", roles)
+        .find({ useMasterKey: true }));
 
     const permissions = {};
 

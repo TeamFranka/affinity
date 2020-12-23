@@ -2,38 +2,31 @@
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const CONSTS = require("./consts.js");
-const Team = CONSTS.Group;
+const Team = CONSTS.Team;
+const TeamSettings =
 
 // Use Parse.Cloud.define to define as many cloud functions as you want.
 // For example:
 Parse.Cloud.define("newRootTeam", async (request) => {
-  console.log("newRootTeam", request.params);
   const admin = await (new Parse.Query(Parse.User))
     .get(request.params.admin, { useMasterKey: true });
-  console.log("post admin");
   if (!admin) throw "Admin not found";
 
   const query = new Parse.Query(Team);
   query.equalTo("slug", request.params.slug)
-  console.log("pre query");
   const alreadyThere = await query.first({ useMasterKey: true });
-  console.log("post query");
   if (alreadyThere) {
     throw "Slug already in use"
   }
 
-  console.log("pre create");
   let newTeam = new Team({
     name: request.params.name,
     slug: request.params.slug,
   });
 
-  console.log("pre save");
   newTeam = await newTeam.save(null, { useMasterKey: true });
-  console.log("post save");
   newTeam.get("members").getUsers().add(admin).save(null, { useMasterKey: true });
   newTeam.get("leaders").getUsers().add(admin).save(null, { useMasterKey: true });
-  console.log("post leaders");
   return newTeam
 
 },{
@@ -98,7 +91,6 @@ Parse.Cloud.beforeSave(Team, async (request) => {
   const publishers = new Parse.Role(name + " Publishers", (new Parse.ACL()));
   const members = new Parse.Role(name + " Members", (new Parse.ACL()));
 
-
   mods.set("type", "mods");
   agents.set("type", "agents");
   publishers.set("type", "publishers");
@@ -109,7 +101,19 @@ Parse.Cloud.beforeSave(Team, async (request) => {
   mods.getRoles().add(leaders);
   members.getRoles().add(leaders);
 
-  await Parse.Object.saveAll([mods, agents, publishers, members], { useMasterKey: true });
+  const toSave = [mods, agents, publishers, members];
+  let teamSettings = request.object.get("settings");
+
+  if (!teamSettings) {
+    teamSettings = new TeamSettings();
+    const teamAcl = new Parse.ACL();
+    teamAcl.setPublicReadAccess(true);
+    teamAcl.setRoleWriteAccess(members, true);
+    teamSettings.setACL(teamAcl);
+    toSave.push(teamSettings);
+  }
+
+  await Parse.Object.saveAll(toSave, { useMasterKey: true });
 
   request.object.set({
     "ACL": acl,
@@ -118,6 +122,7 @@ Parse.Cloud.beforeSave(Team, async (request) => {
     "publishers": publishers,
     "agents": agents,
     "members": members,
+    "settings": teamSettings,
   });
 
 });

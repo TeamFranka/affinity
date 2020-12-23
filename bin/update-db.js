@@ -9,7 +9,7 @@ Parse.initialize(
 );
 Parse.serverURL = process.env.VUE_APP_PARSE_URL;
 
-var All = require('../src/db/models').All;
+var All = require('../src/db/schemas').All;
 var buildSchemas = require('../src/db/buildSchema').buildSchemas;
 
 buildSchemas(All)

@@ -9,6 +9,7 @@ services:
     command: "--appId APPLICATION_ID --masterKey MASTER_KEY --databaseURI mongodb://mongo/dev --cloud /parse-server/cloud/main.js"
     volumes:
       - ./backend/cloud:/parse-server/cloud
+      - ./src/db/models:/parse-server/cloud/models
     ports:
       - 1337:1337
     links:

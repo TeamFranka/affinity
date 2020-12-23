@@ -1,6 +1,37 @@
 // Follow the JSON structure from REST API https://docs.parseplatform.org/rest/guide/#schema
 import { CommonFields } from './common';
 
+export const TeamSettings = {
+    className: "TeamSettings",
+	fields: Object.assign(
+        {},
+        CommonFields,
+        {
+            avatar: {
+                type: 'File'
+            },
+            can_post: {
+                type: 'String',
+                required: true,
+                default: 'members',
+            },
+        }
+    ),
+    classLevelPermissions: {
+        find: { },
+        count: { },
+        get: {
+            '*': true
+        },
+        create: { },
+        update: {},
+        delete: {},
+        addField: {},
+        protectedFields: {}
+    },
+    indexes: { }
+};
+
 export const Team = {
     className: "Team",
 	fields: Object.assign(
@@ -15,8 +46,10 @@ export const Team = {
                 type: "String",
                 required: true
             },
-            avatar: {
-                type: 'File'
+            settings: {
+                type: "Pointer",
+                targetClass: "TeamSettings",
+                required: true,
             },
             leaders: {
                 type: "Pointer",
@@ -47,7 +80,7 @@ export const Team = {
                 type: "Pointer",
                 targetClass: "Team",
                 required: false
-            }
+            },
         }
     ),
     classLevelPermissions: {
