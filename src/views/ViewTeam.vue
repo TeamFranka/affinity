@@ -1,23 +1,29 @@
 <template>
   <ion-page>
     <ion-content>
-      <ion-spinner v-if="loading"/>
-      <div v-if="!loading">
-        <div class="ion-text-center">
-          <div class="profile-img">
-            <avatar :profile="settings" :name="team.name"  />
+      <div class="wrap">
+        <ion-spinner v-if="loading"/>
+        <div v-if="!loading">
+          <div class="ion-text-center">
+            <div class="profile-img">
+              <avatar :profile="settings" :name="team.name"  />
+            </div>
+            <ion-chip v-if="canEdit" @click="selectNewAvatar()">
+              <ion-icon :icon="uploadIcon"></ion-icon>
+            </ion-chip>
           </div>
-          <ion-chip v-if="canEdit" @click="selectNewAvatar()">
-            <ion-icon :icon="uploadIcon"></ion-icon>
-          </ion-chip>
         </div>
+        <div v-if="!loading">
+          <qrcode :text="fullLink" :logo="logo" />
         </div>
+      </div>
     </ion-content>
   </ion-page>
 </template>
 
 <script lang="ts">
 import Avatar from '../components/avatar.vue';
+import Qrcode from '../components/qrcode.vue';
 import { IonContent, IonPage,  IonIcon, IonChip, IonSpinner } from '@ionic/vue';
 import { chatbubbles, logoWhatsapp, cloudUploadOutline } from 'ionicons/icons';
 import { defineComponent, computed, ref } from 'vue';
@@ -58,6 +64,12 @@ export default defineComponent({
       console.log(this.permissions);
       return this.permissions.isAdmin
     },
+    logo(): string | null {
+      return (this.settings && this.settings.get("avatar")) ? this.settings.get("avatar").url() : null
+    },
+    fullLink(): string {
+      return "https://yup"
+    }
   },
   methods: {
     setSetting(params: any) {
@@ -75,6 +87,7 @@ export default defineComponent({
   },
   components: {
     Avatar,
+    Qrcode,
     IonPage,
     IonContent,
     IonIcon,

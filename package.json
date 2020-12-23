@@ -24,6 +24,7 @@
     "@types/parse": "file:../DefinitelyTyped/types/parse",
     "core-js": "^3.6.5",
     "dayjs": "^1.9.7",
+    "easyqrcodejs": "^4.1.0",
     "ionicons": "^5.2.3",
     "parse": "^2.19.0",
     "vue": "^3.0.4",
