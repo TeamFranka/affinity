@@ -7,6 +7,7 @@
 <script>
 import {
   IonLabel, IonIcon, IonChip,
+  toastController,
 } from '@ionic/vue';
 import { arrowRedoOutline } from 'ionicons/icons';
 import { defineComponent } from 'vue';
@@ -53,10 +54,30 @@ export default defineComponent({
         text: 'Really awesome thing you need to see right meow',
         url: this.link,
         dialogTitle: 'Share with buddies'
-      }).then((ok) => {
+      }).then(() => {
         this.disabled = false;
         this.store.dispatch("auth/logShared", this.pointer);
-      }, (err) => {
+      }, async (err) => {
+        if (navigator && navigator.clipboard) {
+          navigator.clipboard.writeText(this.link);
+          const toast = await toastController
+            .create({
+              message: 'Url zur Zwischenablage kopiert',
+              duration: 2000
+            })
+          toast.present();
+          this.store.dispatch("auth/logShared", this.pointer);
+
+        } else {
+          console.error("Could not share", err);
+          const toast = await toastController
+            .create({
+              color: "warning",
+              message: 'Url konnte nicht kopiert  werden.',
+              duration: 2000
+            })
+          toast.present();
+        }
         this.disabled = false;
       });
     }

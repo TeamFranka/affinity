@@ -1,7 +1,7 @@
 /* global Parse */
 
-const common = require('./common');
 const Comment = require('./consts').Comment;
+const common = require('./common');
 const fetchModel = common.fetchModel;
 const GenericObjectParams = common.GenericObjectParams;
 
@@ -122,6 +122,14 @@ Parse.Cloud.define("unlike", async (request) => {
       await model.save(null, { useMasterKey: true });
     }
   }
+  return model
+},
+GenericObjectParams);
+
+Parse.Cloud.define("logShared", async (request) => {
+  const model = await fetchModel(request);
+  model.increment("sharesCount");
+  await model.save(null, { useMasterKey: true });
   return model
 },
 GenericObjectParams);

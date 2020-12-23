@@ -120,6 +120,9 @@ export default defineComponent({
     link(): string {
       return '/a/' + this.activity.id
     },
+    fullLink(): string {
+      return process.env.BASE_URL + this.link;
+    },
     hasLiked(): boolean {
       if (!this.store.getters["auth/isLoggedIn"]) return false;
       return (this.activity.get("likedBy") || []).indexOf(this.store.getters["auth/myId"]) !== -1;
