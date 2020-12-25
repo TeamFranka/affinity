@@ -22,20 +22,49 @@ export const Draft = {
     images:  [],
   }),
   getters: {
+    selectedTeam(state: DraftT, getters: any, rootState: any, rootGetters: any) {
+      return state.team || rootGetters["auth/defaultTeam"];
+    },
     canSubmit(state: DraftT): boolean {
       return state.text.length > 0 || state.images.length > 0;
-    }
+    },
+    selectedType(state: DraftT) {
+      return state.verb;
+    },
+    selectedTeamId(state: DraftT, getters: any): string {
+      return getters.selectedTeam.id
+    },
+    selectedTeamPerms(state: DraftT, getters: any, rootState: any, rootGetters: any): any {
+      return rootState.auth.teamPermissions[getters.selectedTeamId]
+    },
+    selectableTypes(state: DraftT, getters: any): Verb[] {
+      const perms = getters.selectedTeamPerms;
+      const types = [];
+      if (perms.canPost){
+        types.push(Verb.Post);
+      }
+      if (perms.canPublish){
+        types.push(Verb.Announce);
+      }
+      return types
+    },
+    showTypeSelector(state: DraftT, getters: any,): boolean {
+      return getters.selectableTypes.length > 0
+    },
   },
   mutations: {
     addImage(state: DraftT, img: Image) {
       state.images.push(img);
-      console.log(state.images);
     },
     setTeam(state: DraftT, team: Parse.Object) {
       state.team = team;
     },
     setText(state: DraftT, text: string) {
       state.text = text;
+    },
+    setType(state: DraftT, t: Verb) {
+      console.log(state, t);
+      state.verb = t;
     },
     clear(state: DraftT) {
       state.images = [];
@@ -52,7 +81,6 @@ export const Draft = {
       const author = context.rootGetters['auth/userPtr'];
       const state =  context.state;
       const team = state.team || context.rootGetters["auth/defaultTeam"];
-      console.log("author", author, "team", team);
       const objects: Parse.Object[] = [];
 
       if (state.images.length > 0) {
@@ -60,18 +88,15 @@ export const Draft = {
         for (let i = 0; i < state.images.length; i++) {
           const entry: any = state.images[i];
           const f = entry.file;
-          console.log("f", f);
           const file = new Parse.File("post_image."+f.format,
             { uri: f.dataUrl },
             "image/" + f.format
           );
-          console.log("file", file);
           await file.save();
           const picture = new Picture({
             description: entry.description,
             author, team, file,
           });
-          console.log("picture", picture, picture.get("file"));
           await picture.save();
           objects.push(picture.toPointer());
         }

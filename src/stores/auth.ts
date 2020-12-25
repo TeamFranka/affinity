@@ -29,19 +29,16 @@ export const AuthState = {
     myTeams: (state: AuthStateT) => state.teams,
     teamPermissions: (state: AuthStateT) => state.teamPermissions,
     hasManyTeams: (state: AuthStateT) => state.teams.length > 1,
-    postableTeams: (state: AuthStateT) => state.teams?.filter(t => state.teamPermissions[t.id].canPost) || [],
+    postableTeams: (state: AuthStateT) =>  state.teams?.filter(t => state.teamPermissions[t.id].canPost) || [],
   },
   mutations: {
     setUser(state: AuthStateT, newUser: Parse.User|null) {
-      console.debug("Setting user to", newUser);
       state.user = newUser
     },
     setWantsToLogin(state: AuthStateT, wanna: boolean) {
-      console.log("wants to login");
       state.wantsToLogin = wanna;
     },
     setTeams(state: AuthStateT, resp: any) {
-      console.log("setting teams:", resp);
       state.teams = resp.teams;
       state.teamPermissions = Object.assign(state.teamPermissions, resp.permissions);
     },
@@ -58,7 +55,6 @@ export const AuthState = {
     },
     async fetchUser(context: any) {
       const user = await Parse.User.currentAsync();
-      console.log('User object found', user);
       await context.commit("setUser", user);
       const resp = await Parse.Cloud.run("myTeams");
       await context.commit("setTeams", resp);
@@ -67,10 +63,8 @@ export const AuthState = {
       await context.commit("setItems", items, {root: true});
       context.dispatch("refreshRoot", null, { root:true });
     },
-    async setAvatar(context: any, f: Parse.File)  {
-      console.log("about to set", f);
+    async setAvatar(context: any, f: Parse.File) {
       await f.save();
-      console.log("saved and setting", f);
       const user = context.state.user;
       user.set("avatar", f);
       await user.save();

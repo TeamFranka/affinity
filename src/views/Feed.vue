@@ -2,9 +2,9 @@
   <ion-page>
     <ion-content>
       <div class="wrap">
-        <ion-card>
+        <ion-card v-if="canPost">
           <ion-card-content>
-            <new-post :teams="canPostInTeams" @submit="submitPost($event)" v-if="canPost" />
+            <new-post :teams="canPostInTeams" @submit="submitPost($event)" />
           </ion-card-content>
         </ion-card>
 

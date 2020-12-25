@@ -1,26 +1,53 @@
 <template>
   <ion-grid class="new-post">
-    <ion-row v-if="showTeamSelector">
-      <ion-col size="2">
-        Post
-      </ion-Col>
-      <ion-col size="5" v-if="showTeamSelector">
-        to
-        <ion-select  v-model="team" interface="popover" @change="selectTeam($event)" placeholder="select Team">
-          <ion-select-option v-for="team in teams"  :key="team.id" :value="model.team.id">
-            <avatar withName :profile="team" />
-          </ion-select-option>
-        </ion-select>
-      </ion-col>
-    </ion-row>
     <ion-row>
       <ion-col size="11">
         <ion-textarea auto-grow=true :value="text" @change="updateText" placeholder="What do you want to share?" />
       </ion-col>
       <ion-col size="1">
         <ion-button @click="submit()" fill="outline" v-bind:disabled="!canSubmit" shape="round" size="small">
-          <ion-icon slot="icon-only" :icon="sendIcon"></ion-icon>
+          <ion-icon :icon="sendIcon"></ion-icon>
         </ion-button>
+      </ion-col>
+    </ion-row>
+    <ion-row v-if="showTeamSelector || showTypeSelector">
+      <ion-col size="3" v-if="showTypeSelector">
+        <selector
+            label="as"
+            popoverTitle="Select"
+            @select="selectType($event)"
+            :items="selectableTypes"
+        >
+          <template #title>
+            <ion-label>{{selectedType}}</ion-label>
+          </template>
+          <template #item="sProps">
+            <span
+              @click="sProps.select(sProps.item)"
+              :key="sProps.item"
+            >
+              <ion-icon :icon="sendIcon"></ion-icon>
+              {{sProps.item}}
+            </span>
+          </template>
+        </selector>
+      </ion-col>
+      <ion-col size="2" v-if="!showTypeSelector">
+        Post
+      </ion-Col>
+      <ion-col size="4" v-if="showTeamSelector">
+        <selector
+            label="to"
+            @select="selectTeam($event)"
+            :items="teams"
+        >
+          <template #title>
+            <avatar :profile="selectedTeam" withName />
+          </template>
+          <template #item="sProps">
+              <avatar :profile="sProps.item" withName @click="sProps.select(sProps.item)" />
+          </template>
+        </selector>
       </ion-col>
     </ion-row>
     <ion-row>
@@ -46,14 +73,15 @@
 
 <script lang="ts">
 import {
-  IonSelect, IonSelectOption, IonTextarea, IonChip, IonIcon, IonLabel, IonButton, IonInput, IonImg,
+  IonTextarea, IonChip, IonIcon, IonLabel, IonButton, IonInput, IonImg,
   IonGrid, IonRow, IonCol,
 } from '@ionic/vue';
 import { image as imageIcon, paperPlaneOutline as sendIcon } from 'ionicons/icons';
-import Avatar from "./avatar.vue";
 import { defineComponent, computed } from 'vue';
+import Selector from "./selector.vue";
+import Avatar from "./avatar.vue";
 import { useStore } from '../stores/';
-import Parse from 'parse';
+import { Parse, Verb } from '../config/Consts';
 
 export default defineComponent({
   name: 'DraftPost',
@@ -61,30 +89,28 @@ export default defineComponent({
   setup() {
     const store = useStore();
     return {
+      store,
       teams: computed(() => store.getters["auth/postableTeams"]),
       text: computed(() => store.state.draft.text),
-      images: computed(() => {
-        const i = store.state.draft.images;
-        console.log("images", i);
-        return i
-      }),
+      selectedType: computed(() => store.getters["draft/selectedType"]),
+      images: computed(() => store.state.draft.images),
       updateText: (e: any) => store.commit("draft/setText", e.target.value),
       selectTeam: (t: Parse.Object) => store.commit("draft/setTeam", t),
-      addPicture() {
-        store.dispatch("draft/addPicture");
-      },
-      submit() {
-        store.dispatch("draft/submit");
-      },
+      selectType: (t: Verb) => store.commit("draft/setType", t),
+      selectedTeam: computed(() => store.getters["draft/selectedTeam"]),
+      selectedTeamId: computed(() => store.getters["draft/selectedTeamId"]),
+      selectableTypes: computed(() => store.getters["draft/selectableTypes"]),
+      showTypeSelector: computed(() => store.getters["draft/showTypeSelector"]),
+      addPicture() { store.dispatch("draft/addPicture"); },
+      submit() { store.dispatch("draft/submit"); },
       canSubmit: computed(() => store.getters["draft/canSubmit"]),
       showTeamSelector: computed(() => store.getters["auth/hasManyTeams"]),
       imageIcon, sendIcon
     }
   },
   components: {
-    IonSelect, IonSelectOption, IonTextarea, IonChip, IonIcon, IonLabel, IonButton, IonInput, IonImg,
-    IonGrid, IonRow, IonCol,
-    Avatar
+    IonTextarea, IonChip, IonIcon, IonLabel, IonButton, IonInput, IonImg,
+    IonGrid, IonRow, IonCol, Selector, Avatar
   }
 });
 </script>

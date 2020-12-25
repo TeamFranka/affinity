@@ -102,7 +102,6 @@ export default defineComponent({
   },
   mounted() {
     Parse.User.currentAsync().then(user => {
-      console.log('Logged user', user);
       if (user) {
         this.user = user;
         this.loadingConvos = true;
@@ -135,7 +134,6 @@ export default defineComponent({
     //     console.log('Failed to create new object, with error code:' + error.message.toString());
     //   }
     // });
-    console.log("mounted");
   }
 });
 </script>
