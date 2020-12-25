@@ -29,6 +29,13 @@ export enum Verb {
     Announce = "announce",
 }
 
+export enum Visibility {
+    Public = "public",
+    Members = "members",
+    Mods = "mods",
+    Leaders = "leaders",
+}
+
 export interface ModelT {
     id: string;
   }

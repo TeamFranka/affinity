@@ -1,4 +1,4 @@
-import { Parse, Picture, Activity, Verb } from "../config/Consts";
+import { Parse, Picture, Activity, Verb, Visibility } from "../config/Consts";
 import { takePicture, CameraPhoto } from '../utils/camera';
 
 export interface Image {
@@ -10,6 +10,7 @@ export interface DraftT {
   team: Parse.Object | null;
   text: string;
   verb: Verb;
+  visibility: Visibility;
   images: Array<Image>;
 }
 
@@ -19,6 +20,7 @@ export const Draft = {
     team: null,
     text: "",
     verb: Verb.Post,
+    visibility: Visibility.Public,
     images:  [],
   }),
   getters: {
@@ -63,8 +65,10 @@ export const Draft = {
       state.text = text;
     },
     setType(state: DraftT, t: Verb) {
-      console.log(state, t);
       state.verb = t;
+    },
+    setVisibility(state: DraftT, v: Visibility) {
+      state.visibility = v;
     },
     clear(state: DraftT) {
       state.images = [];
@@ -102,7 +106,14 @@ export const Draft = {
         }
       }
 
-      const activity = new Activity({text: state.text, verb:state.verb, author, team, objects});
+      const activity = new Activity({
+        visibility: state.visibility,
+        text: state.text,
+        verb: state.verb,
+        author,
+        team,
+        objects,
+      });
       await activity.save();
 
       context.commit("clear");

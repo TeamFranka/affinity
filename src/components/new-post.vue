@@ -19,14 +19,16 @@
             :items="selectableTypes"
         >
           <template #title>
-            <ion-label>{{selectedType}}</ion-label>
+            <ion-label>
+              <ion-icon :icon="VERB_ICONS[selectedType]"></ion-icon>
+              {{selectedType}}</ion-label>
           </template>
           <template #item="sProps">
             <span
               @click="sProps.select(sProps.item)"
               :key="sProps.item"
             >
-              <ion-icon :icon="sendIcon"></ion-icon>
+              <ion-icon :icon="VERB_ICONS[sProps.item]"></ion-icon>
               {{sProps.item}}
             </span>
           </template>
@@ -76,12 +78,18 @@ import {
   IonTextarea, IonChip, IonIcon, IonLabel, IonButton, IonInput, IonImg,
   IonGrid, IonRow, IonCol,
 } from '@ionic/vue';
-import { image as imageIcon, paperPlaneOutline as sendIcon } from 'ionicons/icons';
+import {
+  image as imageIcon, readerOutline, paperPlaneOutline as sendIcon, newspaperOutline
+} from 'ionicons/icons';
 import { defineComponent, computed } from 'vue';
 import Selector from "./selector.vue";
 import Avatar from "./avatar.vue";
 import { useStore } from '../stores/';
-import { Parse, Verb } from '../config/Consts';
+import { Parse, Verb, Visibility } from '../config/Consts';
+
+const VERB_ICONS: Record<string, any>= {};
+VERB_ICONS[Verb.Post] = readerOutline;
+VERB_ICONS[Verb.Announce] = newspaperOutline;
 
 export default defineComponent({
   name: 'DraftPost',
@@ -90,12 +98,15 @@ export default defineComponent({
     const store = useStore();
     return {
       store,
+      VERB_ICONS,
       teams: computed(() => store.getters["auth/postableTeams"]),
       text: computed(() => store.state.draft.text),
       selectedType: computed(() => store.getters["draft/selectedType"]),
+      visibility: computed(() => store.state.draft.visibility),
       images: computed(() => store.state.draft.images),
       updateText: (e: any) => store.commit("draft/setText", e.target.value),
       selectTeam: (t: Parse.Object) => store.commit("draft/setTeam", t),
+      setVisbility: (t: Visibility) => store.commit("draft/setVisibility", t),
       selectType: (t: Verb) => store.commit("draft/setType", t),
       selectedTeam: computed(() => store.getters["draft/selectedTeam"]),
       selectedTeamId: computed(() => store.getters["draft/selectedTeamId"]),
