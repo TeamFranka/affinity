@@ -1,7 +1,11 @@
 <template>
   <ion-button @click="toggleOpen(!showPopover,$event)" :disabled="disabled" fill="clear" :color="color">
-    <ion-label v-if="label" color="dark" style="padding-right: 0.5em">{{label}}</ion-label>
-    <slot name="title"><ion-label>{{title}}</ion-label></slot>
+    <slot name="label">
+      <ion-label v-if="label" color="dark" style="padding-right: 0.5em">{{label}}</ion-label>
+    </slot>
+    <slot name="current">
+      <ion-label>{{title}}</ion-label>
+    </slot>
     <ion-icon :icon="showIcon" />
   </ion-button>
   <ion-popover :is-open="showPopover"  :event="event">

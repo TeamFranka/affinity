@@ -23,10 +23,10 @@ const ReactionsParams = {
     },
     GenericObjectParams.fields
   ),
-  requiredUser: true
+  requireUser: true
 };
 
-Parse.Cloud.beforeSave(Comment, async(request) => {
+Parse.Cloud.beforeSave(Comment, async (request) => {
   if (request.original) {
     return // an update not a create, ignore
   }
@@ -36,13 +36,11 @@ Parse.Cloud.beforeSave(Comment, async(request) => {
 
   request.object.set("author", request.user);
 
-  console.log("ACL", request.object.getACL());
-
   // setting ACL to that of the main object;
   request.object.setACL(onObj.getACL());
 });
 
-Parse.Cloud.afterSave(Comment, async(request) => {
+Parse.Cloud.afterSave(Comment, async (request) => {
   // ensure the user can access the model they want to comment on
   const pointer = request.object.get("on");
   const onObj = await fetchModel(request, pointer);

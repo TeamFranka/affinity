@@ -50,6 +50,17 @@ export const Draft = {
       }
       return types
     },
+    selectableVisibility(state: DraftT, getters: any): Visibility[] {
+      const perms = getters.selectedTeamPerms;
+      const types = [Visibility.Public, Visibility.Members];
+      if (perms.isMod) {
+        types.push(Visibility.Mods);
+      }
+      if (perms.isLeader) {
+        types.push(Visibility.Leaders);
+      }
+      return types
+    },
     showTypeSelector(state: DraftT, getters: any,): boolean {
       return getters.selectableTypes.length > 0
     },

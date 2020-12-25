@@ -34,13 +34,18 @@ const GenericObjectParams = {
       type: String,
     }
   },
-  requiredUser: true
+  requireUser: true
 }
 
-const fetchModel = async(request, pointer) => {
+const fetchModel = async(request, pointer, includes) => {
   console.log("fething", pointer);
-  return await (new Parse.Query(pointer ? pointer.className : request.params.className))
-      .get(pointer ? pointer.objectId : request.params.objectId, {sessionToken: request.user.getSessionToken()});
+  const query = new Parse.Query(pointer ? pointer.className : request.params.className);
+  if (includes) {
+    includes.forEach((i) => query.include(i))
+  }
+  return await query.get(pointer ? pointer.objectId : request.params.objectId,
+          {sessionToken: request.user.getSessionToken()}
+      );
 }
 
 module.exports = {

@@ -14,49 +14,84 @@
       <ion-col size="3" v-if="showTypeSelector">
         <selector
             label="as"
-            popoverTitle="Select"
+            popoverTitle="Post Type"
             @select="selectType($event)"
             :items="selectableTypes"
         >
-          <template #title>
+          <template #current>
             <ion-label>
               <ion-icon :icon="VERB_ICONS[selectedType]"></ion-icon>
-              {{selectedType}}</ion-label>
+              {{selectedType}}
+            </ion-label>
           </template>
           <template #item="sProps">
-            <span
+            <ion-item
               @click="sProps.select(sProps.item)"
               :key="sProps.item"
+              button
             >
-              <ion-icon :icon="VERB_ICONS[sProps.item]"></ion-icon>
+              <ion-icon slot="start" :icon="VERB_ICONS[sProps.item]" />
               {{sProps.item}}
-            </span>
+              <ion-icon v-if="sProps.item == selectedType" slot="end" :icon="selectedIcon" />
+            </ion-item>
           </template>
         </selector>
       </ion-col>
-      <ion-col size="2" v-if="!showTypeSelector">
+      <ion-col size="3" v-if="!showTypeSelector">
         Post
       </ion-Col>
-      <ion-col size="4" v-if="showTeamSelector">
+      <ion-col size="3" v-if="showTeamSelector">
         <selector
             label="to"
+            popoverTitle="Team"
             @select="selectTeam($event)"
             :items="teams"
         >
-          <template #title>
+          <template #current>
             <avatar :profile="selectedTeam" withName />
           </template>
           <template #item="sProps">
-              <avatar :profile="sProps.item" withName @click="sProps.select(sProps.item)" />
+            <ion-item
+              @click="sProps.select(sProps.item)"
+              button
+            >
+              <avatar :profile="sProps.item" withName />
+              <ion-icon v-if="sProps.item == selectedTeam" slot="end" :icon="selectedIcon" />
+            </ion-item>
+          </template>
+        </selector>
+      </ion-col>
+      <ion-col size="3">
+        <selector
+            @select="setVisibility($event)"
+            popoverTitle="Visibility"
+            :items="selectableVisibility"
+        >
+          <template #label>
+              <ion-icon :icon="eyeOutline"></ion-icon>
+          </template>
+          <template #current>
+            <ion-label>
+              {{visibility}}
+              <ion-icon :icon="VISIBILITY_ICONS[visibility]"></ion-icon>
+            </ion-label>
+          </template>
+          <template #item="sProps">
+            <ion-item
+              @click="sProps.select(sProps.item)"
+              :key="sProps.item"
+              button
+            >
+              <ion-icon slot="start" :icon="VISIBILITY_ICONS[sProps.item]"></ion-icon>
+              {{sProps.item}}
+              <ion-icon v-if="sProps.item == visibility" slot="end" :icon="selectedIcon" />
+            </ion-item>
           </template>
         </selector>
       </ion-col>
     </ion-row>
     <ion-row>
-      <ion-col size="1">
-        <ion-label ion-text-muted>Add</ion-label>
-      </ion-col>
-      <ion-col size="10">
+      <ion-col size="12">
         <ion-chip @click="addPicture()" color="secondary" outline>
           <ion-icon :icon="imageIcon" color="secondary"></ion-icon>
           <ion-label>Image</ion-label>
@@ -76,10 +111,16 @@
 <script lang="ts">
 import {
   IonTextarea, IonChip, IonIcon, IonLabel, IonButton, IonInput, IonImg,
-  IonGrid, IonRow, IonCol,
+  IonGrid, IonRow, IonCol, IonItem,
 } from '@ionic/vue';
 import {
-  image as imageIcon, readerOutline, paperPlaneOutline as sendIcon, newspaperOutline
+  image as imageIcon, readerOutline, paperPlaneOutline as sendIcon, newspaperOutline,
+  eyeOutline,
+  earthOutline,
+  peopleOutline,
+  rocketOutline,
+  shieldCheckmarkOutline,
+  checkmarkOutline,
 } from 'ionicons/icons';
 import { defineComponent, computed } from 'vue';
 import Selector from "./selector.vue";
@@ -91,14 +132,20 @@ const VERB_ICONS: Record<string, any>= {};
 VERB_ICONS[Verb.Post] = readerOutline;
 VERB_ICONS[Verb.Announce] = newspaperOutline;
 
+
+const VISIBILITY_ICONS: Record<string, any>= {};
+VISIBILITY_ICONS[Visibility.Public] = earthOutline;
+VISIBILITY_ICONS[Visibility.Members] = peopleOutline;
+VISIBILITY_ICONS[Visibility.Mods] = shieldCheckmarkOutline;
+VISIBILITY_ICONS[Visibility.Leaders] = rocketOutline;
+
 export default defineComponent({
   name: 'DraftPost',
   emits: ["submitted"],
   setup() {
     const store = useStore();
     return {
-      store,
-      VERB_ICONS,
+      store, VERB_ICONS, VISIBILITY_ICONS,
       teams: computed(() => store.getters["auth/postableTeams"]),
       text: computed(() => store.state.draft.text),
       selectedType: computed(() => store.getters["draft/selectedType"]),
@@ -106,21 +153,23 @@ export default defineComponent({
       images: computed(() => store.state.draft.images),
       updateText: (e: any) => store.commit("draft/setText", e.target.value),
       selectTeam: (t: Parse.Object) => store.commit("draft/setTeam", t),
-      setVisbility: (t: Visibility) => store.commit("draft/setVisibility", t),
+      setVisibility: (t: Visibility) => store.commit("draft/setVisibility", t),
       selectType: (t: Verb) => store.commit("draft/setType", t),
       selectedTeam: computed(() => store.getters["draft/selectedTeam"]),
       selectedTeamId: computed(() => store.getters["draft/selectedTeamId"]),
       selectableTypes: computed(() => store.getters["draft/selectableTypes"]),
+      selectableVisibility: computed(() => store.getters["draft/selectableVisibility"]),
       showTypeSelector: computed(() => store.getters["draft/showTypeSelector"]),
       addPicture() { store.dispatch("draft/addPicture"); },
       submit() { store.dispatch("draft/submit"); },
       canSubmit: computed(() => store.getters["draft/canSubmit"]),
       showTeamSelector: computed(() => store.getters["auth/hasManyTeams"]),
-      imageIcon, sendIcon
+      imageIcon, sendIcon, eyeOutline,
+      selectedIcon: checkmarkOutline,
     }
   },
   components: {
-    IonTextarea, IonChip, IonIcon, IonLabel, IonButton, IonInput, IonImg,
+    IonTextarea, IonChip, IonIcon, IonLabel, IonButton, IonInput, IonImg, IonItem,
     IonGrid, IonRow, IonCol, Selector, Avatar
   }
 });

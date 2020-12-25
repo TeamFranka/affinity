@@ -56,10 +56,11 @@ Parse.Cloud.define("newRootTeam", async (request) => {
 
 Parse.Cloud.define("myTeams", async (request) => {
     const user = request.user;
+    console.log("user", user);
     const roles = await (new Parse.Query(Parse.Role))
         .equalTo("users", user).find({ useMasterKey: true });
 
-    const roleIds = roles.map(r =>r.id);
+    const roleIds = roles.map(r => r.id);
     const teams = await ((new Parse.Query(Team))
         .include("settings")
         .containedIn("members", roles)
@@ -69,20 +70,22 @@ Parse.Cloud.define("myTeams", async (request) => {
     const cfgDefaults = TeamSettings.getDefaults();
 
     for (let idx = 0; idx < teams.length; idx++) {
-        const team = teams[idx];
-        const settings = team.get("settings") || cfgDefaults;
-        const isLeader = roleIds.includes(team.get("leaders").id);
-        const isMod = roleIds.includes(team.get("mods").id);
-        const isAgent = roleIds.includes(team.get("agents").id);
+      const team = teams[idx];
+      const settings = team.get("settings") || cfgDefaults;
+      const isLeader = roleIds.includes(team.get("leaders").id);
+      const isMod = roleIds.includes(team.get("mods").id);
+      const isPublisher = roleIds.includes(team.get("publishers").id);
+      const isAgent = roleIds.includes(team.get("agents").id);
 
-        permissions[team.id] = Object.assign({
-            isMember: true,
-            isLeader: isLeader,
-            isMod: isMod,
-            isAgent: isAgent,
-          },
-          settings.genPermissions(isLeader, isMod, isAgent, true)
-        );
+      permissions[team.id] = Object.assign({
+          isMember: true,
+          isLeader: isLeader,
+          isMod: isMod,
+          isPublisher: isPublisher,
+          isAgent: isAgent,
+        },
+        settings.genPermissions(isLeader, isMod, isAgent, isPublisher, true)
+      );
     }
 
     return {
@@ -114,14 +117,16 @@ Parse.Cloud.define("getTeam", async (request) => {
   const isMember = roleIds.includes(team.get("members").id);
   const isLeader = roleIds.includes(team.get("leaders").id);
   const isMod = roleIds.includes(team.get("mods").id);
+  const isPublisher = roleIds.includes(team.get("publishers").id);
   const isAgent = roleIds.includes(team.get("agents").id);
   permissions[team.id] = Object.assign({
       isMember: isMember,
       isLeader: isLeader,
       isMod: isMod,
+      isPublisher: isPublisher,
       isAgent: isAgent,
     },
-    settings.genPermissions(isLeader, isMod, isAgent, isMember)
+    settings.genPermissions(isLeader, isMod, isAgent, isPublisher, isMember)
   );
 
   return {

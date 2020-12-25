@@ -13,7 +13,7 @@ const TeamSettings = Parse.Object.extend("TeamSettings", {
     chechLevel: function(field, level) {
         return Levels.indexOf(this.get(field) || "nobody") <= Levels.indexOf(level);
     },
-    genPermissions: function(isLeader, isMod, isPublisher, isMember) {
+    genPermissions: function(isLeader, isMod, isAgent, isPublisher, isMember) {
         if (isLeader) {
             // FIXME: some might be limited even for admins later
             return {
