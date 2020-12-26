@@ -1,7 +1,7 @@
 import { createRouter, createWebHistory } from '@ionic/vue-router';
 import { RouteRecordRaw } from 'vue-router';
 import { isPlatform } from '@ionic/core';
-import News from '../views/Home.vue';
+import News from '../views/News.vue';
 import Inbox from '../views/Inbox.vue';
 import CommunityOutlet from '../views/CommunityOutlet.vue';
 import Feed from '../views/Feed.vue';

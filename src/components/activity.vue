@@ -155,7 +155,7 @@ export default defineComponent({
       return '/t/' + this.team.get("slug")
     },
     showAuthor(): boolean {
-      if (this.activity.get("verb") == "announce"){
+      if (this.activity.get("verb") == "announce") {
         // announcement show the team as author
         return false
       }
