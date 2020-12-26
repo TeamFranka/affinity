@@ -2,11 +2,16 @@
 <ion-card>
   <ion-card-header>
     <div class="avatar-wrap">
-      <avatar :profile="author"/>
+      <avatar :profile="author" v-if="showAuthor"/>
+      <avatar :profile="teamSettings" :name="teamName" v-if="!showAuthor"/>
     </div>
     <div class="ion-padding-start">
-      <div>
-        {{authorName}}<span v-if="showTeam"><ion-icon :icon="teamSplitterIcon" /> <a href="">TeamFranka</a></span>
+      <div v-if="showAuthor">
+        {{authorName}}<span v-if="showTeam"><ion-icon :icon="teamSplitterIcon" /> <router-link :to="teamLink">{{teamName}}</router-link
+        ></span>
+      </div>
+      <div v-if="!showAuthor">
+        <router-link :to="teamLink">{{teamName}}</router-link>
       </div>
       <router-link :to="link">
           <ion-note color="medium">{{since}}</ion-note>
@@ -133,6 +138,26 @@ export default defineComponent({
         return team;
       }
       return this.objs[team.id]
+    },
+    teamSettings(): Parse.Object {
+      const settings = this.team.get("settings");
+      if (settings.isDataAvailable()) {
+        return settings;
+      }
+      return this.objs[settings.id]
+    },
+    teamName(): string {
+      return this.team.get("name")
+    },
+    teamLink(): string {
+      return '/t/' + this.team.id
+    },
+    showAuthor(): boolean {
+      if (this.activity.get("verb") == "announce"){
+        // announcement show the team as author
+        return false
+      }
+      return true
     },
     author(): Parse.Object {
       const author = this.activity.get("author");

@@ -22,7 +22,7 @@ export const Teams = {
       await context.commit("setItems", items, {root: true});
       await context.commit("auth/addPermissions", resp.permissions, { root: true });
     },
-    async setSetting(context: any, params: any, ){
+    async setSetting(context: any, params: any) {
       const settings = context.rootGetters.objectsMap[params.id]
       delete params.id
       await settings.save(params);

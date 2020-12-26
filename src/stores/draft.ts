@@ -36,7 +36,7 @@ export const Draft = {
     selectedTeamId(state: DraftT, getters: any): string {
       return getters.selectedTeam.id
     },
-    selectedTeamPerms(state: DraftT, getters: any, rootState: any, rootGetters: any): any {
+    selectedTeamPerms(state: DraftT, getters: any, rootState: any): any {
       return rootState.auth.teamPermissions[getters.selectedTeamId]
     },
     selectableTypes(state: DraftT, getters: any): Verb[] {
