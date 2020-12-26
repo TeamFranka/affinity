@@ -3,7 +3,9 @@
   <ion-card-header>
     <div class="avatar-wrap">
       <avatar :profile="author" v-if="showAuthor"/>
-      <avatar :profile="teamSettings" :name="teamName" v-if="!showAuthor"/>
+      <div v-if="!showAuthor">
+        <router-link :to="teamLink"><avatar :profile="teamSettings" :name="teamName" v-if="!showAuthor"/></router-link>
+      </div>
     </div>
     <div class="ion-padding-start">
       <div v-if="showAuthor">
@@ -150,7 +152,7 @@ export default defineComponent({
       return this.team.get("name")
     },
     teamLink(): string {
-      return '/t/' + this.team.id
+      return '/t/' + this.team.get("slug")
     },
     showAuthor(): boolean {
       if (this.activity.get("verb") == "announce"){
