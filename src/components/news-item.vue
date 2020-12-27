@@ -1,47 +1,50 @@
 <template>
-<div class="slidebox shown" ref="slideBox">
-    <img :src="imageUrl" />
-    <div class="text">
-        <p v-if="text">{{text}}</p>
-        <p><reactions :item="item" /></p>
+<div class="slidebox shown" @dblclick="like" ref="slideBox">
+  <span class="like-icon" ref="liker">
+    <ion-icon :icon="likeIcon"  />
+  </span>
+  <img :src="imageUrl" />
+  <div class="text">
+    <p v-if="text">{{text}}</p>
+    <p><reactions :item="item" /></p>
+  </div>
+  <div class="menu">
+    <router-link :to="teamLink">
+      <avatar :profile="teamSettings" :name="teamName" />
+    </router-link>
+    <div class="interaction">
+      <share-button
+        icon-size="large"
+        :link="fullLink"
+        :pointer="pointer"
+        :counter="item.get('sharesCount') || 0"
+      />
     </div>
-    <div class="menu">
-      <router-link :to="teamLink">
-        <avatar :profile="teamSettings" :name="teamName" />
+    <div class="interaction">
+      <router-link :to="link">
+        <ion-icon :icon="commentsIcon" size="large" />
+        <ion-label>{{item.get("commentsCount") || 0}}</ion-label>
       </router-link>
-      <div class="interaction">
-        <share-button
-            icon-size="large"
-            :link="fullLink"
-            :pointer="pointer"
-            :counter="item.get('sharesCount') || 0"
-        />
-      </div>
-      <div class="interaction">
-        <router-link :to="link">
-          <ion-icon :icon="commentsIcon" size="large" />
-          <ion-label>{{item.get("commentsCount") || 0}}</ion-label>
-        </router-link>
-      </div>
-      <div class="interaction">
-        <like-button
-            icon-size="large"
-            :has-liked="hasLiked"
-            :pointer="pointer"
-            :counter="item.get('likesCount') || 0"
-        />
-      </div>
     </div>
+    <div class="interaction">
+      <like-button
+          icon-size="large"
+          :has-liked="hasLiked"
+          :pointer="pointer"
+          :counter="item.get('likesCount') || 0"
+      />
+    </div>
+  </div>
 </div>
 </template>
 
 <script lang="ts">
 import { IonLabel, IonIcon } from '@ionic/vue';
-import { chatbubblesOutline as commentsIcon } from 'ionicons/icons';
+import { createAnimation } from '@ionic/core';
+import { chatbubblesOutline as commentsIcon, heart as likeIcon } from 'ionicons/icons';
 import Avatar from './avatar.vue';
 import ShareButton from "./share-button.vue";
 import LikeButton from "./like-button.vue";
-import { doubleTapGesture } from "../utils/gestures";
 import { since } from '../utils/time';
 import Parse from "parse";
 import { defineComponent, computed } from 'vue';
@@ -50,6 +53,7 @@ import Reactions from './reactions.vue';
 
 export default defineComponent({
   name: 'NewsItem',
+  emits: ['next'],
   props: {
     item: {
       type: Parse.Object,
@@ -59,19 +63,11 @@ export default defineComponent({
   components: {
     Avatar, ShareButton, Reactions, IonLabel, IonIcon, LikeButton
   },
-  mounted() {
-    // const c: any  = this.$refs.slideBox;
-    // doubleTapGesture(c, (ev: any) => {
-    //   if (!this.hasLiked) {
-    //     this.store.dispatch("auth/like", Object.assign({}, this.pointer));
-    //   }
-    // } ).enable();
-  },
   setup() {
     const store = useStore();
     return {
       objs: computed(() => store.getters.objectsMap),
-      store, commentsIcon
+      store, commentsIcon, likeIcon
     }
   },
   computed: {
@@ -125,6 +121,33 @@ export default defineComponent({
         return this.image?.get("file")?.url()
     },
   },
+  methods: {
+    async like(ev: MouseEvent) {
+      console.log("would like", ev);
+      if (!this.hasLiked) {
+        this.store.dispatch("auth/like", Object.assign({}, this.pointer));
+      }
+      const l: any = this.$refs.liker;
+      await createAnimation()
+        .addElement(l)
+        .duration(800)
+        .beforeStyles({
+          top: `${ev.y}px`,
+          left: `${ev.x}px`,
+          opacity: 1,
+          transform: 'scale(1)',
+        })
+        .fromTo('transform', 'scale(1)', 'scale(3)')
+        .afterStyles({
+          "opacity": 0,
+          transform: 'scale(1)',
+        })
+        .play();
+    },
+    next(ev: Event) {
+      console.log("would go to next", ev);
+    },
+  },
 });
 </script>
 <style scoped>
@@ -137,8 +160,7 @@ export default defineComponent({
   transition: 0.25s ease-out;
 }
 .slidebox.hidden {
-  top: -100%;
-  bottom: unset;
+  transform: translateY(-100%);
 }
 .slidebox > img {
   object-fit: cover;
@@ -161,6 +183,14 @@ export default defineComponent({
   flex-direction: column-reverse;
   align-content: center;
   color: white;
+}
+.like-icon {
+  position: absolute;
+  transform-origin: bottom;
+  opacity: 0;
+  width: 3em;
+  height: 3em;
+  color: #900;
 }
 .menu a {
   color: white;

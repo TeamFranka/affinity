@@ -20,7 +20,10 @@
         </router-link>
     </div>
   </ion-card-header>
-  <div ref="doubleTapRef">
+  <div class="like-ref" @dblclick="like">
+    <span class="like-icon" ref="liker">
+      <ion-icon :icon="likeIcon"  />
+    </span>
     <div class="ion-padding">
       {{ text }}
     </div>
@@ -81,7 +84,7 @@ import {
   IonCard, IonImg, IonLabel, IonCardHeader, IonSpinner,
   IonIcon, IonNote, IonChip, IonGrid,
 } from '@ionic/vue';
-import { chatbubblesOutline, addOutline, arrowRedoOutline } from 'ionicons/icons';
+import { chatbubblesOutline, addOutline, arrowRedoOutline, heartOutline } from 'ionicons/icons';
 
 import Avatar from "./avatar.vue";
 import InlineText from "./inline-text.vue";
@@ -92,7 +95,7 @@ import Comment from "./comment.vue";
 import { useStore } from '../stores/';
 import { defineComponent, computed } from 'vue';
 import { Parse } from "../config/Consts";
-import { doubleTapGesture } from "../utils/gestures";
+import { createAnimation } from '@ionic/core';
 import { since } from "../utils/time";
 
 export default defineComponent({
@@ -119,7 +122,8 @@ export default defineComponent({
       commentsIcon: chatbubblesOutline,
       teamSplitterIcon: arrowRedoOutline,
       shareIcon: arrowRedoOutline,
-      plusIcon: addOutline
+      plusIcon: addOutline,
+      likeIcon: heartOutline,
     }
   },
   computed: {
@@ -232,18 +236,34 @@ export default defineComponent({
         text
       });
     },
-    like() {
-      this.store.dispatch("auth/like", Object.assign({}, this.pointer));
+    async like(ev: MouseEvent) {
+      console.log("would like", ev);
+      if (!this.hasLiked) {
+        this.store.dispatch("auth/like", Object.assign({}, this.pointer));
+      }
+      const l: any = this.$refs.liker;
+      console.log(l);
+      await createAnimation()
+        .addElement(l)
+        .duration(800)
+        .beforeStyles({
+          top: `${ev.y}px`,
+          left: `${ev.x}px`,
+          opacity: 1,
+          transform: 'scale(1)',
+        })
+        .fromTo('transform', 'scale(1)', 'scale(3)')
+        .afterStyles({
+          "opacity": 0,
+          transform: 'scale(1)',
+        })
+        .play();
     },
   },
   components: {
     IonCard, IonImg, IonChip, IonLabel, IonCardHeader, IonSpinner, Comment,
     IonIcon, IonNote, Avatar, IonGrid, InlineText, ShareButton, Reactions, LikeButton
   },
-  mounted() {
-    const c: any = this.$refs.doubleTapRef;
-    doubleTapGesture(c, () => this.like());
-  }
 });
 </script>
 <style scoped>
@@ -253,5 +273,18 @@ ion-card-header {
 }
 .avatar-wrap {
   width: 5em;
+}
+.like-ref {
+  position: relative;
+}
+
+.like-icon {
+  position: absolute;
+  transform-origin: bottom;
+  opacity: 0;
+  width: 3em;
+  height: 3em;
+  color: #900;
+  z-index: 1;
 }
 </style>
