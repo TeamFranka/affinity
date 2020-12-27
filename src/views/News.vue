@@ -49,8 +49,6 @@ export default defineComponent({
       gestureName: "pull-back",
       threshold: 0,
       onStart: ev => {
-
-        console.log("starting", c);
         const hidden = c.getElementsByClassName("hidden");
         const shown = c.getElementsByClassName("shown");
         if (hidden.length == 0) {
@@ -64,17 +62,13 @@ export default defineComponent({
         } else {
           next = null;
         }
-
-        console.log("Started for ", prev, next);
       },
       onMove: ev => {
         console.log(prev);
         if (prev && ev.deltaY > 0) {
-          console.log("setting on prev", ev.deltaY);
           prev.style.transform = `translateY(${ev.deltaY}px)`;
         }
         if (next && ev.deltaY < 0) {
-          console.log("setting on next", ev.deltaY);
           next.style.transform = `translateY(${ev.deltaY}px)`;
         }
       },
@@ -99,7 +93,6 @@ export default defineComponent({
             next.classList.add("shown");
           }
         }
-        console.log("End");
       },
     });
 
@@ -108,7 +101,6 @@ export default defineComponent({
   methods: {
     makeStyle(n: Parse.Object): any {
       const url = n.get('objects')[0].get('file').url();
-      console.log(url);
       return {
         background: `url(${url}) no-repeat center center`,
         backgroundSize: 'cover'

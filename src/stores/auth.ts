@@ -29,7 +29,7 @@ export const AuthState = {
     myTeams: (state: AuthStateT) => state.teams,
     teamPermissions: (state: AuthStateT) => state.teamPermissions,
     hasManyTeams: (state: AuthStateT) => state.teams.length > 1,
-    postableTeams: (state: AuthStateT) =>  state.teams?.filter(t => state.teamPermissions[t.id].canPost) || [],
+    postableTeams: (state: AuthStateT) =>  state.teams?.filter(t => t && state.teamPermissions[t.id].canPost) || [],
   },
   mutations: {
     setUser(state: AuthStateT, newUser: Parse.User|null) {

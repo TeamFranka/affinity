@@ -1,19 +1,37 @@
 <template>
 <div class="slidebox shown" ref="slideBox">
     <img :src="imageUrl" />
-    <p class="text" v-if="text">{{text}}</p>
-    <div class="interactions">
-    <avatar :profile="item.get('team')" />
+    <div class="text">
+        <p v-if="text">{{text}}</p>
+        <p><reactions :item="item" /></p>
+    </div>
+    <div class="menu">
+      <router-link :to="teamLink">
+        <avatar :profile="teamSettings" :name="teamName" />
+      </router-link>
+      <div class="interaction">
+        <share-button
+            v-if="item"
+            icon-size="large"
+            :link="fullLink"
+            :pointer="pointer"
+            :counter="item.get('sharesCount') || 0"
+        />
+      </div>
     </div>
 </div>
 </template>
 
 
 <script lang="ts">
-import { createGesture } from '@ionic/vue';
 import Avatar from './avatar.vue';
+import ShareButton from "./share-button.vue";
+import { doubleTapGesture } from "../utils/gestures";
+import { since } from '../utils/time';
 import Parse from "parse";
-import { defineComponent } from 'vue';
+import { defineComponent, computed } from 'vue';
+import { useStore } from '../stores/';
+import Reactions from './reactions.vue';
 
 export default defineComponent({
   name: 'NewsItem',
@@ -24,52 +42,82 @@ export default defineComponent({
     },
   },
   components: {
-    Avatar,
+    Avatar, ShareButton, Reactions,
   },
   mounted() {
-
-    // const c: any  = this.$refs.slideBox;
-
-    // const gesture = createGesture({
-    //   el: c,
-    //   gestureName: "flip-away",
-    //   threshold: 0,
-    //   onStart: ev => {
-    //     c.style.transition = "0.25s ease-out";
-    //     console.log("Started on ", c);
-    //   },
-    //   onMove: ev => {
-    //       console.log(ev);
-    //     if (ev.deltaY < 0) {
-    //       c.style.transform = `translateY(${ev.deltaY}px)`;
-    //     }
-    //   },
-    //   onEnd: ev => {
-    //     if (ev.deltaY < -150) {
-    //       c.classList.add("hidden");
-    //       c.style.transform = 'translateY(-100%)';
-    //     } else {
-    //       c.style.transform = '';
-    //     }
-    //     console.log("End");
-    //   },
-    // });
-
-    // gesture.enable();
+    const c: any  = this.$refs.slideBox;
+    doubleTapGesture(c, () => this.like() ).enable();
+  },
+  setup() {
+    const store = useStore();
+    return {
+      objs: computed(() => store.getters.objectsMap),
+      store,
+    }
   },
   computed: {
+    link(): string {
+      return '/a/' + this.item.id
+    },
+    fullLink(): string {
+      return process.env.BASE_URL + this.link;
+    },
+    hasLiked(): boolean {
+      if (!this.store.getters["auth/isLoggedIn"]) return false;
+      return (this.item.get("likedBy") || []).indexOf(this.store.getters["auth/myId"]) !== -1;
+    },
+    team(): Parse.Object {
+      const team = this.item.get("team");
+      if (team.isDataAvailable()) {
+        return team;
+      }
+      return this.objs[team.id]
+    },
+    teamSettings(): Parse.Object {
+      const settings = this.team.get("settings");
+      if (settings.isDataAvailable()) {
+        return settings;
+      }
+      return this.objs[settings.id]
+    },
+    teamName(): string {
+      return this.team.get("name")
+    },
+    teamLink(): string {
+      return '/t/' + this.team.get("slug")
+    },
+    since(): string {
+      return since(this.item.get("createdAt"))
+    },
+    text(): string {
+        return this.item.get("text") || ""
+    },
+    objects(): Parse.Object {
+      return (this.item.get("objects") || []).map(
+            (o: Parse.Object) => this.objs[o.id])
+    },
+    pointer(): Parse.Pointer {
+      return this.item.toPointer()
+    },
     image(): Parse.Object | null {
         return this.item.get("objects").find((x: Parse.Object) => x.className == "Picture");
     },
     imageUrl(): string | null {
         return this.image?.get("file")?.url()
     },
-    text(): string {
-        return this.item.get("text")
-    }
-
-
   },
+  methods: {
+    like() {
+      this.store.dispatch("auth/like", Object.assign({}, this.pointer));
+    },
+    toggleLike() {
+      if (this.hasLiked){
+        this.store.dispatch("auth/unlike", Object.assign({}, this.pointer));
+      } else {
+        this.store.dispatch("auth/like", Object.assign({}, this.pointer));
+      }
+    },
+  }
 });
 </script>
 <style scoped>
@@ -95,13 +143,29 @@ export default defineComponent({
   bottom: 1em;
   color: white;
   left: 1em;
+  right: calc(0.5em + 65px);
 }
-.slidebox .interactions {
+.menu {
   position: absolute;
   bottom: 1em;
   right: 0.5em;
   width: 60px;
   display: flex;
-  flex-direction: row-reverse;
+  flex-direction: column-reverse;
+  align-content: center;
+  color: white;
+}
+.interaction {
+  margin-bottom: 0.5em;
+}
+.interaction,
+.interaction > span {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.interaction > span ion-label {
+  font-size: 0.5em
 }
 </style>

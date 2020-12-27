@@ -39,22 +39,18 @@
       <ion-icon :icon="commentsIcon" size="small" />
       <ion-label>{{activity.get("commentsCount")}}</ion-label>
     </ion-chip>
-    <share-button
-      :link="fullLink"
-      :pointer="pointer"
-      :counter="activity.get('sharesCount') || 0"
-    />
+    <ion-chip outline color="light">
+      <share-button
+        :link="fullLink"
+        :pointer="pointer"
+        :counter="activity.get('sharesCount') || 0"
+      />
+    </ion-chip>
     <ion-chip @click="toggleLike" outline :color="likedColor">
       <ion-icon :icon="likeIcon" size="small"/>
       <ion-label>{{activity.get("likesCount") }}</ion-label>
     </ion-chip>
-    <ion-chip outline v-for="r in reactions" :key="r.key" @click="unreact(r.key)">
-      <ion-label>{{r.key}}</ion-label>
-      <ion-label>{{r.count}}</ion-label>
-    </ion-chip>
-    <ion-chip outline color="light">
-      <ion-icon :icon="plusIcon" size="small"/>
-    </ion-chip>
+    <reactions :item="activity" />
   </div>
   <div v-if="showComments">
     <ion-spinner v-if="commentsLoading" />
@@ -83,17 +79,17 @@ import {
   IonIcon, IonNote, IonChip, IonGrid,
 } from '@ionic/vue';
 import { chatbubblesOutline, heartOutline, addOutline, arrowRedoOutline } from 'ionicons/icons';
-import { createGesture } from "@ionic/core";
 
 import Avatar from "./avatar.vue";
 import InlineText from "./inline-text.vue";
 import ShareButton from "./share-button.vue";
+import Reactions from "./reactions.vue";
 import Comment from "./comment.vue";
 import { useStore } from '../stores/';
 import { defineComponent, computed } from 'vue';
-import { Parse, dayjs } from "../config/Consts";
-
-const DOUBLE_CLICK_THRESHOLD = 500;
+import { Parse } from "../config/Consts";
+import { doubleTapGesture } from "../utils/gestures";
+import { since } from "../utils/time";
 
 export default defineComponent({
   name: 'Activity',
@@ -169,7 +165,7 @@ export default defineComponent({
       return this.objs[author.id]
     },
     since(): string {
-      return dayjs(this.activity.get("createdAt")).fromNow()
+      return since(this.activity.get("createdAt"))
     },
     text(): string {
         return this.activity.get("text") || ""
@@ -209,16 +205,6 @@ export default defineComponent({
       const author = this.author;
       return author.get("name") || author.get("username")
     },
-    reactions(): Array<any> {
-      return Object.keys(this.activity.get("reactions") || {}).map((key) => {
-        const reactors = this.activity.get("reactions")[key];
-        return {
-          key,
-          color: reactors.indexOf(this.store.getters["auth/myId"]) === -1 ? "light" : "dark",
-          count: reactors.length
-        }
-      })
-    }
   },
   methods: {
     async toggleComments() {
@@ -244,48 +230,23 @@ export default defineComponent({
       });
     },
     like() {
-      this.store.dispatch("auth/like", Object.assign({}, this.activity.toPointer()));
+      this.store.dispatch("auth/like", Object.assign({}, this.pointer));
     },
     toggleLike() {
       if (this.hasLiked){
-        this.store.dispatch("auth/unlike", Object.assign({}, this.activity.toPointer()));
+        this.store.dispatch("auth/unlike", Object.assign({}, this.pointer));
       } else {
-        this.store.dispatch("auth/like", Object.assign({}, this.activity.toPointer()));
+        this.store.dispatch("auth/like", Object.assign({}, this.pointer));
       }
-    },
-    react(reaction: string) {
-      this.store.dispatch("auth/react", Object.assign({reaction}, this.activity.toPointer()));
-    },
-    unreact(reaction: string) {
-      this.store.dispatch("auth/unreact", Object.assign({reaction}, this.activity.toPointer()));
     },
   },
   components: {
     IonCard, IonImg, IonChip, IonLabel, IonCardHeader, IonSpinner, Comment,
-    IonIcon, IonNote, Avatar, IonGrid, InlineText, ShareButton,
+    IonIcon, IonNote, Avatar, IonGrid, InlineText, ShareButton, Reactions
   },
   mounted() {
     const c: any = this.$refs.doubleTapRef;
-    let lastOnStart = 0;
-
-    const gesture = createGesture({
-      el: c,
-      gestureName: "double-tap-like",
-      threshold: 0,
-      onStart: () => {
-        const now = Date.now();
-
-        if (Math.abs(now - lastOnStart) <= DOUBLE_CLICK_THRESHOLD) {
-          this.like()
-          lastOnStart = 0;
-        } else {
-          lastOnStart = now;
-        }
-      }
-    });
-
-    gesture.enable();
-
+    doubleTapGesture(c, () => this.like());
   }
 });
 </script>

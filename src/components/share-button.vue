@@ -1,12 +1,12 @@
 <template>
-    <ion-chip @click="shareEntry()" :disabled="disabled" outline color="light">
-      <ion-icon :icon="shareIcon" size="small"/>
+    <span @click="shareEntry()" :disabled="disabled">
+      <ion-icon :icon="shareIcon" :size="iconSize" />
       <ion-label>{{counter}}</ion-label>
-    </ion-chip>
+    </span>
 </template>
 <script>
 import {
-  IonLabel, IonIcon, IonChip,
+  IonLabel, IonIcon,
   toastController,
 } from '@ionic/vue';
 import { arrowRedoOutline } from 'ionicons/icons';
@@ -24,6 +24,11 @@ export default defineComponent({
     link: {
       type: String,
       required: true
+    },
+    iconSize: {
+      type: String,
+      required: true,
+      default: "small",
     },
     counter: {
       type: Number,
@@ -83,7 +88,7 @@ export default defineComponent({
     }
   },
   components: {
-    IonLabel, IonIcon, IonChip,
+    IonLabel, IonIcon,
   },
 });
 </script>
