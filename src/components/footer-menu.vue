@@ -2,7 +2,7 @@
   <div class="footer-box" scrollY="false" ref="drawerRef">
     <hr @click="toggleDrawer" />
     <ion-tab-bar>
-      <ion-tab-button tab="home" href="/home">
+      <ion-tab-button tab="news" href="/news">
           <ion-icon :icon="homeIcon" />
           <ion-badge color="danger"></ion-badge>
       </ion-tab-button>

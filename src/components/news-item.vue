@@ -18,12 +18,19 @@
             :counter="item.get('sharesCount') || 0"
         />
       </div>
+      <div class="interaction">
+        <router-link :to="link">
+          <ion-icon :icon="commentsIcon" size="large" />
+          <ion-label>{{item.get("commentsCount") || 0}}</ion-label>
+        </router-link>
+      </div>
     </div>
 </div>
 </template>
 
-
 <script lang="ts">
+import { IonLabel, IonIcon } from '@ionic/vue';
+import { chatbubblesOutline as commentsIcon } from 'ionicons/icons';
 import Avatar from './avatar.vue';
 import ShareButton from "./share-button.vue";
 import { doubleTapGesture } from "../utils/gestures";
@@ -42,7 +49,7 @@ export default defineComponent({
     },
   },
   components: {
-    Avatar, ShareButton, Reactions,
+    Avatar, ShareButton, Reactions, IonLabel, IonIcon
   },
   mounted() {
     const c: any  = this.$refs.slideBox;
@@ -52,7 +59,7 @@ export default defineComponent({
     const store = useStore();
     return {
       objs: computed(() => store.getters.objectsMap),
-      store,
+      store, commentsIcon
     }
   },
   computed: {
@@ -155,11 +162,17 @@ export default defineComponent({
   align-content: center;
   color: white;
 }
+.menu a {
+  color: white;
+  text-decoration: none;
+
+}
 .interaction {
   margin-bottom: 0.5em;
 }
 .interaction,
-.interaction > span {
+.interaction > span,
+.interaction > a {
   text-align: center;
   display: flex;
   flex-direction: column;
