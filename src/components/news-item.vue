@@ -11,7 +11,6 @@
       </router-link>
       <div class="interaction">
         <share-button
-            v-if="item"
             icon-size="large"
             :link="fullLink"
             :pointer="pointer"
@@ -24,6 +23,14 @@
           <ion-label>{{item.get("commentsCount") || 0}}</ion-label>
         </router-link>
       </div>
+      <div class="interaction">
+        <like-button
+            icon-size="large"
+            :has-liked="hasLiked"
+            :pointer="pointer"
+            :counter="item.get('likesCount') || 0"
+        />
+      </div>
     </div>
 </div>
 </template>
@@ -33,6 +40,7 @@ import { IonLabel, IonIcon } from '@ionic/vue';
 import { chatbubblesOutline as commentsIcon } from 'ionicons/icons';
 import Avatar from './avatar.vue';
 import ShareButton from "./share-button.vue";
+import LikeButton from "./like-button.vue";
 import { doubleTapGesture } from "../utils/gestures";
 import { since } from '../utils/time';
 import Parse from "parse";
@@ -49,11 +57,15 @@ export default defineComponent({
     },
   },
   components: {
-    Avatar, ShareButton, Reactions, IonLabel, IonIcon
+    Avatar, ShareButton, Reactions, IonLabel, IonIcon, LikeButton
   },
   mounted() {
-    const c: any  = this.$refs.slideBox;
-    doubleTapGesture(c, () => this.like() ).enable();
+    // const c: any  = this.$refs.slideBox;
+    // doubleTapGesture(c, (ev: any) => {
+    //   if (!this.hasLiked) {
+    //     this.store.dispatch("auth/like", Object.assign({}, this.pointer));
+    //   }
+    // } ).enable();
   },
   setup() {
     const store = useStore();
@@ -113,18 +125,6 @@ export default defineComponent({
         return this.image?.get("file")?.url()
     },
   },
-  methods: {
-    like() {
-      this.store.dispatch("auth/like", Object.assign({}, this.pointer));
-    },
-    toggleLike() {
-      if (this.hasLiked){
-        this.store.dispatch("auth/unlike", Object.assign({}, this.pointer));
-      } else {
-        this.store.dispatch("auth/like", Object.assign({}, this.pointer));
-      }
-    },
-  }
 });
 </script>
 <style scoped>

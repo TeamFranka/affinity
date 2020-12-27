@@ -11,11 +11,11 @@ export function doubleTapGesture(el: any, fn: any): Gesture {
       el,
       gestureName: "double-tap-like",
       threshold: 0,
-      onStart: () => {
+      onStart: (ev: any) => {
         const now = Date.now();
 
         if (Math.abs(now - lastOnStart) <= DOUBLE_CLICK_THRESHOLD) {
-          fn()
+          fn(ev)
           lastOnStart = 0;
         } else {
           lastOnStart = now;

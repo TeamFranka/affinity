@@ -46,9 +46,12 @@
         :counter="activity.get('sharesCount') || 0"
       />
     </ion-chip>
-    <ion-chip @click="toggleLike" outline :color="likedColor">
-      <ion-icon :icon="likeIcon" size="small"/>
-      <ion-label>{{activity.get("likesCount") }}</ion-label>
+    <ion-chip outline :color="likedColor">
+      <like-button
+        :has-liked="hasLiked"
+        :pointer="pointer"
+        :counter="activity.get('likesCount') || 0"
+      />
     </ion-chip>
     <reactions :item="activity" />
   </div>
@@ -78,11 +81,12 @@ import {
   IonCard, IonImg, IonLabel, IonCardHeader, IonSpinner,
   IonIcon, IonNote, IonChip, IonGrid,
 } from '@ionic/vue';
-import { chatbubblesOutline, heartOutline, addOutline, arrowRedoOutline } from 'ionicons/icons';
+import { chatbubblesOutline, addOutline, arrowRedoOutline } from 'ionicons/icons';
 
 import Avatar from "./avatar.vue";
 import InlineText from "./inline-text.vue";
 import ShareButton from "./share-button.vue";
+import LikeButton from "./like-button.vue";
 import Reactions from "./reactions.vue";
 import Comment from "./comment.vue";
 import { useStore } from '../stores/';
@@ -114,7 +118,6 @@ export default defineComponent({
       store,
       commentsIcon: chatbubblesOutline,
       teamSplitterIcon: arrowRedoOutline,
-      likeIcon: heartOutline,
       shareIcon: arrowRedoOutline,
       plusIcon: addOutline
     }
@@ -232,17 +235,10 @@ export default defineComponent({
     like() {
       this.store.dispatch("auth/like", Object.assign({}, this.pointer));
     },
-    toggleLike() {
-      if (this.hasLiked){
-        this.store.dispatch("auth/unlike", Object.assign({}, this.pointer));
-      } else {
-        this.store.dispatch("auth/like", Object.assign({}, this.pointer));
-      }
-    },
   },
   components: {
     IonCard, IonImg, IonChip, IonLabel, IonCardHeader, IonSpinner, Comment,
-    IonIcon, IonNote, Avatar, IonGrid, InlineText, ShareButton, Reactions
+    IonIcon, IonNote, Avatar, IonGrid, InlineText, ShareButton, Reactions, LikeButton
   },
   mounted() {
     const c: any = this.$refs.doubleTapRef;

@@ -11,8 +11,7 @@
 
 <script lang="ts">
 import {
-  IonContent, IonSlide, IonPage, IonButton, IonIcon, IonSlides, IonSpinner,
-  isPlatform
+  IonContent, IonPage, IonSpinner
 } from '@ionic/vue';
 import {
   chatbubbles, logoWhatsapp, heartOutline, mailOutline, addOutline, caretForwardOutline
@@ -51,6 +50,7 @@ export default defineComponent({
       onStart: ev => {
         const hidden = c.getElementsByClassName("hidden");
         const shown = c.getElementsByClassName("shown");
+        console.log("picking", hidden, shown);
         if (hidden.length == 0) {
           prev = null;
         } else {
@@ -62,6 +62,7 @@ export default defineComponent({
         } else {
           next = null;
         }
+        console.log("starting", prev, next);
       },
       onMove: ev => {
         console.log(prev);
