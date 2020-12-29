@@ -1,19 +1,28 @@
 <template>
   <ion-grid class="new-post">
     <ion-row>
-      <ion-col size="11">
+      <ion-col size-md="11" size-xs="10">
         <ion-textarea auto-grow=true :value="text" @change="updateText" placeholder="What do you want to share?" />
+        <p v-if="!showOptions">{{visibility}} {{selectedType}} to <avatar :profile="selectedTeam" withName /><ion-button size="small" fill="clear" @click="showOptions = true"><ion-icon :icon="editIcon"/></ion-button></p>
       </ion-col>
-      <ion-col size="1">
+      <ion-col size-md="1" class="ion-hide-sm-down">
         <ion-button @click="submit()" fill="outline" v-bind:disabled="!canSubmit" shape="round" size="small">
           <ion-icon :icon="sendIcon"></ion-icon>
         </ion-button>
       </ion-col>
     </ion-row>
-    <ion-row v-if="showTeamSelector || showTypeSelector">
-      <ion-col size="3" v-if="showTypeSelector">
+    <ion-row v-if="showOptions">
+      <ion-button
+        :style="{position: 'absolute', right: '1em', 'z-index': 1}"
+        size="small"
+        fill="clear"
+        @click="showOptions = false"
+      >
+        <ion-icon :icon="closeIcon"/>
+      </ion-button>
+      <ion-col size-md="3" size-xs="12" v-if="showTypeSelector">
         <selector
-            label="as"
+            label="Type"
             popoverTitle="Post Type"
             @select="selectType($event)"
             :items="selectableTypes"
@@ -40,9 +49,9 @@
       <ion-col size="3" v-if="!showTypeSelector">
         Post
       </ion-Col>
-      <ion-col size="3" v-if="showTeamSelector">
+      <ion-col size-md="3" size-xs="12" v-if="showTeamSelector">
         <selector
-            label="to"
+            label="Team"
             popoverTitle="Team"
             @select="selectTeam($event)"
             :items="teams"
@@ -61,19 +70,20 @@
           </template>
         </selector>
       </ion-col>
-      <ion-col size="3">
+      <ion-col size-md="3" size-xs="12">
         <selector
             @select="setVisibility($event)"
             popoverTitle="Visibility"
             :items="selectableVisibility"
         >
           <template #label>
-              <ion-icon :icon="eyeOutline"></ion-icon>
+              <ion-icon :icon="eyeOutline" />
+              <ion-label>Sichtbar: </ion-label>
           </template>
           <template #current>
             <ion-label>
-              {{visibility}}
               <ion-icon :icon="VISIBILITY_ICONS[visibility]"></ion-icon>
+              {{visibility}}
             </ion-label>
           </template>
           <template #item="sProps">
@@ -91,17 +101,22 @@
       </ion-col>
     </ion-row>
     <ion-row>
-      <ion-col size="12">
+      <ion-col size="3" v-for="img in images" v-bind:key="img.file.dataUrl">
+        <ion-img :src="img.file.dataUrl" />
+        <ion-input placeholder="description" v-model="img.description"></ion-input>
+      </ion-col>
+    </ion-row>
+    <ion-row>
+      <ion-col size-sm="12" size-xs="10">
         <ion-chip @click="addPicture()" color="secondary" outline>
           <ion-icon :icon="imageIcon" color="secondary"></ion-icon>
           <ion-label>Image</ion-label>
         </ion-chip>
       </ion-col>
-    </ion-row>
-    <ion-row>
-      <ion-col size="3" v-for="img in images" v-bind:key="img.file.dataUrl">
-          <ion-img :src="img.file.dataUrl" />
-          <ion-input placeholder="description" v-model="img.description"></ion-input>
+      <ion-col size-xs="2" class="ion-hide-md-up">
+        <ion-button @click="submit()" fill="outline" v-bind:disabled="!canSubmit" shape="round" size="small">
+          <ion-icon :icon="sendIcon"></ion-icon>
+        </ion-button>
       </ion-col>
     </ion-row>
   </ion-grid>
@@ -115,6 +130,7 @@ import {
 } from '@ionic/vue';
 import {
   image as imageIcon, readerOutline, paperPlaneOutline as sendIcon, newspaperOutline,
+  pencilSharp as editIcon, close as closeIcon,
   eyeOutline,
   earthOutline,
   peopleOutline,
@@ -142,6 +158,11 @@ VISIBILITY_ICONS[Visibility.Leaders] = rocketOutline;
 export default defineComponent({
   name: 'DraftPost',
   emits: ["submitted"],
+  data() {
+    return {
+      showOptions: false,
+    }
+  },
   setup() {
     const store = useStore();
     return {
@@ -164,8 +185,8 @@ export default defineComponent({
       submit() { store.dispatch("draft/submit"); },
       canSubmit: computed(() => store.getters["draft/canSubmit"]),
       showTeamSelector: computed(() => store.getters["auth/hasManyTeams"]),
-      imageIcon, sendIcon, eyeOutline,
-      selectedIcon: checkmarkOutline,
+      imageIcon, sendIcon, eyeOutline, editIcon,
+      selectedIcon: checkmarkOutline, closeIcon,
     }
   },
   components: {
