@@ -1,39 +1,51 @@
 <template>
   <div class="footer-box" scrollY="false" ref="drawerRef">
-    <hr @click="toggleDrawer" />
-    <ion-tab-bar>
-      <ion-tab-button tab="news" href="/news">
-          <ion-icon :icon="homeIcon" />
-          <ion-badge color="danger"></ion-badge>
-      </ion-tab-button>
-      <ion-tab-button tab="faq" href="/faq">
-          <ion-icon :icon="faqIcon" />
-      </ion-tab-button>
-      <ion-tab-button tab="feed" href="/feed">
-          <ion-icon :icon="feedIcon" />
-      </ion-tab-button>
-      <ion-tab-button v-if="isLoggedIn" tab="inbox" href="/inbox">
-          <ion-icon :icon="chatIcon" />
-          <ion-badge color="danger">3</ion-badge>
-      </ion-tab-button>
-      <ion-tab-button v-if="!isLoggedIn" tab="donations" href="/donate">
-          <ion-icon :icon="donationsIcon" />
-      </ion-tab-button>
-      <ion-tab-button v-show="isLoggedIn" tab="me" href="/me">
-          <ion-icon :icon="meIcon" />
-      </ion-tab-button>
-    </ion-tab-bar>
+    <hr @click="toggleDrawer" v-if="isLoggedIn" />
     <ion-grid>
-      <ion-row>
+      <ion-row class="ion-text-center" style="font-size: 1rem;">
+        <ion-col>
+          <router-link expand="full" fill="clear" tab="news" to="/news">
+            <ion-icon size="large" :color="currentTab == 'news' ? 'primary' : 'medium'" :icon="homeIcon" />
+            <ion-badge color="danger"></ion-badge>
+          </router-link>
+        </ion-col>
+        <ion-col>
+        <router-link expand="full" fill="clear" tab="faq" to="/faq">
+          <ion-icon size="large" :color="currentTab == 'faq' ? 'primary' : 'medium'" :icon="faqIcon" />
+        </router-link>
+        </ion-col>
+        <ion-col>
+        <router-link expand="full" fill="clear" tab="feed" to="/feed">
+          <ion-icon size="large" :color="currentTab == 'feed' ? 'primary' : 'medium'" :icon="feedIcon" />
+        </router-link>
+        </ion-col>
+        <ion-col  v-if="isLoggedIn">
+        <router-link expand="full" fill="clear" tab="inbox" to="/inbox">
+          <ion-icon size="large" :color="currentTab == 'inbox' ? 'primary' : 'medium'" :icon="chatIcon" />
+          <ion-badge color="danger">3</ion-badge>
+        </router-link>
+        </ion-col>
+        <ion-col  v-if="!isLoggedIn">
+        <router-link expand="full" fill="clear" tab="donations" to="/donate">
+          <ion-icon size="large" :color="currentTab == 'donate' ? 'primary' : 'medium'" :icon="donationsIcon" />
+        </router-link>
+        </ion-col>
+        <ion-col v-show="isLoggedIn" >
+        <router-link expand="full" fill="clear" tab="me" to="/me">
+          <ion-icon size="large" :color="currentTab == 'me' ? 'primary' : 'medium'" :icon="meIcon" />
+        </router-link>
+        </ion-col>
+      </ion-row>
+      <ion-row v-if="isLoggedIn" >
         <ion-col size="6">
-            <ion-button fill="outline" shape="round" expand="block" size="default" color="primary">
-              <ion-icon :icon="postIcon" /> New Post
-            </ion-button>
+          <ion-button fill="outline" shape="round" expand="block" size="default" color="primary">
+            <ion-icon size="large" :icon="postIcon" /> New Post
+          </ion-button>
         </ion-col>
         <ion-col size="6">
-            <ion-button fill="outline" shape="round" expand="block" size="default" color="secondary">
-              <ion-icon :icon="newChatIcon" /> New Chat
-            </ion-button>
+          <ion-button fill="outline" shape="round" expand="block" size="default" color="secondary">
+            <ion-icon :icon="newChatIcon" /> New Chat
+          </ion-button>
         </ion-col>
       </ion-row>
     </ion-grid>
@@ -43,7 +55,7 @@
 
 <script lang="ts">
 import {
-  IonIcon, IonTabBar, IonTabButton, IonButton, IonGrid, IonRow, IonCol, IonBadge
+  IonIcon, IonButton, IonGrid, IonRow, IonCol, IonBadge
 } from '@ionic/vue';
 import { createGesture } from "@ionic/core";
 import {
@@ -74,8 +86,6 @@ export default defineComponent({
   },
   components: {
     IonIcon,
-    IonTabBar,
-    IonTabButton,
     IonButton,
     IonGrid,
     IonRow,
@@ -93,6 +103,16 @@ export default defineComponent({
         c.style.height = `${c.scrollHeight}px`;
       }
     }
+  },
+  computed: {
+    currentTab(): string {
+      const r: any = this.$route;
+      console.log("currentroute", r);
+      if (r.matched.length > 1) {
+        return 'feed'
+      }
+      return r.path.slice(1)
+    },
   },
   mounted() {
     const c: any = this.$refs.drawerRef;
@@ -153,8 +173,6 @@ hr {
 .footer-box {
   height: 60px;
   transition: 0.5s ease;
-}
-ion-tab-bar {
-  border-top: unset;
+  --ionicon-stroke-width: 24px;
 }
 </style>

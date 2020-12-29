@@ -10,7 +10,7 @@
   </div>
   <div class="menu">
     <router-link :to="teamLink">
-      <avatar :profile="teamSettings" :name="teamName" />
+      <avatar size="4em" :profile="teamSettings" :name="teamName" />
     </router-link>
     <div class="interaction">
       <share-button

@@ -60,7 +60,7 @@ const routes: Array<RouteRecordRaw> = [
       },
       {
         path: '/',
-        redirect: isPlatform('desktop') ? "/feed" : "/home"
+        redirect: isPlatform('desktop') ? "/feed" : "/news"
       },
     ]
   }
