@@ -4,34 +4,35 @@
     <ion-grid>
       <ion-row class="ion-text-center" style="font-size: 1rem;">
         <ion-col>
-          <router-link expand="full" fill="clear" tab="news" to="/news">
+          <router-link style="position: relative" to="/news">
             <ion-icon size="large" :color="currentTab == 'news' ? 'primary' : 'medium'" :icon="homeIcon" />
-            <ion-badge color="danger"></ion-badge>
+            <notification-dot color="danger" slot="end" />
           </router-link>
         </ion-col>
         <ion-col>
-        <router-link expand="full" fill="clear" tab="faq" to="/faq">
+        <router-link style="position: relative" to="/faq">
           <ion-icon size="large" :color="currentTab == 'faq' ? 'primary' : 'medium'" :icon="faqIcon" />
         </router-link>
         </ion-col>
         <ion-col>
-        <router-link expand="full" fill="clear" tab="feed" to="/feed">
+        <router-link style="position: relative" to="/feed">
           <ion-icon size="large" :color="currentTab == 'feed' ? 'primary' : 'medium'" :icon="feedIcon" />
         </router-link>
         </ion-col>
         <ion-col  v-if="isLoggedIn">
-        <router-link expand="full" fill="clear" tab="inbox" to="/inbox">
+        <router-link style="position: relative" to="/inbox">
+          <notification-dot color="warning" slot="start" />
           <ion-icon size="large" :color="currentTab == 'inbox' ? 'primary' : 'medium'" :icon="chatIcon" />
-          <ion-badge color="danger">3</ion-badge>
+          <notification-dot color="danger" slot="end" />
         </router-link>
         </ion-col>
         <ion-col  v-if="!isLoggedIn">
-        <router-link expand="full" fill="clear" tab="donations" to="/donate">
+        <router-link style="position: relative" to="/donate">
           <ion-icon size="large" :color="currentTab == 'donate' ? 'primary' : 'medium'" :icon="donationsIcon" />
         </router-link>
         </ion-col>
         <ion-col v-show="isLoggedIn" >
-        <router-link expand="full" fill="clear" tab="me" to="/me">
+        <router-link style="position: relative" to="/me">
           <ion-icon size="large" :color="currentTab == 'me' ? 'primary' : 'medium'" :icon="meIcon" />
         </router-link>
         </ion-col>
@@ -63,6 +64,7 @@ import {
   fileTrayFullOutline, personCircleOutline,
   listOutline, peopleCircleOutline, walletOutline
 } from 'ionicons/icons';
+import NotificationDot from './notification-dot.vue';
 import { defineComponent, computed } from 'vue';
 import { useStore } from '../stores/';
 
@@ -90,7 +92,7 @@ export default defineComponent({
     IonGrid,
     IonRow,
     IonCol,
-    IonBadge,
+    NotificationDot
   },
   methods: {
     toggleDrawer() {
