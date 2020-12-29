@@ -1,14 +1,14 @@
 <template>
-<div class="profile-wrap">
-  <ion-avatar v-if="avatarUrl">
-    <img v-bind:src="avatarUrl"  />
-  </ion-avatar>
-  <span class="letter-avatar" v-if="!avatarUrl" :style="style">
-    <svg viewBox="0 0 100 100">
-      <text text-anchor="middle" y="75" x="50" font-size="60">{{letter}}</text>
-    </svg>
+  <span class="profile-wrap" :style="iconStyles">
+    <ion-avatar v-if="avatarUrl">
+      <img v-bind:src="avatarUrl"  />
+    </ion-avatar>
+    <span class="letter-avatar" v-if="!avatarUrl" :style="style">
+      <svg viewBox="0 0 100 100">
+        <text text-anchor="middle" y="75" x="50" font-size="60">{{letter}}</text>
+      </svg>
+    </span>
   </span>
-</div>
   <span v-if="withName">{{shownName}}</span>
 </template>
 
@@ -27,6 +27,10 @@ export default defineComponent({
       type: Parse.Object,
       required: true
     },
+    size: {
+      type: String,
+      default: "5em"
+    },
     name: String,
     withName: Boolean,
   },
@@ -43,6 +47,16 @@ export default defineComponent({
     },
     shownName(): string {
       return this.name || this.profile.get("name") || this.profile.get("username") || this.profile.get("slug") || this.profile.id;
+    },
+    iconStyles(): any {
+      if (this.size) {
+        return {
+          height: this.size,
+          width: this.size,
+          "padding-bottom": "unset",
+        }
+      }
+      return {}
     },
     letter(): string {
       const text = this.shownName;
@@ -74,17 +88,20 @@ export default defineComponent({
 </script>
 <style scoped>
 .profile-wrap {
-  width: 100%;
-  padding-bottom: 100%;
   position: relative;
-}
-.letter-avatar, ion-avatar {
   display: inline-block;
+}
+.letter-avatar {
   border-radius: 100%;
+  display: inline-block;
   border: 2px solid #aaa;
-  position: absolute;
-  top: 0;
-  bottom: 0;
+  width: 100%;
+  height: 100%;
+}
+ion-avatar {
+  --border-radius: 100%;
+  display: inline-block;
+  border: 2px solid #aaa;
   width: 100%;
   height: 100%;
 }

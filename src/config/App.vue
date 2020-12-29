@@ -11,7 +11,7 @@
         <ion-title slot="start"><router-link :to="titleLink">{{title}}</router-link></ion-title>
         <div slot="end">
           <router-link to="/faq">faq</router-link>
-          <avatar v-if="user" :profile="user" />
+          <avatar size="45px" v-if="user" :profile="user" />
         </div>
       </ion-toolbar>
     </ion-header>

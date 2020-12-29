@@ -6,7 +6,7 @@
         <div v-if="!loading">
           <div class="ion-text-center">
             <div class="profile-img">
-              <avatar :profile="settings" :name="team.name"  />
+              <avatar size="10rem" :profile="settings" :name="team.name"  />
             </div>
             <ion-chip v-if="canEdit" @click="selectNewAvatar()">
               <ion-icon :icon="uploadIcon"></ion-icon>
@@ -99,8 +99,5 @@ export default defineComponent({
 <style scoped>
 ion-chip ion-icon {
   margin: 0
-}
-.profile-img {
-  width: 50%;
 }
 </style>

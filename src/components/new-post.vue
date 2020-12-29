@@ -3,7 +3,7 @@
     <ion-row>
       <ion-col size-md="11" size-xs="10">
         <ion-textarea auto-grow=true :value="text" @change="updateText" placeholder="What do you want to share?" />
-        <p v-if="!showOptions">{{visibility}} {{selectedType}} to <avatar :profile="selectedTeam" withName /><ion-button size="small" fill="clear" @click="showOptions = true"><ion-icon :icon="editIcon"/></ion-button></p>
+        <p @click="showOptions = true" v-if="!showOptions">{{visibility}} {{selectedType}} to <avatar size="1.5em" :profile="selectedTeam" withName /><ion-icon :icon="editIcon"/></p>
       </ion-col>
       <ion-col size-md="1" class="ion-hide-sm-down">
         <ion-button @click="submit()" fill="outline" v-bind:disabled="!canSubmit" shape="round" size="small">
@@ -12,6 +12,35 @@
       </ion-col>
     </ion-row>
     <ion-row v-if="showOptions">
+      <ion-col size-md="4" size-xs="12">
+        <selector
+            @select="setVisibility($event)"
+            popoverTitle="Visibility"
+            :items="selectableVisibility"
+        >
+          <template #label>
+              <ion-icon :icon="eyeOutline" />
+              <ion-label>Sichtbar: </ion-label>
+          </template>
+          <template #current>
+            <ion-label>
+              <ion-icon :icon="VISIBILITY_ICONS[visibility]"></ion-icon>
+              {{visibility}}
+            </ion-label>
+          </template>
+          <template #item="sProps">
+            <ion-item
+              @click="sProps.select(sProps.item)"
+              :key="sProps.item"
+              button
+            >
+              <ion-icon slot="start" :icon="VISIBILITY_ICONS[sProps.item]"></ion-icon>
+              {{sProps.item}}
+              <ion-icon v-if="sProps.item == visibility" slot="end" :icon="selectedIcon" />
+            </ion-item>
+          </template>
+        </selector>
+      </ion-col>
       <ion-button
         :style="{position: 'absolute', right: '1em', 'z-index': 1}"
         size="small"
@@ -49,7 +78,7 @@
       <ion-col size="3" v-if="!showTypeSelector">
         Post
       </ion-Col>
-      <ion-col size-md="3" size-xs="12" v-if="showTeamSelector">
+      <ion-col size-md="4" size-xs="12" v-if="showTeamSelector">
         <selector
             label="Team"
             popoverTitle="Team"
@@ -57,44 +86,15 @@
             :items="teams"
         >
           <template #current>
-            <avatar :profile="selectedTeam" withName />
+            <avatar :profile="selectedTeam" size="2em" withName />
           </template>
           <template #item="sProps">
             <ion-item
               @click="sProps.select(sProps.item)"
               button
             >
-              <avatar :profile="sProps.item" withName />
+              <avatar :profile="sProps.item" size="2em" withName />
               <ion-icon v-if="sProps.item == selectedTeam" slot="end" :icon="selectedIcon" />
-            </ion-item>
-          </template>
-        </selector>
-      </ion-col>
-      <ion-col size-md="3" size-xs="12">
-        <selector
-            @select="setVisibility($event)"
-            popoverTitle="Visibility"
-            :items="selectableVisibility"
-        >
-          <template #label>
-              <ion-icon :icon="eyeOutline" />
-              <ion-label>Sichtbar: </ion-label>
-          </template>
-          <template #current>
-            <ion-label>
-              <ion-icon :icon="VISIBILITY_ICONS[visibility]"></ion-icon>
-              {{visibility}}
-            </ion-label>
-          </template>
-          <template #item="sProps">
-            <ion-item
-              @click="sProps.select(sProps.item)"
-              :key="sProps.item"
-              button
-            >
-              <ion-icon slot="start" :icon="VISIBILITY_ICONS[sProps.item]"></ion-icon>
-              {{sProps.item}}
-              <ion-icon v-if="sProps.item == visibility" slot="end" :icon="selectedIcon" />
             </ion-item>
           </template>
         </selector>
