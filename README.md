@@ -2,27 +2,66 @@
 
 The affinity progressive communities network app is a social network for progressive movements and initiatives and their followers.
 
+## Requirements
+
+You will need a [NodeJS](https://nodejs.org/en/download/) and `npm` installation. If you want to contribute you'll also need [git](https://ionicframework.com/docs/intro/environment#git) for a github setup.
+
+To run the database / application server you'll need docker & [docker-compose](https://docs.docker.com/compose/install/). On windows, docker-compose is included in the regular [Docker Desktop installation](https://docs.docker.com/docker-for-windows/install/).
+
+### Patched Defnitily Typed
+
+As of now, you'll also still need a fork of `Defnititly Typed` for `Parse`. [This checkout](https://github.com/gnunicorn/DefinitelyTyped/tree/ben-add-anon-utils-to-parse) needs to be present in folder next to this one (can be found at `../DefinitelyTyped`).
+
 ## Setup
 
+On first run, this is downloading some images and other dependendcies, which might takes some time. Number 2 and 3 can be done at the same time.
+
+1. Install ionic:
 ```
 npm install -g @ionic/cli
+```
+2. Install the local dependencies
+```
 npm install
 ```
+3. start the application server/backend (`parse`) via
+```
+npm run dev:run-parse
+```
+4. Now configure the database structure via
+```
+npm run dev:db
+```
+5. load sample data - NOT YET AVAILABLE.
 
+### Running the dev frontend
+
+Now run
+```
+npm run serve
+```
+
+To start the local development frontend, it should open a webbrowser to the UI. The UI is mobile-friendly, use the browsers developer tools to switch into responsive mode.
+
+This is a live-server: whenever you make changes to the source code, the server recompiles and updates the website _live_. Observe the terminal closely to learn about any errors in it. You can stop it by pressing `CTRL+C`.
+
+### Re-/Starting the application backend
+
+If it isn't running yet, start the local backend
 to run locally:
 
 ```
-ionic serve
+npm run serve
 
 ```
 
-### For local Development
+It will then be made accessible through the browser at `http://localhost:4040/`.
+
+If you've done changes to the cloud-code, you have to restart the parse backend for it to take effect. Do that by running:
 
 ```
-docker-compose run
+npm run dev:restart-parse
 ```
-
-
 
 
 ## License
