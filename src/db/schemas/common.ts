@@ -40,3 +40,16 @@ export const Interactable = {
         type: "Object"
     },
 };
+
+export const Closable = {
+    closesAt: {
+        type: "Date",
+    },
+    closedAt: {
+        type: "Date",
+    },
+    closedBy: {
+        type: "Pointer",
+        targetClass: "_User",
+    },
+};

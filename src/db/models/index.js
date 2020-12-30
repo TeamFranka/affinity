@@ -5,6 +5,7 @@ const Activity = Parse.Object.extend("Activity");
 const ChatWidgetSettings = Parse.Object.extend("ChatWidgetSettings");
 const Conversation = Parse.Object.extend("Conversation");
 const Comment = Parse.Object.extend("Comment");
+const Poll = Parse.Object.extend("Poll");
 const Document = Parse.Object.extend("Document");
 const Team = Parse.Object.extend("Team");
 const TeamSettings = require('./team-settings').TeamSettings;
@@ -16,6 +17,7 @@ const Role = Parse.Role;
 
 const Objects = [
     Activity,
+    Poll,
     Document,
     Link,
     Picture,
@@ -33,6 +35,7 @@ module.exports = {
     Document: Document,
     Comment: Comment,
     Link: Link,
+    Poll: Poll,
     Picture: Picture,
     Video: Video,
     Objects: Objects,
