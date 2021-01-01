@@ -28,27 +28,36 @@ export const Poll = {
                 type: "Array",
                 required: true
             },
+            hasVoted: {
+                type: "Array",
+            },
             votes: {
                 type: "Object",
                 required: false,
             },
             isMultiselect: {
                 type: "Boolean",
+                default: false,
             },
             isAnonymous: {
                 type: "Boolean",
+                default: false,
             },
             showResults: {
                 type: "Boolean",
+                default: false,
             },
             randomizeOrder: {
                 type: "Boolean",
+                default: false,
             },
             allowChange:  {
                 type: "Boolean",
+                default: false,
             },
             showsResultsWithoutVote: {
                 type: "Boolean",
+                default: false,
             },
         },
         Closable,

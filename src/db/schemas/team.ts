@@ -29,6 +29,16 @@ export const TeamSettings = {
                 required: true,
                 default: TeamSettingsDefaults.canLike,
             },
+            canCreatePicture: {
+                type: 'String',
+                required: true,
+                default: TeamSettingsDefaults.canCreatePicture,
+            },
+            canCreatePoll: {
+                type: 'String',
+                required: true,
+                default: TeamSettingsDefaults.canCreatePoll,
+            },
             socialLinks: {
                 type: 'Array',
             },

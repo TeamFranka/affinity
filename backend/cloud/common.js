@@ -8,12 +8,17 @@ const setTeamAcl = async (request) => {
       return // an update not a create, ignore
     }
 
+    const team = await (new Parse.Query(Team)
+      .include(["members", "mods", "agents", "leaders", "settings"])
+      .get(request.object.get("team").id, { useMasterKey: true }));
+
+    if (!team.get("settings").canDo(request.user, 'canCreate' + request.object.className, team)) {
+      throw request.user.id + " can't create " + request.object.className + " in team " + team.get("name")
+    }
+
     // setting author to posting user
     request.object.set("author", request.user);
 
-    const team = await (new Parse.Query(Team)
-      .include("members")
-      .get(request.object.get("team").id, { useMasterKey: true }));
     const members = team.get("members");
     const newAcl = new Parse.ACL();
     newAcl.setRoleReadAccess(members, true);
@@ -21,6 +26,17 @@ const setTeamAcl = async (request) => {
     newAcl.setPublicReadAccess(false);
 
     console.assert(request.object.setACL(newAcl), "setting ACL failed");
+}
+
+function rejectIfClosed(model) {
+  if (model.get("closedAt")) {
+    throw "Rejected" + model.className + " " + model.id + " already closed."
+  }
+  const willCloseAt = model.get("closesAt");
+  const now = new Date();
+  if (willCloseAt && willCloseAt <= now) {
+    throw "Rejected" + model.className + " " + model.id + " is closed."
+  }
 }
 
 const GenericObjectParams = {
@@ -38,7 +54,6 @@ const GenericObjectParams = {
 }
 
 const fetchModel = async(request, pointer, includes) => {
-  console.log("fething", pointer);
   const query = new Parse.Query(pointer ? pointer.className : request.params.className);
   if (includes) {
     includes.forEach((i) => query.include(i))
@@ -50,6 +65,7 @@ const fetchModel = async(request, pointer, includes) => {
 
 module.exports = {
   GenericObjectParams: GenericObjectParams,
+  rejectIfClosed: rejectIfClosed,
   fetchModel: fetchModel,
   setTeamAcl: setTeamAcl,
 }

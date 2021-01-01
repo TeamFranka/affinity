@@ -1,4 +1,5 @@
-import { Parse, Picture, Activity, Verb, Visibility } from "../config/Consts";
+import { Parse, Verb, Visibility } from "../config/Consts";
+import { Picture, Activity, Poll } from "../db/models";
 import { takePicture, CameraPhoto } from '../utils/camera';
 
 export interface Image {
@@ -12,6 +13,7 @@ export interface DraftT {
   verb: Verb;
   visibility: Visibility;
   images: Array<Image>;
+  polls: Array<typeof Poll>;
 }
 
 export const Draft = {
@@ -21,7 +23,8 @@ export const Draft = {
     text: "",
     verb: Verb.Post,
     visibility: Visibility.Public,
-    images:  [],
+    images: [],
+    polls: [],
   }),
   getters: {
     selectedTeam(state: DraftT, getters: any, rootState: any, rootGetters: any) {
@@ -112,10 +115,11 @@ export const Draft = {
             description: entry.description,
             author, team, file,
           });
-          await picture.save();
-          objects.push(picture.toPointer());
+          objects.push(picture);
         }
       }
+
+      state.polls.forEach((p: Parse.Object) => objects.push(p));
 
       const activity = new Activity({
         visibility: state.visibility,

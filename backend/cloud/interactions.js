@@ -38,6 +38,8 @@ Parse.Cloud.beforeSave(Comment, async (request) => {
 
   // setting ACL to that of the main object;
   request.object.setACL(onObj.getACL());
+},  {
+  requireUser: true
 });
 
 Parse.Cloud.afterSave(Comment, async (request) => {
@@ -46,6 +48,8 @@ Parse.Cloud.afterSave(Comment, async (request) => {
   const onObj = await fetchModel(request, pointer);
   onObj.increment("commentsCount");
   onObj.save(null, { useMasterKey: true })
+}, {
+  requireUser: true
 });
 
 Parse.Cloud.define("react", async (request) => {
@@ -68,6 +72,7 @@ Parse.Cloud.define("react", async (request) => {
 
 },
 ReactionsParams);
+
 
 Parse.Cloud.define("unreact", async (request) => {
   const model = await fetchModel(request);
