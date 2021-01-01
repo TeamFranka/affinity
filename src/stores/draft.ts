@@ -72,6 +72,9 @@ export const Draft = {
     addImage(state: DraftT, img: Image) {
       state.images.push(img);
     },
+    addPoll(state: DraftT, poll: Parse.Object) {
+      state.polls.push(poll);
+    },
     setTeam(state: DraftT, team: Parse.Object) {
       state.team = team;
     },

@@ -108,9 +108,13 @@
     </ion-row>
     <ion-row>
       <ion-col size-sm="12" size-xs="10">
-        <ion-chip @click="addPicture()" color="secondary" outline>
+        <ion-chip v-if="canCreatePicture" @click="addPicture()" color="secondary" outline>
           <ion-icon :icon="imageIcon" color="secondary"></ion-icon>
           <ion-label>Image</ion-label>
+        </ion-chip>
+        <ion-chip v-if="canCreatePoll" @click="addPoll()" color="secondary" outline>
+          <ion-icon :icon="listIcon" color="secondary"></ion-icon>
+          <ion-label>Umfrage  </ion-label>
         </ion-chip>
       </ion-col>
       <ion-col size-xs="2" class="ion-hide-md-up">
@@ -126,11 +130,12 @@
 <script lang="ts">
 import {
   IonTextarea, IonChip, IonIcon, IonLabel, IonButton, IonInput, IonImg,
-  IonGrid, IonRow, IonCol, IonItem,
+  IonGrid, IonRow, IonCol, IonItem, modalController,
 } from '@ionic/vue';
 import {
   image as imageIcon, readerOutline, paperPlaneOutline as sendIcon, newspaperOutline,
   pencilSharp as editIcon, close as closeIcon,
+  listOutline as listIcon,
   eyeOutline,
   earthOutline,
   peopleOutline,
@@ -141,8 +146,10 @@ import {
 import { defineComponent, computed } from 'vue';
 import Selector from "./selector.vue";
 import Avatar from "./avatar.vue";
+import EditPoll from "./edit-poll.vue";
 import { useStore } from '../stores/';
 import { Parse, Verb, Visibility } from '../config/Consts';
+import { Poll } from '../db/models';
 
 const VERB_ICONS: Record<string, any>= {};
 VERB_ICONS[Verb.Post] = readerOutline;
@@ -181,17 +188,37 @@ export default defineComponent({
       selectableTypes: computed(() => store.getters["draft/selectableTypes"]),
       selectableVisibility: computed(() => store.getters["draft/selectableVisibility"]),
       showTypeSelector: computed(() => store.getters["draft/showTypeSelector"]),
+      canCreatePicture: computed(()=> store.getters["draft/selectedTeamPerms"].canCreatePicture ),
       addPicture() { store.dispatch("draft/addPicture"); },
+      canCreatePoll: computed(()=> store.getters["draft/selectedTeamPerms"].canCreatePoll ),
       submit() { store.dispatch("draft/submit"); },
       canSubmit: computed(() => store.getters["draft/canSubmit"]),
       showTeamSelector: computed(() => store.getters["auth/hasManyTeams"]),
-      imageIcon, sendIcon, eyeOutline, editIcon,
+      imageIcon, sendIcon, eyeOutline, editIcon, listIcon,
       selectedIcon: checkmarkOutline, closeIcon,
     }
   },
   components: {
     IonTextarea, IonChip, IonIcon, IonLabel, IonButton, IonInput, IonImg, IonItem,
     IonGrid, IonRow, IonCol, Selector, Avatar
+  },
+  methods: {
+    async addPoll() {
+      const newPoll = new Poll({options:[{title: 'Option 1'}, {title: 'Option 2'}, {title: 'Option 3'}]});
+      const modal = await modalController
+        .create({
+          component: EditPoll,
+          componentProps: {
+            poll: newPoll,
+            saveLabel: "Erstellen",
+          },
+        })
+      await modal.present();
+      const res = await modal.onDidDismiss();
+      if (res.data) {
+        this.store.commit("draft/addPoll", new Poll(res.data));
+      }
+    },
   }
 });
 </script>
