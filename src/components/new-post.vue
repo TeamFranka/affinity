@@ -105,13 +105,18 @@
         <ion-img :src="img.file.dataUrl" />
         <ion-input placeholder="description" v-model="img.description"></ion-input>
       </ion-col>
-      <ion-col size-md="6" v-for="(poll, index) in polls" v-bind:key="poll.title">
+      <ion-col size-md="6" v-for="(poll, index) in polls" v-bind:key="poll.get('title')">
         <div>
-          <div class="ion-text-end">
-            <ion-icon :icon="editIcon" @click="editPoll(index)" />
-            <ion-icon :icon="closeIcon" @click="removePoll(index)" />
-          </div>
-          <poll :poll="poll" />
+          <poll :poll="poll">
+            <template v-slot:extraButtons>
+              <ion-button @click="editPoll(index)" size="small" fill="clear" color="dark">
+                <ion-icon :icon="editIcon"/>
+              </ion-button>
+              <ion-button @click="removePoll(index)" size="small" fill="clear" color="dark">
+                <ion-icon :icon="deleteIcon"/>
+              </ion-button>
+            </template>
+          </poll>
         </div>
       </ion-col>
     </ion-row>
@@ -145,6 +150,7 @@ import {
   image as imageIcon, readerOutline, paperPlaneOutline as sendIcon, newspaperOutline,
   pencilSharp as editIcon, close as closeIcon,
   listOutline as listIcon,
+  trashOutline as deleteIcon,
   eyeOutline,
   earthOutline,
   peopleOutline,
@@ -188,8 +194,8 @@ export default defineComponent({
       text: computed(() => store.state.draft.text),
       selectedType: computed(() => store.getters["draft/selectedType"]),
       visibility: computed(() => store.state.draft.visibility),
-      images: computed(() => store.state.draft.images),
-      polls: computed(() => store.state.draft.polls),
+      images: computed(() => store.getters["draft/images"]),
+      polls: computed(() => store.getters["draft/polls"]),
       updateText: (e: any) => store.commit("draft/setText", e.target.value),
       selectTeam: (t: Parse.Object) => store.commit("draft/setTeam", t),
       setVisibility: (t: Visibility) => store.commit("draft/setVisibility", t),
@@ -204,9 +210,10 @@ export default defineComponent({
       canCreatePoll: computed(()=> store.getters["draft/selectedTeamPerms"].canCreatePoll ),
       submit() { store.dispatch("draft/submit"); },
       canSubmit: computed(() => store.getters["draft/canSubmit"]),
+      removePoll: (idx: number) => store.commit("draft/removePoll", idx),
       showTeamSelector: computed(() => store.getters["auth/hasManyTeams"]),
       imageIcon, sendIcon, eyeOutline, editIcon, listIcon,
-      selectedIcon: checkmarkOutline, closeIcon,
+      selectedIcon: checkmarkOutline, closeIcon, deleteIcon,
     }
   },
   components: {
@@ -243,7 +250,6 @@ export default defineComponent({
         })
       await modal.present();
       const res = await modal.onDidDismiss();
-      console.log("super", res);
       if (res.data) {
         this.store.commit("draft/updatePoll", {index, data: res.data});
       }

@@ -1,6 +1,10 @@
 <template>
 <div>
+  <div class="ion-text-end">
+    <slot name="extraButtons"></slot>
+  </div>
   <ion-title>{{title}}</ion-title>
+
   <p class="ion-padding-start" v-if="text">{{text}}</p>
   <ion-list>
     <ion-item v-for="(e, index) in options" :key="e" @click="toggleSelection(index)">

@@ -1,3 +1,4 @@
+import { formats } from 'dayjs/locale/*';
 import { Parse, Verb, Visibility } from "../config/Consts";
 import { Picture, Activity, Poll } from "../db/models";
 import { takePicture, CameraPhoto } from '../utils/camera';
@@ -35,6 +36,12 @@ export const Draft = {
     },
     selectedType(state: DraftT) {
       return state.verb;
+    },
+    images(state: DraftT) {
+      return state.images;
+    },
+    polls(state: DraftT)  {
+      return state.polls;
     },
     selectedTeamId(state: DraftT, getters: any): string {
       return getters.selectedTeam.id
@@ -81,8 +88,11 @@ export const Draft = {
       Object.entries(input.data).forEach(([key, value]) => {
         currentPoll.set(key, value);
       });
-      state.polls.splice(index, 1, currentPoll);
-      console.log("updated poll", state.polls);
+      state.polls = Array.from(state.polls);
+    },
+    removePoll(state: DraftT, index: number) {
+      state.polls.splice(index, 1);
+      state.polls = Array.from(state.polls);
     },
     setTeam(state: DraftT, team: Parse.Object) {
       state.team = team;
