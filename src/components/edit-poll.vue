@@ -16,7 +16,7 @@
       </ion-button>
     </ion-toolbar>
   </ion-header>
-  <ion-content class="ion-padding">
+  <ion-content>
     <ion-grid>
       <ion-row>
         <ion-col>

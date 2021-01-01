@@ -101,9 +101,18 @@
       </ion-col>
     </ion-row>
     <ion-row>
-      <ion-col size="3" v-for="img in images" v-bind:key="img.file.dataUrl">
+      <ion-col size-md="6" v-for="img in images" v-bind:key="img.file.dataUrl">
         <ion-img :src="img.file.dataUrl" />
         <ion-input placeholder="description" v-model="img.description"></ion-input>
+      </ion-col>
+      <ion-col size-md="6" v-for="(poll, index) in polls" v-bind:key="poll.title">
+        <div>
+          <div class="ion-text-end">
+            <ion-icon :icon="editIcon" @click="editPoll(index)" />
+            <ion-icon :icon="closeIcon" @click="removePoll(index)" />
+          </div>
+          <poll :poll="poll" />
+        </div>
       </ion-col>
     </ion-row>
     <ion-row>
@@ -147,9 +156,10 @@ import { defineComponent, computed } from 'vue';
 import Selector from "./selector.vue";
 import Avatar from "./avatar.vue";
 import EditPoll from "./edit-poll.vue";
+import Poll from "./poll.vue";
 import { useStore } from '../stores/';
 import { Parse, Verb, Visibility } from '../config/Consts';
-import { Poll } from '../db/models';
+import { Poll as PollModel } from '../db/models';
 
 const VERB_ICONS: Record<string, any>= {};
 VERB_ICONS[Verb.Post] = readerOutline;
@@ -179,6 +189,7 @@ export default defineComponent({
       selectedType: computed(() => store.getters["draft/selectedType"]),
       visibility: computed(() => store.state.draft.visibility),
       images: computed(() => store.state.draft.images),
+      polls: computed(() => store.state.draft.polls),
       updateText: (e: any) => store.commit("draft/setText", e.target.value),
       selectTeam: (t: Parse.Object) => store.commit("draft/setTeam", t),
       setVisibility: (t: Visibility) => store.commit("draft/setVisibility", t),
@@ -200,11 +211,11 @@ export default defineComponent({
   },
   components: {
     IonTextarea, IonChip, IonIcon, IonLabel, IonButton, IonInput, IonImg, IonItem,
-    IonGrid, IonRow, IonCol, Selector, Avatar
+    IonGrid, IonRow, IonCol, Selector, Avatar, Poll,
   },
   methods: {
     async addPoll() {
-      const newPoll = new Poll({options:[{title: 'Option 1'}, {title: 'Option 2'}, {title: 'Option 3'}]});
+      const newPoll = new PollModel({options:[{title: 'Option 1'}, {title: 'Option 2'}, {title: 'Option 3'}]});
       const modal = await modalController
         .create({
           component: EditPoll,
@@ -216,7 +227,25 @@ export default defineComponent({
       await modal.present();
       const res = await modal.onDidDismiss();
       if (res.data) {
-        this.store.commit("draft/addPoll", new Poll(res.data));
+        this.store.commit("draft/addPoll", new PollModel(res.data));
+      }
+    },
+
+    async editPoll(index: number) {
+      const poll = this.polls[index];
+      const modal = await modalController
+        .create({
+          component: EditPoll,
+          componentProps: {
+            poll: poll,
+            saveLabel: "Speichern",
+          },
+        })
+      await modal.present();
+      const res = await modal.onDidDismiss();
+      console.log("super", res);
+      if (res.data) {
+        this.store.commit("draft/updatePoll", {index, data: res.data});
       }
     },
   }

@@ -75,6 +75,15 @@ export const Draft = {
     addPoll(state: DraftT, poll: Parse.Object) {
       state.polls.push(poll);
     },
+    updatePoll(state: DraftT, input: any) {
+      const index: number = input.index;
+      const currentPoll = state.polls[index];
+      Object.entries(input.data).forEach(([key, value]) => {
+        currentPoll.set(key, value);
+      });
+      state.polls.splice(index, 1, currentPoll);
+      console.log("updated poll", state.polls);
+    },
     setTeam(state: DraftT, team: Parse.Object) {
       state.team = team;
     },
