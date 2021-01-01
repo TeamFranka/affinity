@@ -27,12 +27,11 @@
     <div class="ion-padding">
       {{ text }}
     </div>
-    <!-- FIX Rendering of items -->
     <div v-for="obj in objects" :key="obj.id" class="ion-padding">
-      <div v-if="obj.className == 'activity'">
-        {{obj.text}}
+      <div v-if="obj.className == 'Poll'">
+        <poll :poll="obj" />
       </div>
-      <div  v-if="obj.className == 'Picture'">
+      <div v-if="obj.className == 'Picture'">
         <ion-img :src="obj.get('file').url()" />
       </div>
     </div>
@@ -87,6 +86,7 @@ import {
 import { chatbubblesOutline, addOutline, arrowRedoOutline, heartOutline } from 'ionicons/icons';
 
 import Avatar from "./avatar.vue";
+import Poll from "./poll.vue";
 import InlineText from "./inline-text.vue";
 import ShareButton from "./share-button.vue";
 import LikeButton from "./like-button.vue";
@@ -261,7 +261,7 @@ export default defineComponent({
     },
   },
   components: {
-    IonCard, IonImg, IonChip, IonLabel, IonCardHeader, IonSpinner, Comment,
+    IonCard, IonImg, IonChip, IonLabel, IonCardHeader, IonSpinner, Comment, Poll,
     IonIcon, IonNote, Avatar, IonGrid, InlineText, ShareButton, Reactions, LikeButton
   },
 });

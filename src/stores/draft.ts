@@ -108,6 +108,7 @@ export const Draft = {
     },
     clear(state: DraftT) {
       state.images = [];
+      state.polls = [];
       state.text = "";
     },
   },
@@ -141,7 +142,11 @@ export const Draft = {
         }
       }
 
-      state.polls.forEach((p: Parse.Object) => objects.push(p));
+      state.polls.forEach((p: Parse.Object) => {
+        p.set("team", team);
+        p.set("author", author);
+        objects.push(p)
+      });
 
       const activity = new Activity({
         visibility: state.visibility,
