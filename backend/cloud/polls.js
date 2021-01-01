@@ -4,9 +4,6 @@ const Poll = require('./consts').Poll;
 const common = require('./common');
 const fetchModel = common.fetchModel;
 
-const pollParams =
-
-
 Parse.Cloud.define("vote:reset", async (request) => {
   const userId = request.user.id;
   const model = await fetchModel(request, { className: "Poll", objectId: request.params.id});
@@ -31,7 +28,7 @@ Parse.Cloud.define("vote:reset", async (request) => {
   });
 
   await model.save({ hasVoted: hasVoted, votes: votes }, { useMasterKey: true});
-
+  return model;
 }, {
   fields: {
     id: {
@@ -63,18 +60,17 @@ Parse.Cloud.define("vote", async (request) => {
 
   const votes = model.get("votes") || {};
   Object.entries(request.params.votes).forEach( ([key, value]) => {
-    // remove any potential entries
-    const current = votes.get(key) || [];
+    const current = votes[key] || [];
     const obj = { value: value };
     if (!isAnon) {
-      obj[userId] = userId;
+      obj["userId"] = userId;
     }
     current.push(obj);
     votes[key] = current;
   });
 
-  await model.save({votes: votes}, { useMasterKey: true});
-
+  await model.save({ hasVoted: hasVoted, votes: votes }, { useMasterKey: true});
+  return model;
 }, {
   fields: {
     id: {

@@ -16,7 +16,6 @@ const User = Parse.User;
 const Role = Parse.Role;
 
 const Objects = [
-    Activity,
     Poll,
     Document,
     Link,
