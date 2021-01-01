@@ -10,10 +10,12 @@
     <ion-item v-for="(e, index) in options" :key="e" @click="toggleSelection(index)">
       <ion-checkbox v-if="!showingResults" slot="start" :checked="selected.indexOf(index) !== -1" />
       <ion-checkbox disabled v-if="showingResults" slot="start" :checked="hasVotedFor(index)" />
-      <div>
+      <div class="entry">
         <ion-label>{{e.title}}</ion-label>
         <ion-note v-if="e.text">{{e.text}}</ion-note>
+        <ion-progress-bar color="secondary" v-if="showingResults" :value="calcResult(index)" />
       </div>
+      <ion-note class="number" v-if="showingResults" slot="end">{{Math.abs(calcResult(index) * 100)}}% </ion-note>
     </ion-item>
   </ion-list>
   <div class="ion-text-end" v-if="loading">
@@ -54,6 +56,7 @@
 <script lang="ts">
 import {
   IonCheckbox, IonIcon, IonButton, IonNote, IonLabel, IonItem, IonList, IonTitle, IonSpinner,
+  IonProgressBar,
 } from '@ionic/vue';
 import {
   closeOutline as closeIcon,
@@ -69,7 +72,7 @@ import { defineComponent, computed } from 'vue';
 export default defineComponent({
   name: 'Poll',
   components: {
-    IonButton, IonLabel, IonNote, IonCheckbox, IonItem, IonList, IonTitle, IonSpinner,
+    IonButton, IonLabel, IonNote, IonCheckbox, IonItem, IonList, IonTitle, IonSpinner, IonProgressBar
   },
   props: {
     poll:  {
@@ -103,6 +106,11 @@ export default defineComponent({
       } else {
         this.selected.splice(currently, 1)
       }
+    },
+    calcResult(index: number): number {
+      const votersCount = this.poll.get("hasVoted").length;
+      if (votersCount === 0) { return 0 }
+      return ((this.poll.get("votes") || {})[index] || []).length / votersCount;
     },
     hasVotedFor(index: number): boolean {
       if (!this.hasVoted) {
@@ -172,3 +180,11 @@ export default defineComponent({
 });
 
 </script>
+<style scoped>
+.entry {
+  flex-grow: 1;
+}
+.number {
+  width: 5em;
+}
+</style>
