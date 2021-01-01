@@ -3,14 +3,13 @@
 The affinity progressive communities network app is a social network for progressive movements and initiatives and their followers.
 
 ## Requirements
+### Patched Defnitily Typed
+
+As of now, you'll also still need a fork of `Defnititly Typed` for `Parse`. [This checkout](https://github.com/gnunicorn/DefinitelyTyped/tree/ben-add-anon-utils-to-parse) needs to be present in folder next to this one (can be found at `../DefinitelyTyped`).
 
 You will need a [NodeJS](https://nodejs.org/en/download/) and `npm` installation. If you want to contribute you'll also need [git](https://ionicframework.com/docs/intro/environment#git) for a github setup.
 
 To run the database / application server you'll need docker & [docker-compose](https://docs.docker.com/compose/install/). On windows, docker-compose is included in the regular [Docker Desktop installation](https://docs.docker.com/docker-for-windows/install/).
-
-### Patched Defnitily Typed
-
-As of now, you'll also still need a fork of `Defnititly Typed` for `Parse`. [This checkout](https://github.com/gnunicorn/DefinitelyTyped/tree/ben-add-anon-utils-to-parse) needs to be present in folder next to this one (can be found at `../DefinitelyTyped`).
 
 ## Setup
 
