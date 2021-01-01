@@ -16,7 +16,7 @@ export const Poll = {
                 targetClass: "Team",
                 required: true
             },
-            titel: {
+            title: {
                 type: "String",
                 required: true
             },
