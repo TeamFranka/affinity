@@ -27,7 +27,7 @@ const TeamSettings = Parse.Object.extend("TeamSettings", {
     },
     canDo: function(user, field, team) {
         const lvl = this.get(field) || "nobody";
-        console.log("allowed for", team.get("name"), field, user, lvl, typeof lvl, typeof "members", lvl == "members" );
+        console.log("allowed for", team.get("name"), field, user, lvl);
         if (lvl === "anyone") {
             return true
         } else if (lvl === "nobody") {
@@ -35,7 +35,7 @@ const TeamSettings = Parse.Object.extend("TeamSettings", {
         } else if (lvl === "members"  || lvl === "leaders") {
             return isMember(team, lvl, user.id)
         } else if (lvl === "mods" || lvl === "agents") {
-            return isMember(team, lvl, user.id) || isMember(team, "leaders", user.id)
+            return isMember(team, lvl, user.id) ? true : isMember(team, "leaders", user.id)
         }
 
         console.log("unknown level, returning false");
