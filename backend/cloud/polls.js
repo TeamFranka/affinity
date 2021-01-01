@@ -52,7 +52,7 @@ Parse.Cloud.define("vote", async (request) => {
     throw "You have already voted. You must reset your vote first"
   }
 
-  if(!isMulti && request.params.votes.keys().length > 1) {
+  if(!isMulti && Object.keys(request.params.votes).length > 1) {
     throw "Sorry, this is a single option poll."
   }
 

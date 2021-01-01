@@ -8,8 +8,8 @@
   <p class="ion-padding-start" v-if="text">{{text}}</p>
   <ion-list>
     <ion-item v-for="(e, index) in options" :key="e" @click="toggleSelection(index)">
-      <ion-checkbox v-if="!showingResults" slot="start" :checked="selected.indexOf(index) !== -1" />
-      <ion-checkbox disabled v-if="showingResults" slot="start" :checked="hasVotedFor(index)" />
+      <ion-checkbox v-if="!hasVoted && !showingResults" slot="start" :checked="selected.indexOf(index) !== -1" />
+      <ion-checkbox disabled v-if="showingResults || hasVoted" slot="start" :checked="hasVotedFor(index)" />
       <div class="entry">
         <ion-label>{{e.title}}</ion-label>
         <ion-note v-if="e.text">{{e.text}}</ion-note>
