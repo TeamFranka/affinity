@@ -3,7 +3,7 @@
     <ion-row>
       <ion-col size-md="11" size-xs="10">
         <ion-textarea auto-grow=true :value="text" @change="updateText" placeholder="What do you want to share?" />
-        <p @click="showOptions = true" v-if="!showOptions">{{visibility}} {{selectedType}} to <avatar size="1.5em" :profile="selectedTeam" withName /><ion-icon :icon="editIcon"/></p>
+        <p @click="showOptions = true" v-if="!showOptions">{{visibility}} {{selectedType}} to <avatar size="1.5em" :profile="selectedTeam" withName /><ion-button size="small" fill="clear"><ion-icon :icon="editIcon"/></ion-button></p>
       </ion-col>
       <ion-col size-md="1" class="ion-hide-sm-down">
         <ion-button @click="submit()" fill="outline" v-bind:disabled="!canSubmit" shape="round" size="small">
@@ -148,7 +148,7 @@ import {
 } from '@ionic/vue';
 import {
   image as imageIcon, readerOutline, paperPlaneOutline as sendIcon, newspaperOutline,
-  pencilSharp as editIcon, close as closeIcon,
+  createOutline  as editIcon, close as closeIcon,
   listOutline as listIcon,
   trashOutline as deleteIcon,
   eyeOutline,
