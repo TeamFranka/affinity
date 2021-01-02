@@ -62,6 +62,7 @@ export const GlobalState = {
     refreshRoot(context: any) {
       context.dispatch("news/refresh");
       context.dispatch("feed/refresh");
+      context.dispatch("faq/refresh");
     },
     routingStart(context: any) {
         context.commit("startLoading");

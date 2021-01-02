@@ -11,11 +11,13 @@ const Team = Parse.Object.extend("Team");
 const TeamSettings = require('./team-settings').TeamSettings;
 const Link = Parse.Object.extend("Link");
 const Picture = Parse.Object.extend("Picture");
+const FaqEntry = Parse.Object.extend("FaqEntry");
 const Video = Parse.Object.extend("Video");
 const User = Parse.User;
 const Role = Parse.Role;
 
 const Objects = [
+    FaqEntry,
     Poll,
     Document,
     Link,
@@ -26,6 +28,7 @@ const Objects = [
 module.exports = {
     User: User,
     Role: Role,
+    Parse: Parse,
     Team: Team,
     TeamSettings: TeamSettings,
     Activity: Activity,
@@ -36,6 +39,7 @@ module.exports = {
     Link: Link,
     Poll: Poll,
     Picture: Picture,
+    FaqEntry: FaqEntry,
     Video: Video,
     Objects: Objects,
 }

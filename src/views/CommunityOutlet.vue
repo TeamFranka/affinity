@@ -27,8 +27,7 @@ import {
   IonPage, IonContent, IonRouterOutlet,
   IonMenu, IonList, IonItem, IonFooter, IonSplitPane,
 } from '@ionic/vue';
-import { defineComponent, computed } from 'vue';
-import { useStore } from '../stores/';
+import { defineComponent } from 'vue';
 
 
 export default defineComponent({

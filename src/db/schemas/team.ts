@@ -16,28 +16,38 @@ export const TeamSettings = {
             },
             canPost: {
                 type: 'String',
-                required: true,
-                default: TeamSettingsDefaults.canPost,
+                // required: true,
+                // default: TeamSettingsDefaults.canPost,
             },
             canComment: {
                 type: 'String',
-                required: true,
-                default: TeamSettingsDefaults.canComment,
+                // required: true,
+                // default: TeamSettingsDefaults.canComment,
             },
             canLike: {
                 type: 'String',
-                required: true,
-                default: TeamSettingsDefaults.canLike,
+                // required: true,
+                // default: TeamSettingsDefaults.canLike,
             },
             canCreatePicture: {
                 type: 'String',
-                required: true,
-                default: TeamSettingsDefaults.canCreatePicture,
+                // required: true,
+                // default: TeamSettingsDefaults.canCreatePicture,
             },
             canCreatePoll: {
                 type: 'String',
-                required: true,
-                default: TeamSettingsDefaults.canCreatePoll,
+                // required: true,
+                // default: TeamSettingsDefaults.canCreatePoll,
+            },
+            canCreateFaqEntry: {
+                type: 'String',
+                // required: true,
+                // default: TeamSettingsDefaults.canCreatePoll,
+            },
+            canEditFaqEntry: {
+                type: 'String',
+                // required: true,
+                // default: TeamSettingsDefaults.canCreatePoll,
             },
             socialLinks: {
                 type: 'Array',

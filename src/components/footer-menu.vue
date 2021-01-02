@@ -56,13 +56,13 @@
 
 <script lang="ts">
 import {
-  IonIcon, IonButton, IonGrid, IonRow, IonCol, IonBadge
+  IonIcon, IonButton, IonGrid, IonRow, IonCol,
 } from '@ionic/vue';
 import { createGesture } from "@ionic/core";
 import {
   planetOutline, addCircleOutline, chatbubbleEllipsesOutline,
   fileTrayFullOutline, personCircleOutline,
-  listOutline, peopleCircleOutline, walletOutline
+  compassOutline as faqIcon, peopleCircleOutline, walletOutline
 } from 'ionicons/icons';
 import NotificationDot from './notification-dot.vue';
 import { defineComponent, computed } from 'vue';
@@ -79,7 +79,7 @@ export default defineComponent({
       homeIcon: planetOutline,
       feedIcon: peopleCircleOutline,
       donationsIcon: walletOutline,
-      faqIcon: listOutline,
+      faqIcon,
       postIcon: addCircleOutline,
       chatIcon: fileTrayFullOutline,
       newChatIcon: chatbubbleEllipsesOutline,

@@ -6,10 +6,11 @@ import { Document } from './document';
 import { Link } from './link';
 import { Picture } from './picture';
 import { Video } from './video';
+import { FaqEntry } from './faq-entry';
 import { Poll } from './poll';
 import { Comment } from './comment';
 import { Activity } from './activity';
 
 export const All = [
-    User, Role, Team, TeamSettings, Document, Comment, Poll, Picture, Video, Link, Activity,
+    User, Role, Team, TeamSettings, Document, Comment, Poll, FaqEntry, Picture, Video, Link, Activity,
 ]

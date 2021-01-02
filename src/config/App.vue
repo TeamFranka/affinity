@@ -28,8 +28,7 @@
 <script lang="ts">
 import {
   IonApp, IonRouterOutlet, IonFooter, IonProgressBar, IonFab, IonIcon,
-  IonFabButton, modalController, isPlatform, IonSplitPane, IonList, IonItem,
-  IonMenu, IonToolbar, IonHeader, IonTitle,
+  IonFabButton, modalController, isPlatform, IonToolbar, IonHeader, IonTitle,
 } from '@ionic/vue';
 import { logInOutline as logInIcon } from 'ionicons/icons';
 import { defineComponent, computed } from 'vue'

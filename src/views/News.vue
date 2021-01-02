@@ -14,7 +14,7 @@ import {
   IonContent, IonPage, IonSpinner
 } from '@ionic/vue';
 import {
-  chatbubbles, logoWhatsapp, heartOutline, mailOutline, addOutline, caretForwardOutline
+  chatbubbles, heartOutline, mailOutline, addOutline, caretForwardOutline
 } from 'ionicons/icons';
 import { defineComponent, computed } from 'vue';
 import NewsItem from '../components/news-item.vue';
@@ -47,7 +47,7 @@ export default defineComponent({
       el: c,
       gestureName: "pull-back",
       threshold: 0,
-      onStart: ev => {
+      onStart: () => {
         const hidden = c.getElementsByClassName("hidden");
         const shown = c.getElementsByClassName("shown");
         console.log("picking", hidden, shown);

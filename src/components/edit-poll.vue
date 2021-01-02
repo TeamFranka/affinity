@@ -138,16 +138,10 @@ import {
   listOutline as listIcon,
   addCircleOutline as addIcon,
 } from 'ionicons/icons';
-
-import Avatar from "./avatar.vue";
-import { useStore } from '../stores/';
-import { defineComponent, computed } from 'vue';
-import { Parse, dayjs } from "../config/Consts";
-import InlineText from './inline-text.vue';
+import { defineComponent } from 'vue';
 
 export default defineComponent({
   name: 'EditPoll',
-  emits: ['save', 'dismiss'],
   components: {
     IonContent, IonToolbar, IonInput, IonHeader, IonTextarea, IonIcon,
     IonButton, IonFooter, IonLabel,

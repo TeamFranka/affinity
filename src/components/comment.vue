@@ -51,13 +51,13 @@
 
 <script lang="ts">
 import {
-  IonCol, IonRow, IonImg, IonLabel, IonSpinner,
+  IonCol, IonRow, IonLabel,
   IonIcon, IonNote, IonChip,
 } from '@ionic/vue';
 import {
   chatbubblesOutline, heartOutline, addOutline, arrowRedoOutline, arrowUndoOutline
 } from 'ionicons/icons';
-import { createGesture } from "@ionic/core";
+// import { createGesture } from "@ionic/core";
 
 import Avatar from "./avatar.vue";
 import { useStore } from '../stores/';

@@ -7,6 +7,8 @@ const Defaults = {
     canLike: 'members',
     canCreatePicture: 'members',
     canCreatePoll: 'members',
+    canCreateFaqEntry: 'mods',
+    canEditFaqEntry: 'mods',
 };
 
 const Levels = ["anyone", "members", "mods", "leaders", "nobody"];
@@ -23,10 +25,10 @@ function isMember(team, groupName, userId) {
 
 const TeamSettings = Parse.Object.extend("TeamSettings", {
     chechLevel: function(field, level) {
-        return Levels.indexOf(this.get(field) || "nobody") <= Levels.indexOf(level);
+        return Levels.indexOf(this.get(field) || Defaults[field]) <= Levels.indexOf(level);
     },
     canDo: function(user, field, team) {
-        const lvl = this.get(field) || "nobody";
+        const lvl = this.get(field) || Defaults[field];
         console.log("allowed for", team.get("name"), field, user, lvl);
         if (lvl === "anyone") {
             return true
@@ -44,34 +46,41 @@ const TeamSettings = Parse.Object.extend("TeamSettings", {
     genPermissions: function(isLeader, isMod, isAgent, isPublisher, isMember) {
         if (isLeader) {
             // FIXME: some might be limited even for admins later
-            return {
+            const perms = {
                 "isAdmin": true,
                 "canPublish": true,
                 "canModerate": true,
-                "canPost": this.chechLevel("canPost", "leaders"),
-                "canComment": this.chechLevel("canComment", "leaders"),
-                "canLike": this.chechLevel("canLike", "leaders"),
-                "canCreatePicture": this.chechLevel("canCreatePicture", "leaders"),
-                "canCreatePoll": this.chechLevel("canCreatePoll", "leaders"),
             };
+
+            Object.keys(Defaults).forEach(key => {
+                perms[key] = this.chechLevel(key, "leaders")
+            });
+            return perms
         }
 
         const teamPermissions = {
-            "canPost": this.chechLevel("canPost", "anyone"),
-            "canComment": this.chechLevel("canComment", "anyone"),
-            "canLike": this.chechLevel("canLike", "anyone"),
-            "canCreatePicture": this.chechLevel("canCreatePicture", "anyone"),
-            "canCreatePoll": this.chechLevel("canCreatePoll", "anyone"),
-        }
+            "isAdmin": false,
+            "canModerate": false,
+            "canPublish": false,
+        };
+
+        Object.keys(Defaults).forEach(key => {
+            teamPermissions[key] = this.chechLevel(key, "anyone")
+        });
 
         const upgrades = [];
         if (isMember) upgrades.push("members");
-        if (isMod) upgrades.push("mods");
-        if (isPublisher) upgrades.push("publishers");
-
+        if (isMod) {
+            teamPermissions["canModerate"] = true;
+            upgrades.push("mods");
+        }
+        if (isPublisher) {
+            teamPermissions["canPublish"] = true;
+            upgrades.push("publishers");
+        }
 
         upgrades.forEach(u => {
-            Object.keys(teamPermissions).forEach((k) => {
+            Object.keys(Defaults).forEach((k) => {
                 if (!teamPermissions[k] && this.chechLevel(k, u)){
                     teamPermissions[k] = true
                 }

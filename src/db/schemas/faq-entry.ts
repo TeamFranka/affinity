@@ -1,7 +1,7 @@
-import { CommonFields, Interactable, ViewTracking, Closable } from './common';
+import { CommonFields, Interactable, ViewTracking } from './common';
 
-export const Poll = {
-    className: "Poll",
+export const FaqEntry = {
+    className: "FaqEntry",
 	fields: Object.assign(
         {},
         CommonFields,
@@ -20,43 +20,17 @@ export const Poll = {
                 type: "String",
                 required: true
             },
+            image: {
+                type: "File",
+            },
             text: {
                 type: "String",
-                required: false,
-            },
-            options: {
-                type: "Array",
                 required: true
             },
-            hasVoted: {
+            tags: {
                 type: "Array",
-            },
-            votes: {
-                type: "Object",
-            },
-            outcome: {
-                type: "String",
-            },
-            isMultiselect: {
-                type: "Boolean",
-            },
-            isAnonymous: {
-                type: "Boolean",
-            },
-            showResults: {
-                type: "Boolean",
-            },
-            randomizeOrder: {
-                type: "Boolean",
-            },
-            allowChange:  {
-                type: "Boolean",
-            },
-            showsResultsWithoutVote: {
-                type: "Boolean",
-            },
+            }
         },
-        Closable,
         Interactable,
         ViewTracking,
     ),
@@ -71,9 +45,13 @@ export const Poll = {
         create: {
             requiresAuthentication: true
         },
-        update: {},
+        update: {
+            requiresAuthentication: true
+        },
         delete: {},
         addField: {},
         protectedFields: {}
     },
+    indexes: {
+    }
 }

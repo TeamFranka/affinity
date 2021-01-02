@@ -3,29 +3,50 @@
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const Team = require("./consts.js").Team;
 
-const setTeamAcl = async (request) => {
-    if (request.original) {
-      return // an update not a create, ignore
+const CANT_BE_CHANGED = ["team", "author", "ACL"];
+
+const genericObjectsPreSave = async (request) => {
+
+  const teamId = request.original ? request.original.get("team").id : request.object.get("team").id;
+  const team = await (new Parse.Query(Team)
+    .include(["members", "mods", "agents", "leaders", "settings"])
+    .get(teamId, { useMasterKey: true }));
+  const settings = team.get("settings");
+
+  if (!request.master) {
+    const verb = request.original ? 'Edit' : 'Create';
+
+    if (!settings.canDo(request.user, 'can' + verb + request.object.className, team)) {
+      throw request.user.id + " can't " + verb + " " + request.object.className + " in team " + team.get("name")
     }
+  }
 
-    const team = await (new Parse.Query(Team)
-      .include(["members", "mods", "agents", "leaders", "settings"])
-      .get(request.object.get("team").id, { useMasterKey: true }));
+  if (request.original) {
+    CANT_BE_CHANGED.forEach(key => {
+      request.object.set(key, request.original.get(key));
+    });
 
-    if (!team.get("settings").canDo(request.user, 'canCreate' + request.object.className, team)) {
-      throw request.user.id + " can't create " + request.object.className + " in team " + team.get("name")
-    }
-
+  } else {
     // setting author to posting user
     request.object.set("author", request.user);
 
     const members = team.get("members");
     const newAcl = new Parse.ACL();
     newAcl.setRoleReadAccess(members, true);
+    newAcl.setRoleReadAccess(team.get("leaders"), true);
+    newAcl.setRoleWriteAccess(team.get("leaders"), true);
+    const whoCanEdit = settings.get("canEdit" + request.object.className);
+    if (whoCanEdit) {
+      const editGroup = team.get(whoCanEdit);
+      if (editGroup) {
+        newAcl.setRoleReadAccess(editGroup, true);
+        newAcl.setRoleWriteAccess(editGroup, true);
+      }
+    }
     // FIXME: well, should depend.
     newAcl.setPublicReadAccess(false);
-
-    console.assert(request.object.setACL(newAcl), "setting ACL failed");
+    request.object.setACL(newAcl)
+  }
 }
 
 function rejectIfClosed(model) {
@@ -67,5 +88,5 @@ module.exports = {
   GenericObjectParams: GenericObjectParams,
   rejectIfClosed: rejectIfClosed,
   fetchModel: fetchModel,
-  setTeamAcl: setTeamAcl,
+  genericObjectsPreSave: genericObjectsPreSave,
 }
