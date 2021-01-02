@@ -1,61 +1,87 @@
 <template>
-<div>
-  <div class="ion-text-end">
-    <slot name="extraButtons"></slot>
-  </div>
-  <ion-title>{{title}}</ion-title>
-
-  <p class="ion-padding-start" v-if="text">{{text}}</p>
-  <ion-list>
-    <ion-item v-for="(e, index) in options" :key="e" @click="toggleSelection(index)">
-      <ion-checkbox v-if="!hasVoted && !showingResults" slot="start" :checked="selected.indexOf(index) !== -1" />
-      <ion-checkbox disabled v-if="showingResults || hasVoted" slot="start" :checked="hasVotedFor(index)" />
-      <div class="entry">
-        <ion-label>{{e.title}}</ion-label>
-        <ion-note v-if="e.text">{{e.text}}</ion-note>
-        <ion-progress-bar color="secondary" v-if="showingResults" :value="calcResult(index)" />
+<ion-grid>
+  <ion-row>
+    <ion-col>
+      <ion-title>{{title}}</ion-title>
+    </ion-col>
+    <ion-col class="ion-text-end">
+      <slot name="extraButtons"></slot>
+    </ion-col>
+  </ion-row>
+  <ion-row>
+    <ion-col size="12" class="ion-padding-start" v-if="text">
+      <p>{{text}}</p>
+    </ion-col>
+    <ion-col size="12" class="ion-padding-start" v-if="outcome">
+      <h3>Ergebnis:</h3>
+      <p>{{outcome}}</p>
+    </ion-col>
+    <ion-col size="12">
+      <ion-list>
+        <ion-item v-for="(e, index) in options" :key="e" @click="toggleSelection(index)">
+          <ion-checkbox v-if="!hasVoted && !showingResults" slot="start" :checked="selected.indexOf(index) !== -1" />
+          <ion-checkbox disabled v-if="showingResults || hasVoted" slot="start" :checked="hasVotedFor(index)" />
+          <div class="entry">
+            <ion-label>{{e.title}}</ion-label>
+            <ion-note v-if="e.text">{{e.text}}</ion-note>
+            <ion-progress-bar color="secondary" v-if="showingResults" :value="calcResult(index)" />
+          </div>
+          <ion-note class="number" v-if="showingResults" slot="end">{{Math.abs(calcResult(index) * 100)}}% </ion-note>
+        </ion-item>
+      </ion-list>
+    </ion-col>
+  </ion-row>
+  <ion-row>
+    <ion-col>
+      <ion-note>
+        <span v-if="votedCount">{{votedCount}} haben abgestimmt.</span>
+        Jede:r kann {{canMultiselect ? 'eine Option' : 'mehrere Optionen' }} auswählen.
+        <span v-if="isAnonymous">Stimmen werden anonym gespeichert.</span>
+        <span v-if="canReset">Die Stimme kann geändert werden.</span>
+        <span v-if="willClose">Schließt <span style="text-decoration: underline">{{closesAt}}</span>.</span>
+        <span v-if="isClosed">Geschlossen {{closesAt}}.</span>
+      </ion-note>
+    </ion-col>
+    <ion-col class="ion-text-end">
+      <ion-spinner v-if="loading" />
+      <div class="ion-text-end" v-if="!loading && !showingResults">
+        <ion-button
+          v-if="canShowResults && votedCount"
+          @click="wantsToShowResult = true"
+          fill="clear"
+          size="small"
+        >Zwischenergebnis zeigen</ion-button>
+        <ion-button
+          v-if="!hasVoted"
+          :disabled="!canSubmit"
+          @click="submit"
+          size="small"
+          fill="outline"
+        >Abstimmen</ion-button>
       </div>
-      <ion-note class="number" v-if="showingResults" slot="end">{{Math.abs(calcResult(index) * 100)}}% </ion-note>
-    </ion-item>
-  </ion-list>
-  <div class="ion-text-end" v-if="loading">
-    <ion-spinner />
-  </div>
-  <div class="ion-text-end" v-if="!loading && !showingResults">
-    <ion-button
-      v-if="canShowResults"
-      @click="wantsToShowResult = true"
-      fill="clear"
-      size="small"
-    >Zwischenergebnis zeigen</ion-button>
-    <ion-button
-      v-if="!hasVoted"
-      :disabled="!canSubmit"
-      @click="submit"
-      size="small"
-      fill="outline"
-    >Abstimmen</ion-button>
-  </div>
-  <div class="ion-text-end" v-if="!loading && showingResults">
-    <ion-button
-      v-if="!hasVoted && canShowResults"
-      @click="wantsToShowResult = false"
-      fill="clear"
-      size="small"
-    >ausblenden</ion-button>
-    <ion-button
-      v-if="hasVoted && canReset"
-      @click="resetVote"
-      fill="outline"
-      size="small"
-    >Stimme zurücknehmen</ion-button>
-  </div>
-</div>
+      <div class="ion-text-end" v-if="!loading && showingResults">
+        <ion-button
+          v-if="!hasVoted && canShowResults"
+          @click="wantsToShowResult = false"
+          fill="clear"
+          size="small"
+        >ausblenden</ion-button>
+        <ion-button
+          v-if="hasVoted && canReset"
+          @click="resetVote"
+          fill="outline"
+          size="small"
+        >Stimme zurücknehmen</ion-button>
+      </div>
+    </ion-col>
+  </ion-row>
+</ion-grid>
 </template>
 
 <script lang="ts">
 import {
-  IonCheckbox, IonIcon, IonButton, IonNote, IonLabel, IonItem, IonList, IonTitle, IonSpinner,
+  IonGrid, IonRow, IonCol,
+  IonCheckbox, IonButton, IonNote, IonLabel, IonItem, IonList, IonTitle, IonSpinner,
   IonProgressBar,
 } from '@ionic/vue';
 import {
@@ -67,11 +93,13 @@ import {
 
 import { useStore } from '../stores/';
 import { Parse } from '../config/Consts';
-import { defineComponent, computed } from 'vue';
+import { until, hasPassed } from "../utils/time";
+import { defineComponent } from 'vue';
 
 export default defineComponent({
   name: 'Poll',
   components: {
+    IonGrid, IonRow, IonCol,
     IonButton, IonLabel, IonNote, IonCheckbox, IonItem, IonList, IonTitle, IonSpinner, IonProgressBar
   },
   props: {
@@ -139,7 +167,7 @@ export default defineComponent({
   },
   computed: {
     showingResults(): boolean {
-      if (this.poll.get("closedAt")) {
+      if (this.isClosed) {
         return true
       }
 
@@ -155,14 +183,32 @@ export default defineComponent({
 
       return (this.poll.get("hasVoted") || []).indexOf(this.store.getters["auth/myId"]) !== -1
     },
+    votedCount(): number  {
+      return (this.poll.get("hasVoted") || "").length
+    },
+    isClosed(): boolean {
+      return !!this.poll.get("closedAt") || this.poll.get("closesAt") && hasPassed(this.poll.get("closesAt"))
+    },
+    willClose(): boolean  {
+      return !!this.poll.get("closesAt")
+    },
+    closesAt(): string {
+      return until(this.poll.get("closesAt"))
+    },
+    isAnonymous(): boolean {
+      return this.poll.get("isAnonymous");
+    },
     canReset(): boolean {
-      return (!this.poll.get("isAnonymous") && this.poll.get("allowChange"))
+      return (!this.isClosed && !this.poll.get("isAnonymous") && this.poll.get("allowChange"))
     },
     title(): string {
       return this.poll.get('title')
     },
     text(): string {
       return this.poll.get('text')
+    },
+    outcome(): string {
+      return this.poll.get('outcome')
     },
     canMultiselect(): boolean {
       return this.poll.get('isMultiselect')
@@ -171,10 +217,10 @@ export default defineComponent({
       return this.poll.get('options')
     },
     canShowResults(): boolean {
-      return this.poll.get('showResults') && this.poll.get("showsResultsWithoutVote")
+      return this.isClosed || (this.poll.get('showResults') && this.poll.get("showsResultsWithoutVote"))
     },
     canSubmit(): boolean {
-      return this.selected.length > 0
+      return !this.isClosed && this.selected.length > 0
     },
   }
 });

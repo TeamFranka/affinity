@@ -35,6 +35,10 @@ export const Poll = {
                 type: "Object",
                 required: false,
             },
+            outcome: {
+                type: "String",
+                required: false,
+            },
             isMultiselect: {
                 type: "Boolean",
                 default: false,
