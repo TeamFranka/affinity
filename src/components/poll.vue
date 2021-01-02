@@ -5,6 +5,8 @@
       <ion-title>{{title}}</ion-title>
     </ion-col>
     <ion-col class="ion-text-end">
+      <ion-button fill="clear" size="small" v-if="canEdit" title="Editieren"><ion-icon :icon="editIcon"/></ion-button>
+      <ion-button @click="intendToClose" fill="clear" size="small" v-if="canClose" title="Schließen"><ion-icon :icon="closeIcon"/></ion-button>
       <slot name="extraButtons"></slot>
     </ion-col>
   </ion-row>
@@ -80,15 +82,13 @@
 
 <script lang="ts">
 import {
-  IonGrid, IonRow, IonCol,
+  IonGrid, IonRow, IonCol, IonIcon,
   IonCheckbox, IonButton, IonNote, IonLabel, IonItem, IonList, IonTitle, IonSpinner,
-  IonProgressBar,
+  IonProgressBar, alertController
 } from '@ionic/vue';
 import {
-  closeOutline as closeIcon,
-  saveOutline as saveIcon,
-  listOutline as listIcon,
-  addCircleOutline as addIcon,
+  powerOutline as closeIcon,
+  createOutline as editIcon,
 } from 'ionicons/icons';
 
 import { useStore } from '../stores/';
@@ -99,7 +99,7 @@ import { defineComponent } from 'vue';
 export default defineComponent({
   name: 'Poll',
   components: {
-    IonGrid, IonRow, IonCol,
+    IonGrid, IonRow, IonCol, IonIcon,
     IonButton, IonLabel, IonNote, IonCheckbox, IonItem, IonList, IonTitle, IonSpinner, IonProgressBar
   },
   props: {
@@ -111,7 +111,7 @@ export default defineComponent({
   setup() {
     const store = useStore();
     return {
-      saveIcon, closeIcon, addIcon, listIcon, store,
+      editIcon, closeIcon, store,
     }
   },
   data() {
@@ -134,6 +134,37 @@ export default defineComponent({
       } else {
         this.selected.splice(currently, 1)
       }
+    },
+    async intendToClose() {
+      const alert = await alertController
+        .create({
+          header: 'Umfrage abschließen!',
+          message: 'Willst Du die Umfrage wirklich abschließen?',
+          inputs: [
+            {
+              name: "outcome",
+              placeholder: 'optional das Ergebnis festhalten...',
+            },
+          ],
+          buttons: [
+            {
+              text: 'Nope',
+              role: 'cancel',
+              cssClass: 'secondary',
+            },
+            {
+              text: 'Jup',
+              handler: async (data) => {
+                const { outcome } = data;
+                this.loading = true;
+                const pollItem = await Parse.Cloud.run("vote:close", { id: this.poll.id, outcome });
+                await this.store.commit("setItem", pollItem);
+                this.loading = false;
+              },
+            },
+          ],
+        });
+      return alert.present();
     },
     calcResult(index: number): number {
       const votersCount = this.poll.get("hasVoted").length;
@@ -166,6 +197,33 @@ export default defineComponent({
     }
   },
   computed: {
+    canEdit(): boolean {
+      if (this.isClosed) {
+        return false;
+      }
+
+      const userId = this.store.getters["auth/myId"];
+      if (!userId) { return false }
+
+      if (this.poll.get("author").id === userId){
+        return true
+      } else {
+        return false
+      }
+    },
+    canClose(): boolean {
+      if (this.poll.get("closedAt")) {
+        return false
+      }
+      const userId = this.store.getters["auth/myId"];
+      if (!userId)  { return false }
+
+      if (this.poll.get("author").id === userId){
+        return true
+      } else {
+        return false
+      }
+    },
     showingResults(): boolean {
       if (this.isClosed) {
         return true
