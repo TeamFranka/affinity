@@ -52,10 +52,11 @@ export const Users = [
 
 
 export const Teams = [
-    { // Clara
+    {
         slug: "doctor-who",
         name: "Doctor Who",
         admin: 'river',
+        members: ['clara', 'graham', 'yaz'],
         settings: {
             avatar: makeFile('doctor.png')
         }
@@ -64,4 +65,48 @@ export const Teams = [
     //     slug: "team-franka",
     //     name: "Team Franka"
     // }
+];
+
+
+export const FAQs = [
+    {
+        team: "doctor-who",
+        author: 'river',
+        title: "Does the Doctor have a PhD, or is that just his nickname or something?",
+        text: "It's a name he picked for himself. We don't know what his real name is, and maybe never will (it has been 52 years, after all).",
+        tags: ["about"]
+    },
+    {
+        team: "doctor-who",
+        author: 'river',
+        title: 'Do we actually called the Doctor "Doctor Who," or is that title of the show just silly, because no one knows who he is? Like a "Who\'s on first?" joke?',
+        text: 'We call him "The Doctor." The title is exactly like a "who\'s on first" joke, but more British.',
+        tags: ["about"]
+    },
+    {
+        team: "doctor-who",
+        author: 'river',
+        title: 'I know the police box is important. Why do people call that TARDIS?',
+        text: 'TARDIS stands for "Time And Relative Dimension In Space." It is supposed to change it\'s outside depending on where in space in time it lands, but that circuit broke when the Doctor was in London in 1963, so for now until forever it looks like a 1960s British police phone box.',
+        tags: ["about", "tardis"]
+    },
+]
+
+
+export const Posts = [
+    {
+        team: "doctor-who",
+        verb: "post",
+        author: 'river',
+        text: "Willkommen euch allen!",
+    },
+    {
+        team: "doctor-who",
+        verb: "announce",
+        author: 'clara',
+        text: "Ein freundliches Hallo zu Yaz!!!",
+        objects: [
+            {cls: "Picture", file: makeFile('yaz-huge.jpg')}
+        ]
+    }
 ]

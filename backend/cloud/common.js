@@ -28,7 +28,9 @@ const genericObjectsPreSave = async (request) => {
 
   } else {
     // setting author to posting user
-    request.object.set("author", request.user);
+    if (!request.master) {
+      request.object.set("author", request.user);
+    }
 
     const members = team.get("members");
     const newAcl = new Parse.ACL();

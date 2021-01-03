@@ -32,23 +32,10 @@ npm run dev:db
 ```
 npm run dev:db:mock-data
 ```
-6. configure the default Team
+6. configure the default Team as the script told you
 ```
-...
- - graham with password graham
- - bill with password bill
-Looking up Team(s)
-Setting Doctor Who' Team Settings
---- Done
-Your teams are:
- - jWW6Zo487R: Doctor Who
-
- ```
-`jWW6Zo487R` is your TEAM_ID, take whatever you have and put it into .env.development.local as
+cp .env.development.local.template .env.development.local
 ```
-VUE_APP_DEFAULT_TEAM="TEAM_ID"
-```
-
 
 
 ### Running the dev frontend

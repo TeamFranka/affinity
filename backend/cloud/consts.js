@@ -7,7 +7,6 @@ module.exports = {
     Role: models.Role,
     Team: models.Team,
     Activity: models.Activity,
-    Group: models.Team, // Legacy Alias
     Conversation: models.Conversation,
     Message: models.Message,
     Document: models.Document,

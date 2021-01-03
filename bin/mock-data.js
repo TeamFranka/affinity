@@ -1,6 +1,7 @@
 require("./ts-cli-setup.js");
 
 const Parse = require('parse/node');
+const fs = require("fs");
 
 Parse.initialize(
     process.env.VUE_APP_PARSE_APP_ID,
@@ -10,16 +11,44 @@ Parse.initialize(
 Parse.serverURL = process.env.VUE_APP_PARSE_URL;
 
 const mocks = require('./mock-data/index.ts');
+const { SSL_OP_SSLEAY_080_CLIENT_DH_BUG } = require("constants");
 const users = {};
+const userTokens = {};
 const teams = {};
+let defaultTeamId;
 
 const getUser = (name) => users[name];
-const getTeam = (name) => teams[name];
+const getTeam = (slug) => teams[slug];
+const getUserToken = async (username) => {
+    if (!userTokens[username]){
+        const user = await Parse.User.logIn(username, username);
+        userTokens[username] = user.getSessionToken();
+    }
+    return userTokens[username]
+}
 
 const REMAPPINGS = {
     "author": getUser,
+    "team": getTeam,
     "participants": (x) => x.map(getUser),
+};
+
+function remap(d) {
+    Object.entries(REMAPPINGS).forEach(([key, map]) => {
+        if (d[key]) {
+            d[key] = map(d[key]);
+        }
+    });
+
+    if (d.cls){
+        delete d.cls
+    }
+
+    return d
 }
+
+var args = process.argv.slice(2);
+console.log('myArgs: ', args);
 
 (async () => {
     console.info("Creating Users")
@@ -43,27 +72,29 @@ const REMAPPINGS = {
 
     console.info("Looking up Team(s)")
     await Promise.all(mocks.Teams.map(async (data, index) => {
-        let team = await (new Parse.Query("Team"))
+        const Team = Parse.Object.extend("Team");
+        let team = await (new Parse.Query(Team))
             .include("settings")
             .equalTo("slug", data.slug)
             .first({ useMasterKey: true });
         if (!team) {
-            team = await Parse.Cloudata.run("newRootTeam", {
+            team = await Parse.Cloud.run("newRootTeam", {
                 slug: data.slug,
                 name: data.name,
                 admin: getUser(data.admin).id,
-            }, {useMasterKey: true});
+            }, { useMasterKey: true });
+        }
+        if (index === 0){
+            defaultTeamId = team.id
         }
 
         await Promise.all(["members", "leaders", "agents", "mods"].map( key => {
             if(!data[key]) return Promise.resolve(key);
-            console.info(`Updating membership ${data.name}'${key} adding:${data[key]}`);
-            const role = team.relation(key);
-            data[key].forEach(u => {
-                role.getUsers().add(getUser(u));
-            })
-
-            return role.save()
+            console.info(`Updating membership ${data.name}'${key} adding: ${data[key]}`);
+            const role = team.get(key);
+            const users = role.getUsers();
+            users.add(data[key].map(getUser));
+            return role.save(null, { useMasterKey: true })
         }));
 
         if (data.settings) {
@@ -74,15 +105,55 @@ const REMAPPINGS = {
             await settings.save(data.settings, {useMasterKey: true});
         }
 
-        teams[team.slug] = team
+        teams[data.slug] = team
     }));
+
+    if (args.includes("with-faq")) {
+        console.info("Adding FAQ")
+        const FaqEntry = Parse.Object.extend("FaqEntry");
+        await Parse.Object.saveAll(mocks.FAQs.map(d => new FaqEntry(remap(d))), { useMasterKey: true })
+    }
+
+    if (args.includes("with-posts")) {
+        console.info("Adding Posts")
+        const Activity = Parse.Object.extend("Activity");
+        for (let i = 0; i < mocks.Posts.length; i++) {
+            const username = mocks.Posts[i].author;
+            const data = remap(mocks.Posts[i]);
+            const sessionToken = await getUserToken(username);
+            if (data.objects) {
+                data.objects = await Promise.all(data.objects.map( async (o) => {
+                    const obj = new (Parse.Object.extend(o.cls))(
+                        Object.assign({
+                            team: data.team,
+                        }, remap(o))
+                    );
+                    await obj.save(null, {sessionToken});
+                    return obj.toPointer();
+                }));
+            } else {
+                data.objects = [];
+            }
+            await (new Activity(data)).save(null, {sessionToken});
+        }
+    }
 
     console.info("--- Done");
     console.info("Your teams are:");
+    console.info("----------------------------------")
 
     Object.values(teams).forEach((x) => {
-        console.info(` - ${x.id}: ${x.get("name")}`);
+        console.info(` - ${x.id} ${x.id === defaultTeamId ?" (default)":""}: ${x.get("name")} `);
     })
+
+    fs.writeFileSync(".env.development.local.template", `VUE_APP_DEFAULT_TEAM="${defaultTeamId}"`)
+
+
+    console.info("Template saved at .env.development.local.template.");
+    console.info("to use it rename it to .env.development.local and restart your compiler");
+    console.info("  cp .env.development.local.template .env.development.local");
+
+
 
 })().catch(e => {
     // Deal with the fact the chain failed

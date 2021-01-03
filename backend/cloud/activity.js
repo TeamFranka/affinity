@@ -2,7 +2,6 @@
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const Activity = require("./consts.js").Activity;
-const { masterKey } = require("parse");
 const common = require('./common');
 const fetchModel = common.fetchModel;
 
@@ -28,7 +27,7 @@ Parse.Cloud.beforeSave(Activity, async (request) => {
     const isPublisher = team.get("publishers").getUsers().query().contains("id", user.id).exists({ useMasterKey: true });
     const isMember = team.get("members").getUsers().query().contains("id", user.id).exists({ useMasterKey: true });
 
-    const permissions = settings.genPermissions(isLeader, isMod, isAgent, isPublisher, isMember);
+    // const permissions = settings.genPermissions(isLeader, isMod, isAgent, isPublisher, isMember);
 
     if (visibility == "leaders") {
         if (!isLeader) {
@@ -62,16 +61,16 @@ Parse.Cloud.beforeSave(Activity, async (request) => {
     // remove the field.
     activity.unset("visibility");
 
-    console.log(verb, permissions);
+    // console.log(verb, permissions);
 
-    if (verb == "post" && permissions.canPost) {
-        // is okay
-    } else if (verb == "announce" && permissions.canPublish) {
-        // also okay
-    } else {
-        // nope, sorry!
-        throw "Sorry, I can't let you do that, " + user.id
-    }
+    // if (verb == "post" && permissions.canPost) {
+    //     // is okay
+    // } else if (verb == "announce" && permissions.canPublish) {
+    //     // also okay
+    // } else {
+    //     // nope, sorry!
+    //     throw "Sorry, I can't let you do that, " + user.id
+    // }
 
 }, {
     requireUser: true

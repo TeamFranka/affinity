@@ -127,8 +127,5 @@ export const Team = {
         protectedFields: {}
     },
     indexes: {
-        slug: {
-            slug: 1
-        }
     }
 }
