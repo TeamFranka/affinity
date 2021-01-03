@@ -1,5 +1,5 @@
 import { Parse } from "../config/Consts";
-import { FaqEntry } from "../db/models/index.js";
+import { FaqEntry } from "../db/models";
 
 export interface FaqT {
   loading: boolean;

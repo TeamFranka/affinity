@@ -1,6 +1,6 @@
 /* global Parse */
 
-const models = require("../../src/db/models");
+const models = require("./models");
 
 module.exports = {
     User: models.User,

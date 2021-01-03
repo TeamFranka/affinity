@@ -2,7 +2,7 @@
 import Parse from 'parse';
 import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
-import * as Models from "../db/models/";
+import * as Models from "../db/models";
 
 dayjs.extend(relativeTime);
 
