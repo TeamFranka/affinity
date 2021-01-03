@@ -36,62 +36,18 @@
       </div>
     </div>
   </div>
-  <div class="ion-padding-top ion-padding-start">
-    <ion-chip @click="toggleComments()" outline :color="showComments ? 'dark':'light'">
-      <ion-icon :icon="commentsIcon" size="small" />
-      <ion-label>{{activity.get("commentsCount")}}</ion-label>
-    </ion-chip>
-    <ion-chip outline color="light">
-      <share-button
-        :link="fullLink"
-        :pointer="pointer"
-        :counter="activity.get('sharesCount') || 0"
-      />
-    </ion-chip>
-    <ion-chip outline :color="likedColor">
-      <like-button
-        :has-liked="hasLiked"
-        :pointer="pointer"
-        :counter="activity.get('likesCount') || 0"
-      />
-    </ion-chip>
-    <reactions :item="activity" />
-  </div>
-  <div v-if="showComments">
-    <ion-spinner v-if="commentsLoading" />
-    <inline-text
-      :value="draft"
-      :canSubmit="!!(draft && draft.length >= 3)"
-      placeholder="comment here"
-      @submit="submitComment()"
-      @changed="setDraft($event)"
-    />
-    <ion-grid>
-      <comment
-        v-for="c in comments"
-        :commentId="c.objectId"
-        :key="c.oobjectId"
-        :children="c.comments"
-        :object="pointer"
-      />
-    </ion-grid>
-  </div>
+  <interaction-bar :object="activity" :link="link" />
 </ion-card>
 </template>
 <script lang="ts">
 import {
-  IonCard, IonImg, IonLabel, IonCardHeader, IonSpinner,
-  IonIcon, IonNote, IonChip, IonGrid,
+  IonCard, IonImg, IonCardHeader, IonIcon, IonNote,
 } from '@ionic/vue';
 import { chatbubblesOutline, addOutline, arrowRedoOutline, heartOutline } from 'ionicons/icons';
 
 import Avatar from "./avatar.vue";
+import InteractionBar from "./interaction-bar.vue";
 import Poll from "./poll.vue";
-import InlineText from "./inline-text.vue";
-import ShareButton from "./share-button.vue";
-import LikeButton from "./like-button.vue";
-import Reactions from "./reactions.vue";
-import Comment from "./comment.vue";
 import { useStore } from '../stores/';
 import { defineComponent, computed } from 'vue';
 import { Parse } from "../config/Consts";
@@ -129,9 +85,6 @@ export default defineComponent({
   computed: {
     link(): string {
       return '/a/' + this.activity.id
-    },
-    fullLink(): string {
-      return process.env.BASE_URL + this.link;
     },
     hasLiked(): boolean {
       if (!this.store.getters["auth/isLoggedIn"]) return false;
@@ -183,30 +136,6 @@ export default defineComponent({
     },
     pointer(): Parse.Pointer {
       return this.activity.toPointer()
-    },
-    draft(): string {
-      const d = this.store.state.comments.drafts[this.activity.id];
-      if (d) {
-        return d[""]
-      }
-      return ""
-    },
-    commentsLoading(): boolean {
-      const s = this.store.state.comments.comments[this.activity.id];
-      if (s) {
-        return s.loading
-      }
-      return false
-    },
-    comments(): Array<any> {
-      const s = this.store.state.comments.comments[this.activity.id];
-      if (s) {
-        return s.comments
-      }
-      return []
-    },
-    likedColor(): string {
-      return this.hasLiked ? "danger" : "light"
     },
     authorName(): string {
       const author = this.author;
@@ -261,8 +190,8 @@ export default defineComponent({
     },
   },
   components: {
-    IonCard, IonImg, IonChip, IonLabel, IonCardHeader, IonSpinner, Comment, Poll,
-    IonIcon, IonNote, Avatar, IonGrid, InlineText, ShareButton, Reactions, LikeButton
+    IonCard, IonImg, InteractionBar, IonCardHeader, Poll,
+    IonIcon, IonNote, Avatar,
   },
 });
 </script>
@@ -276,15 +205,5 @@ ion-card-header {
 }
 .like-ref {
   position: relative;
-}
-
-.like-icon {
-  position: absolute;
-  transform-origin: bottom;
-  opacity: 0;
-  width: 3em;
-  height: 3em;
-  color: #900;
-  z-index: 1;
 }
 </style>

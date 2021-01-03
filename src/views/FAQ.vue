@@ -27,9 +27,11 @@
           @tag-selected="searchValue = $event"
         >
           {{e.get('text')}}
-          <div class="ion-text-end" v-if="canCreate">
-            <ion-button @click="intendToEdit(e)" fill="clear">Ändern</ion-button>
-          </div>
+          <interaction-bar :object="e" link="">
+            <template v-slot:extraButtons>
+              <ion-button @click="intendToEdit(e)" fill="clear">Editieren</ion-button>
+            </template>
+          </interaction-bar>
         </faq-entry>
       </template>
       <div class="ion-padding ion-text-center" v-if="visibleEntries.length == 0 && !loading && entries.length != 0">
@@ -54,6 +56,7 @@ import { chatbubbles, logoWhatsapp } from 'ionicons/icons';
 import { defineComponent, computed } from 'vue';
 import { useStore } from '../stores/';
 import { Parse, FaqEntry as FaqModel } from '../db/models';
+import InteractionBar from '../components/interaction-bar.vue';
 import EditFaq from '../components/edit-faq.vue';
 
 export default defineComponent({
@@ -138,7 +141,7 @@ export default defineComponent({
   },
   components: {
     IonPage, IonNote, IonContent, IonSearchbar, IonSpinner, IonButton,
-    FaqEntry,
+    FaqEntry, InteractionBar,
   }
 });
 </script>
