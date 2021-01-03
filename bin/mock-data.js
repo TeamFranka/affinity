@@ -16,6 +16,11 @@ const teams = {};
 const getUser = (name) => users[name];
 const getTeam = (name) => teams[name];
 
+const REMAPPINGS = {
+    "author": getUser,
+    "participants": (x) => x.map(getUser),
+}
+
 (async () => {
     console.info("Creating Users")
 
