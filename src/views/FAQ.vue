@@ -66,9 +66,9 @@ export default defineComponent({
     return {
       store, chatbubbles,
       loading: computed(() => store.getters["faq/loading"]),
-      team: computed(() => store.getters["auth/defaultTeam"]),
+      team: computed(() => store.getters["defaultTeam"]),
       canCreate: computed(() =>
-        store.getters["auth/teamPermissions"][store.getters["auth/defaultTeam"]?.id]?.canCreateFaqEntry
+        store.getters["auth/teamPermissions"][store.getters["defaultTeam"]?.id]?.canCreateFaqEntry
       ),
       setItem(entry: Parse.Object) {
         store.commit("setItem", entry);

@@ -28,7 +28,7 @@ export const Draft = {
   }),
   getters: {
     selectedTeam(state: DraftT, getters: any, rootState: any, rootGetters: any) {
-      return state.team || rootGetters["auth/defaultTeam"];
+      return state.team || rootGetters["defaultTeam"];
     },
     canSubmit(state: DraftT): boolean {
       return state.text.length > 0 || state.images.length > 0;
@@ -120,7 +120,7 @@ export const Draft = {
     async submit(context: any) {
       const author = context.rootGetters['auth/userPtr'];
       const state =  context.state;
-      const team = state.team || context.rootGetters["auth/defaultTeam"];
+      const team = state.team || context.rootGetters["defaultTeam"];
       const objects: Parse.Object[] = [];
 
       if (state.images.length > 0) {

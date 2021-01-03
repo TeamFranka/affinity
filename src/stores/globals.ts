@@ -15,6 +15,9 @@ export const GlobalState = {
     teamsBySlug: {},
   }),
   getters: {
+    defaultTeam(state: GlobalStateT): Parse.Object | null {
+      return state.defaultTeam;
+    },
     objectsMap(state: GlobalStateT): Record<string, Parse.Object> {
       return state.objects;
     },

@@ -3,7 +3,7 @@
     <ion-progress-bar v-if="loading" color="secondary" type="indeterminate"></ion-progress-bar>
     <ion-fab v-if="!user" vertical="bottom" horizontal="end" slot="fixed">
       <ion-fab-button @click="openLoginModal">
-          <ion-icon :ion="logInIcon"/>
+          <ion-icon :icon="logInIcon"/>
       </ion-fab-button>
     </ion-fab>
     <ion-header class="ion-hide-lg-down">

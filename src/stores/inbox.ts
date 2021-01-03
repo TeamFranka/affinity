@@ -34,6 +34,9 @@ export const Inbox = {
   },
   actions: {
     async refresh(context: any) {
+      if (!context.getters["auth/isLoggedIn"]) {
+        return
+      }
       context.commit("setLoading", true);
       const query = (new Parse.Query(Conversation))
         .include(["participants", "latestMessage"])

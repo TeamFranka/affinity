@@ -1,4 +1,5 @@
 import { Parse } from '../config/Consts';
+import { Team } from '../db/models';
 
 // export interface TeamPermission {
 //   isAdmin: boolean;
@@ -56,11 +57,15 @@ export const AuthState = {
     async fetchUser(context: any) {
       const user = await Parse.User.currentAsync();
       await context.commit("setUser", user);
-      const resp = await Parse.Cloud.run("myTeams");
-      await context.commit("setTeams", resp);
-      const items: any[] = [];
-      resp.teams.forEach( (t: Parse.Object)  => { items.push(t); items.push(t.get("settings")) });
-      await context.commit("setItems", items, {root: true});
+      if (user) {
+        const resp = await Parse.Cloud.run("myTeams");
+        await context.commit("setTeams", resp);
+        const items: any[] = [];
+        resp.teams.forEach( (t: Parse.Object)  => { items.push(t); items.push(t.get("settings")) });
+        await context.commit("setItems", items, {root: true});
+      } else  {
+        context.commit("setTeams", {teams: [context.state.defaultTeam], permissions: {}});
+      }
       context.dispatch("refreshRoot", null, { root:true });
     },
     async setAvatar(context: any, f: Parse.File) {
