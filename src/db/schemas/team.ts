@@ -1,6 +1,5 @@
 // Follow the JSON structure from REST API https://docs.parseplatform.org/rest/guide/#schema
 import { CommonFields } from './common';
-import { TeamSettingsDefaults } from '../models/team-settings';
 
 export const TeamSettings = {
     className: "TeamSettings",
@@ -16,38 +15,24 @@ export const TeamSettings = {
             },
             canPost: {
                 type: 'String',
-                // required: true,
-                // default: TeamSettingsDefaults.canPost,
             },
             canComment: {
                 type: 'String',
-                // required: true,
-                // default: TeamSettingsDefaults.canComment,
             },
             canLike: {
                 type: 'String',
-                // required: true,
-                // default: TeamSettingsDefaults.canLike,
             },
             canCreatePicture: {
                 type: 'String',
-                // required: true,
-                // default: TeamSettingsDefaults.canCreatePicture,
             },
             canCreatePoll: {
                 type: 'String',
-                // required: true,
-                // default: TeamSettingsDefaults.canCreatePoll,
             },
             canCreateFaqEntry: {
                 type: 'String',
-                // required: true,
-                // default: TeamSettingsDefaults.canCreatePoll,
             },
             canEditFaqEntry: {
                 type: 'String',
-                // required: true,
-                // default: TeamSettingsDefaults.canCreatePoll,
             },
             socialLinks: {
                 type: 'Array',
