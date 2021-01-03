@@ -40,7 +40,7 @@
         </p>
         <ion-note>Nichts gefunden...</ion-note>
         <p>
-          <ion-button fill="outline">Frage stellen</ion-button>
+          <ion-button @click="intendToAskQuestion" fill="outline">Frage stellen</ion-button>
         </p>
       </div>
     </ion-content>
@@ -50,9 +50,9 @@
 <script lang="ts">
 import FaqEntry from '../components/faq-entry.vue';
 import {
-  IonContent, IonSearchbar, IonPage, IonNote, IonSpinner, IonButton, modalController
+  IonContent, IonSearchbar, IonPage, IonNote, IonSpinner, IonButton, modalController, alertController
 } from '@ionic/vue';
-import { chatbubbles, logoWhatsapp } from 'ionicons/icons';
+import { chatbubbles } from 'ionicons/icons';
 import { defineComponent, computed } from 'vue';
 import { useStore } from '../stores/';
 import { Parse, FaqEntry as FaqModel } from '../db/models';
@@ -64,7 +64,7 @@ export default defineComponent({
   setup() {
     const store = useStore();
     return {
-      chatbubbles, logoWhatsapp,
+      store, chatbubbles,
       loading: computed(() => store.getters["faq/loading"]),
       team: computed(() => store.getters["auth/defaultTeam"]),
       canCreate: computed(() =>
@@ -132,6 +132,42 @@ export default defineComponent({
 
       }
       return null
+    },
+    async intendToAskQuestion() {
+
+      const alert = await alertController
+        .create({
+          header: 'Frage an das Team stellen!',
+          message: 'Welche Frage hast du?',
+          inputs: [
+            {
+              name: "message",
+              placeholder: 'Deine Frage ....',
+            },
+          ],
+          buttons: [
+            {
+              text: 'Abbruch',
+              role: 'cancel',
+              cssClass: 'secondary',
+            },
+            {
+              text: 'Schicken',
+              handler: async (data) => {
+                const { message } = data;
+                if (!message) {
+                  return
+                }
+                await Parse.Cloud.run("newPublicInboxConversation",
+                  { teamId: this.team.id, message });
+                await this.store.dispatch("inbox/refresh");
+                this.$router.push("/inbox");
+              },
+            },
+          ],
+        });
+      return alert.present();
+
     }
   },
   mounted() {

@@ -63,6 +63,7 @@ export const GlobalState = {
       context.dispatch("news/refresh");
       context.dispatch("feed/refresh");
       context.dispatch("faq/refresh");
+      context.dispatch("inbox/refresh");
     },
     routingStart(context: any) {
         context.commit("startLoading");

@@ -9,6 +9,7 @@ module.exports = {
     Activity: models.Activity,
     Group: models.Team, // Legacy Alias
     Conversation: models.Conversation,
+    Message: models.Message,
     Document: models.Document,
     Comment: models.Comment,
     Link: models.Link,

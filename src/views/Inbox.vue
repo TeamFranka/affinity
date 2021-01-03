@@ -7,11 +7,25 @@
               <ion-segment-button value="conversation">
                 <ion-label>Conversations</ion-label>
               </ion-segment-button>
-                <ion-segment-button value="activities">
-                <ion-label>All activities</ion-label>
+                <ion-segment-button value="notifications">
+                <ion-label>Notifications</ion-label>
               </ion-segment-button>
           </ion-segment>
         </ion-list-header>
+
+        <ion-item v-for="convo in convos" :key="convo.id" lines="inset">
+          <ion-avatar slot="start">
+            <img src="https://randomuser.me/api/portraits/women/29.jpg">
+          </ion-avatar>
+          <ion-label>
+            <h2>{{convo.get("participants")[0].name}}</h2>
+            <p>{{convo.get("latestMessage") && convo.get("latestMessage").get("text")}}</p>
+          </ion-label>
+          <div class="meta" slot="end">
+            <ion-note color="medium">21:12</ion-note><br/>
+            <ion-badge color="danger">3</ion-badge>
+          </div>
+        </ion-item>
 
         <ion-item lines="inset">
           <ion-avatar slot="start">
@@ -82,14 +96,23 @@ import {
   IonPage, IonContent, IonSegment, IonSegmentButton, IonChip, IonIcon, IonAvatar, IonLabel, IonList, IonListHeader, IonItem, IonBadge, IonNote,
 } from '@ionic/vue';
 import { chatbubbles, logoWhatsapp, folderOpenOutline, mailOutline } from 'ionicons/icons';
-import { defineComponent } from 'vue';
-
+import { defineComponent, computed } from 'vue';
+import { useStore } from '../stores/';
 
 export default defineComponent({
   name: 'Inbox',
   setup() {
+    const store = useStore();
     return {
+      loading: computed(() => store.getters["inbox/loading"]),
+      refresh(){ store.dispatch("inbox/refresh"); },
+      convos: computed(() => store.getters["inbox/latest"]),
       chatbubbles, logoWhatsapp, isNew: folderOpenOutline, mail: mailOutline,
+    }
+  },
+  mounted() {
+    if (!this.loading && this.convos.length === 0) {
+      this.refresh();
     }
   },
   components: {

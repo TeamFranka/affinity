@@ -7,10 +7,12 @@ import { Link } from './link';
 import { Picture } from './picture';
 import { Video } from './video';
 import { FaqEntry } from './faq-entry';
+import { Message } from './message';
+import { Conversation } from './conversation';
 import { Poll } from './poll';
 import { Comment } from './comment';
 import { Activity } from './activity';
 
 export const All = [
-    User, Role, Team, TeamSettings, Document, Comment, Poll, FaqEntry, Picture, Video, Link, Activity,
+    User, Role, Team, TeamSettings, Document, Comment, Message, Conversation, Poll, FaqEntry, Picture, Video, Link, Activity,
 ]

@@ -79,8 +79,9 @@ const fetchModel = async(request, pointer, includes) => {
   if (includes) {
     includes.forEach((i) => query.include(i))
   }
-  return await query.get(pointer ? pointer.objectId : request.params.objectId,
-          {sessionToken: request.user.getSessionToken()}
+  console.log('fetching', pointer, request.params, request.context, request.user.getSessionToken());
+  return await query.get(pointer ? (pointer.objectId || pointer.id ): request.params.objectId,
+          {sessionToken: request.context.sessionToken || request.user.getSessionToken()}
       );
 }
 

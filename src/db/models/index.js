@@ -4,6 +4,7 @@ const Parse = require('./parse-fix');
 const Activity = Parse.Object.extend("Activity");
 const ChatWidgetSettings = Parse.Object.extend("ChatWidgetSettings");
 const Conversation = Parse.Object.extend("Conversation");
+const Message = Parse.Object.extend("Message");
 const Comment = Parse.Object.extend("Comment");
 const Poll = Parse.Object.extend("Poll");
 const Document = Parse.Object.extend("Document");
@@ -36,6 +37,7 @@ module.exports = {
     Conversation: Conversation,
     Document: Document,
     Comment: Comment,
+    Message: Message,
     Link: Link,
     Poll: Poll,
     Picture: Picture,
