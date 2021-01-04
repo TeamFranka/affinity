@@ -1,4 +1,5 @@
-import { Parse, Activity, Verb } from "../config/Consts";
+import { Parse, Verb } from "../config/Consts";
+import { Activity, Team } from "../db/models";
 
 export interface FeedT {
   loading: boolean;
@@ -32,15 +33,20 @@ export const Feed = {
   actions: {
     async refresh(context: any) {
       context.commit("setLoading", true);
-      const teams = context.rootGetters["auth/myTeams"];
+      const defaultTeam = new Team({id:context.rootGetters["defaultTeamId"]})
+      let teams = [defaultTeam];
+      if (context.rootGetters["auth/isLoggedIn"]) {
+        teams = context.rootGetters["auth/myTeams"];
+      }
+      console.log("fetching feed for", teams);
       const query = (new Parse.Query(Activity))
         .containedIn("team", teams)
         .containedIn("verb", [Verb.Post, Verb.Announce])
-        .include("objects")
+        .include(["objects", "author"])
         .descending("createdAt");
       const feed = await query.find();
 
-      await context.dispatch("addItems", {key: "objects", items: feed}, { root: true });
+      await context.dispatch("addItems", {keys: ["objects", "author"], items: feed}, { root: true });
       context.commit("setFeed", feed.map((a) => a.id))
       context.commit("setLoading", false);
 

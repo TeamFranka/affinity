@@ -37,7 +37,7 @@ export const User = {
         },
         count: { },
         get: {
-            requiresAuthentication: true
+            '*': true
         },
         create: {
             '*': true

@@ -24,7 +24,7 @@ export const AuthState = {
   getters: {
     isLoggedIn: (state: AuthStateT) => !!state.user,
     myId: (state: AuthStateT) => state.user?.id,
-    defaultTeam: (state: AuthStateT) => state.teams[0],
+    defaultTeam: (state: AuthStateT, rootState: any, rootGetters: any) => rootGetters["defaultTeam"],
     user: (state: AuthStateT) => state.user,
     userPtr: (state: AuthStateT) => state.user?.toPointer(),
     myTeams: (state: AuthStateT) => state.teams,
@@ -40,7 +40,8 @@ export const AuthState = {
       state.wantsToLogin = wanna;
     },
     setTeams(state: AuthStateT, resp: any) {
-      state.teams = resp.teams;
+      console.log("setting auth teams", resp);
+      state.teams = resp.teams.filter((x: any)=>!!x);
       state.teamPermissions = Object.assign(state.teamPermissions, resp.permissions);
     },
     addPermissions(state: AuthStateT, resp: any) {
@@ -58,13 +59,12 @@ export const AuthState = {
       const user = await Parse.User.currentAsync();
       await context.commit("setUser", user);
       if (user) {
+        console.log("logged in", user);
         const resp = await Parse.Cloud.run("myTeams");
         await context.commit("setTeams", resp);
         const items: any[] = [];
         resp.teams.forEach( (t: Parse.Object)  => { items.push(t); items.push(t.get("settings")) });
         await context.commit("setItems", items, {root: true});
-      } else  {
-        context.commit("setTeams", {teams: [context.state.defaultTeam], permissions: {}});
       }
       context.dispatch("refreshRoot", null, { root:true });
     },

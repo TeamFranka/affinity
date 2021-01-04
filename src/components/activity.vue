@@ -139,7 +139,7 @@ export default defineComponent({
     },
     authorName(): string {
       const author = this.author;
-      return author.get("name") || author.get("username")
+      return author ? (author.get("name") || author.get("username")) : "(hidden)"
     },
   },
   methods: {

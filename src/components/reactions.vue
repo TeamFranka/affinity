@@ -75,7 +75,7 @@ export default defineComponent({
     canReact(): boolean {
       const team = this.item.get("team");
       const settings = this.store.getters["auth/teamPermissions"][team.id];
-      return settings.canReact;
+      return settings ? settings.canReact : false;
     },
   },
   methods: {

@@ -99,12 +99,14 @@ export const Posts = [
         verb: "post",
         author: 'river',
         text: "Willkommen euch allen!",
+        visibility: "public",
     },
     {
         team: "doctor-who",
         verb: "announce",
         author: 'clara',
         text: "Ein freundliches Hallo zu Yaz!!!",
+        visibility: "public",
         objects: [
             {cls: "Picture", file: makeFile('yaz-huge.jpg')}
         ]

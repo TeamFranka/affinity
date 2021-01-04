@@ -4,6 +4,7 @@ import { Parse } from "../config/Consts";
 export interface GlobalStateT {
   loadingCounter: number;
   defaultTeam: Parse.Object | null;
+  defaultTeamId: string;
   objects: Record<string, Parse.Object>;
   teamsBySlug: Record<string, string>;
 }
@@ -12,9 +13,14 @@ export const GlobalState = {
   state: () => ({
     loadingCounter: 0,
     objects: {},
+    defaultTeam: null,
+    defaultTeamId: (window as any) ? (window as any).AFFINITY_DEFAULT_TEAM : '',
     teamsBySlug: {},
   }),
   getters: {
+    defaultTeamId(state: GlobalStateT): string {
+      return state.defaultTeam ? state.defaultTeam.id : state.defaultTeamId;
+    },
     defaultTeam(state: GlobalStateT): Parse.Object | null {
       return state.defaultTeam;
     },
@@ -40,8 +46,12 @@ export const GlobalState = {
     setItem(state: GlobalStateT, item: Parse.Object) {
       state.objects[item.id] = item;
     },
+    setDefaltTeamId(state: GlobalStateT, teamId: string) {
+      state.defaultTeamId = teamId;
+    },
     setGlobalTeam(state: GlobalStateT, team: Parse.Object) {
       state.defaultTeam = team;
+      state.defaultTeamId = team.id;
       state.objects[team.id] = team;
     },
     startLoading(state: GlobalStateT) {
@@ -53,9 +63,10 @@ export const GlobalState = {
   },
   actions: {
     fetchDefaultTeam(context: any, teamId: string) {
+      context.commit("setDefaltTeamId", teamId);
       context.commit("startLoading");
       console.log("fetching  team", teamId);
-      (new Parse.Query("Team")).get(teamId).then((resp)=>{
+      (new Parse.Query("Team")).include("settings").get(teamId).then((resp)=>{
         context.commit("setGlobalTeam", resp)
         context.commit("doneLoading");
       }, (err)=> {
@@ -81,22 +92,24 @@ export const GlobalState = {
       const found: Array<Parse.Object> = [];
       const toLookUp: Record<string, Array<string>> = {};
       const sort = (m: Parse.Object) => {
-          if (m.isDataAvailable()) {
-              found.push(m);
-          } else {
-            if (!context.state.objecsts[m.id]?.isDataAvailable()) {
-              if (!toLookUp[m.className]) {
-                toLookUp[m.className] = [m.id];
-              } else {
-                toLookUp[m.className].push(m.id);
-              }
+        console.log("sorting", m);
+        if (m.isDataAvailable()) {
+            found.push(m);
+        } else {
+          if (!context.state.objecsts[m.id]?.isDataAvailable()) {
+            if (!toLookUp[m.className]) {
+              toLookUp[m.className] = [m.id];
+            } else {
+              toLookUp[m.className].push(m.id);
             }
           }
+        }
       };
+      const sortMany = (i: any) => Array.isArray(i) ? i.forEach(sort) : sort(i);
       items.forEach((i: Parse.Object) => {
         sort(i);
-        key && (i.get(key) || []).forEach(sort);
-        keys && (keys.forEach((key: string) => (i.get(key) || []).forEach(sort)));
+        key && sortMany(i.get(key) || []);
+        keys && (keys.forEach((key: string) => sortMany(i.get(key) || [])));
       });
 
       if (found.length > 0) {
