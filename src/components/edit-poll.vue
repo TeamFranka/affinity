@@ -115,6 +115,16 @@
             <ion-label>ZW-Ergenbisanzeigen ohne Abstimmmung  </ion-label>
           </ion-item>
         </ion-col>
+        <ion-col size-md="12">
+          <ion-item>
+            <ion-label>(opt) Schließt am</ion-label>
+            <ion-datetime
+              display-format="D MMM YYYY H:mm"
+              :value="closesAt"
+              @ionChange="closesAt = $event.target.value"
+            ></ion-datetime>
+          </ion-item>
+        </ion-col>
       </ion-row>
     </ion-grid>
   </ion-content>
@@ -131,6 +141,7 @@
 import {
   IonContent, IonHeader, IonToolbar, IonInput, IonIcon, IonButton, IonTextarea, modalController,
   IonFooter, IonLabel, IonToggle, IonGrid, IonRow, IonCol, IonItem, IonList, IonListHeader,
+  IonDatetime,
 } from '@ionic/vue';
 import {
   closeOutline as closeIcon,
@@ -139,12 +150,13 @@ import {
   addCircleOutline as addIcon,
 } from 'ionicons/icons';
 import { defineComponent } from 'vue';
+import dayjs from 'dayjs';
 
 export default defineComponent({
   name: 'EditPoll',
   components: {
     IonContent, IonToolbar, IonInput, IonHeader, IonTextarea, IonIcon,
-    IonButton, IonFooter, IonLabel,
+    IonButton, IonFooter, IonLabel, IonDatetime,
     IonToggle, IonGrid, IonRow, IonCol, IonItem, IonList, IonListHeader,
   },
   props: {
@@ -161,7 +173,7 @@ export default defineComponent({
       closeModal() {
         modalController.dismiss()
       },
-      saveIcon, closeIcon, addIcon, listIcon,
+      saveIcon, closeIcon, addIcon, listIcon, dayjs,
     }
   },
   data(props) {
@@ -178,6 +190,7 @@ export default defineComponent({
       'randomizeOrder',
       'allowChange',
       'showsResultsWithoutVote',
+      'closesAt',
     ].forEach((key) => {
       data[key] = props.poll.get(key)
     });
@@ -205,6 +218,7 @@ export default defineComponent({
       ].forEach((key) => {
         data[key] = this[key]
       });
+      data.closesAt = this.closesAt ? dayjs(this.closesAt).toDate() : null;
       modalController.dismiss(data);
     },
     addOption() {
