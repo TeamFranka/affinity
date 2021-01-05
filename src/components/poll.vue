@@ -198,6 +198,9 @@ export default defineComponent({
   },
   computed: {
     canEdit(): boolean {
+      if (!this.poll.id) {
+        return false;
+      }
       if (this.isClosed) {
         return false;
       }
@@ -212,6 +215,9 @@ export default defineComponent({
       }
     },
     canClose(): boolean {
+      if (!this.poll.id) {
+        return false;
+      }
       if (this.poll.get("closedAt")) {
         return false
       }
