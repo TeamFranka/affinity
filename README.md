@@ -55,7 +55,7 @@ If it isn't running yet, start the local backend
 to run locally:
 
 ```
-npm run serve
+npm run dev:run-parse
 
 ```
 
