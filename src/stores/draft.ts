@@ -31,7 +31,7 @@ export const Draft = {
       return state.team || rootGetters["defaultTeam"];
     },
     canSubmit(state: DraftT): boolean {
-      return state.text.length > 0 || state.images.length > 0;
+      return state.text.length > 0 || state.images.length > 0 || state.polls.length > 0
     },
     selectedType(state: DraftT) {
       return state.verb;
