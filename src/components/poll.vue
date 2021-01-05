@@ -167,7 +167,7 @@ export default defineComponent({
       return alert.present();
     },
     calcResult(index: number): number {
-      const votersCount = this.poll.get("hasVoted").length;
+      const votersCount = (this.poll.get("hasVoted") || []).length;
       if (votersCount === 0) { return 0 }
       return ((this.poll.get("votes") || {})[index] || []).length / votersCount;
     },
