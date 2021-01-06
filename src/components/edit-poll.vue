@@ -65,10 +65,10 @@
         </ion-col>
       </ion-row>
       <ion-row>
-        <ion-col size-md="12">
+        <ion-col size-sm="12">
           Einstellungen:
         </ion-col>
-        <ion-col size-md="12">
+        <ion-col size-sm="12">
           <ion-item>
             <ion-toggle
               :checked="isMultiselect"
@@ -77,7 +77,7 @@
             <ion-label>Mehrfach-Antwort erlauben</ion-label>
           </ion-item>
         </ion-col>
-        <ion-col size-md="12">
+        <ion-col size-sm="12">
           <ion-item>
             <ion-toggle
               :checked="isAnonymous"
@@ -86,7 +86,7 @@
             <ion-label>Anonyme Abstimmung</ion-label>
           </ion-item>
         </ion-col>
-        <ion-col size-md="12">
+        <ion-col size-sm="12">
           <ion-item>
             <ion-toggle
               :disabled="isAnonymous"
@@ -96,7 +96,7 @@
             <ion-label>Antwort kann geändert werden</ion-label>
           </ion-item>
         </ion-col>
-        <ion-col size-md="12">
+        <ion-col size-sm="12">
           <ion-item>
             <ion-toggle
               :checked="showResults"
@@ -105,7 +105,7 @@
             <ion-label>Zwischenergebnis anzeigen</ion-label>
           </ion-item>
         </ion-col>
-        <ion-col size-md="12">
+        <ion-col size-sm="12">
           <ion-item>
             <ion-toggle
               :disabled="!showResults"
@@ -115,8 +115,9 @@
             <ion-label>ZW-Ergenbisanzeigen ohne Abstimmmung  </ion-label>
           </ion-item>
         </ion-col>
-        <ion-col size-md="12">
-          <div style="display: flex">
+        <ion-col size-sm="12" style="display: flex">
+          <ion-item class="ion-padding-start">
+            <ion-label>schließt automatisch...</ion-label>
             <ion-datetime
               display-format="D MMM YYYY H:mm"
               placeholder="(opt) Schließt..."
@@ -124,16 +125,16 @@
               :value="closesAt"
               @ionChange="closesAt = $event.target.value"
             ></ion-datetime>
-            <ion-button
-              v-if="!!closesAt"
-              type="submit"
-              size="small"
-              fill="clear"
-              @click="closesAt = null"
-            >
-              <ion-icon :icon="closeIcon"/>
-            </ion-button>
-          </div>
+          </ion-item>
+          <ion-button
+            v-if="!!closesAt"
+            type="submit"
+            size="small"
+            fill="clear"
+            @click="closesAt = null"
+          >
+            <ion-icon :icon="closeIcon"/>
+          </ion-button>
         </ion-col>
       </ion-row>
     </ion-grid>
