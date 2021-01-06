@@ -116,14 +116,24 @@
           </ion-item>
         </ion-col>
         <ion-col size-md="12">
-          <ion-item>
-            <ion-label>(opt) Schließt am</ion-label>
+          <div style="display: flex">
             <ion-datetime
               display-format="D MMM YYYY H:mm"
+              placeholder="(opt) Schließt..."
+              :min="(new Date()).toISOString()"
               :value="closesAt"
               @ionChange="closesAt = $event.target.value"
             ></ion-datetime>
-          </ion-item>
+            <ion-button
+              v-if="!!closesAt"
+              type="submit"
+              size="small"
+              fill="clear"
+              @click="closesAt = null"
+            >
+              <ion-icon :icon="closeIcon"/>
+            </ion-button>
+          </div>
         </ion-col>
       </ion-row>
     </ion-grid>
