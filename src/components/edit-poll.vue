@@ -65,10 +65,10 @@
         </ion-col>
       </ion-row>
       <ion-row>
-        <ion-col size-md="12">
+        <ion-col size-sm="12">
           Einstellungen:
         </ion-col>
-        <ion-col size-md="12">
+        <ion-col size-sm="12">
           <ion-item>
             <ion-toggle
               :checked="isMultiselect"
@@ -77,7 +77,7 @@
             <ion-label>Mehrfach-Antwort erlauben</ion-label>
           </ion-item>
         </ion-col>
-        <ion-col size-md="12">
+        <ion-col size-sm="12">
           <ion-item>
             <ion-toggle
               :checked="isAnonymous"
@@ -86,7 +86,7 @@
             <ion-label>Anonyme Abstimmung</ion-label>
           </ion-item>
         </ion-col>
-        <ion-col size-md="12">
+        <ion-col size-sm="12">
           <ion-item>
             <ion-toggle
               :disabled="isAnonymous"
@@ -96,7 +96,7 @@
             <ion-label>Antwort kann geändert werden</ion-label>
           </ion-item>
         </ion-col>
-        <ion-col size-md="12">
+        <ion-col size-sm="12">
           <ion-item>
             <ion-toggle
               :checked="showResults"
@@ -105,7 +105,7 @@
             <ion-label>Zwischenergebnis anzeigen</ion-label>
           </ion-item>
         </ion-col>
-        <ion-col size-md="12">
+        <ion-col size-sm="12">
           <ion-item>
             <ion-toggle
               :disabled="!showResults"
@@ -114,6 +114,27 @@
             />
             <ion-label>ZW-Ergenbisanzeigen ohne Abstimmmung  </ion-label>
           </ion-item>
+        </ion-col>
+        <ion-col size-sm="12" style="display: flex">
+          <ion-item class="ion-padding-start">
+            <ion-label>schließt automatisch...</ion-label>
+            <ion-datetime
+              display-format="D MMM YYYY H:mm"
+              placeholder="(opt) Schließt..."
+              :min="(new Date()).toISOString()"
+              :value="closesAt"
+              @ionChange="closesAt = $event.target.value"
+            ></ion-datetime>
+          </ion-item>
+          <ion-button
+            v-if="!!closesAt"
+            type="submit"
+            size="small"
+            fill="clear"
+            @click="closesAt = null"
+          >
+            <ion-icon :icon="closeIcon"/>
+          </ion-button>
         </ion-col>
       </ion-row>
     </ion-grid>
@@ -131,6 +152,7 @@
 import {
   IonContent, IonHeader, IonToolbar, IonInput, IonIcon, IonButton, IonTextarea, modalController,
   IonFooter, IonLabel, IonToggle, IonGrid, IonRow, IonCol, IonItem, IonList, IonListHeader,
+  IonDatetime,
 } from '@ionic/vue';
 import {
   closeOutline as closeIcon,
@@ -139,12 +161,13 @@ import {
   addCircleOutline as addIcon,
 } from 'ionicons/icons';
 import { defineComponent } from 'vue';
+import dayjs from 'dayjs';
 
 export default defineComponent({
   name: 'EditPoll',
   components: {
     IonContent, IonToolbar, IonInput, IonHeader, IonTextarea, IonIcon,
-    IonButton, IonFooter, IonLabel,
+    IonButton, IonFooter, IonLabel, IonDatetime,
     IonToggle, IonGrid, IonRow, IonCol, IonItem, IonList, IonListHeader,
   },
   props: {
@@ -161,7 +184,7 @@ export default defineComponent({
       closeModal() {
         modalController.dismiss()
       },
-      saveIcon, closeIcon, addIcon, listIcon,
+      saveIcon, closeIcon, addIcon, listIcon, dayjs,
     }
   },
   data(props) {
@@ -178,6 +201,7 @@ export default defineComponent({
       'randomizeOrder',
       'allowChange',
       'showsResultsWithoutVote',
+      'closesAt',
     ].forEach((key) => {
       data[key] = props.poll.get(key)
     });
@@ -205,6 +229,7 @@ export default defineComponent({
       ].forEach((key) => {
         data[key] = this[key]
       });
+      data.closesAt = this.closesAt ? dayjs(this.closesAt).toDate() : null;
       modalController.dismiss(data);
     },
     addOption() {
