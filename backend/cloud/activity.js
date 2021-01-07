@@ -13,9 +13,13 @@ Parse.Cloud.beforeSave(Activity, async (request) => {
 
     const user = request.user;
     const activity = request.object;
-    const team = await fetchModel(request, activity.get("team").toPointer(),
-        ["settings", "members", "publishers", "agents", "mods", "leaders"]
+    // making sure the user can see the team
+    const team = await fetchModel(request,
+        activity.get("team").toPointer(),
+        ["settings"]
     );
+    // then pull the other necessary fields
+    await team.fetchWithInclude(["members", "publishers", "agents", "mods", "leaders"], {useMasterKey: true})
     const settings = team.get("settings");
     const verb = activity.get("verb");
 

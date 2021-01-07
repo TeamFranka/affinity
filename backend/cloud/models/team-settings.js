@@ -15,7 +15,6 @@ const Defaults = {
 const Levels = ["anyone", "members", "publishers", "mods", "leaders", "nobody"];
 
 function isMember(team, groupName, userId) {
-    console.log("checking membership", groupName, userId);
     return team
         .get(groupName)
         .getUsers()
