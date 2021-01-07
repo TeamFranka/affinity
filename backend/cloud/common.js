@@ -5,6 +5,76 @@ const Team = require("./consts.js").Team;
 
 const CANT_BE_CHANGED = ["team", "author", "ACL"];
 
+const enforcACL = async (request, team) => {
+  const visibility = request.object.get("visibility") || "public";
+  await team.fetchWithInclude(["settings", "leaders", visibility], {useMasterKey: true});
+  const leadersRole = team.get("leaders");
+  const settings = team.get("settings");
+  const user = request.user;
+  if (!user) throw "User must be set";
+  if (!leadersRole) throw "Leaders must be set";
+  console.log("checking if leader", user, leadersRole);
+  const isLeader = await leadersRole
+    .getUsers()
+    .query()
+    .contains("id", user.id)
+    .exists({useMasterKey: true});
+  console.log("starting ACL");
+  const acl = new Parse.ACL();
+
+  console.log("visibility check:", visibility);
+
+  if (visibility === "public") {
+    console.log("making public");
+    acl.setPublicReadAccess(true);
+  } else if (visibility === "leaders") {
+    if (!isLeader) {
+      throw "Only team leader can set the role to leaders";
+    }
+    // this is set anyways.
+  } else {
+    console.log("checking for role", visibility);
+    const role = team.get(visibility);
+    if (!role) {
+      throw "Unknown visibility "+ visibility
+    }
+    console.log("checking for user");
+    const isMember = await role
+      .getUsers()
+      .query()
+      .contains("id", user.id)
+      .exists({useMasterKey: true});
+
+    if (!isLeader && !isMember) {
+        throw "Only team leaders and members of the same role can set visibility to it"
+    }
+    console.log("setting role");
+    acl.setRoleReadAccess(role);
+  }
+
+  console.log("setting admin", leadersRole);
+  // Admins can read and write all objects
+  acl.setRoleReadAccess(leadersRole, true);
+  acl.setRoleWriteAccess(leadersRole, true);
+
+  /// there might be others that can write though.
+  const whoCanEdit = settings.get("canEdit" + request.object.className);
+  if (whoCanEdit) {
+    console.log("canEdit", whoCanEdit);
+    const editGroup = team.get(whoCanEdit);
+    if (editGroup) {
+      acl.setRoleReadAccess(editGroup, true);
+      acl.setRoleWriteAccess(editGroup, true);
+    }
+  }
+
+  console.log("end");
+  // remove the field.
+  request.object.unset("visibility");
+  // set the ACL
+  request.object.setACL(acl);
+}
+
 const genericObjectsPreSave = async (request) => {
 
   const teamId = request.original ? request.original.get("team").id : request.object.get("team").id;
@@ -32,22 +102,7 @@ const genericObjectsPreSave = async (request) => {
       request.object.set("author", request.user);
     }
 
-    const members = team.get("members");
-    const newAcl = new Parse.ACL();
-    newAcl.setRoleReadAccess(members, true);
-    newAcl.setRoleReadAccess(team.get("leaders"), true);
-    newAcl.setRoleWriteAccess(team.get("leaders"), true);
-    const whoCanEdit = settings.get("canEdit" + request.object.className);
-    if (whoCanEdit) {
-      const editGroup = team.get(whoCanEdit);
-      if (editGroup) {
-        newAcl.setRoleReadAccess(editGroup, true);
-        newAcl.setRoleWriteAccess(editGroup, true);
-      }
-    }
-    // FIXME: well, should depend.
-    newAcl.setPublicReadAccess(false);
-    request.object.setACL(newAcl)
+    await enforcACL(request, team);
   }
 }
 
@@ -89,6 +144,7 @@ const fetchModel = async(request, pointer, includes) => {
 
 module.exports = {
   GenericObjectParams: GenericObjectParams,
+  enforcACL: enforcACL,
   rejectIfClosed: rejectIfClosed,
   fetchModel: fetchModel,
   genericObjectsPreSave: genericObjectsPreSave,

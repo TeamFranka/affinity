@@ -3,6 +3,7 @@ const Parse = require('./parse-fix');
 
 const Defaults = {
     canPost: 'members',
+    canPublish: 'publishers',
     canComment: 'members',
     canLike: 'members',
     canCreatePicture: 'members',
@@ -11,10 +12,9 @@ const Defaults = {
     canEditFaqEntry: 'mods',
 };
 
-const Levels = ["anyone", "members", "mods", "leaders", "nobody"];
+const Levels = ["anyone", "members", "publishers", "mods", "leaders", "nobody"];
 
 function isMember(team, groupName, userId) {
-    console.log("checking membership", groupName, userId);
     return team
         .get(groupName)
         .getUsers()
@@ -36,7 +36,7 @@ const TeamSettings = Parse.Object.extend("TeamSettings", {
             return false
         } else if (lvl === "members"  || lvl === "leaders") {
             return isMember(team, lvl, user.id)
-        } else if (lvl === "mods" || lvl === "agents") {
+        } else if (lvl === "mods" || lvl === "agents" || lvl === "publishers") {
             return isMember(team, lvl, user.id) ? true : isMember(team, "leaders", user.id)
         }
 

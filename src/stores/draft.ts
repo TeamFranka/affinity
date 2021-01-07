@@ -134,6 +134,7 @@ export const Draft = {
           );
           await file.save();
           const picture = new Picture({
+            visibility: state.visibility,
             description: entry.description,
             author, team, file,
           });
