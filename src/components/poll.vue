@@ -48,18 +48,18 @@
       <ion-spinner v-if="loading" />
       <div class="ion-text-end" v-if="!loading && !showingResults">
         <ion-button
-          v-if="canShowResults && votedCount"
-          @click="wantsToShowResult = true"
-          fill="clear"
-          size="small"
-        >Zwischenergebnis zeigen</ion-button>
-        <ion-button
           v-if="!hasVoted"
           :disabled="!canSubmit"
           @click="submit"
           size="small"
           fill="outline"
         >Abstimmen</ion-button>
+        <ion-button
+          v-if="canShowResults"
+          @click="wantsToShowResult = true"
+          fill="clear"
+          size="small"
+        >Zwischenergebnis zeigen</ion-button>
       </div>
       <div class="ion-text-end" v-if="!loading && showingResults">
         <ion-button
@@ -167,7 +167,7 @@ export default defineComponent({
       return alert.present();
     },
     calcResult(index: number): number {
-      const votersCount = this.poll.get("hasVoted").length;
+      const votersCount = (this.poll.get("hasVoted") || []).length;
       if (votersCount === 0) { return 0 }
       return ((this.poll.get("votes") || {})[index] || []).length / votersCount;
     },
@@ -198,6 +198,9 @@ export default defineComponent({
   },
   computed: {
     canEdit(): boolean {
+      if (!this.poll.id) {
+        return false;
+      }
       if (this.isClosed) {
         return false;
       }
@@ -212,6 +215,9 @@ export default defineComponent({
       }
     },
     canClose(): boolean {
+      if (!this.poll.id) {
+        return false;
+      }
       if (this.poll.get("closedAt")) {
         return false
       }
@@ -275,7 +281,7 @@ export default defineComponent({
       return this.poll.get('options')
     },
     canShowResults(): boolean {
-      return this.isClosed || (this.poll.get('showResults') && this.poll.get("showsResultsWithoutVote"))
+      return !this.isClosed && (this.poll.get('showResults') && this.poll.get("showsResultsWithoutVote"))
     },
     canSubmit(): boolean {
       return !this.isClosed && this.selected.length > 0
