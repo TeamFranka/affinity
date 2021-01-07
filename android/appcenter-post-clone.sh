@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+echo "RUNNING POST CLONE -----------------------------------"
 sudo npm cache clean -f
 sudo npm install -g n
 sudo n stable
