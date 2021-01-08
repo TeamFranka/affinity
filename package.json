@@ -30,6 +30,7 @@
     "dayjs": "^1.9.7",
     "easyqrcodejs": "^4.1.0",
     "ionicons": "^5.2.3",
+    "open-graph-scraper-lite": "^1.1.1",
     "parse": "^2.19.0",
     "vue": "^3.0.4",
     "vue-router": "^4.0.1",
