@@ -2,9 +2,6 @@ import { Parse, Verb, Visibility } from "../config/Consts";
 import { Picture, Activity, Poll } from "../db/models";
 import { takePicture, CameraPhoto } from '../utils/camera';
 
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-const ogs = require('open-graph-scraper-lite');
-
 // FROM https://stackoverflow.com/a/9284473
 // eslint-disable-next-line no-useless-escape
 const LINK_EXP = new RegExp('(?:(?:https?|ftp):\/\/)(?:\S+(?::\S*)?@)?(?:(?!(?:10|127)(?:\.\d{1,3}){3})(?!(?:169\.254|192\.168)(?:\.\d{1,3}){2})(?!172\.(?:1[6-9]|2\d|3[0-1])(?:\.\d{1,3}){2})(?:[1-9]\d?|1\d\d|2[01]\d|22[0-3])(?:\.(?:1?\d{1,2}|2[0-4]\d|25[0-5])){2}(?:\.(?:[1-9]\d?|1\d\d|2[0-4]\d|25[0-4]))|(?:(?:[a-z\u00a1-\uffff0-9]-*)*[a-z\u00a1-\uffff0-9]+)(?:\.(?:[a-z\u00a1-\uffff0-9]-*)*[a-z\u00a1-\uffff0-9]+)*(?:\.(?:[a-z\u00a1-\uffff]{2,}))\.?)(?::\d{2,5})?(?:[/?#]\S*)?', 'ig');
@@ -112,7 +109,7 @@ export const Draft = {
     setTeam(state: DraftT, team: Parse.Object) {
       state.team = team;
     },
-    setText(state: DraftT, text: string) {
+    async setText(state: DraftT, text: string) {
       state.text = text;
       console.log(text);
       for (const l of text.matchAll(LINK_EXP)) {
@@ -125,17 +122,9 @@ export const Draft = {
           }
         }
         if (found) continue
-
-        const newLink: Link = {loading: true, url, title: null, description: null } //, url: url};
-        state.links.push(newLink)
-        ogs({url})
-          .then((data: any) => {
-            const { error, result, response } = data;
-            console.log('error:', error);  // This is returns true or false. True if there was a error. The error it self is inside the results object.
-            console.log('result:', result); // This contains all of the Open Graph results
-            console.log('response:', response); // This contains the HTML of page
-          })
-        console.log(url)
+        console.log(url);
+        const res = await Parse.Cloud.run("fetchLinkMetadata", { url });
+        console.log(res);
       }
     },
     setType(state: DraftT, t: Verb) {
