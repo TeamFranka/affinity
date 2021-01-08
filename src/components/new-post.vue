@@ -101,22 +101,33 @@
       </ion-col>
     </ion-row>
     <ion-row>
-      <ion-col size-md="6" v-for="img in images" v-bind:key="img.file.dataUrl">
-        <ion-img :src="img.file.dataUrl" />
-        <ion-input placeholder="description" v-model="img.description"></ion-input>
-      </ion-col>
-      <ion-col size-md="6" v-for="(poll, index) in polls" v-bind:key="poll.get('title')">
-        <div>
-          <poll :poll="poll">
+      <ion-col size-md="6" v-for="(o, index) in objects" v-bind:key="o._localId">
+        <div v-if="o.className == 'Picture'">
+          <ion-img :src="o.get('img').dataUrl" />
+          <ion-input placeholder="description"
+            @ionChanged="updateObject({index, data: {description: $event.target.value}})"
+            :value="o.get('description')"
+          />
+        </div>
+        <div v-else-if="o.className == 'Poll'">
+          <poll :poll="o">
             <template v-slot:extraButtons>
               <ion-button @click="editPoll(index)" size="small" fill="clear" color="dark">
                 <ion-icon :icon="editIcon"/>
               </ion-button>
-              <ion-button @click="removePoll(index)" size="small" fill="clear" color="dark">
+              <ion-button @click="removeObject(index)" size="small" fill="clear" color="dark">
                 <ion-icon :icon="deleteIcon"/>
               </ion-button>
             </template>
           </poll>
+        </div>
+        <div v-else-if="o.className == 'Link'">
+          <ion-spinner v-if="o.get('loading')" />
+          <span v-if="o.get('siteName')">{{o.get('siteName')}}</span>
+          <span v-if="o.get('title')">{{o.get('title')}}</span>
+          <span v-else>{{o.get('url')}}</span>
+          <ion-img v-if="o.get('previewImage')" :src="o.get('previewImage')" />
+          <p>{{o.get('description')}}</p>
         </div>
       </ion-col>
     </ion-row>
@@ -144,7 +155,7 @@
 <script lang="ts">
 import {
   IonTextarea, IonChip, IonIcon, IonLabel, IonButton, IonInput, IonImg,
-  IonGrid, IonRow, IonCol, IonItem, modalController,
+  IonGrid, IonRow, IonCol, IonItem, modalController, IonSpinner,
 } from '@ionic/vue';
 import {
   image as imageIcon, readerOutline, paperPlaneOutline as sendIcon, newspaperOutline,
@@ -194,9 +205,8 @@ export default defineComponent({
       text: computed(() => store.state.draft.text),
       selectedType: computed(() => store.getters["draft/selectedType"]),
       visibility: computed(() => store.state.draft.visibility),
-      images: computed(() => store.getters["draft/images"]),
-      polls: computed(() => store.getters["draft/polls"]),
-      updateText: (e: any) => store.commit("draft/setText", e.target.value),
+      objects: computed(() => store.getters["draft/objects"]),
+      updateText: (e: any) => store.dispatch("draft/updateText", e.target.value),
       selectTeam: (t: Parse.Object) => store.commit("draft/setTeam", t),
       setVisibility: (t: Visibility) => store.commit("draft/setVisibility", t),
       selectType: (t: Verb) => store.commit("draft/setType", t),
@@ -210,7 +220,8 @@ export default defineComponent({
       canCreatePoll: computed(()=> store.getters["draft/selectedTeamPerms"].canCreatePoll ),
       submit() { store.dispatch("draft/submit"); },
       canSubmit: computed(() => store.getters["draft/canSubmit"]),
-      removePoll: (idx: number) => store.commit("draft/removePoll", idx),
+      removeObject: (idx: number) => store.commit("draft/removeObject", idx),
+      updateObject: (e: any) => store.dispatch("draft/updateObject", e),
       showTeamSelector: computed(() => store.getters["auth/hasManyTeams"]),
       imageIcon, sendIcon, eyeOutline, editIcon, listIcon,
       selectedIcon: checkmarkOutline, closeIcon, deleteIcon,
@@ -218,7 +229,7 @@ export default defineComponent({
   },
   components: {
     IonTextarea, IonChip, IonIcon, IonLabel, IonButton, IonInput, IonImg, IonItem,
-    IonGrid, IonRow, IonCol, Selector, Avatar, Poll,
+    IonGrid, IonRow, IonCol, IonSpinner,  Selector, Avatar, Poll,
   },
   methods: {
     async addPoll() {
@@ -239,7 +250,7 @@ export default defineComponent({
     },
 
     async editPoll(index: number) {
-      const poll = this.polls[index];
+      const poll = this.objects[index];
       const modal = await modalController
         .create({
           component: EditPoll,

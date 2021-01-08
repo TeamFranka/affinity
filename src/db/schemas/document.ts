@@ -20,12 +20,18 @@ export const Document = {
                 type: "String",
                 required: true
             },
+            siteName: {
+                type: "String",
+            },
             upload: {
                 type: "File",
             },
             url: {
                 type: "String",
-            }
+            },
+            metadata: {
+                type: "Object",
+            },
         },
         Interactable,
         ViewTracking,

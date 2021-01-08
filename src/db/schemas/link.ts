@@ -20,6 +20,9 @@ export const Link = {
                 type: "String",
                 required: true
             },
+            siteName: {
+                type: "String",
+            },
             url: {
                 type: "String",
                 required: true
@@ -29,6 +32,9 @@ export const Link = {
             },
             previewText: {
                 type: "String",
+            },
+            metadata: {
+                type: "Object",
             },
         },
         Interactable,
