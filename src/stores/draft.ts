@@ -131,8 +131,9 @@ export const Draft = {
         newLink.set("title", res.ogTitle || res.title);
         newLink.set("siteName", res.ogSiteName);
         newLink.set("description", res.ogDescription);
-        if (res.ogImage && res.ogImage.url) {
-          newLink.set("previewImage", res.ogImage.url);
+        if (res.previewImage) {
+          newLink.set("previewImage", res.previewImage);
+          delete res.previewImage;
         }
         newLink.set("metadata", res)
         newLink.set("loading", false);
@@ -157,7 +158,7 @@ export const Draft = {
         p.set("team", team);
         p.set("author", author);
         return p;
-      })
+      });
 
       const activity = new Activity({
         visibility: state.visibility,

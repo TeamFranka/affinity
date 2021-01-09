@@ -126,7 +126,7 @@
           <span v-if="o.get('siteName')">{{o.get('siteName')}}</span>
           <span v-if="o.get('title')">{{o.get('title')}}</span>
           <span v-else>{{o.get('url')}}</span>
-          <ion-img v-if="o.get('previewImage')" :src="o.get('previewImage')" />
+          <ion-img v-if="o.get('previewImage')" :src="o.get('previewImage').url()" />
           <p>{{o.get('description')}}</p>
         </div>
       </ion-col>
@@ -245,7 +245,7 @@ export default defineComponent({
       await modal.present();
       const res = await modal.onDidDismiss();
       if (res.data) {
-        this.store.commit("draft/addPoll", new PollModel(res.data));
+        this.store.commit("draft/addObject", new PollModel(res.data));
       }
     },
 
