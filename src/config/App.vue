@@ -35,14 +35,15 @@
 <script lang="ts">
 import {
   IonApp, IonRouterOutlet, IonFooter, IonProgressBar, IonFab, IonIcon, IonContent,
-  IonFabButton, modalController, isPlatform, IonToolbar, IonHeader, IonTitle, IonButton,
+  IonFabButton, modalController, isPlatform, IonToolbar, IonHeader, IonTitle,
+  IonButton, toastController,
 } from '@ionic/vue';
 import { logInOutline as logInIcon } from 'ionicons/icons';
 import { defineComponent, computed, watch, ref } from 'vue'
 
 // import SideMenu from '../components/side-menu.vue';
 import FooterMenu from '../components/footer-menu.vue';
-import Login from '../components/login.vue';
+import LoginModal from '../components/login-modal.vue';
 import Avatar from '../components/avatar.vue';
 import { useStore } from '../stores/';
 
@@ -68,23 +69,45 @@ export default defineComponent({
   },
   setup() {
     const store = useStore();
+    let loginModal: any = null;
     store.dispatch("fetchDefaultTeam", (window as any).AFFINITY_DEFAULT_TEAM);
 
     watch(() => store.state.auth.wantsToLogin, async (newVal, oldVal) => {
-      console.log("listener", newVal, oldVal);
       if (newVal && newVal != oldVal) {
-        const modal = await modalController
+        loginModal = await modalController
           .create({
-            component: Login,
+            component: LoginModal,
             componentProps: {
               title: 'New Title'
             },
           })
-        modal.present();
-        modal.onDidDismiss().then(()=>{
+        loginModal.present();
+        loginModal.onDidDismiss().then(()=>{
           store.dispatch("auth/dismissLogin");
         })
+      } else if (!newVal && loginModal) {
+        loginModal.dismiss();
+        loginModal = null;
+      }
+    })
 
+    watch(() => store.state.auth.user, async (newVal, oldVal) => {
+      if (newVal && newVal != oldVal) {
+        const toast = await toastController
+          .create({
+            message: `Erfolgreich als ${newVal.get('usename')} eingeloggt`,
+            color: "success",
+            duration: 2000
+          })
+        return toast.present();
+
+      } else if (!newVal) {
+        const toast = await toastController
+          .create({
+            message: `Erfolgreich ausgeloggt`,
+            duration: 2000
+          })
+        return toast.present();
       }
     })
 
