@@ -124,8 +124,8 @@
         <div v-else-if="o.className == 'Link'">
           <ion-spinner v-if="o.get('loading')" />
           <span v-if="o.get('siteName')">{{o.get('siteName')}}</span>
-          <span v-if="o.get('title')">{{o.get('title')}}</span>
-          <span v-else>{{o.get('url')}}</span>
+          <a :href="o.get('url')" v-if="o.get('title')">{{o.get('title')}}</a>
+          <a :href="o.get('url')" v-else>{{o.get('url')}}</a>
           <ion-img v-if="o.get('previewImage')" :src="o.get('previewImage').url()" />
           <p>{{o.get('description')}}</p>
         </div>
