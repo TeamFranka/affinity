@@ -52,6 +52,10 @@ export const AuthState = {
     dismissLogin(context: any) {
       context.commit("setWantsToLogin", false);
     },
+    logout(context: any) {
+      Parse.User.logOut();
+      context.commit("setUser", null);
+    },
     openLogin(context: any) {
       context.commit("setWantsToLogin", true);
     },
