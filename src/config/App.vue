@@ -93,11 +93,12 @@ export default defineComponent({
 
     watch(() => store.state.auth.user, async (newVal, oldVal) => {
       if (newVal && newVal != oldVal) {
+        console.log(newVal);
         const toast = await toastController
           .create({
-            message: `Erfolgreich als ${newVal.get('usename')} eingeloggt`,
+            message: `Willkommen zurück, ${newVal.get('username')} 👋!`,
             color: "success",
-            duration: 2000
+            duration: 3000
           })
         return toast.present();
 
