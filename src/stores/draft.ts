@@ -72,7 +72,7 @@ export const Draft = {
     addObject(state: DraftT, obj: Parse.Object) {
       state.objects.push(obj);
     },
-    refreshObject(state: DraftT) {
+    refreshObjects(state: DraftT) {
       state.objects = Array.from(state.objects);
     },
     updateObject(state: DraftT, input: any) {
@@ -112,6 +112,13 @@ export const Draft = {
         context.commit("addObject", picture);
       });
     },
+    swapObjects(context: any, index: number) {
+      const a = context.state.objects[index];
+      const b = context.state.objects[index+1];
+      context.state.objects.splice(index, 2, b, a);
+      console.log("swapping", index, b, a, context.state.objects);
+      context.commit("refreshObjects");
+    },
     async updateText(context: any, text: string) {
       context.commit("setText", text);
       for (const l of text.matchAll(LINK_EXP)) {
@@ -137,7 +144,7 @@ export const Draft = {
         }
         newLink.set("metadata", res)
         newLink.set("loading", false);
-        context.commit("refreshObject");
+        context.commit("refreshObjects");
         console.log(res);
       }
     },

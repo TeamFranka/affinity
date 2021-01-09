@@ -102,33 +102,45 @@
     </ion-row>
     <ion-row>
       <ion-col size-md="6" v-for="(o, index) in objects" v-bind:key="o._localId">
-        <div v-if="o.className == 'Picture'">
-          <ion-img :src="o.get('img').dataUrl" />
-          <ion-input placeholder="description"
-            @ionChanged="updateObject({index, data: {description: $event.target.value}})"
-            :value="o.get('description')"
-          />
-        </div>
-        <div v-else-if="o.className == 'Poll'">
-          <poll :poll="o">
-            <template v-slot:extraButtons>
-              <ion-button @click="editPoll(index)" size="small" fill="clear" color="dark">
-                <ion-icon :icon="editIcon"/>
-              </ion-button>
-              <ion-button @click="removeObject(index)" size="small" fill="clear" color="dark">
-                <ion-icon :icon="deleteIcon"/>
-              </ion-button>
-            </template>
-          </poll>
-        </div>
-        <div v-else-if="o.className == 'Link'">
-          <ion-spinner v-if="o.get('loading')" />
-          <span v-if="o.get('siteName')">{{o.get('siteName')}}</span>
-          <a :href="o.get('url')" v-if="o.get('title')">{{o.get('title')}}</a>
-          <a :href="o.get('url')" v-else>{{o.get('url')}}</a>
-          <ion-img v-if="o.get('previewImage')" :src="o.get('previewImage').url()" />
-          <p>{{o.get('description')}}</p>
-        </div>
+        <ion-card>
+          <div class="ion-text-end">
+            <ion-button v-if="index != 0" @click="moveLeft(index)" size="small" fill="clear" color="medium">
+              <ion-icon :icon="leftIcon"/>
+            </ion-button>
+            <ion-button v-if="index+1 !== objects.length" @click="moveRight(index)" size="small" fill="clear" color="medium">
+              <ion-icon :icon="rightIcon"/>
+            </ion-button>
+            <ion-button @click="removeObject(index)" size="small" fill="clear" color="medium">
+              <ion-icon :icon="deleteIcon"/>
+            </ion-button>
+          </div>
+        <ion-card-content>
+          <div v-if="o.className == 'Picture'">
+            <ion-img :src="o.get('img').dataUrl" />
+            <ion-input placeholder="description"
+              @ionChanged="updateObject({index, data: {description: $event.target.value}})"
+              :value="o.get('description')"
+            />
+          </div>
+          <div v-else-if="o.className == 'Poll'">
+            <poll :poll="o">
+              <template v-slot:extraButtons>
+                <ion-button @click="editPoll(index)" size="small" fill="clear" color="dark">
+                  <ion-icon :icon="editIcon"/>
+                </ion-button>
+              </template>
+            </poll>
+          </div>
+          <div v-else-if="o.className == 'Link'">
+            <ion-spinner v-if="o.get('loading')" />
+            <span v-if="o.get('siteName')">{{o.get('siteName')}}</span>
+            <a :href="o.get('url')" v-if="o.get('title')">{{o.get('title')}}</a>
+            <a :href="o.get('url')" v-else>{{o.get('url')}}</a>
+            <ion-img v-if="o.get('previewImage')" :src="o.get('previewImage').url()" />
+            <p>{{o.get('description')}}</p>
+          </div>
+        </ion-card-content>
+        </ion-card>
       </ion-col>
     </ion-row>
     <ion-row>
@@ -156,12 +168,15 @@
 import {
   IonTextarea, IonChip, IonIcon, IonLabel, IonButton, IonInput, IonImg,
   IonGrid, IonRow, IonCol, IonItem, modalController, IonSpinner,
+  IonCard, IonCardContent,
 } from '@ionic/vue';
 import {
   image as imageIcon, readerOutline, paperPlaneOutline as sendIcon, newspaperOutline,
   createOutline  as editIcon, close as closeIcon,
   listOutline as listIcon,
   trashOutline as deleteIcon,
+  chevronBackSharp as leftIcon,
+  chevronForwardSharp as rightIcon,
   eyeOutline,
   earthOutline,
   peopleOutline,
@@ -206,6 +221,8 @@ export default defineComponent({
       selectedType: computed(() => store.getters["draft/selectedType"]),
       visibility: computed(() => store.state.draft.visibility),
       objects: computed(() => store.getters["draft/objects"]),
+      moveLeft: (i: number) => store.dispatch("draft/swapObjects", i-1),
+      moveRight: (i: number) => store.dispatch("draft/swapObjects", i),
       updateText: (e: any) => store.dispatch("draft/updateText", e.target.value),
       selectTeam: (t: Parse.Object) => store.commit("draft/setTeam", t),
       setVisibility: (t: Visibility) => store.commit("draft/setVisibility", t),
@@ -223,13 +240,14 @@ export default defineComponent({
       removeObject: (idx: number) => store.commit("draft/removeObject", idx),
       updateObject: (e: any) => store.dispatch("draft/updateObject", e),
       showTeamSelector: computed(() => store.getters["auth/hasManyTeams"]),
-      imageIcon, sendIcon, eyeOutline, editIcon, listIcon,
+      imageIcon, sendIcon, eyeOutline, editIcon, listIcon, leftIcon, rightIcon,
       selectedIcon: checkmarkOutline, closeIcon, deleteIcon,
     }
   },
   components: {
     IonTextarea, IonChip, IonIcon, IonLabel, IonButton, IonInput, IonImg, IonItem,
     IonGrid, IonRow, IonCol, IonSpinner,  Selector, Avatar, Poll,
+    IonCard, IonCardContent,
   },
   methods: {
     async addPoll() {
