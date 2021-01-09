@@ -28,6 +28,12 @@ export const TeamSettings = {
             canCreatePoll: {
                 type: 'String',
             },
+            canCreateLink: {
+                type: 'String',
+            },
+            canCreateDocument: {
+                type: 'String',
+            },
             canCreateFaqEntry: {
                 type: 'String',
             },

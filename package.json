@@ -14,10 +14,10 @@
     "dev:db:mock-data": "node -r dotenv/config bin/mock-data.js dotenv_config_path=.env.development with-faq with-posts",
     "dev:db:add-posts": "node -r dotenv/config bin/mock-data.js dotenv_config_path=.env.development with-posts",
     "dev:run-parse": "docker-compose pull && docker-compose up -d && docker-compose logs -f --tail 10 parse",
-    "dev:restart-parse": "docker-compose stop parse && docker-compose up -d && docker-compose logs -f --tail 10 parse",
+    "dev:restart-parse": "cd backend/cloud/  && npm install && cd ../.. && docker-compose stop parse && docker-compose up -d && docker-compose logs -f --tail 10 parse",
     "deploy:db": "node -r dotenv/config bin/update-db.js dotenv_config_path=.env.production.local",
-    "deploy:web": "ionic build --engine browser && cd backend && b4a deploy",
-    "deploy:b4a": "cd backend && b4a deploy"
+    "deploy:web": "ionic build --engine browser && cd backend/cloud && npm install && cd ../ && b4a deploy",
+    "deploy:b4a": "npm run deploy:web && npm run deploy:web"
   },
   "dependencies": {
     "@capacitor/android": "^2.4.3",

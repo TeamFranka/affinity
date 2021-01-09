@@ -8,6 +8,8 @@ const Defaults = {
     canLike: 'members',
     canCreatePicture: 'members',
     canCreatePoll: 'members',
+    canCreateLink: 'members',
+    canCreateDocument: 'mods',
     canCreateFaqEntry: 'mods',
     canEditFaqEntry: 'mods',
 };

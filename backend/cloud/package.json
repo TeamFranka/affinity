@@ -1,0 +1,8 @@
+{
+  "name": "affinity-backend",
+  "version": "0.0.1",
+  "private": true,
+  "dependencies": {
+    "open-graph-scraper": "4.7.1"
+  }
+}

@@ -101,23 +101,57 @@
       </ion-col>
     </ion-row>
     <ion-row>
-      <ion-col size-md="6" v-for="img in images" v-bind:key="img.file.dataUrl">
-        <ion-img :src="img.file.dataUrl" />
-        <ion-input placeholder="description" v-model="img.description"></ion-input>
-      </ion-col>
-      <ion-col size-md="6" v-for="(poll, index) in polls" v-bind:key="poll.get('title')">
-        <div>
-          <poll :poll="poll">
-            <template v-slot:extraButtons>
-              <ion-button @click="editPoll(index)" size="small" fill="clear" color="dark">
-                <ion-icon :icon="editIcon"/>
-              </ion-button>
-              <ion-button @click="removePoll(index)" size="small" fill="clear" color="dark">
-                <ion-icon :icon="deleteIcon"/>
-              </ion-button>
-            </template>
-          </poll>
-        </div>
+      <ion-col size-md="6" v-for="(o, index) in objects" v-bind:key="o._localId">
+        <ion-card>
+          <div class="ion-text-end">
+            <ion-button v-if="index != 0" @click="moveLeft(index)" size="small" fill="clear" color="medium">
+              <ion-icon :icon="leftIcon"/>
+            </ion-button>
+            <ion-button v-if="index+1 !== objects.length" @click="moveRight(index)" size="small" fill="clear" color="medium">
+              <ion-icon :icon="rightIcon"/>
+            </ion-button>
+            <ion-button @click="removeObject(index)" size="small" fill="clear" color="medium">
+              <ion-icon :icon="deleteIcon"/>
+            </ion-button>
+          </div>
+        <ion-card-content>
+          <div v-if="o.className == 'Picture'">
+            <ion-img :src="o.get('img').dataUrl" />
+            <ion-input placeholder="description"
+              @ionChange="updateObject({index, data: {description: $event.target.value}})"
+              :value="o.get('description')"
+            />
+          </div>
+          <div v-else-if="o.className == 'Poll'">
+            <poll :poll="o">
+              <template v-slot:extraButtons>
+                <ion-button @click="editPoll(index)" size="small" fill="clear" color="dark">
+                  <ion-icon :icon="editIcon"/>
+                </ion-button>
+              </template>
+            </poll>
+          </div>
+          <div v-else-if="o.className == 'Link'">
+            <div v-if="o.get('loading')">
+              <ion-spinner  /> <a :href="o.get('url')">{{o.get('url')}}</a>
+            </div>
+            <div v-else>
+              <span v-if="o.get('siteName')">{{o.get('siteName')}}</span>
+              <ion-input
+                @ionChange="updateObject({index, data: {title: $event.target.value}})"
+                  :value="o.get('title')"
+                  :placeholder="o.get('url')"
+              />
+              <ion-img v-if="o.get('previewImage')" :src="o.get('previewImage').url()" />
+              <ion-textarea
+                @ionChange="updateObject({index, data: {description: $event.target.value}})"
+                :value="o.get('description')"
+                placeholder="description text..."
+              />
+            </div>
+          </div>
+        </ion-card-content>
+        </ion-card>
       </ion-col>
     </ion-row>
     <ion-row>
@@ -129,6 +163,10 @@
         <ion-chip v-if="canCreatePoll" @click="addPoll()" color="secondary" outline>
           <ion-icon :icon="listIcon" color="secondary"></ion-icon>
           <ion-label>Umfrage  </ion-label>
+        </ion-chip>
+        <ion-chip v-if="canCreateLink" @click="addLink()" color="secondary" outline>
+          <ion-icon :icon="linkIcon" color="secondary"></ion-icon>
+          <ion-label>Link</ion-label>
         </ion-chip>
       </ion-col>
       <ion-col size-xs="2" class="ion-hide-md-up">
@@ -144,13 +182,17 @@
 <script lang="ts">
 import {
   IonTextarea, IonChip, IonIcon, IonLabel, IonButton, IonInput, IonImg,
-  IonGrid, IonRow, IonCol, IonItem, modalController,
+  IonGrid, IonRow, IonCol, IonItem, modalController, IonSpinner,
+  IonCard, IonCardContent, alertController,
 } from '@ionic/vue';
 import {
   image as imageIcon, readerOutline, paperPlaneOutline as sendIcon, newspaperOutline,
   createOutline  as editIcon, close as closeIcon,
   listOutline as listIcon,
   trashOutline as deleteIcon,
+  chevronBackSharp as leftIcon,
+  chevronForwardSharp as rightIcon,
+  linkOutline as linkIcon,
   eyeOutline,
   earthOutline,
   peopleOutline,
@@ -194,9 +236,10 @@ export default defineComponent({
       text: computed(() => store.state.draft.text),
       selectedType: computed(() => store.getters["draft/selectedType"]),
       visibility: computed(() => store.state.draft.visibility),
-      images: computed(() => store.getters["draft/images"]),
-      polls: computed(() => store.getters["draft/polls"]),
-      updateText: (e: any) => store.commit("draft/setText", e.target.value),
+      objects: computed(() => store.getters["draft/objects"]),
+      moveLeft: (i: number) => store.dispatch("draft/swapObjects", i-1),
+      moveRight: (i: number) => store.dispatch("draft/swapObjects", i),
+      updateText: (e: any) => store.dispatch("draft/updateText", e.target.value),
       selectTeam: (t: Parse.Object) => store.commit("draft/setTeam", t),
       setVisibility: (t: Visibility) => store.commit("draft/setVisibility", t),
       selectType: (t: Verb) => store.commit("draft/setType", t),
@@ -208,17 +251,20 @@ export default defineComponent({
       canCreatePicture: computed(()=> store.getters["draft/selectedTeamPerms"].canCreatePicture ),
       addPicture() { store.dispatch("draft/addPicture"); },
       canCreatePoll: computed(()=> store.getters["draft/selectedTeamPerms"].canCreatePoll ),
+      canCreateLink: computed(()=> store.getters["draft/selectedTeamPerms"].canCreateLink ),
       submit() { store.dispatch("draft/submit"); },
       canSubmit: computed(() => store.getters["draft/canSubmit"]),
-      removePoll: (idx: number) => store.commit("draft/removePoll", idx),
+      removeObject: (idx: number) => store.commit("draft/removeObject", idx),
+      updateObject: (e: any) => store.commit("draft/updateObject", e),
       showTeamSelector: computed(() => store.getters["auth/hasManyTeams"]),
-      imageIcon, sendIcon, eyeOutline, editIcon, listIcon,
-      selectedIcon: checkmarkOutline, closeIcon, deleteIcon,
+      imageIcon, sendIcon, eyeOutline, editIcon, listIcon, leftIcon, rightIcon,
+      selectedIcon: checkmarkOutline, closeIcon, deleteIcon, linkIcon,
     }
   },
   components: {
     IonTextarea, IonChip, IonIcon, IonLabel, IonButton, IonInput, IonImg, IonItem,
-    IonGrid, IonRow, IonCol, Selector, Avatar, Poll,
+    IonGrid, IonRow, IonCol, IonSpinner,  Selector, Avatar, Poll,
+    IonCard, IonCardContent,
   },
   methods: {
     async addPoll() {
@@ -234,12 +280,42 @@ export default defineComponent({
       await modal.present();
       const res = await modal.onDidDismiss();
       if (res.data) {
-        this.store.commit("draft/addPoll", new PollModel(res.data));
+        this.store.commit("draft/addObject", new PollModel(res.data));
       }
     },
 
+    async addLink() {
+
+      const alert = await alertController
+        .create({
+          header: 'Link anhängen',
+          message: 'Welchen Link möchtest Du anhängen?',
+          inputs: [
+            {
+              name: "link",
+              type: "url",
+              placeholder: 'https://...',
+            },
+          ],
+          buttons: [
+            {
+              text: 'Abbrechen',
+              role: 'cancel',
+              cssClass: 'secondary',
+            },
+            {
+              text: 'Anhängen',
+              handler: async (data) => {
+                const { link } = data;
+                this.store.dispatch("draft/addLink", link);
+              },
+            },
+          ],
+        });
+      return alert.present();
+    },
     async editPoll(index: number) {
-      const poll = this.polls[index];
+      const poll = this.objects[index];
       const modal = await modalController
         .create({
           component: EditPoll,
