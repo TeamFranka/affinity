@@ -251,6 +251,7 @@ export default defineComponent({
       canCreatePicture: computed(()=> store.getters["draft/selectedTeamPerms"].canCreatePicture ),
       addPicture() { store.dispatch("draft/addPicture"); },
       canCreatePoll: computed(()=> store.getters["draft/selectedTeamPerms"].canCreatePoll ),
+      canCreateLink: computed(()=> store.getters["draft/selectedTeamPerms"].canCreateLink ),
       submit() { store.dispatch("draft/submit"); },
       canSubmit: computed(() => store.getters["draft/canSubmit"]),
       removeObject: (idx: number) => store.commit("draft/removeObject", idx),
