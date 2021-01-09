@@ -108,7 +108,6 @@ export const Draft = {
     addPicture(context: any) {
       takePicture().then((img: typeof CameraPhoto) => {
         const picture = new Picture({ description: "", img });
-        console.log(picture, img, picture.get("img"));
         context.commit("addObject", picture);
       });
     },
@@ -116,11 +115,29 @@ export const Draft = {
       const a = context.state.objects[index];
       const b = context.state.objects[index+1];
       context.state.objects.splice(index, 2, b, a);
-      console.log("swapping", index, b, a, context.state.objects);
       context.commit("refreshObjects");
+    },
+    async addLink(context: any, url: string) {
+      const newLink = new Link({url, loading: true});
+      context.commit("addObject", newLink);
+      const res = await Parse.Cloud.run("fetchLinkMetadata", { url });
+      newLink.set("title", res.ogTitle || res.title);
+      newLink.set("siteName", res.ogSiteName);
+      newLink.set("description", res.ogDescription);
+      if (res.previewImage) {
+        newLink.set("previewImage", res.previewImage);
+        delete res.previewImage;
+      }
+      newLink.set("metadata", res)
+      newLink.set("loading", false);
+      context.commit("refreshObjects");
+      // console.log(res);
     },
     async updateText(context: any, text: string) {
       context.commit("setText", text);
+      if (!context.getters.selectedTeamPerms.canCreateLink) {
+        return
+      }
       for (const l of text.matchAll(LINK_EXP)) {
         let found = false;
         const url = l.toString();
@@ -131,21 +148,7 @@ export const Draft = {
           }
         }
         if (found) continue
-        const newLink = new Link({url, loading: true});
-        context.commit("addObject", newLink);
-        console.log(url);
-        const res = await Parse.Cloud.run("fetchLinkMetadata", { url });
-        newLink.set("title", res.ogTitle || res.title);
-        newLink.set("siteName", res.ogSiteName);
-        newLink.set("description", res.ogDescription);
-        if (res.previewImage) {
-          newLink.set("previewImage", res.previewImage);
-          delete res.previewImage;
-        }
-        newLink.set("metadata", res)
-        newLink.set("loading", false);
-        context.commit("refreshObjects");
-        console.log(res);
+        context.dispatch("addLink", url);
       }
     },
     async submit(context: any) {

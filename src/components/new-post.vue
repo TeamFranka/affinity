@@ -118,7 +118,7 @@
           <div v-if="o.className == 'Picture'">
             <ion-img :src="o.get('img').dataUrl" />
             <ion-input placeholder="description"
-              @ionChanged="updateObject({index, data: {description: $event.target.value}})"
+              @ionChange="updateObject({index, data: {description: $event.target.value}})"
               :value="o.get('description')"
             />
           </div>
@@ -132,12 +132,23 @@
             </poll>
           </div>
           <div v-else-if="o.className == 'Link'">
-            <ion-spinner v-if="o.get('loading')" />
-            <span v-if="o.get('siteName')">{{o.get('siteName')}}</span>
-            <a :href="o.get('url')" v-if="o.get('title')">{{o.get('title')}}</a>
-            <a :href="o.get('url')" v-else>{{o.get('url')}}</a>
-            <ion-img v-if="o.get('previewImage')" :src="o.get('previewImage').url()" />
-            <p>{{o.get('description')}}</p>
+            <div v-if="o.get('loading')">
+              <ion-spinner  /> <a :href="o.get('url')">{{o.get('url')}}</a>
+            </div>
+            <div v-else>
+              <span v-if="o.get('siteName')">{{o.get('siteName')}}</span>
+              <ion-input
+                @ionChange="updateObject({index, data: {title: $event.target.value}})"
+                  :value="o.get('title')"
+                  :placeholder="o.get('url')"
+              />
+              <ion-img v-if="o.get('previewImage')" :src="o.get('previewImage').url()" />
+              <ion-textarea
+                @ionChange="updateObject({index, data: {description: $event.target.value}})"
+                :value="o.get('description')"
+                placeholder="description text..."
+              />
+            </div>
           </div>
         </ion-card-content>
         </ion-card>
@@ -152,6 +163,10 @@
         <ion-chip v-if="canCreatePoll" @click="addPoll()" color="secondary" outline>
           <ion-icon :icon="listIcon" color="secondary"></ion-icon>
           <ion-label>Umfrage  </ion-label>
+        </ion-chip>
+        <ion-chip v-if="canCreateLink" @click="addLink()" color="secondary" outline>
+          <ion-icon :icon="linkIcon" color="secondary"></ion-icon>
+          <ion-label>Link</ion-label>
         </ion-chip>
       </ion-col>
       <ion-col size-xs="2" class="ion-hide-md-up">
@@ -168,7 +183,7 @@
 import {
   IonTextarea, IonChip, IonIcon, IonLabel, IonButton, IonInput, IonImg,
   IonGrid, IonRow, IonCol, IonItem, modalController, IonSpinner,
-  IonCard, IonCardContent,
+  IonCard, IonCardContent, alertController,
 } from '@ionic/vue';
 import {
   image as imageIcon, readerOutline, paperPlaneOutline as sendIcon, newspaperOutline,
@@ -177,6 +192,7 @@ import {
   trashOutline as deleteIcon,
   chevronBackSharp as leftIcon,
   chevronForwardSharp as rightIcon,
+  linkOutline as linkIcon,
   eyeOutline,
   earthOutline,
   peopleOutline,
@@ -238,10 +254,10 @@ export default defineComponent({
       submit() { store.dispatch("draft/submit"); },
       canSubmit: computed(() => store.getters["draft/canSubmit"]),
       removeObject: (idx: number) => store.commit("draft/removeObject", idx),
-      updateObject: (e: any) => store.dispatch("draft/updateObject", e),
+      updateObject: (e: any) => store.commit("draft/updateObject", e),
       showTeamSelector: computed(() => store.getters["auth/hasManyTeams"]),
       imageIcon, sendIcon, eyeOutline, editIcon, listIcon, leftIcon, rightIcon,
-      selectedIcon: checkmarkOutline, closeIcon, deleteIcon,
+      selectedIcon: checkmarkOutline, closeIcon, deleteIcon, linkIcon,
     }
   },
   components: {
@@ -267,6 +283,36 @@ export default defineComponent({
       }
     },
 
+    async addLink() {
+
+      const alert = await alertController
+        .create({
+          header: 'Link anhängen',
+          message: 'Welchen Link möchtest Du anhängen?',
+          inputs: [
+            {
+              name: "link",
+              type: "url",
+              placeholder: 'https://...',
+            },
+          ],
+          buttons: [
+            {
+              text: 'Abbrechen',
+              role: 'cancel',
+              cssClass: 'secondary',
+            },
+            {
+              text: 'Anhängen',
+              handler: async (data) => {
+                const { link } = data;
+                this.store.dispatch("draft/addLink", link);
+              },
+            },
+          ],
+        });
+      return alert.present();
+    },
     async editPoll(index: number) {
       const poll = this.objects[index];
       const modal = await modalController
