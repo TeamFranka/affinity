@@ -151,6 +151,12 @@
                 :value="o.get('description')"
                 placeholder="description text..."
               />
+              <ion-button
+                v-if="canCreateDocument"
+                @click="convertLinkToDocument(index)"
+                size="small"
+                fill="clear"
+              >zu Dokument umwandeln</ion-button>
             </div>
           </div>
           <div v-else-if="o.className == 'Document'">
@@ -302,6 +308,7 @@ export default defineComponent({
 
       // specifics
       addPicture() { store.dispatch("draft/addPicture"); },
+      convertLinkToDocument: (index: number) => store.dispatch("draft/convertLinkToDocument", index),
       uploadDocs: (files: FileList)=> {
         for (const f of files){
           store.dispatch("draft/addDocumentFile", f);

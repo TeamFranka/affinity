@@ -122,7 +122,7 @@ export const Draft = {
       context.commit("addObject", newDoc);
       const res = await Parse.Cloud.run("fetchLinkMetadata", { url });
       newDoc.set("title", res.ogTitle || res.title);
-      newDoc.set("siteName", res.ogSiteName);
+      newDoc.set("provider", res.ogSiteName);
       newDoc.set("description", res.ogDescription);
       newDoc.set("metadata", res)
       newDoc.set("loading", false);
@@ -148,6 +148,17 @@ export const Draft = {
       }
       newLink.set("metadata", res)
       newLink.set("loading", false);
+      context.commit("refreshObjects");
+    },
+    convertLinkToDocument(context: any, index: number) {
+      const link = context.state.objects[index];
+      context.state.objects[index] = new Document({
+        url: link.get("url"),
+        title: link.get("title"),
+        description: link.get("description"),
+        metadata: link.get("metadata"),
+        siteName: link.get("siteName")
+      });
       context.commit("refreshObjects");
     },
     async updateText(context: any, text: string) {
@@ -182,6 +193,7 @@ export const Draft = {
           p.unset("img");
           p.set("file", file);
         }
+        p.unset("loading");
         p.set("team", team);
         p.set("author", author);
         return p;
