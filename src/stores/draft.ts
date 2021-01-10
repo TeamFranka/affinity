@@ -117,6 +117,25 @@ export const Draft = {
       context.state.objects.splice(index, 2, b, a);
       context.commit("refreshObjects");
     },
+    async addDocumentLink(context: any, url: string) {
+      const newDoc = new Document({url, loading: true});
+      context.commit("addObject", newDoc);
+      const res = await Parse.Cloud.run("fetchLinkMetadata", { url });
+      newDoc.set("title", res.ogTitle || res.title);
+      newDoc.set("siteName", res.ogSiteName);
+      newDoc.set("description", res.ogDescription);
+      newDoc.set("metadata", res)
+      newDoc.set("loading", false);
+      context.commit("refreshObjects");
+      // console.log(res);
+    },
+    async addDocumentFile(context: any, input: File) {
+      const upload = new Parse.File(input.name, input);
+      upload.addMetadata("size", input.size);
+      upload.addMetadata("type", input.type);
+      const newDoc = new Document({title: input.name, upload});
+      context.commit("addObject", newDoc);
+    },
     async addLink(context: any, url: string) {
       const newLink = new Link({url, loading: true});
       context.commit("addObject", newLink);
@@ -131,7 +150,6 @@ export const Draft = {
       newLink.set("metadata", res)
       newLink.set("loading", false);
       context.commit("refreshObjects");
-      // console.log(res);
     },
     async updateText(context: any, text: string) {
       context.commit("setText", text);

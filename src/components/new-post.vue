@@ -133,16 +133,40 @@
           </div>
           <div v-else-if="o.className == 'Link'">
             <div v-if="o.get('loading')">
-              <ion-spinner  /> <a :href="o.get('url')">{{o.get('url')}}</a>
+              <ion-spinner /><ion-icon :icon="linkIcon"/><a :href="o.get('url')">{{o.get('url')}}</a>
             </div>
             <div v-else>
-              <span v-if="o.get('siteName')">{{o.get('siteName')}}</span>
-              <ion-input
-                @ionChange="updateObject({index, data: {title: $event.target.value}})"
-                  :value="o.get('title')"
-                  :placeholder="o.get('url')"
-              />
+              <span class="text-muted" v-if="o.get('siteName')">{{o.get('siteName')}}</span>
+              <div style="display: flex; align-items: center">
+                <ion-icon :icon="linkIcon"/>
+                <ion-input
+                  @ionChange="updateObject({index, data: {title: $event.target.value}})"
+                    :value="o.get('title')"
+                    :placeholder="o.get('url')"
+                />
+              </div>
               <ion-img v-if="o.get('previewImage')" :src="o.get('previewImage').url()" />
+              <ion-textarea
+                @ionChange="updateObject({index, data: {description: $event.target.value}})"
+                :value="o.get('description')"
+                placeholder="description text..."
+              />
+            </div>
+          </div>
+          <div v-else-if="o.className == 'Document'">
+            <div v-if="o.get('loading')">
+              <ion-spinner /><ion-icon :icon="documentIcon"/><a :href="o.get('url')">{{o.get('url')}}</a>
+            </div>
+            <div v-else>
+              <span class="text-muted" v-if="o.get('siteName')">{{o.get('siteName')}}</span>
+              <div style="display: flex; align-items: center">
+                <ion-icon :icon="documentIcon"/>
+                <ion-input
+                  @ionChange="updateObject({index, data: {title: $event.target.value}})"
+                    :value="o.get('title')"
+                    :placeholder="o.get('url')"
+                />
+              </div>
               <ion-textarea
                 @ionChange="updateObject({index, data: {description: $event.target.value}})"
                 :value="o.get('description')"
@@ -156,6 +180,13 @@
     </ion-row>
     <ion-row>
       <ion-col size-sm="12" size-xs="10">
+        <input
+          type="file"
+          ref="fileSelector"
+          style="display:none"
+          multiple
+          @change="uploadDocs($event.target.files)"
+          />
         <ion-chip v-if="canCreatePicture" @click="addPicture()" color="secondary" outline>
           <ion-icon :icon="imageIcon" color="secondary"></ion-icon>
           <ion-label>Image</ion-label>
@@ -164,9 +195,13 @@
           <ion-icon :icon="listIcon" color="secondary"></ion-icon>
           <ion-label>Umfrage  </ion-label>
         </ion-chip>
-        <ion-chip v-if="canCreateLink" @click="addLink()" color="secondary" outline>
+        <ion-chip v-if="canCreateLink" @click="addLink('addLink')" color="secondary" outline>
           <ion-icon :icon="linkIcon" color="secondary"></ion-icon>
           <ion-label>Link</ion-label>
+        </ion-chip>
+        <ion-chip v-if="canCreateLink" @click="addDocument()" color="secondary" outline>
+          <ion-icon :icon="documentIcon" color="secondary"></ion-icon>
+          <ion-label>Dokument</ion-label>
         </ion-chip>
       </ion-col>
       <ion-col size-xs="2" class="ion-hide-md-up">
@@ -183,7 +218,7 @@
 import {
   IonTextarea, IonChip, IonIcon, IonLabel, IonButton, IonInput, IonImg,
   IonGrid, IonRow, IonCol, IonItem, modalController, IonSpinner,
-  IonCard, IonCardContent, alertController,
+  IonCard, IonCardContent, alertController, actionSheetController,
 } from '@ionic/vue';
 import {
   image as imageIcon, readerOutline, paperPlaneOutline as sendIcon, newspaperOutline,
@@ -193,6 +228,8 @@ import {
   chevronBackSharp as leftIcon,
   chevronForwardSharp as rightIcon,
   linkOutline as linkIcon,
+  documentOutline as documentIcon,
+  cloudUploadOutline as uploadIcon,
   eyeOutline,
   earthOutline,
   peopleOutline,
@@ -250,6 +287,11 @@ export default defineComponent({
       showTypeSelector: computed(() => store.getters["draft/showTypeSelector"]),
       canCreatePicture: computed(()=> store.getters["draft/selectedTeamPerms"].canCreatePicture ),
       addPicture() { store.dispatch("draft/addPicture"); },
+      uploadDocs: (files: FileList)=> {
+        for (const f of files){
+          store.dispatch("draft/addDocumentFile", f);
+        }
+      },
       canCreatePoll: computed(()=> store.getters["draft/selectedTeamPerms"].canCreatePoll ),
       canCreateLink: computed(()=> store.getters["draft/selectedTeamPerms"].canCreateLink ),
       submit() { store.dispatch("draft/submit"); },
@@ -258,7 +300,7 @@ export default defineComponent({
       updateObject: (e: any) => store.commit("draft/updateObject", e),
       showTeamSelector: computed(() => store.getters["auth/hasManyTeams"]),
       imageIcon, sendIcon, eyeOutline, editIcon, listIcon, leftIcon, rightIcon,
-      selectedIcon: checkmarkOutline, closeIcon, deleteIcon, linkIcon,
+      selectedIcon: checkmarkOutline, closeIcon, deleteIcon, linkIcon, documentIcon
     }
   },
   components: {
@@ -284,7 +326,31 @@ export default defineComponent({
       }
     },
 
-    async addLink() {
+    async addDocument() {
+      const actionSheet = await actionSheetController
+        .create({
+          header: 'Document',
+          buttons: [
+            {
+              text: 'Upload',
+              icon: uploadIcon,
+              handler: () => {
+                const e: any = this.$refs.fileSelector;
+                e.click();
+              },
+            },
+            {
+              text: 'Link',
+              icon: linkIcon,
+              handler: () => {
+                this.addLink('addDocumentLink');
+              },
+            },
+          ],
+        });
+      return actionSheet.present();
+    },
+    async addLink(target: string) {
 
       const alert = await alertController
         .create({
@@ -307,7 +373,7 @@ export default defineComponent({
               text: 'Anhängen',
               handler: async (data) => {
                 const { link } = data;
-                this.store.dispatch("draft/addLink", link);
+                this.store.dispatch(`draft/${target}`, link);
               },
             },
           ],

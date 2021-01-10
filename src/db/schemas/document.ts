@@ -29,6 +29,9 @@ export const Document = {
             url: {
                 type: "String",
             },
+            description : {
+                type: "String",
+            },
             metadata: {
                 type: "Object",
             },
