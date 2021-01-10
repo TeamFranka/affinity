@@ -52,21 +52,32 @@ export const AuthState = {
     dismissLogin(context: any) {
       context.commit("setWantsToLogin", false);
     },
+    logout(context: any) {
+      Parse.User.logOut();
+      context.commit("setUser", null);
+    },
     openLogin(context: any) {
       context.commit("setWantsToLogin", true);
     },
+    async loggedIn(context: any, newUser: Parse.User) {
+      context.commit("setUser", newUser);
+      context.dispatch("dismissLogin");
+
+      const resp = await Parse.Cloud.run("myTeams");
+      await context.commit("setTeams", resp);
+      const items: any[] = [];
+      resp.teams.forEach( (t: Parse.Object)  => { items.push(t); items.push(t.get("settings")) });
+      await context.commit("setItems", items, {root: true});
+      context.dispatch("refreshRoot", null, { root:true });
+
+    },
     async fetchUser(context: any) {
       const user = await Parse.User.currentAsync();
-      await context.commit("setUser", user);
-      if (user) {
-        console.log("logged in", user);
-        const resp = await Parse.Cloud.run("myTeams");
-        await context.commit("setTeams", resp);
-        const items: any[] = [];
-        resp.teams.forEach( (t: Parse.Object)  => { items.push(t); items.push(t.get("settings")) });
-        await context.commit("setItems", items, {root: true});
+      if(user) {
+        context.dispatch("loggedIn", user);
+      } else {
+        context.dispatch("refreshRoot", null, { root:true });
       }
-      context.dispatch("refreshRoot", null, { root:true });
     },
     async setAvatar(context: any, f: Parse.File) {
       await f.save();

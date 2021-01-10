@@ -8,10 +8,17 @@
     </ion-fab>
     <ion-header class="ion-hide-lg-down">
       <ion-toolbar>
-        <ion-title slot="start"><router-link :to="titleLink">{{title}}</router-link></ion-title>
-        <div slot="end">
+        <ion-title slot="start">
+          <router-link :to="titleLink">{{title}}</router-link>
+        </ion-title>
+        <div class="menu" slot="end">
           <router-link to="/faq">faq</router-link>
-          <avatar size="45px" v-if="user" :profile="user" />
+          <span v-if="user" @dblclick="logout">
+            <avatar  size="45px" v-if="user" :profile="user" />
+          </span>
+          <ion-button fill="clear" v-else @click="openLoginModal">
+              <ion-icon :icon="logInIcon"/> Einloggen
+          </ion-button>
         </div>
       </ion-toolbar>
     </ion-header>
@@ -29,13 +36,14 @@
 import {
   IonApp, IonRouterOutlet, IonFooter, IonProgressBar, IonFab, IonIcon, IonContent,
   IonFabButton, modalController, isPlatform, IonToolbar, IonHeader, IonTitle,
+  IonButton, toastController,
 } from '@ionic/vue';
 import { logInOutline as logInIcon } from 'ionicons/icons';
-import { defineComponent, computed } from 'vue'
+import { defineComponent, computed, watch, ref } from 'vue'
 
 // import SideMenu from '../components/side-menu.vue';
 import FooterMenu from '../components/footer-menu.vue';
-import Login from '../components/login.vue';
+import LoginModal from '../components/login-modal.vue';
 import Avatar from '../components/avatar.vue';
 import { useStore } from '../stores/';
 
@@ -55,12 +63,55 @@ export default defineComponent({
     IonToolbar,
     IonHeader,
     IonTitle,
+    IonButton,
     Avatar,
     // Login,
   },
   setup() {
     const store = useStore();
+    let loginModal: any = null;
     store.dispatch("fetchDefaultTeam", (window as any).AFFINITY_DEFAULT_TEAM);
+
+    watch(() => store.state.auth.wantsToLogin, async (newVal, oldVal) => {
+      if (newVal && newVal != oldVal) {
+        loginModal = await modalController
+          .create({
+            component: LoginModal,
+            componentProps: {
+              title: 'New Title'
+            },
+          })
+        loginModal.present();
+        loginModal.onDidDismiss().then(()=>{
+          store.dispatch("auth/dismissLogin");
+        })
+      } else if (!newVal && loginModal) {
+        loginModal.dismiss();
+        loginModal = null;
+      }
+    })
+
+    watch(() => store.state.auth.user, async (newVal, oldVal) => {
+      if (newVal && newVal != oldVal) {
+        console.log(newVal);
+        const toast = await toastController
+          .create({
+            message: `Willkommen zurück, ${newVal.get('username')} 👋!`,
+            color: "success",
+            duration: 3000
+          })
+        return toast.present();
+
+      } else if (!newVal) {
+        const toast = await toastController
+          .create({
+            message: `Erfolgreich ausgeloggt`,
+            duration: 2000
+          })
+        return toast.present();
+      }
+    })
+
     return {
       logInIcon,
       onDesktop: isPlatform("desktop"),
@@ -68,36 +119,30 @@ export default defineComponent({
       title: computed(() => store.state.global.defaultTeam?.get("name") || "affinity"),
       user: computed(() => store.state.auth.user),
       loginModalOpened: computed(() => {
-        console.log("called");
         return store.state.auth.wantsToLogin
       }),
+      logout: () => store.dispatch('auth/logout'),
+      openLoginModal: () => store.dispatch('auth/openLogin'),
       loading: store.getters.isLoading,
-      closeLoginModal: () => store.dispatch("auth/dismissLogin"),
       // openLoginModal: () => store.dispatch("auth/openLogin"),
       fetchUser: () => store.dispatch("auth/fetchUser")
      }
   },
-  methods: {
-    async openLoginModal() {
-      const modal = await modalController
-        .create({
-          component: Login,
-          componentProps: {
-            title: 'New Title'
-          },
-        })
-      return modal.present();
-    },
-  },
   mounted() {
     this.fetchUser();
-    console.log("mounted");
   }
 });
 </script>
 <style>
 ion-app {
   align-items: center;
+}
+.menu {
+  display: flex;
+  align-items: center;
+}
+.menu > * {
+  margin-right: 0.3em;
 }
 .wrap {
   max-width: 860px;
