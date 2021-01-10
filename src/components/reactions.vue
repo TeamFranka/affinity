@@ -3,21 +3,22 @@
         outline
         v-for="r in reactions"
         :disabled="!canReact"
-        :color="r.selected ? this.selectedColor : this.unselectedColor"
+        :color="r.selected ? selectedColor : unselectedColor"
         :key="r.key"
-        @click="r.selected ? this.unreact(r.key) : r.react(r.key)"
+        @click="r.selected ? unreact(r.key) : react(r.key)"
     >
-      <ion-label>{{r.key}}</ion-label>
-      <ion-label>{{r.count}}</ion-label>
+      <ion-label>{{r.key}} {{r.count}}</ion-label>
     </ion-chip>
-    <ion-chip v-if="canReact" outline color="light">
+    <ion-chip @click="selectEmoji" v-if="canReact" outline color="light">
       <ion-icon :icon="plusIcon" size="small"/>
     </ion-chip>
 </template>
 <script lang="ts">
 import {
-  IonChip, IonLabel, IonIcon
+  IonChip, IonLabel, IonIcon, modalController,
 } from '@ionic/vue';
+
+import EmojiPickerModal from  "./emoji-picker-modal.vue";
 import { addOutline as plusIcon } from 'ionicons/icons';
 import { Parse } from '../config/Consts';
 import { useStore } from '../stores/';
@@ -73,12 +74,25 @@ export default defineComponent({
       return this.item.toPointer()
     },
     canReact(): boolean {
-      const team = this.item.get("team");
-      const settings = this.store.getters["auth/teamPermissions"][team.id];
-      return settings ? settings.canReact : false;
+      return true;
+      // const team = this.item.get("team");
+      // const settings = this.store.getters["auth/teamPermissions"][team.id];
+      // return settings ? settings.canReact : false;
     },
   },
   methods: {
+    async selectEmoji () {
+      const popover = await modalController
+        .create({
+          component: EmojiPickerModal,
+        });
+      popover.present();
+      const result = await popover.onDidDismiss();
+      console.log("test", result);
+      if (result.data) {
+        this.react(result.data);
+      }
+    },
     react(reaction: string) {
       this.store.dispatch("auth/react", Object.assign({reaction}, this.pointer));
     },

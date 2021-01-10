@@ -46,8 +46,9 @@
 import {
   IonLabel, IonSpinner, IonIcon, IonChip, IonGrid,
 } from '@ionic/vue';
-import { chatbubblesOutline, addOutline, arrowRedoOutline, heartOutline } from 'ionicons/icons';
-
+import {
+  chatbubblesOutline, addOutline, arrowRedoOutline, heartOutline
+} from 'ionicons/icons';
 import InlineText from "./inline-text.vue";
 import ShareButton from "./share-button.vue";
 import LikeButton from "./like-button.vue";
