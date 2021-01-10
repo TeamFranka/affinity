@@ -127,7 +127,6 @@ export const Draft = {
       newDoc.set("metadata", res)
       newDoc.set("loading", false);
       context.commit("refreshObjects");
-      // console.log(res);
     },
     async addDocumentFile(context: any, input: File) {
       const upload = new Parse.File(input.name, input);

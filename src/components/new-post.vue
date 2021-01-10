@@ -184,6 +184,7 @@
           type="file"
           ref="fileSelector"
           style="display:none"
+          v-if="canCreateDocument"
           multiple
           @change="uploadDocs($event.target.files)"
           />
@@ -199,7 +200,7 @@
           <ion-icon :icon="linkIcon" color="secondary"></ion-icon>
           <ion-label>Link</ion-label>
         </ion-chip>
-        <ion-chip v-if="canCreateLink" @click="addDocument()" color="secondary" outline>
+        <ion-chip v-if="canCreateDocument" @click="addDocument()" color="secondary" outline>
           <ion-icon :icon="documentIcon" color="secondary"></ion-icon>
           <ion-label>Dokument</ion-label>
         </ion-chip>
@@ -269,36 +270,47 @@ export default defineComponent({
     const store = useStore();
     return {
       store, VERB_ICONS, VISIBILITY_ICONS,
+      // generic
       teams: computed(() => store.getters["auth/postableTeams"]),
       text: computed(() => store.state.draft.text),
       selectedType: computed(() => store.getters["draft/selectedType"]),
       visibility: computed(() => store.state.draft.visibility),
-      objects: computed(() => store.getters["draft/objects"]),
-      moveLeft: (i: number) => store.dispatch("draft/swapObjects", i-1),
-      moveRight: (i: number) => store.dispatch("draft/swapObjects", i),
+
       updateText: (e: any) => store.dispatch("draft/updateText", e.target.value),
       selectTeam: (t: Parse.Object) => store.commit("draft/setTeam", t),
       setVisibility: (t: Visibility) => store.commit("draft/setVisibility", t),
       selectType: (t: Verb) => store.commit("draft/setType", t),
       selectedTeam: computed(() => store.getters["draft/selectedTeam"]),
       selectedTeamId: computed(() => store.getters["draft/selectedTeamId"]),
+      showTypeSelector: computed(() => store.getters["draft/showTypeSelector"]),
+      showTeamSelector: computed(() => store.getters["auth/hasManyTeams"]),
+
+      // permissions
       selectableTypes: computed(() => store.getters["draft/selectableTypes"]),
       selectableVisibility: computed(() => store.getters["draft/selectableVisibility"]),
-      showTypeSelector: computed(() => store.getters["draft/showTypeSelector"]),
       canCreatePicture: computed(()=> store.getters["draft/selectedTeamPerms"].canCreatePicture ),
+      canCreatePoll: computed(()=> store.getters["draft/selectedTeamPerms"].canCreatePoll ),
+      canCreateLink: computed(()=> store.getters["draft/selectedTeamPerms"].canCreateLink ),
+      canCreateDocument: computed(()=> store.getters["draft/selectedTeamPerms"].canCreateDocument ),
+
+      // objects
+      objects: computed(() => store.getters["draft/objects"]),
+      moveLeft: (i: number) => store.dispatch("draft/swapObjects", i-1),
+      moveRight: (i: number) => store.dispatch("draft/swapObjects", i),
+      removeObject: (idx: number) => store.commit("draft/removeObject", idx),
+      updateObject: (e: any) => store.commit("draft/updateObject", e),
+
+      // specifics
       addPicture() { store.dispatch("draft/addPicture"); },
       uploadDocs: (files: FileList)=> {
         for (const f of files){
           store.dispatch("draft/addDocumentFile", f);
         }
       },
-      canCreatePoll: computed(()=> store.getters["draft/selectedTeamPerms"].canCreatePoll ),
-      canCreateLink: computed(()=> store.getters["draft/selectedTeamPerms"].canCreateLink ),
-      submit() { store.dispatch("draft/submit"); },
+      // submission
       canSubmit: computed(() => store.getters["draft/canSubmit"]),
-      removeObject: (idx: number) => store.commit("draft/removeObject", idx),
-      updateObject: (e: any) => store.commit("draft/updateObject", e),
-      showTeamSelector: computed(() => store.getters["auth/hasManyTeams"]),
+      submit() { store.dispatch("draft/submit"); },
+      // icons
       imageIcon, sendIcon, eyeOutline, editIcon, listIcon, leftIcon, rightIcon,
       selectedIcon: checkmarkOutline, closeIcon, deleteIcon, linkIcon, documentIcon
     }
