@@ -92,7 +92,6 @@ export const GlobalState = {
       const found: Array<Parse.Object> = [];
       const toLookUp: Record<string, Array<string>> = {};
       const sort = (m: Parse.Object) => {
-        console.log("sorting", m);
         if (m.isDataAvailable()) {
             found.push(m);
         } else {

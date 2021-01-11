@@ -3,7 +3,7 @@
   <ion-card-header>
     <div class="avatar-wrap">
       <avatar :profile="author" v-if="showAuthor"/>
-      <div v-if="!showAuthor">
+      <div v-else>
         <router-link :to="teamLink"><avatar :profile="teamSettings" :name="teamName" v-if="!showAuthor"/></router-link>
       </div>
     </div>

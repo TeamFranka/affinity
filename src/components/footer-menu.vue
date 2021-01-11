@@ -19,22 +19,24 @@
           <ion-icon size="large" :color="currentTab == 'feed' ? 'primary' : 'medium'" :icon="feedIcon" />
         </router-link>
         </ion-col>
-        <ion-col  v-if="isLoggedIn">
-        <router-link style="position: relative" to="/inbox">
-          <notification-dot color="warning" slot="start" />
-          <ion-icon size="large" :color="currentTab == 'inbox' ? 'primary' : 'medium'" :icon="chatIcon" />
-          <notification-dot color="danger" slot="end" />
-        </router-link>
-        </ion-col>
-        <ion-col  v-if="!isLoggedIn">
-        <router-link style="position: relative" to="/donate">
-          <ion-icon size="large" :color="currentTab == 'donate' ? 'primary' : 'medium'" :icon="donationsIcon" />
-        </router-link>
-        </ion-col>
-        <ion-col v-show="isLoggedIn" >
-        <router-link style="position: relative" to="/me">
-          <ion-icon size="large" :color="currentTab == 'me' ? 'primary' : 'medium'" :icon="meIcon" />
-        </router-link>
+        <template v-if="isLoggedIn">
+          <ion-col>
+            <router-link style="position: relative" to="/inbox">
+              <notification-dot color="warning" slot="start" />
+              <ion-icon size="large" :color="currentTab == 'inbox' ? 'primary' : 'medium'" :icon="chatIcon" />
+              <notification-dot color="danger" slot="end" />
+            </router-link>
+          </ion-col>
+          <ion-col>
+            <router-link style="position: relative" to="/me">
+              <ion-icon size="large" :color="currentTab == 'me' ? 'primary' : 'medium'" :icon="meIcon" />
+            </router-link>
+          </ion-col>
+        </template>
+        <ion-col v-else>
+          <router-link style="position: relative" to="/donate">
+            <ion-icon size="large" :color="currentTab == 'donate' ? 'primary' : 'medium'" :icon="donationsIcon" />
+          </router-link>
         </ion-col>
       </ion-row>
       <ion-row v-if="isLoggedIn" >
