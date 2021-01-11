@@ -6,9 +6,10 @@ services:
 
   parse:
     image: "parseplatform/parse-server:4.5.0"
-    command: "--appId APPLICATION_ID --masterKey MASTER_KEY --databaseURI mongodb://mongo/dev --cloud /parse-server/cloud/main.js"
+    command: "--appId APPLICATION_ID --masterKey MASTER_KEY --databaseURI mongodb://mongo/dev --cloud /parse-server/cloud/main.js /parse-server/custom-config.json"
     volumes:
       - ./backend/cloud:/parse-server/cloud
+      - ./backend/parse-config.json:/parse-server/custom-config.json
     ports:
       - 1337:1337
     links:

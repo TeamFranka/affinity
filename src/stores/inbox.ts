@@ -46,14 +46,29 @@ export const Inbox = {
       // FIXME: do something smarter
       state.messages[conversationId] = items.map((x: Parse.Object) => x.id)
     },
-    addItem(state: InboxT, item: string) {
-      state.latest.unshift(item);
+    msgReceived(state: InboxT, msg: Parse.Object) {
+      const conversationId = msg.get("conversation").id;
+      if (!state.messages[conversationId]) {
+        state.messages[conversationId] = [msg.id]
+      } else {
+        state.messages[conversationId].unshift(msg.id)
+
+      }
     },
     setLoading(state: InboxT, value: boolean) {
       state.loading = value;
     }
   },
   actions: {
+    async sendMessage(context: any, data: any) {
+      const { conversationId, text } = data;
+      const author = context.rootGetters["auth/user"];
+      const conversation = new Conversation();
+      conversation.id = conversationId;
+      const msg = new Message({conversation, text, author});
+      await msg.save();
+
+    },
     async loadMessages(context: any, conversationId: string) {
       context.commit("setLoading", true);
       const keys = ["author"];
@@ -67,6 +82,17 @@ export const Inbox = {
       await context.dispatch("addItems", {keys, items: feed}, { root: true });
       context.commit("setMessages", {conversationId, items: feed});
       context.commit("setLoading", false);
+      const subscription = await query.subscribe();
+      subscription.on('open', () => {
+        console.log('subscription opened');
+       });
+      subscription.on('create', async (msg: Parse.Object) => {
+        await context.dispatch("addItems", { items: [msg] }, { root: true });
+        context.commit("msgReceived", msg);
+      });
+      subscription.on('close', () => {
+        console.log('subscription closed');
+      });
     },
     async refresh(context: any) {
       if (!context.rootGetters["auth/isLoggedIn"]) {
