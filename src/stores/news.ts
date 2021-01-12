@@ -1,5 +1,6 @@
 import { Parse, Activity, Verb } from "../config/Consts";
 
+const MODEL_KEYS = ['objects'];
 export interface NewsT {
   loading: boolean;
   latest: Array<string>;
@@ -27,26 +28,31 @@ export const News = {
     setLoading(state: NewsT, val: boolean) {
       state.loading = val;
     },
+    addItem(state: NewsT, item: string) {
+      state.latest.unshift(item);
+    },
+    rmItem(state: NewsT, item: string) {
+      state.latest = state.latest.filter((x) => x !== item);
+    },
   },
   actions: {
     async refresh(context: any) {
       context.commit("setLoading", true);
       const teams = context.rootGetters["auth/myTeams"];
       teams.push(context.state.defaultTeam);
-      console.log(teams);
-      const news = await (new Parse.Query(Activity))
+      const query = (new Parse.Query(Activity))
         .equalTo("verb", Verb.Announce)
         .containedIn("team", teams)
-        .include("objects")
+        .include(MODEL_KEYS)
         .descending("createdAt")
-        .find();
+        const news = await query.find();
 
-      await context.dispatch("addItems", { items: news, key: "objects" }, { root: true });
+      await context.dispatch("addItems", { items: news, keys: MODEL_KEYS }, { root: true });
+      context.dispatch("subscribe", {
+        id: 'news', keys: MODEL_KEYS, query, addCb: "news/addItem", rmCb: "newsItem"
+      }, {root: true});
       context.commit("setNews", news.map((a) => a.id))
       context.commit("setLoading", false);
-
-      // FIXME: add live query support to stay up to date;
-      // https://docs.parseplatform.org/js/guide/#live-queries
     },
   },
 };

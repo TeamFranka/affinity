@@ -25,6 +25,20 @@ export const Inbox = {
     }
   },
   mutations: {
+    newConversation(state: InboxT, c: Parse.Object) {
+      const msg = c.get("latestMesssage");
+      if (!msg) {
+        return
+      }
+      if (!state.messages[c.id]) {
+        state.messages[c.id] = [msg.id]
+      } else {
+        if (!state.messages[c.id].includes(msg.id)) {
+          state.messages[c.id].unshift(msg.id)
+        }
+      }
+      state.latest.unshift(c.id);
+    },
     setConvos(state: InboxT, items: Array<Parse.Object>) {
       items.forEach((c) => {
         const msg = c.get("latestMesssage");
@@ -82,17 +96,10 @@ export const Inbox = {
       await context.dispatch("addItems", {keys, items: feed}, { root: true });
       context.commit("setMessages", {conversationId, items: feed});
       context.commit("setLoading", false);
-      const subscription = await query.subscribe();
-      subscription.on('open', () => {
-        console.log('subscription opened');
-       });
-      subscription.on('create', async (msg: Parse.Object) => {
-        await context.dispatch("addItems", { items: [msg] }, { root: true });
-        context.commit("msgReceived", msg);
-      });
-      subscription.on('close', () => {
-        console.log('subscription closed');
-      });
+      context.dispatch("subscribe", {
+        id: `conversation/${conversationId}`,
+        keys, query, addCb: "inbox/msgReceived", full: true,
+      }, {root: true});
     },
     async refresh(context: any) {
       if (!context.rootGetters["auth/isLoggedIn"]) {
@@ -107,6 +114,9 @@ export const Inbox = {
       console.log("found conversations feed:", feed);
 
       await context.dispatch("addItems", {keys, items: feed}, { root: true });
+      context.dispatch("subscribe", {
+        id: 'conversations', keys, query, addCb: "inbox/newConversation", full: true,
+      }, {root: true});
       context.commit("setConvos", feed)
       context.commit("setLoading", false);
     },

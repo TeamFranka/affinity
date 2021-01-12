@@ -57,6 +57,7 @@ export const Teams = [
         name: "Doctor Who",
         admin: 'river',
         members: ['clara', 'graham', 'yaz'],
+        agents: ['yaz'],
         settings: {
             avatar: makeFile('doctor.png')
         }
