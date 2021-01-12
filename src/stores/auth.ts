@@ -11,6 +11,7 @@ export interface AuthStateT {
   user: Parse.User | null;
   teams: Array<Parse.Object>;
   teamPermissions: Record<string, any>;
+  afterLoginRouting: any;
 }
 
 export const AuthState = {
@@ -19,7 +20,8 @@ export const AuthState = {
     wantsToLogin: false,
     user: Parse.User.current(),
     teams: [],
-    teamPermissions: {}
+    teamPermissions: {},
+    afterLoginRouting: null,
   }),
   getters: {
     isLoggedIn: (state: AuthStateT) => !!state.user,
@@ -35,9 +37,21 @@ export const AuthState = {
   mutations: {
     setUser(state: AuthStateT, newUser: Parse.User|null) {
       state.user = newUser
+      if (newUser && state.afterLoginRouting) {
+        const { next } = state.afterLoginRouting;
+        if (next) {
+          next()
+        }
+      }
+    },
+    afterLoginRouting(state: AuthStateT, after: any) {
+      state.afterLoginRouting = after;
     },
     setWantsToLogin(state: AuthStateT, wanna: boolean) {
       state.wantsToLogin = wanna;
+      if (!wanna) {
+        state.afterLoginRouting = null;
+      }
     },
     setTeams(state: AuthStateT, resp: any) {
       console.log("setting auth teams", resp);
@@ -56,7 +70,8 @@ export const AuthState = {
       Parse.User.logOut();
       context.commit("setUser", null);
     },
-    openLogin(context: any) {
+    openLogin(context: any, after: any) {
+      context.commit("afterLoginRouting", after);
       context.commit("setWantsToLogin", true);
     },
     async loggedIn(context: any, newUser: Parse.User) {
