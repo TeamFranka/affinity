@@ -54,7 +54,8 @@ export const Feed = {
       const feed = await query.find();
 
       await context.dispatch("addItems", {keys: MODEL_KEYS, items: feed}, { root: true });
-      context.commit("setFeed", feed.map((a) => a.id))
+      context.commit("setFeed", feed.map((a) => a.id));
+
       context.dispatch("subscribe", {
         id: 'feed', keys: MODEL_KEYS, query, addCb: "feed/addItem", rmCb: "rmItem"
       }, {root: true});
