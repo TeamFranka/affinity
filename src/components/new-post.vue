@@ -116,7 +116,8 @@
           </div>
         <ion-card-content>
           <div v-if="o.className == 'Picture'">
-            <ion-img :src="o.get('img').dataUrl" />
+            <!-- FIXME: this renders incorrectly while saving... -->
+            <ion-img v-if="o.get('img')" :src="o.get('img').dataUrl" />
             <ion-input placeholder="description"
               @ionChange="updateObject({index, data: {description: $event.target.value}})"
               :value="o.get('description')"

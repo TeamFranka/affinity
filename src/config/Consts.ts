@@ -12,7 +12,7 @@ Parse.initialize(
 );
 Parse.serverURL = process.env.VUE_APP_PARSE_URL || "http://localhost:1337/parse";
 // Parse.enableEncryptedUser();
-Parse.enableLocalDatastore();
+// Parse.enableLocalDatastore();
 
 export const VERSION = "0.0.1";
 export const DEFAULT_COMMUNITY = process.env.VUE_APP_DEFAULT_TEAM;
