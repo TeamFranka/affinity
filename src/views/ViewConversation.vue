@@ -27,7 +27,7 @@
 </template>
 
 <script lang="ts">
-import InlineText from "@/components/inline-text";
+import InlineText from "../components/inline-text.vue";
 import {
   IonPage, IonContent, IonSpinner, IonFooter, IonButtons, IonBackButton,
   IonHeader, IonItem, IonTitle,
@@ -35,7 +35,7 @@ import {
 import { defineComponent, computed, ref } from 'vue';
 import { useStore } from '../stores/';
 import { useRoute } from 'vue-router';
-import ConversationEntry from "@/components/conversation-entry.vue";
+import ConversationEntry from "../components/conversation-entry.vue";
 
 
 export default defineComponent({
