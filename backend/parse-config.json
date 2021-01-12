@@ -1,0 +1,6 @@
+{
+"liveQuery": {
+    "classNames": ["Conversation", "Message", "Activity"],
+},
+"startLiveQueryServer": true
+}

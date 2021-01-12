@@ -17,7 +17,7 @@ export const AuthState = {
   namespaced: true,
   state: () => ({
     wantsToLogin: false,
-    user: null,
+    user: Parse.User.current(),
     teams: [],
     teamPermissions: {}
   }),

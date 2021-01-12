@@ -10,6 +10,8 @@ import Me from '../views/Me.vue';
 import Donations from '../views/Donations.vue';
 import ViewTeam from '../views/ViewTeam.vue';
 import ViewActivity from '../views/ViewActivity.vue';
+import ViewConversation from '../views/ViewConversation.vue';
+import { Conversation } from '@/db/models';
 // import { useStore } from '../stores/';
 
 const routes: Array<RouteRecordRaw> = [
@@ -17,6 +19,11 @@ const routes: Array<RouteRecordRaw> = [
     path: '/news',
     name: 'News',
     component: News
+  },
+  {
+    path: '/inbox/:conversationId',
+    name: 'Conversation',
+    component: ViewConversation,
   },
   {
     path: '/inbox',

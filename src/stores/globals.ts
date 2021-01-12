@@ -7,6 +7,7 @@ export interface GlobalStateT {
   defaultTeamId: string;
   objects: Record<string, Parse.Object>;
   teamsBySlug: Record<string, string>;
+  subscriptions: Record<string, any>;
 }
 
 export const GlobalState = {
@@ -16,6 +17,7 @@ export const GlobalState = {
     defaultTeam: null,
     defaultTeamId: (window as any) ? (window as any).AFFINITY_DEFAULT_TEAM : '',
     teamsBySlug: {},
+    subscriptions: {}
   }),
   getters: {
     defaultTeamId(state: GlobalStateT): string {
@@ -54,6 +56,10 @@ export const GlobalState = {
       state.defaultTeamId = team.id;
       state.objects[team.id] = team;
     },
+    setSubscription(state: GlobalStateT, data: any) {
+      const { id, sub } = data;
+      state.subscriptions[id] = sub;
+    },
     startLoading(state: GlobalStateT) {
       state.loadingCounter += 1;
     },
@@ -88,11 +94,9 @@ export const GlobalState = {
     },
     addItems(context: any, inp: any) {
       const { items, key, keys } = inp;
-      console.log("items", items);
       const found: Array<Parse.Object> = [];
       const toLookUp: Record<string, Array<string>> = {};
       const sort = (m: Parse.Object) => {
-        console.log("sorting", m);
         if (m.isDataAvailable()) {
             found.push(m);
         } else {
@@ -142,6 +146,43 @@ export const GlobalState = {
 
       context.commit("setItems", items);
     },
+    unsubscribe(context: any, id: string) {
+      const sub = context.state.subscriptions[id]
+      context.commit("setSubscription", {id, sub: null});
+      if (sub) {
+        sub.unsubscribe()
+      }
+    },
+    async subscribe(context: any, data: any) {
+      const { id, query, keys, addCb, rmCb, full} = data;
+      if (context.state.subscriptions[id]) {
+        context.state.subscriptions[id].unsubscribe()
+      }
+      const subscription = await query.subscribe();
+      subscription.on('create', async (object: Parse.Object) => {
+        await context.dispatch("addItems", {keys, items: [object]});
+        addCb && context.commit(addCb, full ? object : object.id)
+      });
+      subscription.on('enter', async (object: Parse.Object) => {
+        await context.dispatch("addItems", {keys, items: [object]});
+        addCb && context.commit(addCb, full ? object : object.id)
+      });
+
+      subscription.on('update', async (object: Parse.Object) => {
+        await context.dispatch("addItems", {keys, items: [object]});
+      });
+
+      subscription.on('delete', async (object: Parse.Object) => {
+        await context.dispatch("addItems", {keys, items: [object]});
+        rmCb && context.commit(rmCb, full ? object : object.id)
+      });
+      subscription.on('leave', async (object: Parse.Object) => {
+        await context.dispatch("addItems", {keys, items: [object]});
+        addCb && context.commit(addCb, full ? object : object.id)
+      });
+
+      context.commit("setSubscription", {id, sub: subscription});
+    }
   }
 }
 

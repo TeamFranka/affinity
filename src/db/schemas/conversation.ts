@@ -22,7 +22,7 @@ export const Conversation = {
                 type: "Array",
                 required: true
             },
-            latestMesssage: {
+            latestMessage: {
                 type: "Pointer",
                 targetClass: "Message"
             }

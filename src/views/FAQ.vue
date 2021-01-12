@@ -66,9 +66,10 @@ export default defineComponent({
     return {
       store, chatbubbles,
       loading: computed(() => store.getters["faq/loading"]),
+      teamId: computed(() => store.getters["defaultTeamId"]),
       team: computed(() => store.getters["defaultTeam"]),
       canCreate: computed(() =>
-        store.getters["auth/teamPermissions"][store.getters["defaultTeam"]?.id]?.canCreateFaqEntry
+        store.getters["auth/teamPermissions"][store.getters["defaultTeamId"]]?.canCreateFaqEntry
       ),
       setItem(entry: Parse.Object) {
         store.commit("setItem", entry);
@@ -134,6 +135,7 @@ export default defineComponent({
       return null
     },
     async intendToAskQuestion() {
+      const teamId = this.teamId;
 
       const alert = await alertController
         .create({
@@ -142,6 +144,8 @@ export default defineComponent({
           inputs: [
             {
               name: "message",
+              type: "textarea",
+              value: this.searchValue,
               placeholder: 'Deine Frage ....',
             },
           ],
@@ -159,7 +163,7 @@ export default defineComponent({
                   return
                 }
                 await Parse.Cloud.run("newPublicInboxConversation",
-                  { teamId: this.team.id, message });
+                  { teamId, message });
                 await this.store.dispatch("inbox/refresh");
                 this.$router.push("/inbox");
               },

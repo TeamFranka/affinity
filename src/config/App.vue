@@ -13,6 +13,12 @@
         </ion-title>
         <div class="menu" slot="end">
           <router-link to="/faq">faq</router-link>
+
+          <router-link style="position: relative" to="/inbox">
+            <notification-dot color="warning" slot="start" />
+            <ion-icon size="large" color="secondary" :icon="chatIcon" />
+            <notification-dot color="danger" slot="end" />
+          </router-link>
           <span v-if="user" @dblclick="logout">
             <avatar  size="45px" v-if="user" :profile="user" />
           </span>
@@ -38,8 +44,12 @@ import {
   IonFabButton, modalController, isPlatform, IonToolbar, IonHeader, IonTitle,
   IonButton, toastController,
 } from '@ionic/vue';
-import { logInOutline as logInIcon } from 'ionicons/icons';
-import { defineComponent, computed, watch, ref } from 'vue'
+import {
+  logInOutline as logInIcon,
+  chatboxOutline as chatIcon,
+} from 'ionicons/icons';
+import NotificationDot from '../components/notification-dot.vue';
+import { defineComponent, computed, watch } from 'vue'
 
 // import SideMenu from '../components/side-menu.vue';
 import FooterMenu from '../components/footer-menu.vue';
@@ -65,6 +75,7 @@ export default defineComponent({
     IonTitle,
     IonButton,
     Avatar,
+    NotificationDot,
     // Login,
   },
   setup() {
@@ -113,7 +124,7 @@ export default defineComponent({
     })
 
     return {
-      logInIcon,
+      logInIcon, chatIcon,
       onDesktop: isPlatform("desktop"),
       titleLink: computed(() => "/t/" + store.state.global.defaultTeam?.get("slug")),
       title: computed(() => store.state.global.defaultTeam?.get("name") || "affinity"),
