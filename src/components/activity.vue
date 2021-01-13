@@ -20,10 +20,7 @@
         </router-link>
     </div>
   </ion-card-header>
-  <div class="like-ref" @dblclick="like">
-    <span class="like-icon" ref="liker">
-      <ion-icon :icon="likeIcon"  />
-    </span>
+  <div>
     <div class="ion-padding">
       {{ text }}
     </div>
@@ -85,10 +82,6 @@ export default defineComponent({
   computed: {
     link(): string {
       return '/a/' + this.activity.id
-    },
-    hasLiked(): boolean {
-      if (!this.store.getters["auth/isLoggedIn"]) return false;
-      return (this.activity.get("likedBy") || []).indexOf(this.store.getters["auth/myId"]) !== -1;
     },
     team(): Parse.Object {
       const team = this.activity.get("team");
@@ -164,30 +157,7 @@ export default defineComponent({
         ptr: this.activity.toPointer(),
         text
       });
-    },
-    async like(ev: MouseEvent) {
-      console.log("would like", ev);
-      if (!this.hasLiked) {
-        this.store.dispatch("auth/like", Object.assign({}, this.pointer));
-      }
-      const l: any = this.$refs.liker;
-      console.log(l);
-      await createAnimation()
-        .addElement(l)
-        .duration(800)
-        .beforeStyles({
-          top: `${ev.y}px`,
-          left: `${ev.x}px`,
-          opacity: 1,
-          transform: 'scale(1)',
-        })
-        .fromTo('transform', 'scale(1)', 'scale(3)')
-        .afterStyles({
-          "opacity": 0,
-          transform: 'scale(1)',
-        })
-        .play();
-    },
+    }
   },
   components: {
     IonCard, IonImg, InteractionBar, IonCardHeader, Poll,
@@ -202,8 +172,5 @@ ion-card-header {
 }
 .avatar-wrap {
   width: 5em;
-}
-.like-ref {
-  position: relative;
 }
 </style>
