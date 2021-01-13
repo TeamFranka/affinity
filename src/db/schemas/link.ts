@@ -49,7 +49,7 @@ export const Link = {
             '*': true
         },
         create: {
-
+            requiresAuthentication: true
         },
         update: {},
         delete: {},
