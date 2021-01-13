@@ -146,7 +146,7 @@
               <ion-textarea
                 @ionChange="updateObject({index, data: {previewText: $event.target.value}})"
                 :value="o.get('previewText')"
-                placeholder="preview text text..."
+                placeholder="information about this link to preview"
               />
               <ion-button
                 v-if="canCreateDocument"
