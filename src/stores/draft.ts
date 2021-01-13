@@ -65,7 +65,7 @@ export const Draft = {
       return types
     },
     showTypeSelector(state: DraftT, getters: any,): boolean {
-      return getters.selectableTypes.length > 0
+      return getters.selectableTypes.length > 1
     },
   },
   mutations: {
