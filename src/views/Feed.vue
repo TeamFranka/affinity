@@ -13,7 +13,7 @@
         <ion-spinner v-if="loading" name="dots"></ion-spinner>
 
         <transition-group name="list">
-          <activity v-for="a in latestPosts" :activity="a" :key="a.id" />
+          <activity v-for="activity in latestPosts" :activity="activity" :key="activity.id" />
         </transition-group>
       </div>
     </ion-content>
