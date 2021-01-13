@@ -83,7 +83,7 @@ export default defineComponent({
     let loginModal: any = null;
     store.dispatch("fetchDefaultTeam", (window as any).AFFINITY_DEFAULT_TEAM);
 
-    watch(() => store.state.auth.wantsToLogin, async (newVal, oldVal) => {
+    const updateLoginModal = async (newVal: boolean, oldVal: boolean) => {
       if (newVal && newVal != oldVal) {
         loginModal = await modalController
           .create({
@@ -100,7 +100,10 @@ export default defineComponent({
         loginModal.dismiss();
         loginModal = null;
       }
-    })
+    };
+
+    watch(() => store.state.auth.wantsToLogin, updateLoginModal);
+    if (store.state.auth.wantsToLogin) { updateLoginModal(true, false) }
 
     watch(() => store.state.auth.user, async (newVal, oldVal) => {
       if (newVal && newVal != oldVal) {
@@ -114,6 +117,7 @@ export default defineComponent({
         return toast.present();
 
       } else if (!newVal) {
+        location.reload();
         const toast = await toastController
           .create({
             message: `Erfolgreich ausgeloggt`,

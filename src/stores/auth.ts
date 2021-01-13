@@ -19,7 +19,7 @@ export const AuthState = {
     wantsToLogin: false,
     user: Parse.User.current(),
     teams: [],
-    teamPermissions: {}
+    teamPermissions: {},
   }),
   getters: {
     isLoggedIn: (state: AuthStateT) => !!state.user,

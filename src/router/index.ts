@@ -7,12 +7,27 @@ import CommunityOutlet from '../views/CommunityOutlet.vue';
 import Feed from '../views/Feed.vue';
 import Faq from '../views/FAQ.vue';
 import Me from '../views/Me.vue';
+import Login from '../views/Login.vue';
 import Donations from '../views/Donations.vue';
 import ViewTeam from '../views/ViewTeam.vue';
 import ViewActivity from '../views/ViewActivity.vue';
 import ViewConversation from '../views/ViewConversation.vue';
+import { store } from '../stores/';
+
+const ensureLoggedIn = (to: any, from: any, next: any) => {
+  if (store.getters["auth/isLoggedIn"]) {
+    next()
+  } else {
+    next({ name: 'Login' , params: {next: to.fullPath}});
+  }
+};
 
 const routes: Array<RouteRecordRaw> = [
+  {
+    path: '/login',
+    name: 'Login',
+    component: Login,
+  },
   {
     path: '/news',
     name: 'News',
@@ -22,11 +37,13 @@ const routes: Array<RouteRecordRaw> = [
     path: '/inbox/:conversationId',
     name: 'Conversation',
     component: ViewConversation,
+    beforeEnter: ensureLoggedIn,
   },
   {
     path: '/inbox',
     name: 'Inbox',
-    component: Inbox
+    component: Inbox,
+    beforeEnter: ensureLoggedIn,
   },
   {
     path: '/faq',
@@ -36,7 +53,8 @@ const routes: Array<RouteRecordRaw> = [
   {
     path: '/me',
     name: 'Me',
-    component: Me
+    component: Me,
+    beforeEnter: ensureLoggedIn
   },
   {
     path: '/donate',
@@ -76,18 +94,14 @@ const router = createRouter({
   routes
 })
 
-// FIXME: routing and state connection currently fails
+router.beforeEach((_to, _from, next) => {
+  store.dispatch("routingStart");
+  next()
+})
 
-// router.beforeEach((_to, _from, next) => {
-//   const store = useStore();
-//   store && store.dispatch("routingStart");
-//   next()
-// })
-
-// router.afterEach((to, from) => {
-//   const store = useStore();
-//   store && store.dispatch("routingEnd");
-// })
+router.afterEach((to, from) => {
+  store.dispatch("routingEnd");
+})
 
 
 export default router
