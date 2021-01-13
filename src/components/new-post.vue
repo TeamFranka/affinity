@@ -148,9 +148,9 @@
               </div>
               <ion-img v-if="o.get('previewImage')" :src="o.get('previewImage').url()" />
               <ion-textarea
-                @ionChange="updateObject({index, data: {description: $event.target.value}})"
-                :value="o.get('description')"
-                placeholder="description text..."
+                @ionChange="updateObject({index, data: {previewText: $event.target.value}})"
+                :value="o.get('previewText')"
+                placeholder="preview text text..."
               />
               <ion-button
                 v-if="canCreateDocument"

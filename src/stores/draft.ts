@@ -141,7 +141,7 @@ export const Draft = {
       const res = await Parse.Cloud.run("fetchLinkMetadata", { url });
       newLink.set("title", res.ogTitle || res.title);
       newLink.set("siteName", res.ogSiteName);
-      newLink.set("description", res.ogDescription);
+      newLink.set("previewText", res.ogDescription);
       if (res.previewImage) {
         newLink.set("previewImage", res.previewImage);
         delete res.previewImage;
@@ -155,7 +155,7 @@ export const Draft = {
       context.state.objects[index] = new Document({
         url: link.get("url"),
         title: link.get("title"),
-        description: link.get("description"),
+        description: link.get("previewText"),
         metadata: link.get("metadata"),
         siteName: link.get("siteName")
       });
