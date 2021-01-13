@@ -7,6 +7,7 @@ import CommunityOutlet from '../views/CommunityOutlet.vue';
 import Feed from '../views/Feed.vue';
 import Faq from '../views/FAQ.vue';
 import Me from '../views/Me.vue';
+import Login from '../views/Login.vue';
 import Donations from '../views/Donations.vue';
 import ViewTeam from '../views/ViewTeam.vue';
 import ViewActivity from '../views/ViewActivity.vue';
@@ -15,13 +16,18 @@ import { store } from '../stores/';
 
 const ensureLoggedIn = (to: any, from: any, next: any) => {
   if (store.getters["auth/isLoggedIn"]) {
-    return next()
+    next()
   } else {
-    store.dispatch("auth/openLogin", {to, from, next});
+    next({ name: 'Login' , params: {next: to.fullPath}});
   }
 };
 
 const routes: Array<RouteRecordRaw> = [
+  {
+    path: '/login',
+    name: 'Login',
+    component: Login,
+  },
   {
     path: '/news',
     name: 'News',
@@ -31,12 +37,13 @@ const routes: Array<RouteRecordRaw> = [
     path: '/inbox/:conversationId',
     name: 'Conversation',
     component: ViewConversation,
+    beforeEnter: ensureLoggedIn,
   },
   {
     path: '/inbox',
     name: 'Inbox',
     component: Inbox,
-    beforeEnter: ensureLoggedIn
+    beforeEnter: ensureLoggedIn,
   },
   {
     path: '/faq',
