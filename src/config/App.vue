@@ -117,6 +117,7 @@ export default defineComponent({
         return toast.present();
 
       } else if (!newVal) {
+        location.reload();
         const toast = await toastController
           .create({
             message: `Erfolgreich ausgeloggt`,
