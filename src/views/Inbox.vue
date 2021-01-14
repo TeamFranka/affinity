@@ -3,8 +3,8 @@
     <ion-content fullscreen>
       <ion-list>
         <ion-list-header>
-          <ion-segment value="conversation">
-              <ion-segment-button value="conversation">
+          <ion-segment @ionChange="selectedSegment = $event.target.value" :value="selectedSegment">
+              <ion-segment-button value="convos">
                 <ion-label>Conversations</ion-label>
               </ion-segment-button>
                 <ion-segment-button value="notifications">
@@ -13,16 +13,30 @@
           </ion-segment>
         </ion-list-header>
 
-        <ion-item
-          button
-          details=false
-          @click="selectConversation  (convo.id)"
-          v-for="convo in convos"
-          :key="convo.id"
-          lines="inset"
-          >
-          <conversation-entry :convo="convo" />
-        </ion-item>
+        <template v-if="selectedSegment == 'convos'">
+          <ion-item
+            button
+            details=false
+            @click="selectConversation  (convo.id)"
+            v-for="convo in convos"
+            :key="convo.id"
+            lines="inset"
+            >
+            <conversation-entry :convo="convo" />
+          </ion-item>
+        </template>
+        <template v-else>
+          <ion-item
+            button
+            details=false
+            v-for="notify in notifications"
+            :key="notify.id"
+            lines="inset"
+            >
+            {{notify}}
+          </ion-item>
+
+        </template>
       </ion-list>
     </ion-content>
   </ion-page>
@@ -39,12 +53,18 @@ import { useStore } from '../stores/';
 
 export default defineComponent({
   name: 'Inbox',
+  data(){
+    return {
+      selectedSegment: "convos",
+    }
+  },
   setup() {
     const store = useStore();
     return {
       loading: computed(() => store.getters["inbox/loading"]),
       refresh(){ store.dispatch("inbox/refresh"); },
       convos: computed(() => store.getters["inbox/latest"]),
+      notifications: computed(() => store.getters["inbox/notifications"]),
       chatbubbles, logoWhatsapp, isNew: folderOpenOutline, mail: mailOutline,
     }
   },
