@@ -37,7 +37,7 @@
 import InlineText from "../components/inline-text.vue";
 import {
   IonPage, IonContent, IonSpinner, IonFooter, IonButtons, IonBackButton,
-  IonHeader, IonItem, IonTitle,
+  IonHeader, IonItem,
 } from '@ionic/vue';
 import { defineComponent, computed, ref } from 'vue';
 import { useStore } from '../stores/';

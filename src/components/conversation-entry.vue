@@ -23,7 +23,7 @@
 </template>
 <script lang="ts">
 import {
-    IonChip, IonIcon, IonAvatar, IonLabel, IonBadge, IonNote,
+    IonLabel, IonBadge, IonNote,
 } from '@ionic/vue';
 import { since } from "../utils/time";
 

@@ -13,12 +13,11 @@
 </template>
 <script type="ts">
 import {
-    IonList, IonItem, IonItemDivider, IonLabel,
+    IonList, IonItem, IonLabel,
     popoverController,
 } from "@ionic/vue";
 import { useStore } from '../stores/';
 import { defineComponent, computed } from 'vue';
-import { Parse } from "../config/Consts";
 
 export default defineComponent({
   name: 'MyMenu',
