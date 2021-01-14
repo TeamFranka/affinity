@@ -24,6 +24,7 @@ const ReactionsParams = {
   requireUser: true
 };
 
+
 Parse.Cloud.beforeSave(Comment, async (request) => {
   if (request.original) {
     return // an update not a create, ignore
@@ -47,14 +48,18 @@ Parse.Cloud.afterSave(Comment, async (request) => {
   onObj.increment("commentsCount");
   await onObj.save(null, { useMasterKey: true })
 
-  await (new Notification({
-    for: onObj.get("author"),
-    by: request.object.get("author"),
-    verb: "comment",
-    objects: [
-      pointer, request.object.toPointer()
-    ]
-  })).save(null, { useMasterKey: true });
+  const forUser = onObj.get("author");
+  const user = request.object.get("author");
+  if (forUser.id != user.id) {
+    await (new Notification({
+      for: forUser,
+      by: user,
+      verb: "comment",
+      objects: [
+        pointer, request.object.toPointer()
+      ]
+    })).save(null, { useMasterKey: true });
+  }
 }, {
   requireUser: true
 });
@@ -76,13 +81,16 @@ Parse.Cloud.define("react", async (request) => {
   model.set(F_REACTIONS, reacts);
   await model.save(null, { useMasterKey: true });
 
-  await (new Notification({
-    for: model.get("author"),
-    by: user,
-    verb: "react",
-    specifics: { reaction },
-    objects: [ model.toPointer() ]
-  })).save(null, { useMasterKey: true });
+  const forUser = model.get("author");
+  if (forUser.id != user.id) {
+    await (new Notification({
+      for: forUser,
+      by: user,
+      verb: "react",
+      specifics: { reaction },
+      objects: [ model.toPointer() ]
+    })).save(null, { useMasterKey: true });
+  }
 
   return model
 
@@ -125,12 +133,15 @@ Parse.Cloud.define("like", async (request) => {
   }
   await model.save(null, { useMasterKey: true });
 
-  await (new Notification({
-    for: model.get("author"),
-    by: user,
-    verb: "like",
-    objects: [ model.toPointer() ]
-  })).save(null, { useMasterKey: true });
+  const forUser =  model.get("author")
+  if (forUser.id != user.id) {
+    await (new Notification({
+      for: forUser,
+      by: user,
+      verb: "like",
+      objects: [ model.toPointer() ]
+    })).save(null, { useMasterKey: true });
+  }
 
   return model
 },
