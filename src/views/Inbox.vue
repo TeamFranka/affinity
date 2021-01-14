@@ -29,11 +29,20 @@
           <ion-item
             button
             details=false
-            v-for="notify in notifications"
-            :key="notify.id"
-            lines="inset"
+            v-for="n in notifications"
+            :key="n.id"
+            lines="none"
             >
-            {{notify}}
+            <avatar size="2em" with-name :profile="n.get('by')" />
+            <div v-if="n.get('verb') == 'react'">
+               reacted with {{(n.get('specifics')||{})["reaction"]}}
+            </div>
+            <div v-else-if="n.get('verb') == 'like'">
+              ❤️
+            </div>
+            <div v-else>
+              {{n}}
+            </div>
           </ion-item>
 
         </template>
@@ -49,6 +58,7 @@ import {
 import { chatbubbles, logoWhatsapp, folderOpenOutline, mailOutline } from 'ionicons/icons';
 import { defineComponent, computed } from 'vue';
 import ConversationEntry from "../components/conversation-entry.vue";
+import Avatar from "../components/avatar.vue";
 import { useStore } from '../stores/';
 
 export default defineComponent({
@@ -81,7 +91,7 @@ export default defineComponent({
   },
   components: {
     IonContent, IonPage,
-    ConversationEntry,
+    ConversationEntry, Avatar,
     IonSegment, IonSegmentButton, IonLabel, IonList, IonListHeader, IonItem,
   }
 });
