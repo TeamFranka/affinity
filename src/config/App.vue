@@ -6,28 +6,7 @@
           <ion-icon :icon="logInIcon"/>
       </ion-fab-button>
     </ion-fab>
-    <ion-header class="ion-hide-lg-down">
-      <ion-toolbar>
-        <ion-title slot="start">
-          <router-link :to="titleLink">{{title}}</router-link>
-        </ion-title>
-        <div class="menu" slot="end">
-          <router-link to="/faq">faq</router-link>
-
-          <router-link style="position: relative" to="/inbox">
-            <notification-dot color="warning" slot="start" />
-            <ion-icon size="large" color="secondary" :icon="chatIcon" />
-            <notification-dot color="danger" slot="end" />
-          </router-link>
-          <span v-if="user" @dblclick="logout">
-            <avatar  size="45px" v-if="user" :profile="user" />
-          </span>
-          <ion-button fill="clear" v-else @click="openLoginModal">
-              <ion-icon :icon="logInIcon"/> Einloggen
-          </ion-button>
-        </div>
-      </ion-toolbar>
-    </ion-header>
+    <header-bar />
     <!-- FIXME: animation is broken -->
     <ion-content>
       <ion-router-outlet />
@@ -41,20 +20,17 @@
 <script lang="ts">
 import {
   IonApp, IonRouterOutlet, IonFooter, IonProgressBar, IonFab, IonIcon, IonContent,
-  IonFabButton, modalController, isPlatform, IonToolbar, IonHeader, IonTitle,
-  IonButton, toastController,
+  IonFabButton, modalController, isPlatform, toastController,
 } from '@ionic/vue';
 import {
   logInOutline as logInIcon,
-  chatboxOutline as chatIcon,
 } from 'ionicons/icons';
-import NotificationDot from '../components/notification-dot.vue';
 import { defineComponent, computed, watch } from 'vue'
 
 // import SideMenu from '../components/side-menu.vue';
 import FooterMenu from '../components/footer-menu.vue';
 import LoginModal from '../components/login-modal.vue';
-import Avatar from '../components/avatar.vue';
+import HeaderBar from '../components/header-bar.vue';
 import { useStore } from '../stores/';
 
 
@@ -70,12 +46,7 @@ export default defineComponent({
     IonFabButton,
     IonIcon,
     FooterMenu,
-    IonToolbar,
-    IonHeader,
-    IonTitle,
-    IonButton,
-    Avatar,
-    NotificationDot,
+    HeaderBar,
     // Login,
   },
   setup() {
@@ -128,15 +99,12 @@ export default defineComponent({
     })
 
     return {
-      logInIcon, chatIcon,
+      logInIcon,
       onDesktop: isPlatform("desktop"),
-      titleLink: computed(() => "/t/" + store.state.global.defaultTeam?.get("slug")),
-      title: computed(() => store.state.global.defaultTeam?.get("name") || "affinity"),
       user: computed(() => store.state.auth.user),
       loginModalOpened: computed(() => {
         return store.state.auth.wantsToLogin
       }),
-      logout: () => store.dispatch('auth/logout'),
       openLoginModal: () => store.dispatch('auth/openLogin'),
       loading: store.getters.isLoading,
       // openLoginModal: () => store.dispatch("auth/openLogin"),
