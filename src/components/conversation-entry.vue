@@ -13,9 +13,9 @@
             <h2 v-else>
                 {{convo.get("participants")[0].get('name')}}
             </h2>
-            <p>{{msgPreview}}</p>
+            <p v-if="!brief">{{msgPreview}}</p>
         </ion-label>
-        <div class="ion-text-right" slot="end">
+        <div v-if="!brief" class="ion-text-right" slot="end">
             <ion-note color="medium">{{when}}</ion-note><br/>
             <ion-badge color="danger">3</ion-badge>
         </div>
@@ -40,7 +40,8 @@ export default defineComponent({
     convo: {
       type: Parse.Object,
       required: true
-    }
+    },
+    brief: Boolean,
   },
   components: {
     Avatar,
