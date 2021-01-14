@@ -1,9 +1,7 @@
 /* global Parse */
 
-const Comment = require('./consts').Comment;
-const common = require('./common');
-const fetchModel = common.fetchModel;
-const GenericObjectParams = common.GenericObjectParams;
+const { Comment, Notification } = require('./consts');
+const { GenericObjectParams, fetchModel } = require('./common');
 
 const F_LIKED_BY = "likedBy";
 const F_LIKES_COUNT = "likesCount";
@@ -26,6 +24,7 @@ const ReactionsParams = {
   requireUser: true
 };
 
+
 Parse.Cloud.beforeSave(Comment, async (request) => {
   if (request.original) {
     return // an update not a create, ignore
@@ -47,7 +46,20 @@ Parse.Cloud.afterSave(Comment, async (request) => {
   const pointer = request.object.get("on");
   const onObj = await fetchModel(request, pointer);
   onObj.increment("commentsCount");
-  onObj.save(null, { useMasterKey: true })
+  await onObj.save(null, { useMasterKey: true })
+
+  const forUser = onObj.get("author");
+  const user = request.object.get("author");
+  if (forUser.id != user.id) {
+    await (new Notification({
+      for: forUser,
+      by: user,
+      verb: "comment",
+      objects: [
+        pointer, request.object.toPointer()
+      ]
+    })).save(null, { useMasterKey: true });
+  }
 }, {
   requireUser: true
 });
@@ -68,6 +80,18 @@ Parse.Cloud.define("react", async (request) => {
 
   model.set(F_REACTIONS, reacts);
   await model.save(null, { useMasterKey: true });
+
+  const forUser = model.get("author");
+  if (forUser.id != user.id) {
+    await (new Notification({
+      for: forUser,
+      by: user,
+      verb: "react",
+      specifics: { reaction },
+      objects: [ model.toPointer() ]
+    })).save(null, { useMasterKey: true });
+  }
+
   return model
 
 },
@@ -108,6 +132,17 @@ Parse.Cloud.define("like", async (request) => {
     model.set(F_LIKES_COUNT, model.get(F_LIKED_BY).length);
   }
   await model.save(null, { useMasterKey: true });
+
+  const forUser =  model.get("author")
+  if (forUser.id != user.id) {
+    await (new Notification({
+      for: forUser,
+      by: user,
+      verb: "like",
+      objects: [ model.toPointer() ]
+    })).save(null, { useMasterKey: true });
+  }
+
   return model
 },
 GenericObjectParams);

@@ -12,6 +12,7 @@ module.exports = {
     Document: models.Document,
     Comment: models.Comment,
     Link: models.Link,
+    Notification: models.Notification,
     Picture: models.Picture,
     Video: models.Video,
     Objects: models.Objects,
