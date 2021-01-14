@@ -34,15 +34,26 @@
             lines="none"
             >
             <avatar size="2em" with-name :profile="n.get('by')" />
-            <div v-if="n.get('verb') == 'react'">
-               reacted with {{(n.get('specifics')||{})["reaction"]}}
+            <div v-if="n.get('verb') == 'react'"
+              class="ion-padding-start"
+            >
+              reacted with {{(n.get('specifics')||{})["reaction"]}}
+              on <object-link mine :object="n.get('objects')[0]" />
             </div>
-            <div v-else-if="n.get('verb') == 'like'">
-              ❤️
+            <div v-else-if="n.get('verb') == 'like'"
+              class="ion-padding-start"
+            >
+              ❤️ <object-link mine :object="n.get('objects')[0]" />
+            </div>
+            <div v-else-if="n.get('verb') == 'comment'"
+              class="ion-padding-start"
+            >
+              kommentierte <object-link mine :object="n.get('objects')[0]" />
             </div>
             <div v-else>
               {{n}}
             </div>
+            <span class="meta" slot="start">{{smartTimestamp(n.get('createdAt'))}}</span>
           </ion-item>
 
         </template>
@@ -59,7 +70,9 @@ import { chatbubbles, logoWhatsapp, folderOpenOutline, mailOutline } from 'ionic
 import { defineComponent, computed } from 'vue';
 import ConversationEntry from "../components/conversation-entry.vue";
 import Avatar from "../components/avatar.vue";
+import ObjectLink from "../components/object-link.vue";
 import { useStore } from '../stores/';
+import { smartTimestamp } from '../utils/time';
 
 export default defineComponent({
   name: 'Inbox',
@@ -71,6 +84,7 @@ export default defineComponent({
   setup() {
     const store = useStore();
     return {
+      smartTimestamp,
       loading: computed(() => store.getters["inbox/loading"]),
       refresh(){ store.dispatch("inbox/refresh"); },
       convos: computed(() => store.getters["inbox/latest"]),
@@ -91,7 +105,7 @@ export default defineComponent({
   },
   components: {
     IonContent, IonPage,
-    ConversationEntry, Avatar,
+    ConversationEntry, Avatar, ObjectLink,
     IonSegment, IonSegmentButton, IonLabel, IonList, IonListHeader, IonItem,
   }
 });
@@ -99,6 +113,7 @@ export default defineComponent({
 
 <style scoped>
 .meta {
-  text-align: right;
+  font-size: 0.8em;
+  color: var(--ion-color-medium);
 }
 </style>
