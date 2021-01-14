@@ -14,6 +14,7 @@ const Link = Parse.Object.extend("Link");
 const Picture = Parse.Object.extend("Picture");
 const FaqEntry = Parse.Object.extend("FaqEntry");
 const Video = Parse.Object.extend("Video");
+const Notification = Parse.Object.extend("Notification");
 const User = Parse.User;
 const Role = Parse.Role;
 
@@ -43,5 +44,6 @@ module.exports = {
     Picture: Picture,
     FaqEntry: FaqEntry,
     Video: Video,
+    Notification: Notification,
     Objects: Objects,
 }
