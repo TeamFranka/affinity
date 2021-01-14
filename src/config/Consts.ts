@@ -27,6 +27,8 @@ export const Conversation = Models.Conversation;
 export enum Verb {
     Post = "post",
     Announce = "announce",
+    Comment = "comment",
+    Like = "like",
 }
 
 export enum Visibility {
