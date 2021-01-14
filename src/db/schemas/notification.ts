@@ -36,15 +36,26 @@ export const Notification = {
     ),
     classLevelPermissions: {
         find: {
-            '*': true
+            pointerFields: [
+                "for"
+            ]
         },
-        count: {},
+        count: {
+            pointerFields: [
+                "for"
+            ]
+        },
         get: {
-            '*': true
+            pointerFields: [
+                "for"
+            ]
         },
         create: {},
         update: {
-            requiresAuthentication: true},
+            pointerFields: [
+                "for"
+            ]
+        },
         delete: {},
         addField: {},
         protectedFields: {}
