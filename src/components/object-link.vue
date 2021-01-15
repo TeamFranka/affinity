@@ -2,13 +2,13 @@
 <router-link :to="routeTo">{{text}}</router-link>
 </template>
 <script lang="ts">
-import {
-  IonCard, IonImg, IonCardHeader, IonIcon, IonNote,
-} from '@ionic/vue';
-import { chatbubblesOutline, addOutline, arrowRedoOutline, heartOutline } from 'ionicons/icons';
+// import {
+//   IonCard, IonImg, IonCardHeader, IonIcon, IonNote,
+// } from '@ionic/vue';
+// import { chatbubblesOutline, addOutline, arrowRedoOutline, heartOutline } from 'ionicons/icons';
 
-import { useStore } from '../stores/';
-import { defineComponent, computed } from 'vue';
+//  import { useStore } from '../stores/';
+import { defineComponent } from 'vue';
 import { Parse } from "../config/Consts";
 
 export default defineComponent({
