@@ -1,11 +1,15 @@
 <template>
 <ion-card>
   <ion-card-header>
-    <div class="avatar-wrap" @click="$router.push('/me')">
-      <avatar :profile="author" v-if="showAuthor"/>
-      <div v-else>
-        <router-link :to="teamLink"><avatar :profile="teamSettings" :name="teamName" v-if="!showAuthor"/></router-link>
-      </div>
+    <div class="avatar-wrap">
+      <router-link v-if="showAuthor" :to="{name: 'ViewUser', params:{userId: author.id}}">
+        <avatar :profile="author" />
+      </router-link>
+      <router-link
+        v-else
+        :to="teamLink">
+          <avatar :profile="teamSettings" :name="teamName" v-if="!showAuthor"/>
+      </router-link>
     </div>
     <div class="ion-padding-start">
       <div v-if="showAuthor">
