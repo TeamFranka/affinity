@@ -115,8 +115,8 @@ export const Inbox = {
       if (!context.rootGetters["auth/isLoggedIn"]) {
         context.commit("setConvos", [])
         context.commit("setLoading", false);
-        context.dispatch("unsubscribe", 'conversations');
-        context.dispatch("unsubscribe", 'notifications');
+        context.dispatch("unsubscribe", 'conversations', { root: true });
+        context.dispatch("unsubscribe", 'notifications', { root: true });
         return
       }
       context.commit("setLoading", true);
