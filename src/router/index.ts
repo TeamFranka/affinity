@@ -11,6 +11,7 @@ import Login from '../views/Login.vue';
 import Donations from '../views/Donations.vue';
 import ViewTeam from '../views/ViewTeam.vue';
 import ViewActivity from '../views/ViewActivity.vue';
+import ViewUser from '../views/ViewUser.vue';
 import ViewConversation from '../views/ViewConversation.vue';
 import { store } from '../stores/';
 
@@ -75,6 +76,12 @@ const routes: Array<RouteRecordRaw> = [
         path: 'a/:activityId',
         name: 'ViewActivity',
         component: ViewActivity
+      },
+      {
+        // FIXME: support username-based URLs
+        path: 'u/:userId',
+        name: 'ViewUser',
+        component: ViewUser
       },
       {
         path: 'feed',
