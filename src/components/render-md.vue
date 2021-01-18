@@ -1,0 +1,32 @@
+<template>
+  <span v-if="inline" v-html="compiled"></span>
+  <div v-else v-html="compiled"></div>
+</template>
+<script>
+import { adminMd, userMd } from '../utils/md';
+import { defineComponent } from 'vue';
+
+export default defineComponent({
+  name: 'RenderMd',
+  props: {
+    source: {
+      type: String,
+      required: true
+    },
+    admin: {
+      type: Boolean,
+    },
+    inline: {
+        type: Boolean,
+    },
+  },
+  computed: {
+    compiled(){
+      const r = this.admin ? adminMd : userMd;
+      const content = this.inline ? r.renderInline(this.source): r.render(this.source);
+      console.log(content);
+      return content;
+    }
+  }
+});
+</script>

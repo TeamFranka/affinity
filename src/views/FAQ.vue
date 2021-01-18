@@ -26,7 +26,7 @@
           :tags="e.get('tags')"
           @tag-selected="searchValue = $event"
         >
-          {{e.get('text')}}
+          <render-md admin :source="e.get('text')" />
           <interaction-bar :object="e" link="">
             <template v-slot:extraButtons>
               <ion-button @click="intendToEdit(e)" fill="clear">Editieren</ion-button>
@@ -58,6 +58,7 @@ import { useStore } from '../stores/';
 import { Parse, FaqEntry as FaqModel } from '../db/models';
 import InteractionBar from '../components/interaction-bar.vue';
 import EditFaq from '../components/edit-faq.vue';
+import RenderMd from '../components/render-md.vue';
 
 export default defineComponent({
   name: 'Faq',
@@ -181,7 +182,7 @@ export default defineComponent({
   },
   components: {
     IonPage, IonNote, IonContent, IonSearchbar, IonSpinner, IonButton,
-    FaqEntry, InteractionBar,
+    FaqEntry, InteractionBar, RenderMd,
   }
 });
 </script>
