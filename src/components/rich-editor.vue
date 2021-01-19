@@ -1,0 +1,254 @@
+<template>
+  <ion-toolbar v-if="showToolbar">
+    <ion-button
+      v-for="a in actions"
+      :title="a.title"
+      :key="a.title"
+      size="small"
+      fill="clear"
+      @click="execute(a.action)"
+      :color="(a.stateKey && selected.includes(a.stateKey)) ? 'dark' : 'medium'"
+      v-html="a.icon"
+    />
+  </ion-toolbar>
+  <div
+    :class="classes"
+    ref="content"
+    contenteditable="true"
+    @input="oninput"
+    @keydown="onkeydown"
+    @mouseup="refreshSelected"
+    @keyup="refreshSelected"
+  ><slot></slot></div>
+</template>
+<script lang="ts">
+import {
+  IonToolbar, IonButton, modalController,
+} from '@ionic/vue';
+import {
+  closeOutline as closeIcon,
+  saveOutline as saveIcon,
+  trashOutline as removeIcon,
+  addCircleOutline as addIcon,
+} from 'ionicons/icons';
+
+import { defineComponent } from 'vue';
+
+const formatBlock = 'formatBlock'
+const queryCommandState = (command: string) => document.queryCommandState(command)
+const queryCommandValue = (command: string) => document.queryCommandValue(command)
+
+export const exec = (command: string, value: any = null) => document.execCommand(command, false, value)
+
+const defaultActions: Record<string, any> = {
+  bold: {
+    icon: '<b>B</b>',
+    title: 'Bold',
+    stateKey: 'bold',
+    action: () => exec('bold')
+  },
+  italic: {
+    icon: '<i>I</i>',
+    title: 'Italic',
+    stateKey: 'italic',
+    action: () => exec('italic')
+  },
+  underline: {
+    icon: '<u>U</u>',
+    title: 'Underline',
+    stateKey: 'underline',
+    action: () => exec('underline')
+  },
+  strikethrough: {
+    icon: '<strike>S</strike>',
+    title: 'Strike-through',
+    stateKey: 'strikeThrough',
+    action: () => exec('strikeThrough')
+  },
+  heading1: {
+    icon: '<b>H<sub>1</sub></b>',
+    title: 'Heading 1',
+    action: () => exec(formatBlock, '<h1>')
+  },
+  heading2: {
+    icon: '<b>H<sub>2</sub></b>',
+    title: 'Heading 2',
+    action: () => exec(formatBlock, '<h2>')
+  },
+  heading3: {
+    icon: '<b>H<sub>3</sub></b>',
+    title: 'Heading 3',
+    action: () => exec(formatBlock, '<h3>')
+  },
+  paragraph: {
+    icon: '&#182;',
+    title: 'Paragraph',
+    action: () => exec(formatBlock, '<p>')
+  },
+  quote: {
+    icon: '&#8220; &#8221;',
+    title: 'Quote',
+    action: () => exec(formatBlock, '<blockquote>')
+  },
+  olist: {
+    icon: '&#35;',
+    title: 'Ordered List',
+    action: () => exec('insertOrderedList')
+  },
+  ulist: {
+    icon: '&#8226;',
+    title: 'Unordered List',
+    action: () => exec('insertUnorderedList')
+  },
+  code: {
+    icon: '&lt;/&gt;',
+    title: 'Code',
+    action: () => exec(formatBlock, '<pre>')
+  },
+  line: {
+    icon: '&#8213;',
+    title: 'Horizontal Line',
+    action: () => exec('insertHorizontalRule')
+  }
+};
+
+export const DefaultActions = ['bold', 'italic', 'underline'];
+
+export const AllActions = [
+  'bold', 'italic', 'underline', 'strikethrough',
+  'heading1', 'heading2', 'heading3',
+  'pagragraph', 'quote', 'olist', 'ulist',
+//  'line', 'code',
+];
+
+export default defineComponent({
+  name: 'RichEditor',
+  components: {
+    IonToolbar,
+    IonButton, //RenderMd
+  },
+  emits: ['change'],
+  props: {
+    classes: { },
+    defaultParagraphSeparator: {
+      type: String,
+      required: true,
+      default: "p",
+    },
+    showToolbar: {
+      type: Boolean,
+      default: true
+    },
+    enabledActions: {
+      default: DefaultActions,
+    },
+    extraActions: {
+      default: []
+    },
+  },
+  data() {
+    return {
+      selected: ['']
+    }
+  },
+  setup() {
+    return {
+      closeModal() {
+        modalController.dismiss()
+      },
+      saveIcon, closeIcon, addIcon, removeIcon,
+    }
+  },
+  computed: {
+    content(): HTMLElement {
+      return (this.$refs.content as HTMLElement)
+    },
+    paragrapher(): string {
+      return `<${this.defaultParagraphSeparator}>`;
+    },
+    actions(): any[] {
+      const actions = this.enabledActions.map(x => defaultActions[x]).filter(x=>!!x);
+      return actions.concat(this.extraActions);
+    },
+    actionStates(): string[] {
+      return this.actions.filter(x => !!x.stateKey ).map(x => x.stateKey)
+    },
+  },
+  methods: {
+    execute(action: any) {
+      action();
+      this.refreshSelected();
+      this.focus();
+    },
+    focus() {
+      this.content.focus();
+    },
+    refreshSelected() {
+      console.log("refreshing");
+      this.selected = this.actionStates.filter(a => queryCommandState(a));
+    },
+    oninput(ev: InputEvent) {
+      const content = this.content;
+      const firstChild = (ev.target as Node).firstChild;
+      if (firstChild && firstChild.nodeType === 3) exec(formatBlock, this.paragrapher)
+      else if (content.innerHTML === '<br>') content.innerHTML = ''
+      this.refreshSelected();
+      this.$emit("change", content.innerHTML);
+    },
+    onkeydown(event: KeyboardEvent) {
+      if (event.key === 'Enter' && queryCommandValue(formatBlock) === 'blockquote') {
+        setTimeout(() => exec(formatBlock, this.paragrapher), 0)
+      }
+      this.refreshSelected();
+    }
+  }
+});
+
+// export const init = settings => {
+//   const actions = settings.actions
+//     ? (
+//       settings.actions.map(action => {
+//         if (typeof action === 'string') return defaultActions[action]
+//         else if (defaultActions[action.name]) return { ...defaultActions[action.name], ...action }
+//         return action
+//       })
+//     )
+//     : Object.keys(defaultActions).map(action => defaultActions[action])
+
+//   const classes = { ...defaultClasses, ...settings.classes }
+
+//   const defaultParagraphSeparator = settings[defaultParagraphSeparatorString] || 'div'
+
+//   const actionbar = createElement('div')
+//   actionbar.className = classes.actionbar
+//   appendChild(settings.element, actionbar)
+
+//   const content = settings.element.content = createElement('div')
+//   content.contentEditable = true
+//   content.className = classes.content
+//   appendChild(settings.element, content)
+
+//   actions.forEach(action => {
+//     const button = createElement('button')
+//     button.className = classes.button
+//     button.innerHTML = action.icon
+//     button.title = action.title
+//     button.setAttribute('type', 'button')
+//     button.onclick = () => action.action() && content.focus()
+
+//     if (action.state) {
+//       const handler = () => button.classList[action.state() ? 'add' : 'remove'](classes.selected)
+//       addEventListener(content, 'keyup', handler)
+//       addEventListener(content, 'mouseup', handler)
+//       addEventListener(button, 'click', handler)
+//     }
+
+//     appendChild(actionbar, button)
+//   })
+
+//   if (settings.styleWithCSS) exec('styleWithCSS')
+//   exec(defaultParagraphSeparatorString, defaultParagraphSeparator)
+
+//   return settings.element
+// }
+</script>

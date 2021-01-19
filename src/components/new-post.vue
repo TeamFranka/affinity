@@ -2,7 +2,7 @@
   <ion-grid class="new-post">
     <ion-row>
       <ion-col size-md="11" size-xs="10">
-        <ion-textarea auto-grow=true :value="text" @change="updateText" placeholder="What do you want to share?" />
+        <div></div>
         <p @click="showOptions = true" v-if="!showOptions">{{visibility}} <span v-if="showTypeSelector">{{selectedType}}</span> <span v-if="showTeamSelector">to <avatar size="1.5em" :profile="selectedTeam" withName /></span><ion-button size="small" fill="clear"><ion-icon :icon="editIcon"/></ion-button></p>
       </ion-col>
       <ion-col size-md="1" class="ion-hide-sm-down">
