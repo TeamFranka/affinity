@@ -12,7 +12,8 @@
     />
   </ion-toolbar>
   <div
-    :class="classes"
+    class="ion-padding-bottom"
+    :data-placeholder="placeholder"
     ref="content"
     contenteditable="true"
     @input="oninput"
@@ -150,6 +151,10 @@ export default defineComponent({
     isAdminMd: {
       type: Boolean
     },
+    placeholder: {
+      type: String,
+      default: "Type your text here"
+    }
   },
   data(props) {
     const r = props.isAdminMd ? adminMd : userMd;
@@ -206,3 +211,17 @@ export default defineComponent({
   }
 });
 </script>
+<style scoped>
+[contenteditable]{
+  padding-left: var(--padding-start);
+  padding-right: var(--padding-end);
+  padding-top: var(--padding-top);
+  padding-bottom: var(--padding-bottom);
+}
+[contenteditable]:empty:before {
+  content: attr(data-placeholder);
+  color: var(--ion-color-medium);
+  display: inline-block;
+  font-style: italic;
+}
+</style>
