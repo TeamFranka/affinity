@@ -38,7 +38,7 @@
       </div>
     </div>
   </div>
-  <interaction-bar :object="activity" :link="link" />
+  <interaction-bar :object="interactivityObject" :link="link" />
 </ion-card>
 </template>
 <script lang="ts">
@@ -129,7 +129,7 @@ export default defineComponent({
     text(): string {
         return this.activity.get("text") || ""
     },
-    objects(): Parse.Object {
+    objects(): Parse.Object[] {
       return (this.activity.get("objects") || []).map(
             (o: Parse.Object) => this.objs[o.id])
     },
@@ -140,6 +140,12 @@ export default defineComponent({
       const author = this.author;
       return author ? (author.get("name") || author.get("username")) : "(hidden)"
     },
+    interactivityObject(): Parse.Object {
+      if (this.objects.length == 1) {
+        return this.objects[0]
+      }
+      return this.activity
+    }
   },
   methods: {
     async toggleComments() {
