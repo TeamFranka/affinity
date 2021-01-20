@@ -30,11 +30,6 @@ const routes: Array<RouteRecordRaw> = [
     component: Login,
   },
   {
-    path: '/news',
-    name: 'News',
-    component: News
-  },
-  {
     path: '/inbox/:conversationId',
     name: 'Conversation',
     component: ViewConversation,
@@ -45,11 +40,6 @@ const routes: Array<RouteRecordRaw> = [
     name: 'Inbox',
     component: Inbox,
     beforeEnter: ensureLoggedIn,
-  },
-  {
-    path: '/faq',
-    name: 'FAQ',
-    component: Faq
   },
   {
     path: '/me',
@@ -67,6 +57,16 @@ const routes: Array<RouteRecordRaw> = [
     name: "CommunityOutlet",
     component: CommunityOutlet,
     children: [
+      {
+        path: '/faq',
+        name: 'FAQ',
+        component: Faq
+      },
+      {
+        path: '/news',
+        name: 'News',
+        component: News
+      },
       {
         path: 't/:teamSlug',
         name: 'ViewTeam',

@@ -27,10 +27,11 @@ export const AuthState = {
     defaultTeam: (state: AuthStateT, rootState: any, rootGetters: any) => rootGetters["defaultTeam"],
     user: (state: AuthStateT) => state.user,
     userPtr: (state: AuthStateT) => state.user?.toPointer(),
-    myTeams: (state: AuthStateT) => state.teams,
+    myTeams: (state: AuthStateT) => state.teams.filter(x => !!x),
     teamPermissions: (state: AuthStateT) => state.teamPermissions,
     hasManyTeams: (state: AuthStateT) => state.teams.length > 1,
     postableTeams: (state: AuthStateT) =>  state.teams?.filter(t => t && state.teamPermissions[t.id].canPost) || [],
+    adminOfTeams: (state: AuthStateT) =>  state.teams?.filter(t => t && state.teamPermissions[t.id].isAdmin) || [],
   },
   mutations: {
     setUser(state: AuthStateT, newUser: Parse.User|null) {

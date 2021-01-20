@@ -7,9 +7,6 @@
             <new-post :teams="canPostInTeams" @submit="submitPost($event)" />
           </ion-card-content>
         </ion-card>
-
-        <ion-toggle color="light">Posts only</ion-toggle>
-
         <ion-spinner v-if="loading" name="dots"></ion-spinner>
 
         <transition-group name="list">
@@ -22,7 +19,7 @@
 
 <script lang="ts">
 import {
-  IonPage, IonContent, IonToggle, IonSpinner, IonCard, IonCardContent
+  IonPage, IonContent, IonSpinner, IonCard, IonCardContent
 } from '@ionic/vue';
 import { chatbubbles, heartOutline, addOutline, mailOutline, caretForwardOutline } from 'ionicons/icons';
 import { defineComponent, computed } from 'vue';
@@ -45,7 +42,7 @@ export default defineComponent({
     }
   },
   components: {
-    IonContent, IonPage, IonToggle, IonSpinner, IonCard, IonCardContent,
+    IonContent, IonPage, IonSpinner, IonCard, IonCardContent,
     NewPost, Activity
   }
 });
