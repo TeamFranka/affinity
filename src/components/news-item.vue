@@ -1,10 +1,24 @@
 <template>
-<div class="slidebox shown" @dblclick="like" ref="slideBox">
+<div class="slidebox shown" :style="extraStyle" @dblclick="like" ref="slideBox">
   <span class="like-icon" ref="liker">
     <ion-icon :icon="likeIcon"  />
   </span>
-  <img :src="imageUrl" />
-  <div class="text">
+
+  <template v-if="is('Poll')">
+    <ion-card>
+      <poll :poll="obj" />
+    </ion-card>
+  </template>
+  <template v-else-if="is('Post')">
+    <ion-card class="post-text ion-padding">
+      <p>{{text}}</p>
+      <p><reactions :item="item" /></p>
+    </ion-card>
+  </template>
+  <template v-else-if="is('Picture')">
+    <ion-img :src="imageUrl" />
+  </template>
+  <div v-if="!is('Post')" class="text">
     <p v-if="text">{{text}}</p>
     <p><reactions :item="item" /></p>
   </div>
@@ -39,10 +53,11 @@
 </template>
 
 <script lang="ts">
-import { IonLabel, IonIcon } from '@ionic/vue';
+import { IonLabel, IonIcon, IonImg, IonCard } from '@ionic/vue';
 import { createAnimation } from '@ionic/core';
 import { chatbubblesOutline as commentsIcon, heart as likeIcon } from 'ionicons/icons';
 import Avatar from './avatar.vue';
+import Poll from './poll.vue';
 import ShareButton from "./share-button.vue";
 import LikeButton from "./like-button.vue";
 import { since } from '../utils/time';
@@ -59,9 +74,13 @@ export default defineComponent({
       type: Parse.Object,
       required: true
     },
+    zIndex:{
+      type: String,
+    }
   },
   components: {
-    Avatar, ShareButton, Reactions, IonLabel, IonIcon, LikeButton
+    IonLabel, IonIcon, IonCard, IonImg,
+    Avatar, ShareButton, Reactions, LikeButton,  Poll
   },
   setup() {
     const store = useStore();
@@ -107,9 +126,12 @@ export default defineComponent({
     text(): string {
         return this.item.get("text") || ""
     },
-    objects(): Parse.Object {
+    objects(): Parse.Object[] {
       return (this.item.get("objects") || []).map(
             (o: Parse.Object) => this.objs[o.id])
+    },
+    obj(): Parse.Object {
+      return this.objects[0]
     },
     pointer(): Parse.Pointer {
       return this.item.toPointer()
@@ -120,8 +142,30 @@ export default defineComponent({
     imageUrl(): string | null {
         return this.image?.get("file")?.url()
     },
+    extraStyle(): object {
+      const style = (this.item.get("extra") || {})['style'] || {
+        'background': "var(--ion-color-tertiary )"
+      };
+      const localStyle = {
+        'z-index': this.zIndex,
+      };
+      if (this.is('Poll') || this.is('Post')) {
+        return Object.assign({}, style, localStyle, {
+          display: 'flex',
+          justifyContent: 'space-around',
+          alignItems: 'center'
+        });
+      }
+      return Object.assign({}, style, localStyle);
+    }
   },
   methods: {
+    is(type: string): boolean {
+      if (!this.obj) {
+        return type == "Post"
+      }
+      return this.obj.className == type;
+    },
     async like(ev: MouseEvent) {
       console.log("would like", ev);
       if (!this.hasLiked) {
@@ -158,6 +202,7 @@ export default defineComponent({
   bottom: 0px;
   right: 0;
   transition: 0.25s ease-out;
+  overflow: hidden;
 }
 .slidebox.hidden {
   transform: translateY(-100%);
@@ -173,6 +218,11 @@ export default defineComponent({
   color: white;
   left: 1em;
   right: calc(0.5em + 65px);
+}
+.post-text {
+  max-width: 650px;
+  width: 65vw;
+  font-size: 1.1rem;
 }
 .menu {
   position: absolute;

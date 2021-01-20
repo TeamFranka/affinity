@@ -28,6 +28,9 @@ export const Activity = {
                 type: "Array",
                 required: true
             },
+            extra: { // any extra data
+                type: "Object",
+            },
         },
         Interactable,
         ViewTracking,
