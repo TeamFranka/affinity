@@ -47,6 +47,7 @@ export default defineComponent({
     return {
       logInIcon, chatIcon,
       isLoggedIn: computed(() => store.getters["auth/isLoggedIn"]),
+      openLoginModal: () => store.dispatch('auth/openLogin'),
       user: computed(() => store.state.auth.user),
       title: computed(() => store.state.global.defaultTeam?.get("name") || "affinity"),
     }

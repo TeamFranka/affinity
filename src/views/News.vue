@@ -3,7 +3,12 @@
     <ion-content scroll-x="false" scroll-y="false">
       <ion-spinner v-if="loading" />
       <div class="flip-in" ref="box">
-        <news-item :item="n" v-for="n in feed" :key="n.id" />
+        <news-item
+          v-for="(n, index) in feed"
+          :z-index="index"
+          :item="n"
+          :key="n.id"
+        />
       </div>
     </ion-content>
   </ion-page>
@@ -21,6 +26,14 @@ import NewsItem from '../components/news-item.vue';
 import { useStore } from '../stores/';
 import { createGesture } from "@ionic/core";
 
+function reversed<T>(input: Array<T>): Array<T> {
+    const ret = [];
+    for(let i = input.length - 1; i >= 0; i--) {
+        ret.push(input[i]);
+    }
+    return ret;
+}
+
 export default defineComponent({
   name: 'NewsFeed',
   setup() {
@@ -28,7 +41,8 @@ export default defineComponent({
     return {
       loading: computed(() => store.getters["news/loading"]),
       refresh(){ store.dispatch("news/refresh"); },
-      feed: computed(() => store.getters["news/latest"].map((id: string) => store.getters["objectsMap"][id])),
+      feed: computed(() => reversed(store.getters["news/latest"]
+        .map((id: string) => store.getters["objectsMap"][id]))),
       chatbubbles, like: heartOutline, mail: mailOutline, plus: addOutline,
       teamSplitter: caretForwardOutline,
     }
@@ -98,15 +112,6 @@ export default defineComponent({
     });
 
     gesture.enable();
-  },
-  methods: {
-    makeStyle(n: Parse.Object): any {
-      const url = n.get('objects')[0].get('file').url();
-      return {
-        background: `url(${url}) no-repeat center center`,
-        backgroundSize: 'cover'
-      };
-    }
   },
   components: {
     IonContent, IonPage, IonSpinner, NewsItem,
