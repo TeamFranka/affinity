@@ -12,7 +12,7 @@
   </ion-row>
   <ion-row>
     <ion-col size="12" class="ion-padding-start" v-if="text">
-      <p>{{text}}</p>
+      <render-md :source="text" />
     </ion-col>
     <ion-col size="12" class="ion-padding-start" v-if="outcome">
       <h3>Ergebnis:</h3>
@@ -91,6 +91,7 @@ import {
   createOutline as editIcon,
 } from 'ionicons/icons';
 
+import RenderMd from './render-md.vue';
 import { useStore } from '../stores/';
 import { Parse } from '../config/Consts';
 import { until, hasPassed } from "../utils/time";
@@ -100,7 +101,9 @@ export default defineComponent({
   name: 'Poll',
   components: {
     IonGrid, IonRow, IonCol, IonIcon,
-    IonButton, IonLabel, IonNote, IonCheckbox, IonItem, IonList, IonTitle, IonSpinner, IonProgressBar
+    IonButton, IonLabel, IonNote, IonCheckbox, IonItem, IonList,
+    IonTitle, IonSpinner, IonProgressBar,
+    RenderMd,
   },
   props: {
     poll:  {
