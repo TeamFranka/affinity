@@ -7,7 +7,8 @@
       </router-link>
       <router-link
         v-else
-        :to="teamLink">
+        :to="teamLink"
+      >
           <avatar :profile="teamSettings" :name="teamName" v-if="!showAuthor"/>
       </router-link>
     </div>
@@ -26,7 +27,7 @@
   </ion-card-header>
   <div>
     <div class="ion-padding">
-      {{ text }}
+      <render-md :source="text" />
     </div>
     <div v-for="obj in objects" :key="obj.id" class="ion-padding">
       <div v-if="obj.className == 'Poll'">
@@ -49,6 +50,7 @@ import { chatbubblesOutline, addOutline, arrowRedoOutline, heartOutline } from '
 import Avatar from "./avatar.vue";
 import InteractionBar from "./interaction-bar.vue";
 import Poll from "./poll.vue";
+import RenderMd from './render-md.vue';
 import { useStore } from '../stores/';
 import { defineComponent, computed } from 'vue';
 import { Parse } from "../config/Consts";
@@ -165,7 +167,7 @@ export default defineComponent({
   },
   components: {
     IonCard, IonImg, InteractionBar, IonCardHeader, Poll,
-    IonIcon, IonNote, Avatar,
+    IonIcon, IonNote, Avatar, RenderMd,
   },
 });
 </script>

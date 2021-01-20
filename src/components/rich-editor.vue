@@ -19,18 +19,16 @@
     @keydown="onkeydown"
     @mouseup="refreshSelected"
     @keyup="refreshSelected"
-  ><slot></slot></div>
+    v-html="startingContent"
+  />
 </template>
 <script lang="ts">
 import {
-  IonToolbar, IonButton, modalController,
+  IonToolbar, IonButton,
 } from '@ionic/vue';
-import {
-  closeOutline as closeIcon,
-  saveOutline as saveIcon,
-  trashOutline as removeIcon,
-  addCircleOutline as addIcon,
-} from 'ionicons/icons';
+// import {
+// } from 'ionicons/icons';
+import { adminMd, userMd, td } from '../utils/md';
 
 import { defineComponent } from 'vue';
 
@@ -145,18 +143,20 @@ export default defineComponent({
     extraActions: {
       default: []
     },
+    startText: {
+      type: String,
+      default: ''
+    },
+    isAdminMd: {
+      type: Boolean
+    },
   },
-  data() {
+  data(props) {
+    const r = props.isAdminMd ? adminMd : userMd;
+    const startingContent = r.render(props.startText);
     return {
-      selected: ['']
-    }
-  },
-  setup() {
-    return {
-      closeModal() {
-        modalController.dismiss()
-      },
-      saveIcon, closeIcon, addIcon, removeIcon,
+      selected: [''],
+      startingContent,
     }
   },
   computed: {
@@ -175,6 +175,9 @@ export default defineComponent({
     },
   },
   methods: {
+    clear(){
+      this.content.innerHTML = '';
+    },
     execute(action: any) {
       action();
       this.refreshSelected();
@@ -184,7 +187,6 @@ export default defineComponent({
       this.content.focus();
     },
     refreshSelected() {
-      console.log("refreshing");
       this.selected = this.actionStates.filter(a => queryCommandState(a));
     },
     oninput(ev: InputEvent) {
@@ -193,7 +195,7 @@ export default defineComponent({
       if (firstChild && firstChild.nodeType === 3) exec(formatBlock, this.paragrapher)
       else if (content.innerHTML === '<br>') content.innerHTML = ''
       this.refreshSelected();
-      this.$emit("change", content.innerHTML);
+      this.$emit("change", td.turndown(content.innerHTML));
     },
     onkeydown(event: KeyboardEvent) {
       if (event.key === 'Enter' && queryCommandValue(formatBlock) === 'blockquote') {

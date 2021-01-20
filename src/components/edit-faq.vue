@@ -17,7 +17,11 @@
     </ion-toolbar>
   </ion-header>
   <ion-content>
-    <rich-editor :enabledActions="AllActions"><render-md :source="text" /></rich-editor>
+    <rich-editor
+      :enabledActions="AllActions"
+      @change="(v) => text = v"
+      :startText="text"
+    />
     <ion-chip v-for="(t, index) in tags" :key="t" @click="removeTag(index)">
         {{t}} <ion-icon :icon="removeIcon"></ion-icon>
     </ion-chip>
@@ -46,19 +50,15 @@ import {
   trashOutline as removeIcon,
   addCircleOutline as addIcon,
 } from 'ionicons/icons';
+import { defineComponent } from 'vue';
 import { AllActions } from './rich-editor.vue';
 import RichEditor from './rich-editor.vue';
-import { td } from '../utils/md';
-import RenderMd from './render-md.vue';
-
-console.log("jup", AllActions);
-import { defineComponent } from 'vue';
 
 export default defineComponent({
   name: 'EditFaq',
   components: {
     IonContent, IonToolbar, IonInput, IonHeader, IonIcon, IonChip,
-    IonButton, IonFooter, IonLabel, RichEditor, RenderMd,
+    IonButton, IonFooter, IonLabel, RichEditor,
   },
   props: {
     saveLabel: {

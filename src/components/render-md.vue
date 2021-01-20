@@ -24,7 +24,6 @@ export default defineComponent({
     compiled(){
       const r = this.admin ? adminMd : userMd;
       const content = this.inline ? r.renderInline(this.source): r.render(this.source);
-      console.log(content);
       return content;
     }
   }

@@ -2,7 +2,12 @@
   <ion-grid class="new-post">
     <ion-row>
       <ion-col size-md="11" size-xs="10">
-        <div></div>
+        <rich-editor
+          ref="editor"
+          :enabledActions="richActions"
+          :startText="text"
+          @change="updateText"
+        ></rich-editor>
         <p @click="showOptions = true" v-if="!showOptions">{{visibility}} <span v-if="showTypeSelector">{{selectedType}}</span> <span v-if="showTeamSelector">to <avatar size="1.5em" :profile="selectedTeam" withName /></span><ion-button size="small" fill="clear"><ion-icon :icon="editIcon"/></ion-button></p>
       </ion-col>
       <ion-col size-md="1" class="ion-hide-sm-down">
@@ -249,6 +254,8 @@ import Poll from "./poll.vue";
 import { useStore } from '../stores/';
 import { Parse, Verb, Visibility } from '../config/Consts';
 import { Poll as PollModel } from '../db/models';
+import { AllActions, DefaultActions } from './rich-editor.vue';
+import RichEditor from './rich-editor.vue';
 
 const VERB_ICONS: Record<string, any>= {};
 VERB_ICONS[Verb.Post] = readerOutline;
@@ -277,9 +284,10 @@ export default defineComponent({
       teams: computed(() => store.getters["auth/postableTeams"]),
       text: computed(() => store.state.draft.text),
       selectedType: computed(() => store.getters["draft/selectedType"]),
+      richActions: computed(() => store.getters["draft/selectedType"] == 'announce' ? AllActions : DefaultActions ),
       visibility: computed(() => store.state.draft.visibility),
 
-      updateText: (e: any) => store.dispatch("draft/updateText", e.target.value),
+      updateText: (value: string) => store.dispatch("draft/updateText", value),
       selectTeam: (t: Parse.Object) => store.commit("draft/setTeam", t),
       setVisibility: (t: Visibility) => store.commit("draft/setVisibility", t),
       selectType: (t: Verb) => store.commit("draft/setType", t),
@@ -313,7 +321,6 @@ export default defineComponent({
       },
       // submission
       canSubmit: computed(() => store.getters["draft/canSubmit"]),
-      submit() { store.dispatch("draft/submit"); },
       // icons
       imageIcon, sendIcon, eyeOutline, editIcon, listIcon, leftIcon, rightIcon,
       selectedIcon: checkmarkOutline, closeIcon, deleteIcon, linkIcon, documentIcon
@@ -322,9 +329,14 @@ export default defineComponent({
   components: {
     IonTextarea, IonChip, IonIcon, IonLabel, IonButton, IonInput, IonImg, IonItem,
     IonGrid, IonRow, IonCol, IonSpinner,  Selector, Avatar, Poll,
-    IonCard, IonCardContent,
+    IonCard, IonCardContent, RichEditor,
   },
   methods: {
+    async submit() {
+      await this.store.dispatch("draft/submit");
+      console.log(this.$refs.editor);
+      (this.$refs.editor as any).clear();
+    },
     async addPoll() {
       const newPoll = new PollModel({options:[{title: 'Option 1'}, {title: 'Option 2'}, {title: 'Option 3'}]});
       const modal = await modalController
