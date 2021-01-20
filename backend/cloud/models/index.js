@@ -6,9 +6,7 @@ const ChatWidgetSettings = Parse.Object.extend("ChatWidgetSettings");
 const Conversation = Parse.Object.extend("Conversation");
 const Message = Parse.Object.extend("Message");
 const Comment = Parse.Object.extend("Comment");
-const Poll = Parse.Object.extend("Poll");
 const Document = Parse.Object.extend("Document");
-const Team = Parse.Object.extend("Team");
 const TeamSettings = require('./team-settings').TeamSettings;
 const Link = Parse.Object.extend("Link");
 const Picture = Parse.Object.extend("Picture");
@@ -17,6 +15,29 @@ const Video = Parse.Object.extend("Video");
 const Notification = Parse.Object.extend("Notification");
 const User = Parse.User;
 const Role = Parse.Role;
+
+const Team = Parse.Object.extend("Team", {
+    isMember: function(groupName, userId) {
+        return this
+            .get(groupName)
+            .getUsers()
+            .query()
+            .contains("id", userId)
+            .exists({ useMasterKey: true })
+    }
+});
+
+const Poll = Parse.Object.extend("Poll", {
+    canEdit: function(user, team) {
+      if ((this.get("hasVoted") || []).length !== 0) {
+          return false
+      }
+      if (team.isMember("leaders", user.id)) {
+        return true;
+      }
+      return this.get("author").id === user.id;
+    }
+});
 
 const Objects = [
     FaqEntry,

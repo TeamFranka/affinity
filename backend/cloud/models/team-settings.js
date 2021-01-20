@@ -16,15 +16,6 @@ const Defaults = {
 
 const Levels = ["anyone", "members", "publishers", "mods", "leaders", "nobody"];
 
-function isMember(team, groupName, userId) {
-    return team
-        .get(groupName)
-        .getUsers()
-        .query()
-        .contains("id", userId)
-        .exists({ useMasterKey: true })
-}
-
 const TeamSettings = Parse.Object.extend("TeamSettings", {
     chechLevel: function(field, level) {
         return Levels.indexOf(this.get(field) || Defaults[field]) <= Levels.indexOf(level);
@@ -37,9 +28,9 @@ const TeamSettings = Parse.Object.extend("TeamSettings", {
         } else if (lvl === "nobody") {
             return false
         } else if (lvl === "members"  || lvl === "leaders") {
-            return isMember(team, lvl, user.id)
+            return team.isMember(lvl, user.id)
         } else if (lvl === "mods" || lvl === "agents" || lvl === "publishers") {
-            return isMember(team, lvl, user.id) ? true : isMember(team, "leaders", user.id)
+            return team.isMember(lvl, user.id) ? true : team.isMember("leaders", user.id)
         }
 
         console.log("unknown level, returning false");
