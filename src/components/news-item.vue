@@ -12,7 +12,7 @@
   <template v-else-if="is('Post')">
     <ion-card class="post-text ion-padding">
       <render-md :source="text" />
-      <p><reactions :item="item" /></p>
+      <p><reactions :item="interactivityObject" /></p>
     </ion-card>
   </template>
   <template v-else-if="is('Picture')">
@@ -20,7 +20,7 @@
   </template>
   <div v-if="!is('Post')" class="text">
     <render-md v-if="text" :source="text" />
-    <p><reactions :item="item" /></p>
+    <p><reactions :item="interactivityObject" /></p>
   </div>
   <div class="menu">
     <router-link :to="teamLink">
@@ -31,13 +31,13 @@
         icon-size="large"
         :link="fullLink"
         :pointer="pointer"
-        :counter="item.get('sharesCount') || 0"
+        :counter="interactivityObject.get('sharesCount') || 0"
       />
     </div>
     <div class="interaction">
       <router-link :to="link">
         <ion-icon :icon="commentsIcon" size="large" />
-        <ion-label>{{item.get("commentsCount") || 0}}</ion-label>
+        <ion-label>{{interactivityObject.get("commentsCount") || 0}}</ion-label>
       </router-link>
     </div>
     <div class="interaction">
@@ -45,7 +45,7 @@
           icon-size="large"
           :has-liked="hasLiked"
           :pointer="pointer"
-          :counter="item.get('likesCount') || 0"
+          :counter="interactivityObject.get('likesCount') || 0"
       />
     </div>
   </div>
@@ -131,6 +131,12 @@ export default defineComponent({
       return (this.item.get("objects") || []).map(
             (o: Parse.Object) => this.objs[o.id])
     },
+    interactivityObject(): Parse.Object {
+      if (this.objects.length == 1) {
+        return this.objects[0]
+      }
+      return this.item
+    },
     obj(): Parse.Object {
       return this.objects[0]
     },
@@ -169,7 +175,7 @@ export default defineComponent({
     },
     async like(ev: MouseEvent) {
       if (!this.hasLiked) {
-        this.store.dispatch("auth/like", Object.assign({}, this.pointer));
+        this.store.dispatch("auth/like", Object.assign({}, this.interactivityObject.toPointer()));
       }
       const l: any = this.$refs.liker;
       await createAnimation()
