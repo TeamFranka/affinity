@@ -20,10 +20,11 @@
     <ion-grid>
       <ion-row>
         <ion-col>
-          <ion-textarea
-            :value="text"
-            @ionChange="text = $event.target.value"
-            placeholder="Give further context" />
+          <rich-editor
+            :startText="text"
+            @change="(v) => text = v"
+            placeholder="Give further context"
+          />
         </ion-col>
       </ion-row>
       <ion-row>
@@ -150,7 +151,7 @@
 </template>
 <script lang="ts">
 import {
-  IonContent, IonHeader, IonToolbar, IonInput, IonIcon, IonButton, IonTextarea, modalController,
+  IonContent, IonHeader, IonToolbar, IonInput, IonIcon, IonButton, modalController,
   IonFooter, IonLabel, IonToggle, IonGrid, IonRow, IonCol, IonItem, IonList, IonListHeader,
   IonDatetime,
 } from '@ionic/vue';
@@ -162,11 +163,12 @@ import {
 } from 'ionicons/icons';
 import { defineComponent } from 'vue';
 import dayjs from 'dayjs';
+import RichEditor from './rich-editor.vue';
 
 export default defineComponent({
   name: 'EditPoll',
   components: {
-    IonContent, IonToolbar, IonInput, IonHeader, IonTextarea, IonIcon,
+    IonContent, IonToolbar, IonInput, IonHeader, RichEditor, IonIcon,
     IonButton, IonFooter, IonLabel, IonDatetime,
     IonToggle, IonGrid, IonRow, IonCol, IonItem, IonList, IonListHeader,
   },
@@ -209,7 +211,6 @@ export default defineComponent({
   },
   computed: {
     canSubmit(): boolean {
-      console.log(this.title,  this.options);
       return  this.title.length > 0 && this.options.length > 0
     },
   },

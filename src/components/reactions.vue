@@ -9,13 +9,13 @@
     >
       <ion-label>{{r.key}} {{r.count}}</ion-label>
     </ion-chip>
-    <ion-chip @click="selectEmoji" v-if="canReact" outline color="light">
+    <ion-button @click="selectEmoji" v-if="canReact" fill="clear" color="medium">
       <ion-icon :icon="plusIcon" size="small"/>
-    </ion-chip>
+    </ion-button>
 </template>
 <script lang="ts">
 import {
-  IonChip, IonLabel, IonIcon, modalController,
+  IonChip, IonLabel, IonIcon, modalController, IonButton,
 } from '@ionic/vue';
 
 import EmojiPickerModal from  "./emoji-picker-modal.vue";
@@ -34,7 +34,7 @@ export default defineComponent({
   name: 'Activity',
   emits: ['react', 'unreact'],
   components: {
-    IonChip, IonLabel, IonIcon,
+    IonChip, IonLabel, IonIcon, IonButton,
   },
   props: {
       selectedColor: {

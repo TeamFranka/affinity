@@ -71,7 +71,9 @@ export const Poll = {
         create: {
             requiresAuthentication: true
         },
-        update: {},
+        update: {
+            requiresAuthentication: true
+        },
         delete: {},
         addField: {},
         protectedFields: {}

@@ -5,14 +5,14 @@
       <ion-title>{{title}}</ion-title>
     </ion-col>
     <ion-col class="ion-text-end">
-      <ion-button fill="clear" size="small" v-if="canEdit" title="Editieren"><ion-icon :icon="editIcon"/></ion-button>
+      <ion-button fill="clear" @click="editPoll" size="small" v-if="canEdit" title="Editieren"><ion-icon :icon="editIcon"/></ion-button>
       <ion-button @click="intendToClose" fill="clear" size="small" v-if="canClose" title="Schließen"><ion-icon :icon="closeIcon"/></ion-button>
       <slot name="extraButtons"></slot>
     </ion-col>
   </ion-row>
   <ion-row>
     <ion-col size="12" class="ion-padding-start" v-if="text">
-      <p>{{text}}</p>
+      <render-md :source="text" />
     </ion-col>
     <ion-col size="12" class="ion-padding-start" v-if="outcome">
       <h3>Ergebnis:</h3>
@@ -84,14 +84,17 @@
 import {
   IonGrid, IonRow, IonCol, IonIcon,
   IonCheckbox, IonButton, IonNote, IonLabel, IonItem, IonList, IonTitle, IonSpinner,
-  IonProgressBar, alertController
+  IonProgressBar, alertController, modalController,
 } from '@ionic/vue';
 import {
   powerOutline as closeIcon,
   createOutline as editIcon,
 } from 'ionicons/icons';
 
+import RenderMd from './render-md.vue';
+import EditPoll from './edit-poll.vue';
 import { useStore } from '../stores/';
+import { Poll as PollModel } from '../db/models';
 import { Parse } from '../config/Consts';
 import { until, hasPassed } from "../utils/time";
 import { defineComponent } from 'vue';
@@ -100,11 +103,13 @@ export default defineComponent({
   name: 'Poll',
   components: {
     IonGrid, IonRow, IonCol, IonIcon,
-    IonButton, IonLabel, IonNote, IonCheckbox, IonItem, IonList, IonTitle, IonSpinner, IonProgressBar
+    IonButton, IonLabel, IonNote, IonCheckbox, IonItem, IonList,
+    IonTitle, IonSpinner, IonProgressBar,
+    RenderMd,
   },
   props: {
     poll:  {
-      type: Object,
+      type: Parse.Object,
       required: true
     },
   },
@@ -133,6 +138,25 @@ export default defineComponent({
         }
       } else {
         this.selected.splice(currently, 1)
+      }
+    },
+    async editPoll(){
+      const intermedPoll = new PollModel(this.poll.toJSON());
+      const modal = await modalController
+        .create({
+          component: EditPoll,
+          componentProps: {
+            poll: intermedPoll,
+            saveLabel: "Speichern",
+          },
+        })
+      await modal.present();
+      const res = await modal.onDidDismiss();
+      if (res.data) {
+        await this.poll.save(res.data);
+        // FIXME: updates here do not propagate b/c
+        //        vue reactivity doesn't notice it changed
+        //        https://github.com/TeamFranka/affinity/issues/53
       }
     },
     async intendToClose() {
@@ -205,14 +229,20 @@ export default defineComponent({
         return false;
       }
 
-      const userId = this.store.getters["auth/myId"];
-      if (!userId) { return false }
-
-      if (this.poll.get("author").id === userId){
-        return true
-      } else {
-        return false
+      // FIXME: use poll.canEdit here instead...
+      if ((this.poll.get("hasVoted") || []).length == 0) {
+        // only for as long as no one" has voted.
+        const teamId = this.poll.get("team").id;
+        const teamPerms = this.store.getters["auth/teamPermissions"][teamId];
+        if (teamPerms && teamPerms.isAdmin) {
+          return true;
+        }
+        const userId = this.store.getters["auth/myId"];
+        if (!userId) {
+          return this.poll.get("author").id === userId;
+        }
       }
+      return false
     },
     canClose(): boolean {
       if (!this.poll.id) {

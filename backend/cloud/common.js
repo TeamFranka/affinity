@@ -57,7 +57,6 @@ const enforcACL = async (request, team) => {
   acl.setRoleReadAccess(leadersRole, true);
   acl.setRoleWriteAccess(leadersRole, true);
 
-  /// there might be others that can write though.
   const whoCanEdit = settings.get("canEdit" + request.object.className);
   if (whoCanEdit) {
     console.log("canEdit", whoCanEdit);
@@ -86,7 +85,12 @@ const genericObjectsPreSave = async (request) => {
   if (!request.master) {
     const verb = request.original ? 'Edit' : 'Create';
 
-    if (!settings.canDo(request.user, 'can' + verb + request.object.className, team)) {
+    if (request.object['can' + verb]) {
+      // model has custom rules
+      if (!request.object['can' + verb](request.user, team, settings)) {
+        throw request.user.id + " can't " + verb + " " + request.object.className + " in team " + team.get("name") +  " because model rules disallow that";
+      }
+    } else if (!settings.canDo(request.user, 'can' + verb + request.object.className, team)) {
       throw request.user.id + " can't " + verb + " " + request.object.className + " in team " + team.get("name")
     }
   }

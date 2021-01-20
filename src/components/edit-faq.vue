@@ -17,10 +17,11 @@
     </ion-toolbar>
   </ion-header>
   <ion-content>
-    <ion-textarea
-    :value="text"
-    @ionChange="text = $event.target.value"
-    placeholder="Antwort Text" />
+    <rich-editor
+      :enabledActions="AllActions"
+      @change="(v) => text = v"
+      :startText="text"
+    />
     <ion-chip v-for="(t, index) in tags" :key="t" @click="removeTag(index)">
         {{t}} <ion-icon :icon="removeIcon"></ion-icon>
     </ion-chip>
@@ -41,7 +42,7 @@
 <script lang="ts">
 import {
   IonContent, IonHeader, IonToolbar, IonInput, IonIcon, IonButton, IonTextarea, modalController,
-  IonFooter, IonLabel,
+  IonFooter, IonLabel, IonChip
 } from '@ionic/vue';
 import {
   closeOutline as closeIcon,
@@ -49,14 +50,15 @@ import {
   trashOutline as removeIcon,
   addCircleOutline as addIcon,
 } from 'ionicons/icons';
-
 import { defineComponent } from 'vue';
+import { AllActions } from './rich-editor.vue';
+import RichEditor from './rich-editor.vue';
 
 export default defineComponent({
   name: 'EditFaq',
   components: {
-    IonContent, IonToolbar, IonInput, IonHeader, IonTextarea, IonIcon,
-    IonButton, IonFooter, IonLabel,
+    IonContent, IonToolbar, IonInput, IonHeader, IonIcon, IonChip,
+    IonButton, IonFooter, IonLabel, RichEditor,
   },
   props: {
     saveLabel: {
@@ -73,6 +75,7 @@ export default defineComponent({
         modalController.dismiss()
       },
       saveIcon, closeIcon, addIcon, removeIcon,
+      AllActions,
     }
   },
   data(props) {

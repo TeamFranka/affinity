@@ -11,7 +11,7 @@
   </template>
   <template v-else-if="is('Post')">
     <ion-card class="post-text ion-padding">
-      <p>{{text}}</p>
+      <render-md :source="text" />
       <p><reactions :item="item" /></p>
     </ion-card>
   </template>
@@ -19,7 +19,7 @@
     <ion-img :src="imageUrl" />
   </template>
   <div v-if="!is('Post')" class="text">
-    <p v-if="text">{{text}}</p>
+    <render-md v-if="text" :source="text" />
     <p><reactions :item="item" /></p>
   </div>
   <div class="menu">
@@ -64,6 +64,7 @@ import { since } from '../utils/time';
 import Parse from "parse";
 import { defineComponent, computed } from 'vue';
 import { useStore } from '../stores/';
+import RenderMd from './render-md.vue';
 import Reactions from './reactions.vue';
 
 export default defineComponent({
@@ -75,12 +76,12 @@ export default defineComponent({
       required: true
     },
     zIndex:{
-      type: String,
+      type: Number,
     }
   },
   components: {
     IonLabel, IonIcon, IonCard, IonImg,
-    Avatar, ShareButton, Reactions, LikeButton,  Poll
+    Avatar, ShareButton, Reactions, LikeButton, Poll, RenderMd
   },
   setup() {
     const store = useStore();
@@ -167,7 +168,6 @@ export default defineComponent({
       return this.obj.className == type;
     },
     async like(ev: MouseEvent) {
-      console.log("would like", ev);
       if (!this.hasLiked) {
         this.store.dispatch("auth/like", Object.assign({}, this.pointer));
       }
