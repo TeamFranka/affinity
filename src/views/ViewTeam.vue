@@ -44,12 +44,23 @@
               </ion-button>
             </div>
           </div>
-          <ion-toolbar class="ion-padding-end">
+          <ion-toolbar>
             <ion-button size="small" @click="showQr = !showQr" fill="clear">
               <ion-icon size="small" :icon="qrCodeIcon" />
             </ion-button>
             <div slot="end">
-              End Menu
+              <ul class="footer-menu">
+                <li v-for="l in footerLinks" :key="l.target">
+                  <a :href="l.target" target="_blank">
+                    {{l.title}}
+                  </a>
+                </li>
+                <li v-if="canEdit">
+                  <ion-button @click="intendEditFooterLinks" size="small" fill="clear">
+                    <ion-icon size="small" :icon="editIcon" />
+                  </ion-button>
+                </li>
+              </ul>
             </div>
           </ion-toolbar>
           <div v-if="showQr">
@@ -71,7 +82,7 @@
 <script lang="ts">
 import RenderMd from '../components/render-md.vue';
 import Avatar from '../components/avatar.vue';
-import EditSocialLinks from '../components/settings/edit-social-links.vue';
+import EditLinks from '../components/settings/edit-links.vue';
 import GenericEditorModal from '../components/settings/generic-editor-modal.vue';
 import Qrcode from '../components/qrcode.vue';
 import {
@@ -159,7 +170,10 @@ export default defineComponent({
       return this.settings.get('info') || ""
     },
     socialLinks(): any[] {
-      return ((this.settings || {}).get("socialLinks") || [])
+      return this.settings.get("socialLinks") || []
+    },
+    footerLinks(): any[] {
+      return this.settings.get("footerLinks") || []
     },
     permissions(): any {
       return this.store.getters["auth/teamPermissions"][this.team.id] || {};
@@ -223,12 +237,29 @@ export default defineComponent({
         await this.setSetting({"customStyles": res.data.value})
       }
     },
+    async intendEditFooterLinks() {
+      const modal = await modalController
+        .create({
+          component: EditLinks,
+          componentProps: {
+            items: Array.from(this.footerLinks),
+            withIcons: false,
+            saveLabel: "Speichern",
+          },
+        })
+      await modal.present();
+      const res = await modal.onDidDismiss();
+      if (res.data) {
+        await this.setSetting({"footerLinks": res.data.items})
+      }
+    },
     async intendEditSocialLink() {
       const modal = await modalController
         .create({
-          component: EditSocialLinks,
+          component: EditLinks,
           componentProps: {
-            settings: this.settings,
+            items: Array.from(this.socialLinks),
+            withIcons: true,
             platforms: Object.keys(ICONS).map((x) => Object.assign({}, {key: x}, ICONS[x])),
             saveLabel: "Speichern",
           },
@@ -236,7 +267,7 @@ export default defineComponent({
       await modal.present();
       const res = await modal.onDidDismiss();
       if (res.data) {
-        await this.setSetting({"socialLinks": res.data.socialLinks})
+        await this.setSetting({"socialLinks": res.data.items})
       }
     },
     async setSetting(params: any) {
@@ -311,6 +342,7 @@ ion-toolbar {
   bottom: 0;
   right: 0;
 }
+.footer-menu,
 .social-icons {
   list-style: none;
   padding: 0;
@@ -322,6 +354,16 @@ ion-toolbar {
 }
 .social-icons li a {
   color: var(--ion-color-light);
+}
+
+.footer-menu li {
+  display: inline-block;
+}
+.footer-menu li a {
+  color: var(--ion-color-medium);
+  margin-left: 0.5em;
+  text-transform: uppercase;
+  text-decoration: none;
 }
 ion-chip ion-icon {
   margin: 0
