@@ -191,6 +191,7 @@ export default defineComponent({
           componentProps: {
             value: this.settings.get('customStyles'),
             type: "textarea",
+            help: "Hier kannst du die globalen css-Style-Variablen des Theme überschreiben. Siehe dazu [den Ionic Theming Guide](https://ionicframework.com/docs/theming/css-variables) und den [praktischen Color Generator](https://ionicframework.com/docs/theming/color-generator)",
             title: "Eigene Styles",
             saveLabel: "Speichern",
           },

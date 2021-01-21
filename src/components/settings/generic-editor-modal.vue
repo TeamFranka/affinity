@@ -13,7 +13,8 @@
     </ion-toolbar>
   </ion-header>
   <ion-content>
-    <ion-item >
+    <ion-item>
+      <render-md v-if="help" admin :source="help" />
       <ion-label position="stacked">{{label}}</ion-label>
       <rich-editor
         v-if="type == 'richtext'"
@@ -37,7 +38,6 @@
         :placeholder="placeholder"
         @ionchange="currentValue = $event.target.value"
       />
-      <ion-label v-if="help">{{help}}</ion-label>
     </ion-item>
   </ion-content>
   <ion-footer>
@@ -64,12 +64,13 @@ import {
 import { defineComponent } from 'vue';
 import { DefaultActions, AllActions } from '../rich-editor.vue';
 import RichEditor from '../rich-editor.vue';
+import RenderMd from '../render-md.vue';
 
 export default defineComponent({
   name: 'IconSelector',
   components: {
     IonContent, IonToolbar, IonInput, IonHeader, IonIcon, IonTextarea,
-    IonButton, IonFooter, IonLabel, IonItem, IonTitle, RichEditor,
+    IonButton, IonFooter, IonLabel, IonItem, IonTitle, RichEditor, RenderMd,
   },
   props: {
     title: {
