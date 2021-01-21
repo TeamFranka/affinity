@@ -75,13 +75,13 @@
 </template>
 
 <script lang="ts">
-import RenderMd from '../components/render-md.vue';
-import Avatar from '../components/avatar.vue';
-import { DefaultIcon, Icons } from '../components/generic/inline-link-list.vue';
-import InlineLinkList from '../components/generic/inline-link-list.vue';
-import EditLinks from '../components/settings/edit-links.vue';
-import GenericEditorModal from '../components/settings/generic-editor-modal.vue';
-import Qrcode from '../components/qrcode.vue';
+import RenderMd from '@/components/render-md.vue';
+import Avatar from '@/components/avatar.vue';
+import { DefaultIcon, Icons } from '@/components/generic/inline-link-list.vue';
+import InlineLinkList from '@/components/generic/inline-link-list.vue';
+import EditLinks from '@/components/settings/edit-links.vue';
+import GenericEditorModal from '@/components/settings/generic-editor-modal.vue';
+import Qrcode from '@/components/qrcode.vue';
 import {
   IonContent, IonPage,  IonIcon, IonChip, IonSpinner, IonButton,
   modalController, alertController, IonToolbar,
@@ -94,10 +94,10 @@ import {
   createOutline as editIcon,
 } from 'ionicons/icons';
 import { defineComponent, computed, ref } from 'vue';
-import { useStore } from '../stores/';
+import { useStore } from '@/stores/';
 import { useRoute } from 'vue-router';
 import Parse from 'parse';
-import { takePicture, CameraPhoto } from '../utils/camera';
+import { takePicture, CameraPhoto } from '@/utils/camera';
 
 const DEFAULT_STYLES = {
   "background": "transparent",
