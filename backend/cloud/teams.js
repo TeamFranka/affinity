@@ -179,7 +179,6 @@ Parse.Cloud.beforeSave("Team", async (request) => {
   await leaders.save(null, { useMasterKey: true });
   acl.setRoleReadAccess(leaders, true);
   acl.setRoleWriteAccess(leaders, true);
-  console.log("mods");
   const mods = new Parse.Role(name + " Mods", (new Parse.ACL()));
   const agents = new Parse.Role(name + " Agents", (new Parse.ACL()));
   const publishers = new Parse.Role(name + " Publishers", (new Parse.ACL()));
@@ -195,28 +194,18 @@ Parse.Cloud.beforeSave("Team", async (request) => {
   await publishers.save(null, { useMasterKey: true });
   await members.save(null, { useMasterKey: true });
 
-  console.log("other")
-  // agents.getRoles().add(leaders);
-  // publishers.getRoles().add(leaders);
-  // mods.getRoles().add(leaders);
-  // members.getRoles().add(leaders);
-
-  // console.log("a")
-  // const toSave = [mods, agents, publishers, members];
-  // await Parse.Object.saveAll(toSave, null, { useMasterKey: true });
   let teamSettings = request.object.get("settings");
 
-  console.log("d")
   if (!teamSettings) {
     teamSettings = new TeamSettings();
     const teamAcl = new Parse.ACL();
     teamAcl.setPublicReadAccess(true);
-    //teamAcl.setRoleWriteAccess(members, true);
+    teamAcl.setRoleReadAccess(leaders, true);
+    teamAcl.setRoleWriteAccess(leaders, true);
     teamSettings.setACL(teamAcl);
     await teamSettings.save(null, { useMasterKey: true })
   }
 
-  console.log("w")
   request.object.set({
     "ACL": acl,
     "leaders": leaders,

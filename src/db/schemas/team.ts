@@ -13,6 +13,9 @@ export const TeamSettings = {
             background: {
                 type: 'File'
             },
+            customStyles: {
+                type: 'String'
+            },
             canPost: {
                 type: 'String',
             },

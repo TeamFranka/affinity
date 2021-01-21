@@ -4,7 +4,7 @@
       <div class="wrap">
         <ion-spinner v-if="loading"/>
         <template v-else>
-          <div class="header">
+          <div class="header" :style="teamStyle">
             <div class="profile-img ion-padding">
               <avatar size="10rem" :profile="settings" />
               <ion-chip v-if="canEdit" @click="selectNewAvatar()">
@@ -25,6 +25,19 @@
                   </ion-button>
                 </li>
               </ul>
+            </div>
+            <div class="extra-actions" v-if="canEdit">
+              <ion-chip title="remove background" v-if="settings.get('background')" @click="removeBackground">
+                <ion-icon :icon="imageIcon" />
+                <ion-icon  :icon="trashIcon" />
+              </ion-chip>
+              <ion-chip v-else @click="selectBackground" title="upload background">
+                <ion-icon :icon="imageIcon" />
+                <ion-icon :icon="uploadIcon" />
+              </ion-chip>
+              <ion-button color="light" @click="intendEditStyles" size="small" fill="clear">
+                Edit Custom Styles
+              </ion-button>
             </div>
           </div>
           <ion-button size="small" @click="showQr = !showQr" fill="clear">
@@ -49,10 +62,11 @@
 <script lang="ts">
 import Avatar from '../components/avatar.vue';
 import EditSocialLinks from '../components/settings/edit-social-links.vue';
+import GenericEditorModal from '../components/settings/generic-editor-modal.vue';
 import Qrcode from '../components/qrcode.vue';
 import {
   IonContent, IonPage,  IonIcon, IonChip, IonSpinner, IonButton,
-  modalController,
+  modalController, alertController,
 } from '@ionic/vue';
 import {
   chatbubbles, logoWhatsapp, cloudUploadOutline, logoTwitter, logoSoundcloud,
@@ -60,6 +74,8 @@ import {
   logoMedium, logoPaypal, logoReddit, logoSkype, logoSnapchat, logoTiktok, logoYoutube,
   logoVimeo, logoXing,
   logoInstagram, globeOutline,
+  trashOutline as trashIcon,
+  imageOutline as imageIcon,
   qrCodeOutline as qrCodeIcon,
   createOutline as editIcon,
 } from 'ionicons/icons';
@@ -93,6 +109,11 @@ const ICONS: Record<string, any> = {
   'website': { icon: globeOutline, title: "Website", prefix: "https://" },
 }
 
+const DEFAULT_STYLES = {
+  "background": "transparent",
+  "backgroundImage": "linear-gradient(to right, var(--ion-color-secondary) 0%, var(--ion-color-primary) 100%)"
+}
+
 export default defineComponent({
   name: 'Team',
   data(){
@@ -117,7 +138,7 @@ export default defineComponent({
       team: computed(() => store.getters.objectsMap[store.getters.teamsBySlug[slug]]),
       store, loading,
       chatbubbles, logoWhatsapp, uploadIcon: cloudUploadOutline,
-      editIcon, qrCodeIcon,
+      editIcon, qrCodeIcon, imageIcon, trashIcon,
     }
   },
   computed: {
@@ -137,6 +158,18 @@ export default defineComponent({
     logo(): string | null {
       return (this.settings && this.settings.get("avatar")) ? this.settings.get("avatar").url() : null
     },
+    teamStyle(): any {
+      const customStyles = this.settings.get('customStyles');
+      const extraStyles: any = {};
+      const backgroundImage =  this.settings.get("background");
+      if (backgroundImage) {
+        extraStyles.backgroundImage = `url(${backgroundImage.url()})`;
+        extraStyles.backgroundSize = "cover";
+      }
+      const res = [DEFAULT_STYLES, customStyles, extraStyles];
+      console.log(res);
+      return res;
+    },
     fullLink(): string {
       return "https://yup"
     }
@@ -144,6 +177,23 @@ export default defineComponent({
   methods: {
     getSocialIcon(l: string): any {
       return (ICONS[l] || {icon: DEFAULT_ICON}).icon;
+    },
+    async intendEditStyles() {
+      const modal = await modalController
+        .create({
+          component: GenericEditorModal,
+          componentProps: {
+            value: this.settings.get('customStyle'),
+            type: "textarea",
+            title: "Eigene Styles",
+            saveLabel: "Speichern",
+          },
+        })
+      await modal.present();
+      const res = await modal.onDidDismiss();
+      if (res.data) {
+        await this.setSetting({"customStyles": res.data.value})
+      }
     },
     async intendEditSocialLink() {
       const modal = await modalController
@@ -172,6 +222,34 @@ export default defineComponent({
         await file.save();
         await this.setSetting({avatar: file});
       });
+    },
+    async removeBackground() {
+      const alert = await alertController
+        .create({
+          header: 'Hintergrund löschen?',
+          message: 'Soll der Hintergrund wirklich gelöscht werden?',
+          buttons: [
+            {
+              text: 'Abbruch',
+              role: 'cancel',
+              cssClass: 'secondary',
+            },
+            {
+              text: 'Ja, löschen',
+              handler: () => {
+                this.setSetting({background: null})
+              },
+            },
+          ],
+        });
+      return alert.present();
+    },
+    selectBackground() {
+      takePicture().then(async (img: typeof CameraPhoto) => {
+        const file = new Parse.File(this.team.get("slug") + "_background", {uri: img.dataUrl}, "image/" + img.format);
+        await file.save();
+        await this.setSetting({background: file});
+      });
     }
   },
   components: {
@@ -183,6 +261,7 @@ export default defineComponent({
 </script>
 <style scoped>
 .header {
+  position: relative;
   display: flex;
   align-content: center;
   align-items: center;
@@ -196,6 +275,11 @@ export default defineComponent({
   left: 50%;
   transform: translateX(-50%);
 }
+.extra-actions {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+}
 .social-icons {
   list-style: none;
   padding: 0;
@@ -204,6 +288,9 @@ export default defineComponent({
 .social-icons li {
   display: inline-block;
   margin-right: 0.2em;
+}
+.social-icons li a {
+  color: var(--ion-color-light);
 }
 ion-chip ion-icon {
   margin: 0

@@ -59,9 +59,6 @@ export default defineComponent({
         loginModal = await modalController
           .create({
             component: LoginModal,
-            componentProps: {
-              title: 'New Title'
-            },
           })
         loginModal.present();
         loginModal.onDidDismiss().then(()=>{
