@@ -6,6 +6,7 @@
         <span v-if="showTitle">{{l.title}}</span>
       </a>
     </li>
+    <slot></slot>
   </ul>
 </template>
 <script lang="ts">
