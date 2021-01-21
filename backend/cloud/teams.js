@@ -47,11 +47,12 @@ Parse.Cloud.define("getTeam", async (request) => {
   const user = request.user;
   const slug = request.params.slug;
   const team = await ((new Parse.Query(Team))
-        .equalTo("slug", slug)
-      .first({ useMasterKey: true }));
+    .equalTo("slug", slug)
+    .first());
 
   const roles = await (new Parse.Query(Parse.Role))
-      .equalTo("users", user).find({ useMasterKey: true });
+      .equalTo("users", user)
+      .find({ useMasterKey: true });
 
   const roleIds = roles.map(r =>r.id);
 
@@ -87,7 +88,6 @@ Parse.Cloud.define("getTeam", async (request) => {
       },
     },
   },
-  requireUser: true,
 });
 
 

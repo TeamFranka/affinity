@@ -94,7 +94,7 @@ export const Team = {
     ),
     classLevelPermissions: {
         find: {
-            requiresAuthentication: true
+            '*': true
         },
         count: {},
         get: {
