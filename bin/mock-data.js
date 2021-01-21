@@ -74,15 +74,15 @@ console.log('myArgs: ', args);
     await Promise.all(mocks.Teams.map(async (data, index) => {
         const Team = Parse.Object.extend("Team");
         let team = await (new Parse.Query(Team))
-            .include("settings")
             .equalTo("slug", data.slug)
             .first({ useMasterKey: true });
         if (!team) {
-            team = await Parse.Cloud.run("newRootTeam", {
+            team = new Team(Object.assign({
                 slug: data.slug,
                 name: data.name,
-                admin: getUser(data.admin).id,
-            }, { useMasterKey: true });
+                admin: getUser(data.admin).id
+            }, data.params));
+            await team.save(null, { useMasterKey: true });
         }
         if (index === 0){
             defaultTeamId = team.id

@@ -4,52 +4,6 @@
 const CONSTS = require("./consts.js");
 const Team = CONSTS.Team;
 
-Parse.Cloud.define("newRootTeam", async (request) => {
-  const admin = await (new Parse.Query(Parse.User))
-    .get(request.params.admin, { useMasterKey: true });
-  if (!admin) throw "Admin not found";
-  const query = new Parse.Query(Team);
-  query.equalTo("slug", request.params.slug)
-  const alreadyThere = await query.first({ useMasterKey: true });
-  if (alreadyThere) {
-    throw "Slug already in use"
-  }
-
-  const newTeam = new Team({
-    name: request.params.name,
-    slug: request.params.slug,
-  });
-
-  await newTeam.save(null, { useMasterKey: true });
-  newTeam.get("members").getUsers().add(admin).save(null, { useMasterKey: true });
-  newTeam.get("leaders").getUsers().add(admin).save(null, { useMasterKey: true });
-  return newTeam
-
-}, {
-  fields: {
-    name: {
-      required: true,
-      type: String,
-      options: val => {
-        return val.length > 7 && !!val.match(CONSTS.UNI_MATCH)
-      },
-      slug: {
-        required: true,
-        type: String,
-        options: val => {
-          return val.length > 7 && !!val.match(CONSTS.SLUG_MATCH)
-        },
-      },
-      admin: {
-        required: true,
-        type: String,
-      }
-    },
-  },
-  validateMasterKey: true,
-  requireMaster: true,
-});
-
 Parse.Cloud.define("myTeams", async (request) => {
     const user = request.user;
     const roles = await (new Parse.Query(Parse.Role))
@@ -145,13 +99,18 @@ const CANT_BE_CHANGED = [
 // Ensure the ACL are set correctly when created
 Parse.Cloud.beforeSave("Team", async (request) => {
   console.log("starting", request.master);
-  const user = request.user;
+  let user = request.user;
+  if (!user && request.master && request.object.get("admin")){
+    user = await (new Parse.Query(Parse.User))
+      .get(request.object.get("admin"), { useMasterKey:true });
+    request.object.unset("admin");
+  }
   const name = request.object.get("name");
 
   if (request.original) {
     // enforce some fields can't be changed
     const team = request.original;
-    if (!team.isMember("leaders", user.id)) {
+    if (!request.master && !team.isMember("leaders", user.id)) {
       throw "Only admins can edit team"
     }
     CANT_BE_CHANGED.forEach(key => {
@@ -160,6 +119,14 @@ Parse.Cloud.beforeSave("Team", async (request) => {
       }
     });
   } else {
+
+    const query = new Parse.Query(Team);
+    query.equalTo("slug", request.object.get('slug'))
+    const alreadyThere = await query.first({ useMasterKey: true });
+    if (alreadyThere) {
+      throw "Slug already in use"
+    }
+
     // creating,
     const parentId = request.object.get("subOf");
     const acl = new Parse.ACL();
@@ -206,6 +173,8 @@ Parse.Cloud.beforeSave("Team", async (request) => {
     agents.set("type", "agents");
     publishers.set("type", "publishers");
     members.set("type", "members");
+
+    members.getUsers().add(user);
 
     // FIXME: can we just add them and have them created in one go instead?
     await mods.save(null, { useMasterKey: true });
