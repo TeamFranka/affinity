@@ -44,9 +44,14 @@
               </ion-button>
             </div>
           </div>
-          <ion-button size="small" @click="showQr = !showQr" fill="clear">
-            <ion-icon size="small" :icon="qrCodeIcon" />
-          </ion-button>
+          <ion-toolbar class="ion-padding-end">
+            <ion-button size="small" @click="showQr = !showQr" fill="clear">
+              <ion-icon size="small" :icon="qrCodeIcon" />
+            </ion-button>
+            <div slot="end">
+              End Menu
+            </div>
+          </ion-toolbar>
           <div v-if="showQr">
             <ul class="social-icons">
               <li>
@@ -71,7 +76,7 @@ import GenericEditorModal from '../components/settings/generic-editor-modal.vue'
 import Qrcode from '../components/qrcode.vue';
 import {
   IonContent, IonPage,  IonIcon, IonChip, IonSpinner, IonButton,
-  modalController, alertController,
+  modalController, alertController, IonToolbar,
 } from '@ionic/vue';
 import {
   chatbubbles, logoWhatsapp, cloudUploadOutline, logoTwitter, logoSoundcloud,
@@ -277,7 +282,7 @@ export default defineComponent({
   },
   components: {
     Avatar, Qrcode, RenderMd,
-    IonPage, IonContent, IonIcon, IonChip, IonSpinner, IonButton,
+    IonPage, IonContent, IonIcon, IonChip, IonSpinner, IonButton, IonToolbar,
   }
 });
 </script>
@@ -287,6 +292,10 @@ export default defineComponent({
   display: flex;
   align-content: center;
   align-items: center;
+}
+ion-toolbar {
+  border-bottom: 1px dotted;
+  border-top: 1px dotted;
 }
 .profile-img {
   position: relative;
