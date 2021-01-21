@@ -16,6 +16,9 @@ export const TeamSettings = {
             customStyles: {
                 type: 'String'
             },
+            info: {
+                type: 'String'
+            },
             canPost: {
                 type: 'String',
             },

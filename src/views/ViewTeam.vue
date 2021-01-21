@@ -20,11 +20,15 @@
                   </a>
                 </li>
                 <li v-if="canEdit">
-                  <ion-button @click="intendEditSocialLink" size="small" fill="clear">
+                  <ion-button @click="intendEditSocialLink" color="light" size="small" fill="clear">
                     <ion-icon size="small" :icon="editIcon" />
                   </ion-button>
                 </li>
               </ul>
+              <render-md adminMd :source="info" />
+              <ion-button v-if="canEdit" color="light" @click="intendEditInfo" size="small" fill="clear">
+                Edit Text
+              </ion-button>
             </div>
             <div class="extra-actions" v-if="canEdit">
               <ion-chip title="remove background" v-if="settings.get('background')" @click="removeBackground">
@@ -60,6 +64,7 @@
 </template>
 
 <script lang="ts">
+import RenderMd from '../components/render-md.vue';
 import Avatar from '../components/avatar.vue';
 import EditSocialLinks from '../components/settings/edit-social-links.vue';
 import GenericEditorModal from '../components/settings/generic-editor-modal.vue';
@@ -145,6 +150,9 @@ export default defineComponent({
     settings(): Parse.Object {
       return this.store.getters.objectsMap[this.team.get("settings").id];
     },
+    info(): string {
+      return this.settings.get('info') || ""
+    },
     socialLinks(): any[] {
       return ((this.settings || {}).get("socialLinks") || [])
     },
@@ -152,7 +160,6 @@ export default defineComponent({
       return this.store.getters["auth/teamPermissions"][this.team.id] || {};
     },
     canEdit(): boolean {
-      console.log(this.permissions);
       return this.permissions.isAdmin
     },
     logo(): string | null {
@@ -166,9 +173,7 @@ export default defineComponent({
         extraStyles.backgroundImage = `url(${backgroundImage.url()})`;
         extraStyles.backgroundSize = "cover";
       }
-      const res = [DEFAULT_STYLES, customStyles, extraStyles];
-      console.log(res);
-      return res;
+      return [DEFAULT_STYLES, customStyles, extraStyles];
     },
     fullLink(): string {
       return "https://yup"
@@ -177,6 +182,24 @@ export default defineComponent({
   methods: {
     getSocialIcon(l: string): any {
       return (ICONS[l] || {icon: DEFAULT_ICON}).icon;
+    },
+    async intendEditInfo() {
+      const modal = await modalController
+        .create({
+          component: GenericEditorModal,
+          componentProps: {
+            value: this.settings.get('info') || '',
+            type: "richtext",
+            isAdminMd: true,
+            title: "Team Info",
+            saveLabel: "Speichern",
+          },
+        })
+      await modal.present();
+      const res = await modal.onDidDismiss();
+      if (res.data) {
+        await this.setSetting({"info": res.data.value})
+      }
     },
     async intendEditStyles() {
       const modal = await modalController
@@ -253,8 +276,7 @@ export default defineComponent({
     }
   },
   components: {
-    Avatar,
-    Qrcode,
+    Avatar, Qrcode, RenderMd,
     IonPage, IonContent, IonIcon, IonChip, IonSpinner, IonButton,
   }
 });

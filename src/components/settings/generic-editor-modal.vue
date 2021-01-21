@@ -13,23 +13,31 @@
     </ion-toolbar>
   </ion-header>
   <ion-content>
-    <ion-item v-if="type == 'textarea'">
+    <ion-item >
       <ion-label position="stacked">{{label}}</ion-label>
+      <rich-editor
+        v-if="type == 'richtext'"
+        :placeholder="placeholder"
+        :startText="currentValue"
+        :isAdminMd="isAdminMd"
+        :enabledActions="isAdminMd ? AllActions : DefaultActions"
+        @change="(x) => { currentValue = x}"
+      />
       <ion-textarea
+        v-else-if="type == 'textarea'"
         :placeholder="placeholder"
         :value="currentValue"
         auto-grow
         @ionchange="currentValue = $event.target.value"
       />
-    </ion-item>
-    <ion-item v-else>
-      <ion-label position="stacked">{{label}}</ion-label>
-        <ion-input
-          :type="type"
-          :value="currentValue"
-          :placeholder="placeholder"
-          @ionchange="currentValue = $event.target.value"
-        />
+      <ion-input
+        v-else
+        :type="type"
+        :value="currentValue"
+        :placeholder="placeholder"
+        @ionchange="currentValue = $event.target.value"
+      />
+      <ion-label v-if="help">{{help}}</ion-label>
     </ion-item>
   </ion-content>
   <ion-footer>
@@ -54,12 +62,14 @@ import {
   trashOutline as removeIcon,
 } from 'ionicons/icons';
 import { defineComponent } from 'vue';
+import { DefaultActions, AllActions } from '../rich-editor.vue';
+import RichEditor from '../rich-editor.vue';
 
 export default defineComponent({
   name: 'IconSelector',
   components: {
     IonContent, IonToolbar, IonInput, IonHeader, IonIcon, IonTextarea,
-    IonButton, IonFooter, IonLabel, IonItem, IonTitle,
+    IonButton, IonFooter, IonLabel, IonItem, IonTitle, RichEditor,
   },
   props: {
     title: {
@@ -68,7 +78,9 @@ export default defineComponent({
     },
     label: {
       type: String,
-      default: "Edit:"
+    },
+    help: {
+      type: String,
     },
     saveLabel: {
       type: String,
@@ -84,6 +96,9 @@ export default defineComponent({
     value: {
       type: String,
     },
+    isAdminMd: {
+      type: Boolean
+    },
   },
   data(props) {
     return {
@@ -96,6 +111,7 @@ export default defineComponent({
         modalController.dismiss()
       },
       saveIcon, closeIcon, addIcon, listIcon, removeIcon,
+      DefaultActions, AllActions,
     }
   },
   methods: {
