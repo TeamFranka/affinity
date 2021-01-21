@@ -183,7 +183,7 @@ export default defineComponent({
         .create({
           component: GenericEditorModal,
           componentProps: {
-            value: this.settings.get('customStyle'),
+            value: this.settings.get('customStyles'),
             type: "textarea",
             title: "Eigene Styles",
             saveLabel: "Speichern",
