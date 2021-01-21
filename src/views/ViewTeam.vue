@@ -13,18 +13,13 @@
             </div>
             <div class="ion-padding">
               <h1>{{team.get('name')}}</h1>
-              <ul class="social-icons">
-                <li v-for="l in socialLinks" :key="l.target">
-                  <a :href="l.target" target="_blank">
-                    <ion-icon :icon="getSocialIcon(l.platform)" />
-                  </a>
-                </li>
+              <inline-link-list :items="socialLinks" showIcon>
                 <li v-if="canEdit">
                   <ion-button @click="intendEditSocialLink" color="light" size="small" fill="clear">
                     <ion-icon size="small" :icon="editIcon" />
                   </ion-button>
                 </li>
-              </ul>
+              </inline-link-list>
               <render-md adminMd :source="info" />
               <ion-button v-if="canEdit" color="light" @click="intendEditInfo" size="small" fill="clear">
                 Edit Text
@@ -49,18 +44,13 @@
               <ion-icon size="small" :icon="qrCodeIcon" />
             </ion-button>
             <div slot="end">
-              <ul class="footer-menu">
-                <li v-for="l in footerLinks" :key="l.target">
-                  <a :href="l.target" target="_blank">
-                    {{l.title}}
-                  </a>
-                </li>
+              <inline-link-list showTitle :items="footerLinks">
                 <li v-if="canEdit">
                   <ion-button @click="intendEditFooterLinks" size="small" fill="clear">
                     <ion-icon size="small" :icon="editIcon" />
                   </ion-button>
                 </li>
-              </ul>
+              </inline-link-list>
             </div>
           </ion-toolbar>
           <div v-if="showQr">
@@ -82,6 +72,8 @@
 <script lang="ts">
 import RenderMd from '../components/render-md.vue';
 import Avatar from '../components/avatar.vue';
+import { DefaultIcon, Icons } from '../components/generic/inline-link-list.vue';
+import InlineLinkList from '../components/generic/inline-link-list.vue';
 import EditLinks from '../components/settings/edit-links.vue';
 import GenericEditorModal from '../components/settings/generic-editor-modal.vue';
 import Qrcode from '../components/qrcode.vue';
@@ -90,11 +82,7 @@ import {
   modalController, alertController, IonToolbar,
 } from '@ionic/vue';
 import {
-  chatbubbles, logoWhatsapp, cloudUploadOutline, logoTwitter, logoSoundcloud,
-  logoGithub, logoGitlab, logoLinkedin, logoAmazon, logoFacebook, logoStackoverflow,
-  logoMedium, logoPaypal, logoReddit, logoSkype, logoSnapchat, logoTiktok, logoYoutube,
-  logoVimeo, logoXing,
-  logoInstagram, globeOutline,
+  chatbubbles, logoWhatsapp, cloudUploadOutline,
   trashOutline as trashIcon,
   imageOutline as imageIcon,
   qrCodeOutline as qrCodeIcon,
@@ -105,30 +93,6 @@ import { useStore } from '../stores/';
 import { useRoute } from 'vue-router';
 import Parse from 'parse';
 import { takePicture, CameraPhoto } from '../utils/camera';
-
-const DEFAULT_ICON = globeOutline;
-const ICONS: Record<string, any> = {
-  'whatsApp': { icon: logoWhatsapp, title: "WhatsApp", prefix: "whatsapp://" },
-  'skype': { icon: logoSkype, title: "skype", prefix: "skype://" },
-  'snapchat': { icon: logoSnapchat, title: "snapchat", prefix: "snapchat://" },
-  'amazon': { icon: logoAmazon, title: "amazon", prefix: "https://amazon.com" },
-  'youtube': { icon: logoYoutube, title: "youtube", prefix: "https://youtube.com" },
-  'vimeo': { icon: logoVimeo, title: "vimeo", prefix: "https://vimeo.com" },
-  'tiktok': { icon: logoTiktok, title: "tiktok", prefix: "https://tiktok.com" },
-  'soundcloud': { icon: logoSoundcloud, title: "soundcloud", prefix: "https://soundcloud.com" },
-  'stackoverflow': { icon: logoStackoverflow, title: "stackoverflow", prefix: "https://stackoverflow.com" },
-  'facebook': { icon: logoFacebook, title: "facebook", prefix: "https://facebook.com" },
-  'reddit': { icon: logoReddit, title: "reddit", prefix: "https://reddit.com" },
-  'paypal': { icon: logoPaypal, title: "paypal", prefix: "https://paypal.com" },
-  'medium': { icon: logoMedium, title: "medium", prefix: "https://medium.com" },
-  'twitter': { icon: logoTwitter, title: "twitter", prefix: "https://twitter.com/" },
-  'instagram': { icon: logoInstagram, title: "Instagram", prefix: "https://instagram.com/" },
-  'github': { icon: logoGithub, title: "github", prefix: "https://github.com/" },
-  'gitlab': { icon: logoGitlab, title: "gitlab", prefix: "https://gitlab.com/" },
-  'linkedin': { icon: logoLinkedin, title: "linkedin", prefix: "https://linkedin.com/" },
-  'xing': { icon: logoXing, title: "xing", prefix: "https://xing.com/" },
-  'website': { icon: globeOutline, title: "Website", prefix: "https://" },
-}
 
 const DEFAULT_STYLES = {
   "background": "transparent",
@@ -200,7 +164,7 @@ export default defineComponent({
   },
   methods: {
     getSocialIcon(l: string): any {
-      return (ICONS[l] || {icon: DEFAULT_ICON}).icon;
+      return (Icons[l] || {icon: DefaultIcon}).icon;
     },
     async intendEditInfo() {
       const modal = await modalController
@@ -260,7 +224,7 @@ export default defineComponent({
           componentProps: {
             items: Array.from(this.socialLinks),
             withIcons: true,
-            platforms: Object.keys(ICONS).map((x) => Object.assign({}, {key: x}, ICONS[x])),
+            platforms: Object.keys(Icons).map((x) => Object.assign({}, {key: x}, Icons[x])),
             saveLabel: "Speichern",
           },
         })
@@ -312,7 +276,7 @@ export default defineComponent({
     }
   },
   components: {
-    Avatar, Qrcode, RenderMd,
+    Avatar, Qrcode, RenderMd, InlineLinkList,
     IonPage, IonContent, IonIcon, IonChip, IonSpinner, IonButton, IonToolbar,
   }
 });
@@ -323,6 +287,7 @@ export default defineComponent({
   display: flex;
   align-content: center;
   align-items: center;
+  --menu-color: var(--ion-color-light);
 }
 ion-toolbar {
   border-bottom: 1px dotted;
@@ -341,29 +306,6 @@ ion-toolbar {
   position: absolute;
   bottom: 0;
   right: 0;
-}
-.footer-menu,
-.social-icons {
-  list-style: none;
-  padding: 0;
-  margin: 0
-}
-.social-icons li {
-  display: inline-block;
-  margin-right: 0.2em;
-}
-.social-icons li a {
-  color: var(--ion-color-light);
-}
-
-.footer-menu li {
-  display: inline-block;
-}
-.footer-menu li a {
-  color: var(--ion-color-medium);
-  margin-left: 0.5em;
-  text-transform: uppercase;
-  text-decoration: none;
 }
 ion-chip ion-icon {
   margin: 0

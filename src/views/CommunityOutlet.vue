@@ -28,7 +28,8 @@
             </ion-list>
           </ion-content>
           <ion-footer class="ion-padding">
-            Impressum
+            <inline-link-list style="--menu-color: var(--ion-color-tertiary)" :items="socialLinks" showIcon />
+            <inline-link-list style="--menu-color: var(--ion-color-medium)" :items="footerLinks" showTitle />
           </ion-footer>
         </ion-menu>
         <ion-router-outlet id="main"/>
@@ -53,6 +54,7 @@ import {
 } from 'ionicons/icons';
 import { useStore } from '../stores/';
 import { defineComponent, computed } from 'vue';
+import InlineLinkList from '../components/generic/inline-link-list.vue';
 import Avatar from '../components/avatar.vue';
 
 
@@ -66,6 +68,7 @@ export default defineComponent({
       donationsIcon: walletOutline,
       faqIcon,
       teams: computed(() => store.getters['auth/myTeams']),
+      defaultTeamSettings: computed(() => store.getters['defaultTeamSettings']),
       showTeamSubmenu: computed(() => {
         if (store.getters['auth/hasManyTeams']){
           return true;
@@ -79,8 +82,16 @@ export default defineComponent({
       meIcon: personCircleOutline,
     }
   },
+  computed: {
+    socialLinks(): any[]{
+      return this.defaultTeamSettings?.get("socialLinks")
+    },
+    footerLinks(): any[]{
+      return this.defaultTeamSettings?.get("footerLinks")
+    }
+  },
   components: {
-    Avatar,
+    Avatar, InlineLinkList,
     IonPage, IonContent, IonRouterOutlet, IonIcon,
     IonMenu, IonList, IonItem, IonFooter, IonSplitPane,
     IonItemGroup, IonItemDivider, IonLabel,
