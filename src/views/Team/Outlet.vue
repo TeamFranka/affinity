@@ -68,6 +68,9 @@
               </li>
             </ul>
           </div>
+          <div>
+            <activity v-for="activity in feed" :activity="activity" :key="activity.id" />
+          </div>
         </template>
       </div>
     </ion-content>
@@ -81,10 +84,11 @@ import { DefaultIcon, Icons } from '@/components/generic/inline-link-list.vue';
 import InlineLinkList from '@/components/generic/inline-link-list.vue';
 import EditLinks from '@/components/settings/edit-links.vue';
 import GenericEditorModal from '@/components/settings/generic-editor-modal.vue';
+import Activity from '@/components/activity.vue';
 import Qrcode from '@/components/qrcode.vue';
 import {
-  IonContent, IonPage,  IonIcon, IonChip, IonSpinner, IonButton,
-  modalController, alertController, IonToolbar,
+  IonContent, IonPage,  IonIcon, IonChip, IonSpinner, IonButton, IonToolbar,
+  modalController, alertController,
 } from '@ionic/vue';
 import {
   chatbubbles, logoWhatsapp, cloudUploadOutline,
@@ -116,13 +120,18 @@ export default defineComponent({
     const route = useRoute();
     const slug: any = route.params.teamSlug;
     const loading = ref(true);
+    let promise;
     if (store.getters.teamsBySlug[slug]) {
-        loading.value = false;
+        promise = Promise.resolve()
     } else {
-      store.dispatch("teams/fetch", slug).then(() => {
-        loading.value = false
-      });
+      promise = store.dispatch("teams/fetch", slug);
     }
+
+    promise.then(()=>
+      store.dispatch("teams/fetchNews", store.getters.objectsMap[store.getters.teamsBySlug[slug]].toPointer())
+    ).then(() => {
+        loading.value = false;
+    })
 
     return {
       team: computed(() => store.getters.objectsMap[store.getters.teamsBySlug[slug]]),
@@ -132,6 +141,14 @@ export default defineComponent({
     }
   },
   computed: {
+    feed(): Parse.Object[] {
+      if (!this.team) {
+        return []
+      }
+      const teamId = this.team.id;
+      return this.store.state.teams.news[teamId]
+        .map((id: string) => this.store.getters["objectsMap"][id])
+    },
     info(): string {
       return this.team.get('info') || ""
     },
@@ -296,8 +313,9 @@ export default defineComponent({
     }
   },
   components: {
-    Avatar, Qrcode, RenderMd, InlineLinkList,
-    IonPage, IonContent, IonIcon, IonChip, IonSpinner, IonButton, IonToolbar,
+    Avatar, Qrcode, RenderMd, InlineLinkList, Activity,
+    IonPage, IonContent, IonIcon, IonChip, IonSpinner,
+    IonButton, IonToolbar,
   }
 });
 </script>
@@ -326,6 +344,19 @@ ion-toolbar {
   position: absolute;
   bottom: 0;
   right: 0;
+}
+.submenu {
+  padding-top: var(--padding-top);
+  padding-bottom: var(--padding-bottom);
+  display: flex;
+  justify-content: space-around;
+}
+.submenu a {
+  color: var(--ion-color-medium);
+  text-decoration: none;
+}
+.submenu a.router-link-active {
+  color: var(--ion-color-primary);
 }
 ion-chip ion-icon {
   margin: 0
