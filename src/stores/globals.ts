@@ -5,7 +5,6 @@ export interface GlobalStateT {
   loadingCounter: number;
   defaultTeam: Parse.Object | null;
   defaultTeamId: string;
-  defaultTeamSettings: Parse.Object | null;
   objects: Record<string, Parse.Object>;
   teamsBySlug: Record<string, string>;
   subscriptions: Record<string, any>;
@@ -26,9 +25,6 @@ export const GlobalState = {
     },
     defaultTeam(state: GlobalStateT): Parse.Object | null {
       return state.defaultTeam;
-    },
-    defaultTeamSettings(state: GlobalStateT): Parse.Object | null {
-      return state.defaultTeamSettings;
     },
     objectsMap(state: GlobalStateT): Record<string, Parse.Object> {
       return state.objects;
@@ -56,12 +52,9 @@ export const GlobalState = {
       state.defaultTeamId = teamId;
     },
     setGlobalTeam(state: GlobalStateT, team: Parse.Object) {
-      const settings = team.get('settings');
       state.defaultTeam = team;
-      state.defaultTeamSettings = settings;
       state.defaultTeamId = team.id;
       state.objects[team.id] = team;
-      state.objects[settings.id] = settings;
     },
     setSubscription(state: GlobalStateT, data: any) {
       const { id, sub } = data;
@@ -79,7 +72,7 @@ export const GlobalState = {
       context.commit("setDefaltTeamId", teamId);
       context.commit("startLoading");
       console.log("fetching  team", teamId);
-      (new Parse.Query("Team")).include("settings").get(teamId).then((resp)=>{
+      (new Parse.Query("Team")).get(teamId).then((resp)=>{
         context.commit("setGlobalTeam", resp)
         context.commit("doneLoading");
       }, (err)=> {

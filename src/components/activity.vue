@@ -9,7 +9,7 @@
         v-else
         :to="teamLink"
       >
-          <avatar :profile="teamSettings" :name="teamName" v-if="!showAuthor"/>
+          <avatar :profile="team" :name="teamName" v-if="!showAuthor"/>
       </router-link>
     </div>
     <div class="ion-padding-start">
@@ -54,7 +54,6 @@ import RenderMd from './render-md.vue';
 import { useStore } from '../stores/';
 import { defineComponent, computed } from 'vue';
 import { Parse } from "../config/Consts";
-import { createAnimation } from '@ionic/core';
 import { since } from "../utils/time";
 
 export default defineComponent({
@@ -95,13 +94,6 @@ export default defineComponent({
         return team;
       }
       return this.objs[team.id]
-    },
-    teamSettings(): Parse.Object {
-      const settings = this.team.get("settings");
-      if (settings.isDataAvailable()) {
-        return settings;
-      }
-      return this.objs[settings.id]
     },
     teamName(): string {
       return this.team.get("name")

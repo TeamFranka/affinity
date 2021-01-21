@@ -6,13 +6,18 @@
         <template v-else>
           <div class="header" :style="teamStyle">
             <div class="profile-img ion-padding">
-              <avatar size="10rem" :profile="settings" />
+              <avatar size="10rem" :profile="team" />
               <ion-chip v-if="canEdit" @click="selectNewAvatar()">
                 <ion-icon :icon="uploadIcon"></ion-icon>
               </ion-chip>
             </div>
             <div class="ion-padding">
-              <h1>{{team.get('name')}}</h1>
+              <h1>
+                {{team.get('name')}}
+                <ion-button v-if="canEdit" color="light" @click="intendEditTitle" fill="clear">
+                  <ion-icon size="small" :icon="editIcon" />
+                </ion-button>
+              </h1>
               <inline-link-list :items="socialLinks" showIcon>
                 <li v-if="canEdit">
                   <ion-button @click="intendEditSocialLink" color="light" size="small" fill="clear">
@@ -26,7 +31,7 @@
               </ion-button>
             </div>
             <div class="extra-actions" v-if="canEdit">
-              <ion-chip title="remove background" v-if="settings.get('background')" @click="removeBackground">
+              <ion-chip title="remove background" v-if="team.get('background')" @click="removeBackground">
                 <ion-icon :icon="imageIcon" />
                 <ion-icon  :icon="trashIcon" />
               </ion-chip>
@@ -127,17 +132,14 @@ export default defineComponent({
     }
   },
   computed: {
-    settings(): Parse.Object {
-      return this.store.getters.objectsMap[this.team.get("settings").id];
-    },
     info(): string {
-      return this.settings.get('info') || ""
+      return this.team.get('info') || ""
     },
     socialLinks(): any[] {
-      return this.settings.get("socialLinks") || []
+      return this.team.get("socialLinks") || []
     },
     footerLinks(): any[] {
-      return this.settings.get("footerLinks") || []
+      return this.team.get("footerLinks") || []
     },
     permissions(): any {
       return this.store.getters["auth/teamPermissions"][this.team.id] || {};
@@ -146,12 +148,12 @@ export default defineComponent({
       return this.permissions.isAdmin
     },
     logo(): string | null {
-      return (this.settings && this.settings.get("avatar")) ? this.settings.get("avatar").url() : null
+      return (this.team && this.team.get("avatar")) ? this.team.get("avatar").url() : null
     },
     teamStyle(): any {
-      const customStyles = this.settings.get('customStyles');
+      const customStyles = this.team.get('customStyles');
       const extraStyles: any = {};
-      const backgroundImage =  this.settings.get("background");
+      const backgroundImage =  this.team.get("background");
       if (backgroundImage) {
         extraStyles.backgroundImage = `url(${backgroundImage.url()})`;
         extraStyles.backgroundSize = "cover";
@@ -166,12 +168,29 @@ export default defineComponent({
     getSocialIcon(l: string): any {
       return (Icons[l] || {icon: DefaultIcon}).icon;
     },
+    async intendEditTitle() {
+      const modal = await modalController
+        .create({
+          component: GenericEditorModal,
+          componentProps: {
+            value: this.team.get('name') || '',
+            type: "text",
+            title: "Team Name",
+            saveLabel: "Speichern",
+          },
+        })
+      await modal.present();
+      const res = await modal.onDidDismiss();
+      if (res.data) {
+        await this.team.save({"name": res.data.value});
+      }
+    },
     async intendEditInfo() {
       const modal = await modalController
         .create({
           component: GenericEditorModal,
           componentProps: {
-            value: this.settings.get('info') || '',
+            value: this.team.get('info') || '',
             type: "richtext",
             isAdminMd: true,
             title: "Team Info",
@@ -189,7 +208,7 @@ export default defineComponent({
         .create({
           component: GenericEditorModal,
           componentProps: {
-            value: this.settings.get('customStyles'),
+            value: this.team.get('customStyles'),
             type: "textarea",
             help: "Hier kannst du die globalen css-Style-Variablen des Theme überschreiben. Siehe dazu [den Ionic Theming Guide](https://ionicframework.com/docs/theming/css-variables) und den [praktischen Color Generator](https://ionicframework.com/docs/theming/color-generator)",
             title: "Eigene Styles",
@@ -237,7 +256,7 @@ export default defineComponent({
     },
     async setSetting(params: any) {
       await this.store.dispatch("teams/setSetting", Object.assign({
-        id: this.settings.id
+        id: this.team.id
       }, params));
     },
     selectNewAvatar() {

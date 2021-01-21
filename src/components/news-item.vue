@@ -24,7 +24,7 @@
   </div>
   <div class="menu">
     <router-link :to="teamLink">
-      <avatar size="4em" :profile="teamSettings" :name="teamName" />
+      <avatar size="4em" :profile="team" :name="teamName" />
     </router-link>
     <div class="interaction">
       <share-button
@@ -107,13 +107,6 @@ export default defineComponent({
         return team;
       }
       return this.objs[team.id]
-    },
-    teamSettings(): Parse.Object {
-      const settings = this.team.get("settings");
-      if (settings.isDataAvailable()) {
-        return settings;
-      }
-      return this.objs[settings.id]
     },
     teamName(): string {
       return this.team.get("name")

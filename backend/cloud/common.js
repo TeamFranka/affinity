@@ -7,9 +7,8 @@ const CANT_BE_CHANGED = ["team", "author", "ACL"];
 
 const enforcACL = async (request, team) => {
   const visibility = request.object.get("visibility") || "public";
-  await team.fetchWithInclude(["settings", "leaders", visibility], {useMasterKey: true});
+  await team.fetchWithInclude(["leaders", visibility], {useMasterKey: true});
   const leadersRole = team.get("leaders");
-  const settings = team.get("settings");
   const user = request.user;
   if (!user) throw "User must be set";
   if (!leadersRole) throw "Leaders must be set";
@@ -57,7 +56,7 @@ const enforcACL = async (request, team) => {
   acl.setRoleReadAccess(leadersRole, true);
   acl.setRoleWriteAccess(leadersRole, true);
 
-  const whoCanEdit = settings.get("canEdit" + request.object.className);
+  const whoCanEdit = team.get("canEdit" + request.object.className);
   if (whoCanEdit) {
     console.log("canEdit", whoCanEdit);
     const editGroup = team.get(whoCanEdit);
@@ -78,19 +77,18 @@ const genericObjectsPreSave = async (request) => {
 
   const teamId = request.original ? request.original.get("team").id : request.object.get("team").id;
   const team = await (new Parse.Query(Team)
-    .include(["members", "mods", "agents", "leaders", "settings"])
+    .include(["members", "mods", "agents", "leaders"])
     .get(teamId, { useMasterKey: true }));
-  const settings = team.get("settings");
 
   if (!request.master) {
     const verb = request.original ? 'Edit' : 'Create';
 
     if (request.object['can' + verb]) {
       // model has custom rules
-      if (!request.object['can' + verb](request.user, team, settings)) {
+      if (!request.object['can' + verb](request.user, team)) {
         throw request.user.id + " can't " + verb + " " + request.object.className + " in team " + team.get("name") +  " because model rules disallow that";
       }
-    } else if (!settings.canDo(request.user, 'can' + verb + request.object.className, team)) {
+    } else if (!team.canDo(request.user, 'can' + verb + request.object.className, team)) {
       throw request.user.id + " can't " + verb + " " + request.object.className + " in team " + team.get("name")
     }
   }

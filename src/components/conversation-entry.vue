@@ -2,7 +2,7 @@
     <template v-if="isSharedInbox">
         <div slot="start" class="avatar-wrap">
             <div v-if="showTeam">
-                <avatar :profile="teamSettings" :name="teamName"/>
+                <avatar :profile="team" :name="teamName"/>
             </div>
             <avatar v-else :profile="convo.get('participants')[0]" />
         </div>
@@ -64,7 +64,7 @@ export default defineComponent({
     },
     teamName(): string { return this.convo.get("team").get("name") },
     isSharedInbox(): boolean { return this.convo.get("type") == "sharedInbox" },
-    teamSettings(): Parse.Object { return this.convo.get("team").get("settings") },
+    team(): Parse.Object { return this.convo.get("team") },
     showTeam(): boolean {
         return this.isMe(this.convo.get('participants')[0].id)
     },

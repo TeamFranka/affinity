@@ -1,10 +1,4 @@
 import { Parse } from '../config/Consts';
-import { Team } from '../db/models';
-
-// export interface TeamPermission {
-//   isAdmin: boolean;
-//   canPost: boolean;
-// }
 
 export interface AuthStateT {
   wantsToLogin: boolean;
@@ -66,9 +60,7 @@ export const AuthState = {
 
       const resp = await Parse.Cloud.run("myTeams");
       await context.commit("setTeams", resp);
-      const items: any[] = [];
-      resp.teams.forEach( (t: Parse.Object)  => { items.push(t); items.push(t.get("settings")) });
-      await context.commit("setItems", items, {root: true});
+      await context.commit("setItems", resp.teams, {root: true});
       context.dispatch("refreshRoot", null, { root:true });
 
     },

@@ -16,21 +16,29 @@ const Defaults = {
 
 const Levels = ["anyone", "members", "publishers", "mods", "leaders", "nobody"];
 
-const TeamSettings = Parse.Object.extend("TeamSettings", {
-    chechLevel: function(field, level) {
+const Team = Parse.Object.extend("Team", {
+    isMember: function(groupName, userId) {
+        return this
+            .get(groupName)
+            .getUsers()
+            .query()
+            .contains("id", userId)
+            .exists({ useMasterKey: true })
+    },
+    checkLevel: function(field, level) {
         return Levels.indexOf(this.get(field) || Defaults[field]) <= Levels.indexOf(level);
     },
-    canDo: function(user, field, team) {
+    canDo: function(user, field) {
         const lvl = this.get(field) || Defaults[field];
-        console.log("allowed for", team.get("name"), field, user, lvl);
+        console.log("allowed for", this.get("name"), field, user, lvl);
         if (lvl === "anyone") {
             return true
         } else if (lvl === "nobody") {
             return false
         } else if (lvl === "members"  || lvl === "leaders") {
-            return team.isMember(lvl, user.id)
+            return this.isMember(lvl, user.id)
         } else if (lvl === "mods" || lvl === "agents" || lvl === "publishers") {
-            return team.isMember(lvl, user.id) ? true : team.isMember("leaders", user.id)
+            return this.isMember(lvl, user.id) ? true : this.isMember("leaders", user.id)
         }
 
         console.log("unknown level, returning false");
@@ -46,7 +54,7 @@ const TeamSettings = Parse.Object.extend("TeamSettings", {
             };
 
             Object.keys(Defaults).forEach(key => {
-                perms[key] = this.chechLevel(key, "leaders")
+                perms[key] = this.checkLevel(key, "leaders")
             });
             return perms
         }
@@ -58,7 +66,7 @@ const TeamSettings = Parse.Object.extend("TeamSettings", {
         };
 
         Object.keys(Defaults).forEach(key => {
-            teamPermissions[key] = this.chechLevel(key, "anyone")
+            teamPermissions[key] = this.checkLevel(key, "anyone")
         });
 
         const upgrades = [];
@@ -74,7 +82,7 @@ const TeamSettings = Parse.Object.extend("TeamSettings", {
 
         upgrades.forEach(u => {
             Object.keys(Defaults).forEach((k) => {
-                if (!teamPermissions[k] && this.chechLevel(k, u)){
+                if (!teamPermissions[k] && this.checkLevel(k, u)){
                     teamPermissions[k] = true
                 }
             })
@@ -85,11 +93,11 @@ const TeamSettings = Parse.Object.extend("TeamSettings", {
 }, {
     // static
     getDefaults: function() {
-        return (new TeamSettings(Object.assign({}, Defaults)));
+        return (new Team(Object.assign({}, Defaults)));
     }
 });
 
 module.exports = {
-    TeamSettingsDefaults: Defaults,
-    TeamSettings: TeamSettings
+    PermissionDefaults: Defaults,
+    Team: Team
 }

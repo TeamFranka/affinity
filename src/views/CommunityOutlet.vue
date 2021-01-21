@@ -18,7 +18,7 @@
                 </ion-item-divider>
                 <ion-item v-for="t in teams" :key="t.id">
                   <router-link :to="{name: 'ViewTeam', params:{teamSlug:t.get('slug')}}">
-                    <avatar :profile="t.get('settings')" :name="t.get('name')" size="25px" withName />
+                    <avatar :profile="t" :name="t.get('name')" size="25px" withName />
                   </router-link>
                   <div slot="end">
                     <router-link :to="{name: 'ViewTeam', params:{teamSlug:t.get('slug')}}"><ion-icon :icon="settingsIcon" /></router-link>
@@ -68,7 +68,7 @@ export default defineComponent({
       donationsIcon: walletOutline,
       faqIcon,
       teams: computed(() => store.getters['auth/myTeams']),
-      defaultTeamSettings: computed(() => store.getters['defaultTeamSettings']),
+      defaultTeam: computed(() => store.getters['defaultTeam']),
       showTeamSubmenu: computed(() => {
         if (store.getters['auth/hasManyTeams']){
           return true;
@@ -84,10 +84,10 @@ export default defineComponent({
   },
   computed: {
     socialLinks(): any[]{
-      return this.defaultTeamSettings?.get("socialLinks")
+      return this.defaultTeam?.get("socialLinks")
     },
     footerLinks(): any[]{
-      return this.defaultTeamSettings?.get("footerLinks")
+      return this.defaultTeam?.get("footerLinks")
     }
   },
   components: {

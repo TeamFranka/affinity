@@ -1,4 +1,3 @@
-// import { TeamSettings } from '@/db/schemas/team';
 import { Parse } from "../config/Consts";
 
 export interface TeamsT {
@@ -17,15 +16,13 @@ export const Teams = {
   actions: {
     async fetch(context: any, slug: string) {
       const resp = await Parse.Cloud.run("getTeam", { slug });
-      const items: any[] = [];
-      resp.teams.forEach( (t: Parse.Object)  => { items.push(t); items.push(t.get("settings")) });
-      await context.commit("setItems", items, {root: true});
+      await context.commit("setItems", resp.teams, {root: true});
       await context.commit("auth/addPermissions", resp.permissions, { root: true });
     },
     async setSetting(context: any, params: any) {
-      const settings = context.rootGetters.objectsMap[params.id]
+      const team = context.rootGetters.objectsMap[params.id]
       delete params.id
-      await settings.save(params);
+      await team.save(params);
     }
   },
 };

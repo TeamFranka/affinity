@@ -1,5 +1,5 @@
 import { Parse, Verb, Visibility } from "../config/Consts";
-import { Picture, Activity, Poll, Link, Document } from "../db/models";
+import { Picture, Activity, Link, Document } from "../db/models";
 import { takePicture, CameraPhoto } from '../utils/camera';
 
 // FROM https://stackoverflow.com/a/9284473

@@ -3,7 +3,6 @@
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const CONSTS = require("./consts.js");
 const Team = CONSTS.Team;
-const TeamSettings = require("./models/team-settings").TeamSettings;
 
 Parse.Cloud.define("newRootTeam", async (request) => {
   const admin = await (new Parse.Query(Parse.User))
@@ -58,17 +57,13 @@ Parse.Cloud.define("myTeams", async (request) => {
 
     const roleIds = roles.map(r => r.id);
     const teams = await ((new Parse.Query(Team))
-        .include("settings")
         .containedIn("members", roles)
         .find({ useMasterKey: true }));
 
     const permissions = {};
-    const cfgDefaults = TeamSettings.getDefaults();
 
     for (let idx = 0; idx < teams.length; idx++) {
       const team = teams[idx];
-      const settings = team.get("settings") || cfgDefaults;
-      console.log("settings", settings);
       const isLeader = roleIds.includes(team.get("leaders").id);
       const isMod = roleIds.includes(team.get("mods").id);
       const isPublisher = roleIds.includes(team.get("publishers").id);
@@ -81,7 +76,7 @@ Parse.Cloud.define("myTeams", async (request) => {
           isPublisher: isPublisher,
           isAgent: isAgent,
         },
-        settings.genPermissions(isLeader, isMod, isAgent, isPublisher, true)
+        team.genPermissions(isLeader, isMod, isAgent, isPublisher, true)
       );
     }
 
@@ -99,7 +94,6 @@ Parse.Cloud.define("getTeam", async (request) => {
   const slug = request.params.slug;
   const team = await ((new Parse.Query(Team))
         .equalTo("slug", slug)
-        .include("settings")
       .first({ useMasterKey: true }));
 
   const roles = await (new Parse.Query(Parse.Role))
@@ -108,9 +102,7 @@ Parse.Cloud.define("getTeam", async (request) => {
   const roleIds = roles.map(r =>r.id);
 
   const permissions = {};
-  const cfgDefaults = TeamSettings.getDefaults();
 
-  const settings = team.get("settings") || cfgDefaults;
   const isMember = roleIds.includes(team.get("members").id);
   const isLeader = roleIds.includes(team.get("leaders").id);
   const isMod = roleIds.includes(team.get("mods").id);
@@ -123,7 +115,7 @@ Parse.Cloud.define("getTeam", async (request) => {
       isPublisher: isPublisher,
       isAgent: isAgent,
     },
-    settings.genPermissions(isLeader, isMod, isAgent, isPublisher, isMember)
+    team.genPermissions(isLeader, isMod, isAgent, isPublisher, isMember)
   );
 
   return {
@@ -145,75 +137,89 @@ Parse.Cloud.define("getTeam", async (request) => {
 });
 
 
+const CANT_BE_CHANGED = [
+  "subOf", "slug", "ACL",
+  "leaders", "mods", "agents", "publishers", "members"
+];
 
 // Ensure the ACL are set correctly when created
 Parse.Cloud.beforeSave("Team", async (request) => {
   console.log("starting", request.master);
-  if (request.original) {
-    return // an update not a create, ignore
-  }
-
-  const isRoot = request.master;
-  const parentId = request.object.get("subOf");
-  let parentTeam = false;
-  console.log("starting");
-  const acl = new Parse.ACL();
-  if (!isRoot) {
-      throw "Sorry, only master-key can create new root Level teams."
-  // } else if (parentId) {
-  //   console.log("parent_id", parentId);
-  //   parentTeam = await (new Parse.Query(Team)).get(parentId);
-  } else {
-    acl.setPublicReadAccess(true);
-  }
-
-  // FIXME: parent ACL
-
+  const user = request.user;
   const name = request.object.get("name");
 
-  const leaders = new Parse.Role(name + " Leaders", (new Parse.ACL()));
-  leaders.set("type", "leaders");
-  if (parentTeam) {
-      leaders.getRoles().add(parentTeam.leaders);
+  if (request.original) {
+    // enforce some fields can't be changed
+    const team = request.original;
+    if (!team.isMember("leaders", user.id)) {
+      throw "Only admins can edit team"
+    }
+    CANT_BE_CHANGED.forEach(key => {
+      if (request.original.get(key) !== request.object.get(key)) {
+        request.object.set(key, request.original.get(key));
+      }
+    });
+  } else {
+    // creating,
+    const parentId = request.object.get("subOf");
+    const acl = new Parse.ACL();
+
+    let parentTeam = false;
+
+    if (!parentId && !request.master) {
+      throw "Sorry, only master-key can create new root Level teams."
+    }
+
+    if (parentId) {
+      console.log("parentId", parentId);
+      parentTeam = await (new Parse.Query(Team))
+        .get(parentId, { useMasterKey: true });
+
+      if (!parentTeam.isMember("leaders", user.id)) {
+        throw "Only admins can create sub teams"
+      }
+
+      // FIXME: setting visbility
+
+    } else {
+      acl.setPublicReadAccess(true);
+    }
+
+    // creating the roles
+    const leaders = new Parse.Role(name + " Leaders", (new Parse.ACL()));
+    leaders.set("type", "leaders");
+    leaders.getUsers().add(user);
+
+    if (parentTeam) {
+        leaders.getRoles().add(parentTeam.leaders);
+    }
+    await leaders.save(null, { useMasterKey: true });
+
+    acl.setRoleReadAccess(leaders, true);
+    acl.setRoleWriteAccess(leaders, true);
+    const mods = new Parse.Role(name + " Mods", (new Parse.ACL()));
+    const agents = new Parse.Role(name + " Agents", (new Parse.ACL()));
+    const publishers = new Parse.Role(name + " Publishers", (new Parse.ACL()));
+    const members = new Parse.Role(name + " Members", (new Parse.ACL()));
+
+    mods.set("type", "mods");
+    agents.set("type", "agents");
+    publishers.set("type", "publishers");
+    members.set("type", "members");
+
+    // FIXME: can we just add them and have them created in one go instead?
+    await mods.save(null, { useMasterKey: true });
+    await agents.save(null, { useMasterKey: true });
+    await publishers.save(null, { useMasterKey: true });
+    await members.save(null, { useMasterKey: true });
+
+    request.object.set({
+      "ACL": acl,
+      "leaders": leaders,
+      "mods": mods,
+      "publishers": publishers,
+      "agents": agents,
+      "members": members,
+    });
   }
-  await leaders.save(null, { useMasterKey: true });
-  acl.setRoleReadAccess(leaders, true);
-  acl.setRoleWriteAccess(leaders, true);
-  const mods = new Parse.Role(name + " Mods", (new Parse.ACL()));
-  const agents = new Parse.Role(name + " Agents", (new Parse.ACL()));
-  const publishers = new Parse.Role(name + " Publishers", (new Parse.ACL()));
-  const members = new Parse.Role(name + " Members", (new Parse.ACL()));
-
-  mods.set("type", "mods");
-  agents.set("type", "agents");
-  publishers.set("type", "publishers");
-  members.set("type", "members");
-
-  await mods.save(null, { useMasterKey: true });
-  await agents.save(null, { useMasterKey: true });
-  await publishers.save(null, { useMasterKey: true });
-  await members.save(null, { useMasterKey: true });
-
-  let teamSettings = request.object.get("settings");
-
-  if (!teamSettings) {
-    teamSettings = new TeamSettings();
-    const teamAcl = new Parse.ACL();
-    teamAcl.setPublicReadAccess(true);
-    teamAcl.setRoleReadAccess(leaders, true);
-    teamAcl.setRoleWriteAccess(leaders, true);
-    teamSettings.setACL(teamAcl);
-    await teamSettings.save(null, { useMasterKey: true })
-  }
-
-  request.object.set({
-    "ACL": acl,
-    "leaders": leaders,
-    "mods": mods,
-    "publishers": publishers,
-    "agents": agents,
-    "members": members,
-    "settings": teamSettings,
-  });
-
 });
