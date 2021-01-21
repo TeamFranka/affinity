@@ -47,12 +47,12 @@
                   placeholder="optionale Beschreibung"
                 />
               </div>
-                <ion-button
-                  color="dark"
-                  fill="clear"
-                  @click="removeOption(index)"
-                  slot="end"
-                >
+              <ion-button
+                color="dark"
+                fill="clear"
+                @click="removeOption(index)"
+                slot="end"
+              >
                 <ion-icon :icon="closeIcon" />
               </ion-button>
             </ion-item>

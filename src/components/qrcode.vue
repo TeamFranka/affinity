@@ -19,7 +19,7 @@ export default defineComponent({
   mounted() {
     const options = {
       text: this.text,
-      backgroundImage:  this.logo,
+      logo: this.logo,
       tooltip: true,
     };
 
