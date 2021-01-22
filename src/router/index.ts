@@ -9,7 +9,7 @@ import Faq from '../views/FAQ.vue';
 import Me from '../views/Me.vue';
 import Login from '../views/Login.vue';
 import Donations from '../views/Donations.vue';
-import ViewTeam from '../views/ViewTeam.vue';
+import TeamOutlet from '../views/Team/Outlet.vue';
 import ViewActivity from '../views/ViewActivity.vue';
 import ViewUser from '../views/ViewUser.vue';
 import ViewConversation from '../views/ViewConversation.vue';
@@ -70,7 +70,10 @@ const routes: Array<RouteRecordRaw> = [
       {
         path: 't/:teamSlug',
         name: 'ViewTeam',
-        component: ViewTeam
+        component: TeamOutlet,
+        children: [
+
+        ]
       },
       {
         path: 'a/:activityId',

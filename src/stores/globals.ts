@@ -72,7 +72,7 @@ export const GlobalState = {
       context.commit("setDefaltTeamId", teamId);
       context.commit("startLoading");
       console.log("fetching  team", teamId);
-      (new Parse.Query("Team")).include("settings").get(teamId).then((resp)=>{
+      (new Parse.Query("Team")).get(teamId).then((resp)=>{
         context.commit("setGlobalTeam", resp)
         context.commit("doneLoading");
       }, (err)=> {

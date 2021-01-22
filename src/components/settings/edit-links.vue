@@ -16,8 +16,8 @@
   </ion-header>
   <ion-content>
     <ion-list>
-      <ion-item v-for="(i, index) in items" :key="i.target">
-        <ion-button @click="selectIcon($event, index)" size="small" color="medium" fill="outline" slot="start">
+      <ion-item v-for="(i, index) in innerItems" :key="i.target">
+        <ion-button v-if="withIcons" @click="selectIcon($event, index)" size="small" color="medium" fill="outline" slot="start">
           <ion-icon :icon="(icons[i.platform] || {}).icon || defaultIcon" />
         </ion-button>
         <div>
@@ -77,7 +77,7 @@ import IconSelector from "./icon-selector.vue";
 import { defineComponent } from 'vue';
 
 export default defineComponent({
-  name: 'EditSocialLinks',
+  name: 'EditLinks',
   components: {
     IonContent, IonToolbar, IonInput, IonHeader, IonIcon,
     IonButton, IonFooter, IonLabel, IonItem, IonList, IonTitle,
@@ -91,8 +91,11 @@ export default defineComponent({
       type: Array,
       default: () => ([]),
     },
-    settings: {
-      type: Object,
+    withIcons: {
+      type: Boolean
+    },
+    items: {
+      type: Array,
       required: true
     },
     defaultIcon: {
@@ -105,7 +108,7 @@ export default defineComponent({
       icons[x.key] = x;
     });
     return {
-      items: Array.from(props.settings.get("socialLinks")),
+      innerItems: Array.from(props.items),
       icons,
     }
   },
@@ -129,7 +132,7 @@ export default defineComponent({
           component: IconSelector,
           componentProps: {
             icons: this.platforms,
-            selected: (this.items[index] as any).platform,
+            selected: (this.innerItems[index] as any).platform,
           },
           event: ev,
           translucent: true
@@ -142,20 +145,20 @@ export default defineComponent({
       }
     },
     setPlatform(index: number, entry: any) {
-      const item: any = this.items[index];
+      const item: any = this.innerItems[index];
       item.platform = entry.key;
       if (!item.target) {
         item.target = entry.prefix
       }
     },
     saveAndClose() {
-      modalController.dismiss({socialLinks: this.items});
+      modalController.dismiss({items: this.innerItems});
     },
     addOption() {
-      this.items.push({});
+      this.innerItems.push({});
     },
     removeOption(idx: number) {
-      this.items.splice(idx, 1);
+      this.innerItems.splice(idx, 1);
     }
   }
 });

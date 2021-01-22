@@ -58,14 +58,10 @@ export const Teams = [
         admin: 'river',
         members: ['clara', 'graham', 'yaz'],
         agents: ['yaz'],
-        settings: {
+        params: {
             avatar: makeFile('doctor.png')
         }
-    },
-    // {
-    //     slug: "team-franka",
-    //     name: "Team Franka"
-    // }
+    }
 ];
 
 

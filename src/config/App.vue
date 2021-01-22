@@ -1,5 +1,5 @@
 <template>
-  <ion-app>
+  <ion-app :style="teamStyles">
     <ion-progress-bar v-if="loading" color="secondary" type="indeterminate"></ion-progress-bar>
     <ion-fab v-if="!user" vertical="bottom" horizontal="end" slot="fixed">
       <ion-fab-button @click="openLoginModal">
@@ -59,9 +59,6 @@ export default defineComponent({
         loginModal = await modalController
           .create({
             component: LoginModal,
-            componentProps: {
-              title: 'New Title'
-            },
           })
         loginModal.present();
         loginModal.onDidDismiss().then(()=>{
@@ -105,6 +102,7 @@ export default defineComponent({
       loginModalOpened: computed(() => {
         return store.state.auth.wantsToLogin
       }),
+      teamStyles: computed(() => store.getters["defaultTeam"]?.get("customStyles")),
       openLoginModal: () => store.dispatch('auth/openLogin'),
       loading: store.getters.isLoading,
       // openLoginModal: () => store.dispatch("auth/openLogin"),

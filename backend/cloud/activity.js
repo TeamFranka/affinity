@@ -14,19 +14,15 @@ Parse.Cloud.beforeSave(Activity, async (request) => {
     const user = request.user;
     const activity = request.object;
     // making sure the user can see the team
-    const team = await fetchModel(request,
-        activity.get("team").toPointer(),
-        ["settings"]
-    );
+    const team = await fetchModel(request, activity.get("team").toPointer());
     // then pull the other necessary fields
     await team.fetchWithInclude(["members", "publishers", "agents", "mods", "leaders"], {useMasterKey: true})
-    const settings = team.get("settings");
     const verb = activity.get("verb");
 
-    console.log("can", verb, settings);
-    if (verb == "post" && settings.canDo(user, "canPost", team)) {
+    console.log("can", verb, team);
+    if (verb == "post" && team.canDo(user, "canPost")) {
         // is okay
-    } else if (verb == "announce" && settings.canDo(user, "canPublish", team)) {
+    } else if (verb == "announce" && team.canDo(user, "canPublish")) {
         // also okay
     } else {
         // nope, sorry!
