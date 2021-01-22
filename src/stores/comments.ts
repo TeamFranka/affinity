@@ -44,21 +44,23 @@ export const Comments = {
   },
   actions: {
     async submitDraft(context: any, res: any) {
-      const ptr = res.ptr;
-      const replyTo = res.replyTo;
-      const text = context.state.drafts[ptr.objectId][replyTo ? replyTo.objectId : ""];
-      console.log(ptr, replyTo, text);
-      if (!text || text.length <=3 ){ return }
+      return context.dispatch("auth/afterLogin", null, { root: true }).then(async () => {
+        const ptr = res.ptr;
+        const replyTo = res.replyTo;
+        const text = context.state.drafts[ptr.objectId][replyTo ? replyTo.objectId : ""];
+        console.log(ptr, replyTo, text);
+        if (!text || text.length <=3 ){ return }
 
-      await new Comment({text, replyTo, on:{
-        className: ptr.className,
-        objectId: ptr.objectId,
-      }}).save();
-      context.commit("setDraft", {
-        objectId: ptr.objectId,
-        replyTo: replyTo ? replyTo.objectId : ""
-      });
-      await context.dispatch("loadComments", ptr);
+        await new Comment({text, replyTo, on:{
+          className: ptr.className,
+          objectId: ptr.objectId,
+        }}).save();
+        context.commit("setDraft", {
+          objectId: ptr.objectId,
+          replyTo: replyTo ? replyTo.objectId : ""
+        });
+        await context.dispatch("loadComments", ptr);
+      }, (e: string) => console.warn("Aborted commenting: ", e))
     },
     async loadComments(context: any, ptr: Parse.Pointer) {
       console.log("fetching", ptr.objectId);
