@@ -1,4 +1,4 @@
-import { Parse, Activity, Verb } from "../config/Consts";
+import { Parse, Activity, Team, Verb } from "../config/Consts";
 
 const MODEL_KEYS = ['objects'];
 export interface NewsT {
@@ -17,7 +17,6 @@ export const News = {
       return state.loading
     },
     latest(state: NewsT): Array<string> {
-      console.log(state);
       return state.latest
     },
   },
@@ -39,7 +38,9 @@ export const News = {
     async refresh(context: any) {
       context.commit("setLoading", true);
       const teams = context.rootGetters["auth/myTeams"];
-      teams.push(context.state.defaultTeam);
+      const defaultTeam = new Team();
+      defaultTeam.id = context.rootGetters.defaultTeamId;
+      teams.push(defaultTeam.toPointer());
       const query = (new Parse.Query(Activity))
         .equalTo("verb", Verb.Announce)
         .containedIn("team", teams)
