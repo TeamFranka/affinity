@@ -23,7 +23,6 @@ export default defineComponent({
   mounted() {
     const store = useStore();
     const r: any = this.$route;
-    console.log("currentroute", r);
     const forward = () => this.$router.replace(r.params.next || "/");
 
     if (store.getters["auth/isLoggedIn"]) {

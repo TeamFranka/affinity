@@ -1,4 +1,5 @@
 import { Parse } from '../config/Consts';
+import { watch } from 'vue';
 
 export interface AuthStateT {
   wantsToLogin: boolean;
@@ -20,6 +21,7 @@ export const AuthState = {
     myId: (state: AuthStateT) => state.user?.id,
     defaultTeam: (state: AuthStateT, rootState: any, rootGetters: any) => rootGetters["defaultTeam"],
     user: (state: AuthStateT) => state.user,
+    wantsToLogin: (state: AuthStateT) => state.wantsToLogin,
     userPtr: (state: AuthStateT) => state.user?.toPointer(),
     myTeams: (state: AuthStateT) => state.teams.filter(x => !!x),
     teamPermissions: (state: AuthStateT) => state.teamPermissions,
@@ -79,21 +81,54 @@ export const AuthState = {
       await user.save();
       context.commit("setUser", user);
     },
+    async afterLogin(context: any) {
+      if (context.getters["isLoggedIn"]) {
+        // all good, continue
+        return Promise.resolve(true)
+      }
+
+      await context.commit("setWantsToLogin", true);
+
+      return new Promise((resolve, reject) => {
+        const stopper = watch(
+        () => [context.getters['user'], context.getters['wantsToLogin']],
+        (newVals) => {
+          console.log("new watch changes", newVals);
+          if (newVals[0]) {
+            // login happened
+            resolve(true);
+            stopper()
+          } else if (!newVals[1]) {
+            // closed without login
+            reject("Didn't log in");
+            stopper()
+          }
+        });
+      });
+    },
     async like(context: any, params: any) {
-      const obj = await Parse.Cloud.run("like", params);
-      await context.commit("setItem", obj, { root:true });
+      return context.dispatch("afterLogin").then(async () => {
+        const obj = await Parse.Cloud.run("like", params);
+        await context.commit("setItem", obj, { root:true });
+      }, (e: string) => console.warn("Aborted liking: ", e))
     },
     async unlike(context: any, params: any) {
-      const obj = await Parse.Cloud.run("unlike", params);
-      await context.commit("setItem", obj, { root:true });
+      return context.dispatch("afterLogin").then(async () => {
+        const obj = await Parse.Cloud.run("unlike", params);
+        await context.commit("setItem", obj, { root:true });
+      }, (e: string) => console.warn("Aborted unliking: ", e))
     },
     async react(context: any, params: any) {
-      const obj = await Parse.Cloud.run("react", params);
-      await context.commit("setItem", obj, { root:true });
+      return context.dispatch("afterLogin").then(async () => {
+        const obj = await Parse.Cloud.run("react", params);
+        await context.commit("setItem", obj, { root:true });
+      }, (e: string) => console.warn("Aborted reacting: ", e))
     },
     async unreact(context: any, params: any) {
-      const obj = await Parse.Cloud.run("unreact", params);
-      await context.commit("setItem", obj, { root:true });
+      return context.dispatch("afterLogin").then(async () => {
+        const obj = await Parse.Cloud.run("unreact", params);
+        await context.commit("setItem", obj, { root:true });
+      }, (e: string) => console.warn("Aborted unreacting: ", e))
     },
     async logShared(context: any, params: any) {
       const obj = await Parse.Cloud.run("logShared", params);

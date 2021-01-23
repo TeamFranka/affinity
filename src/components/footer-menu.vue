@@ -5,39 +5,46 @@
       <ion-row class="ion-text-center" style="font-size: 1rem;">
         <ion-col>
           <router-link style="position: relative" to="/news">
-            <ion-icon size="large" :color="currentTab == 'news' ? 'primary' : 'medium'" :icon="homeIcon" />
+            <ion-icon size="large" :icon="homeIcon" />
             <notification-dot color="danger" slot="end" />
           </router-link>
         </ion-col>
         <ion-col>
         <router-link style="position: relative" to="/faq">
-          <ion-icon size="large" :color="currentTab == 'faq' ? 'primary' : 'medium'" :icon="faqIcon" />
+          <ion-icon size="large" :icon="faqIcon" />
         </router-link>
         </ion-col>
         <ion-col>
         <router-link style="position: relative" to="/feed">
-          <ion-icon size="large" :color="currentTab == 'feed' ? 'primary' : 'medium'" :icon="feedIcon" />
+          <ion-icon size="large" :icon="feedIcon" />
         </router-link>
         </ion-col>
         <template v-if="isLoggedIn">
           <ion-col>
             <router-link style="position: relative" to="/inbox">
               <notification-dot color="warning" slot="start" />
-              <ion-icon size="large" :color="currentTab == 'inbox' ? 'primary' : 'medium'" :icon="chatIcon" />
+              <ion-icon size="large" :icon="chatIcon" />
               <notification-dot color="danger" slot="end" />
             </router-link>
           </ion-col>
           <ion-col>
-            <router-link style="position: relative" to="/me">
-              <ion-icon size="large" :color="currentTab == 'me' ? 'primary' : 'medium'" :icon="meIcon" />
+            <div @click="openUserPopover" style="position: relative">
+              <avatar size="2em" :profile="user" />
+            </div>
+          </ion-col>
+        </template>
+        <template v-else>
+          <ion-col>
+            <router-link style="position: relative" to="/donate">
+              <ion-icon size="large" :icon="donationsIcon" />
+            </router-link>
+          </ion-col>
+          <ion-col>
+            <router-link style="position: relative" to="/login">
+              <ion-icon size="large" :icon="loginIcon" />
             </router-link>
           </ion-col>
         </template>
-        <ion-col v-else>
-          <router-link style="position: relative" to="/donate">
-            <ion-icon size="large" :color="currentTab == 'donate' ? 'primary' : 'medium'" :icon="donationsIcon" />
-          </router-link>
-        </ion-col>
       </ion-row>
       <ion-row v-if="isLoggedIn" >
         <ion-col size="6">
@@ -59,16 +66,20 @@
 <script lang="ts">
 import {
   IonIcon, IonButton, IonGrid, IonRow, IonCol,
+  popoverController,
 } from '@ionic/vue';
 import { createGesture } from "@ionic/core";
 import {
   planetOutline, addCircleOutline, chatbubbleEllipsesOutline,
   fileTrayFullOutline, personCircleOutline,
+  logInOutline as loginIcon,
   compassOutline as faqIcon, peopleCircleOutline, walletOutline
 } from 'ionicons/icons';
-import NotificationDot from './notification-dot.vue';
+import NotificationDot from '@/components/notification-dot.vue';
+import Avatar from '@/components/avatar.vue';
+import MyMenu from '@/components/my-menu.vue';
 import { defineComponent, computed } from 'vue';
-import { useStore } from '../stores/';
+import { useStore } from '@/stores/';
 
 const SMALL_HEIGHT = 60;
 
@@ -77,11 +88,12 @@ export default defineComponent({
   setup() {
     const store = useStore();
     return {
-      isLoggedIn: computed(() => !!store.state.auth.user),
+      isLoggedIn: computed(() => !!store.getters["auth/isLoggedIn"]),
+      user: computed(() => store.state.auth.user),
       homeIcon: planetOutline,
       feedIcon: peopleCircleOutline,
       donationsIcon: walletOutline,
-      faqIcon,
+      faqIcon, loginIcon,
       postIcon: addCircleOutline,
       chatIcon: fileTrayFullOutline,
       newChatIcon: chatbubbleEllipsesOutline,
@@ -94,9 +106,19 @@ export default defineComponent({
     IonGrid,
     IonRow,
     IonCol,
-    NotificationDot
+    NotificationDot,
+    Avatar,
   },
   methods: {
+    async openUserPopover(ev: Event) {
+      const popover = await popoverController
+        .create({
+          component: MyMenu,
+          event: ev,
+          translucent: true
+        })
+      return popover.present();
+    },
     toggleDrawer() {
     const c: any = this.$refs.drawerRef;
       if (c.dataset.open == "true") {
@@ -107,16 +129,6 @@ export default defineComponent({
         c.style.height = `${c.scrollHeight}px`;
       }
     }
-  },
-  computed: {
-    currentTab(): string {
-      const r: any = this.$route;
-      console.log("currentroute", r);
-      if (r.matched.length > 1) {
-        return 'feed'
-      }
-      return r.path.slice(1)
-    },
   },
   mounted() {
     const c: any = this.$refs.drawerRef;
@@ -168,6 +180,12 @@ export default defineComponent({
 </script>
 
 <style scoped>
+a ion-icon {
+  color: var(--ion-color-medium);
+}
+.router-link-active ion-icon {
+  color: var(--ion-color-primary);
+}
 hr {
   width: 10%;
   height: 0;

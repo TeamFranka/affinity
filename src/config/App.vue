@@ -1,11 +1,6 @@
 <template>
   <ion-app :style="teamStyles">
     <ion-progress-bar v-if="loading" color="secondary" type="indeterminate"></ion-progress-bar>
-    <ion-fab v-if="!user" vertical="bottom" horizontal="end" slot="fixed">
-      <ion-fab-button @click="openLoginModal">
-          <ion-icon :icon="logInIcon"/>
-      </ion-fab-button>
-    </ion-fab>
     <header-bar />
     <!-- FIXME: animation is broken -->
     <ion-content>
@@ -19,8 +14,8 @@
 
 <script lang="ts">
 import {
-  IonApp, IonRouterOutlet, IonFooter, IonProgressBar, IonFab, IonIcon, IonContent,
-  IonFabButton, modalController, isPlatform, toastController,
+  IonApp, IonRouterOutlet, IonFooter, IonProgressBar, IonContent,
+  modalController, isPlatform, toastController,
 } from '@ionic/vue';
 import {
   logInOutline as logInIcon,
@@ -42,12 +37,8 @@ export default defineComponent({
     IonRouterOutlet,
     IonProgressBar,
     IonFooter,
-    IonFab,
-    IonFabButton,
-    IonIcon,
     FooterMenu,
     HeaderBar,
-    // Login,
   },
   setup() {
     const store = useStore();
@@ -75,7 +66,6 @@ export default defineComponent({
 
     watch(() => store.state.auth.user, async (newVal, oldVal) => {
       if (newVal && newVal != oldVal) {
-        console.log(newVal);
         const toast = await toastController
           .create({
             message: `Willkommen zurück, ${newVal.get('username')} 👋!`,
