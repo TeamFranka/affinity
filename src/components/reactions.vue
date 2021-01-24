@@ -46,7 +46,7 @@ export default defineComponent({
         default: 'light'
       },
       item: {
-        type: Parse.Object,
+        type: Object,
         required: true
       }
   },
@@ -59,7 +59,7 @@ export default defineComponent({
   },
   computed: {
     reactions(): ReactionState[] {
-      const reacts: Record<string, string[]> = this.item.get("reactions") || {};
+      const reacts: Record<string, string[]> = this.item.reactions || {};
       const myId = this.store.getters["auth/myId"] || "";
 
       return Object.entries(reacts || {}).map(([key, reactors]) => {
@@ -75,7 +75,7 @@ export default defineComponent({
     },
     canReact(): boolean {
       return true;
-      // const team = this.item.get("team");
+      // const team = this.item.team;
       // const settings = this.store.getters["auth/teamPermissions"][team.id];
       // return settings ? settings.canReact : false;
     },

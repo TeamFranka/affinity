@@ -118,10 +118,10 @@
         <ion-card-content>
           <div v-if="o.className == 'Picture'">
             <!-- FIXME: this renders incorrectly while saving... -->
-            <ion-img v-if="o.get('img')" :src="o.get('img').dataUrl" />
+            <ion-img v-if="o.img" :src="o.img.dataUrl" />
             <ion-input placeholder="description"
               @ionChange="updateObject({index, data: {description: $event.target.value}})"
-              :value="o.get('description')"
+              :value="o.description"
             />
           </div>
           <div v-else-if="o.className == 'Poll'">
@@ -134,23 +134,23 @@
             </poll>
           </div>
           <div v-else-if="o.className == 'Link'">
-            <div v-if="o.get('loading')">
-              <ion-spinner /><ion-icon :icon="linkIcon"/><a :href="o.get('url')">{{o.get('url')}}</a>
+            <div v-if="o.loading">
+              <ion-spinner /><ion-icon :icon="linkIcon"/><a :href="o.url">{{o.url}}</a>
             </div>
             <div v-else>
-              <span class="text-muted" v-if="o.get('siteName')">{{o.get('siteName')}}</span>
+              <span class="text-muted" v-if="o.siteName">{{o.siteName}}</span>
               <div style="display: flex; align-items: center">
                 <ion-icon :icon="linkIcon"/>
                 <ion-input
                   @ionChange="updateObject({index, data: {title: $event.target.value}})"
-                    :value="o.get('title')"
-                    :placeholder="o.get('url')"
+                    :value="o.title"
+                    :placeholder="o.url"
                 />
               </div>
-              <ion-img v-if="o.get('previewImage')" :src="o.get('previewImage').url()" />
+              <ion-img v-if="o.previewImage" :src="o.previewImage.url()" />
               <ion-textarea
                 @ionChange="updateObject({index, data: {previewText: $event.target.value}})"
-                :value="o.get('previewText')"
+                :value="o.previewText"
                 placeholder="information about this link to preview"
               />
               <ion-button
@@ -162,22 +162,22 @@
             </div>
           </div>
           <div v-else-if="o.className == 'Document'">
-            <div v-if="o.get('loading')">
-              <ion-spinner /><ion-icon :icon="documentIcon"/><a :href="o.get('url')">{{o.get('url')}}</a>
+            <div v-if="o.loading">
+              <ion-spinner /><ion-icon :icon="documentIcon"/><a :href="o.url">{{o.url}}</a>
             </div>
             <div v-else>
-              <span class="text-muted" v-if="o.get('siteName')">{{o.get('siteName')}}</span>
+              <span class="text-muted" v-if="o.siteName">{{o.siteName}}</span>
               <div style="display: flex; align-items: center">
                 <ion-icon :icon="documentIcon"/>
                 <ion-input
                   @ionChange="updateObject({index, data: {title: $event.target.value}})"
-                    :value="o.get('title')"
-                    :placeholder="o.get('url')"
+                    :value="o.title"
+                    :placeholder="o.url"
                 />
               </div>
               <ion-textarea
                 @ionChange="updateObject({index, data: {description: $event.target.value}})"
-                :value="o.get('description')"
+                :value="o.description"
                 placeholder="description text..."
               />
             </div>
@@ -252,10 +252,11 @@ import Avatar from "./avatar.vue";
 import EditPoll from "./edit-poll.vue";
 import Poll from "./poll.vue";
 import { useStore } from '../stores/';
-import { Parse, Verb, Visibility } from '../config/Consts';
+import { Verb, Visibility } from '../config/Consts';
 import { Poll as PollModel } from '../db/models';
 import { AllActions, DefaultActions } from './rich-editor.vue';
 import RichEditor from './rich-editor.vue';
+import { Model } from '@/utils/model';
 
 const VERB_ICONS: Record<string, any>= {};
 VERB_ICONS[Verb.Post] = readerOutline;
@@ -288,7 +289,7 @@ export default defineComponent({
       visibility: computed(() => store.state.draft.visibility),
 
       updateText: (value: string) => store.dispatch("draft/updateText", value),
-      selectTeam: (t: Parse.Object) => store.commit("draft/setTeam", t),
+      selectTeam: (t: Model) => store.commit("draft/setTeam", t),
       setVisibility: (t: Visibility) => store.commit("draft/setVisibility", t),
       selectType: (t: Verb) => store.commit("draft/setType", t),
       selectedTeam: computed(() => store.getters["draft/selectedTeam"]),

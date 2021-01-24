@@ -41,8 +41,8 @@
 </template>
 <script lang="ts">
 import {
-  IonContent, IonHeader, IonToolbar, IonInput, IonIcon, IonButton, IonTextarea, modalController,
-  IonFooter, IonLabel, IonChip
+  IonContent, IonHeader, IonToolbar, IonInput, IonIcon, IonButton,
+  IonFooter, IonLabel, IonChip, modalController,
 } from '@ionic/vue';
 import {
   closeOutline as closeIcon,
@@ -79,9 +79,9 @@ export default defineComponent({
     }
   },
   data(props) {
-    const tags = props.faq.get("tags") || [];
-    const text = props.faq.get("text") || "";
-    const title = props.faq.get("title") || "";
+    const tags = props.faq.tags || [];
+    const text = props.faq.text || "";
+    const title = props.faq.title || "";
     const data: any = {
         newTag: '', tags, text, title
     };

@@ -34,7 +34,7 @@
         <poll :poll="obj" />
       </div>
       <div v-if="obj.className == 'Picture'">
-        <ion-img :src="obj.get('file').url()" />
+        <ion-img :src="obj.file.url()" />
       </div>
     </div>
   </div>
@@ -55,12 +55,13 @@ import { useStore } from '../stores/';
 import { defineComponent, computed } from 'vue';
 import { Parse } from "../config/Consts";
 import { since } from "../utils/time";
+import { Model } from '@/utils/model';
 
 export default defineComponent({
   name: 'Activity',
   props: {
     activity: {
-      type: Parse.Object,
+      type: Object,
       required: true
     },
     showTeam: Boolean,
@@ -88,51 +89,51 @@ export default defineComponent({
     link(): string {
       return '/a/' + this.activity.id
     },
-    team(): Parse.Object {
-      const team = this.activity.get("team");
+    team(): any {
+      const team = this.activity.team;
       if (team.isDataAvailable()) {
         return team;
       }
       return this.objs[team.id]
     },
     teamName(): string {
-      return this.team.get("name")
+      return this.team.name
     },
     teamLink(): string {
-      return '/t/' + this.team.get("slug")
+      return '/t/' + this.team.slug
     },
     showAuthor(): boolean {
-      if (this.activity.get("verb") == "announce") {
+      if (this.activity.verb == "announce") {
         // announcement show the team as author
         return false
       }
       return true
     },
-    author(): Parse.Object {
-      const author = this.activity.get("author");
+    author(): any {
+      const author = this.activity.author;
       if (author.isDataAvailable()) {
         return author;
       }
       return this.objs[author.id]
     },
     since(): string {
-      return since(this.activity.get("createdAt"))
+      return since(this.activity.createdAt)
     },
     text(): string {
-        return this.activity.get("text") || ""
+        return this.activity.text || ""
     },
-    objects(): Parse.Object[] {
-      return (this.activity.get("objects") || []).map(
-            (o: Parse.Object) => this.objs[o.id])
+    objects(): Model[] {
+      return (this.activity.objects || []).map(
+            (o: Model) => this.objs[o.id])
     },
     pointer(): Parse.Pointer {
       return this.activity.toPointer()
     },
     authorName(): string {
       const author = this.author;
-      return author ? (author.get("name") || author.get("username")) : "(hidden)"
+      return author ? (author.name || author.username) : "(hidden)"
     },
-    interactivityObject(): Parse.Object {
+    interactivityObject(): any {
       if (this.objects.length == 1) {
         return this.objects[0]
       }

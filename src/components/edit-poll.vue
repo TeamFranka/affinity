@@ -190,9 +190,9 @@ export default defineComponent({
     }
   },
   data(props) {
-    const options = props.poll.get("options") || [];
-    const text = props.poll.get("text") || "";
-    const title = props.poll.get("title") || "";
+    const options = props.poll.options || [];
+    const text = props.poll.text || "";
+    const title = props.poll.title || "";
     const data: any = {
       options, text, title
     };

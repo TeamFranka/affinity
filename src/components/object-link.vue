@@ -9,13 +9,12 @@
 
 //  import { useStore } from '../stores/';
 import { defineComponent } from 'vue';
-import { Parse } from "../config/Consts";
 
 export default defineComponent({
   name: 'ObjectLink',
   props: {
     object: {
-      type: Parse.Object,
+      type: Object,
       required: true
     },
     mine: Boolean,
@@ -26,7 +25,7 @@ export default defineComponent({
     },
     text(): string {
       if (this.type == "Activity") {
-        if (this.object.get("text")) {
+        if (this.object.text) {
           return `${this.mine ? "Dein " : ""} Post`;
         }
       }

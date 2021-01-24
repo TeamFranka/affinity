@@ -1,6 +1,6 @@
 <template>
 <ion-list>
-    <ion-item lines="full" button @click="select({name: 'Profile', params: {username: user.get('username')} })">
+    <ion-item lines="full" button @click="select({name: 'Profile', params: {username: user.username} })">
         <ion-label>My Profile</ion-label>
     </ion-item>
     <ion-item button @click="select({name: 'MySettings'})">

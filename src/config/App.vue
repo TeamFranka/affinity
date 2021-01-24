@@ -92,7 +92,7 @@ export default defineComponent({
       loginModalOpened: computed(() => {
         return store.state.auth.wantsToLogin
       }),
-      teamStyles: computed(() => store.getters["defaultTeam"]?.get("customStyles")),
+      teamStyles: computed(() => store.getters["defaultTeam"]?.customStyles),
       openLoginModal: () => store.dispatch('auth/openLogin'),
       loading: store.getters.isLoading,
       // openLoginModal: () => store.dispatch("auth/openLogin"),

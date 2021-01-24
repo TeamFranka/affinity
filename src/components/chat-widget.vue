@@ -77,7 +77,7 @@ export default defineComponent({
     IonButton,
   },
   setup(props) {
-    const chatIcon = props.config.get("buttonIcon") || "chatbubbles";
+    const chatIcon = props.config.buttonIcon || "chatbubbles";
     console.log("chatIcon", chatIcon);
     return {
       chatbubbles, logoFacebook, logoTwitter, logoInstagram, logoWhatsapp,
@@ -97,7 +97,7 @@ export default defineComponent({
   },
   computed: {
     community(): any {
-        return this.config.get("team");
+        return this.config.team;
     },
   },
   mounted() {
