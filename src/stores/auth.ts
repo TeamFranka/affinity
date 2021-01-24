@@ -1,45 +1,60 @@
 import { Parse } from '@/config/Consts';
-import { toModel } from '@/utils/model';
+import { Model, toModel } from '@/utils/model';
 import { watch } from 'vue';
 
 export interface AuthStateT {
   wantsToLogin: boolean;
-  user: Parse.User | null;
-  teams: Array<Parse.Object>;
+  user: Model | null;
+  teams: Array<Model>;
   teamPermissions: Record<string, any>;
+}
+
+function currentUser(): Model | null{
+  const u = Parse.User.current();
+  return u ? toModel(u): null;
 }
 
 export const AuthState = {
   namespaced: true,
   state: () => ({
     wantsToLogin: false,
-    user: Parse.User.current(),
+    user: currentUser(),
     teams: [],
     teamPermissions: {},
   }),
   getters: {
     isLoggedIn: (state: AuthStateT) => !!state.user,
-    myId: (state: AuthStateT) => state.user?.id,
+    myId: (state: AuthStateT) => state.user?.objectId,
     defaultTeam: (state: AuthStateT, rootState: any, rootGetters: any) => rootGetters["defaultTeam"],
     user: (state: AuthStateT) => state.user,
     wantsToLogin: (state: AuthStateT) => state.wantsToLogin,
     userPtr: (state: AuthStateT) => state.user?.toPointer(),
     myTeams: (state: AuthStateT) => state.teams.filter(x => !!x),
+    teamPointers: (state: AuthStateT, rootState: any, rootGetters: any) => {
+      const teams = state.teams.filter(x => !!x)
+      if (!teams.length) {
+        return [{
+          __type: "Pointer",
+          className: "Team",
+          id: rootGetters["defaultTeamId"]
+        }];
+      }
+      return teams.map((x: Model) => x.toPointer());
+    },
     teamPermissions: (state: AuthStateT) => state.teamPermissions,
     hasManyTeams: (state: AuthStateT) => state.teams.length > 1,
-    postableTeams: (state: AuthStateT) =>  state.teams?.filter(t => t && state.teamPermissions[t.id].canPost) || [],
-    adminOfTeams: (state: AuthStateT) =>  state.teams?.filter(t => t && state.teamPermissions[t.id].isAdmin) || [],
+    postableTeams: (state: AuthStateT) =>  state.teams?.filter(t => t && state.teamPermissions[t.objectId].canPost) || [],
+    adminOfTeams: (state: AuthStateT) =>  state.teams?.filter(t => t && state.teamPermissions[t.objectId].isAdmin) || [],
   },
   mutations: {
-    setUser(state: AuthStateT, newUser: Parse.User|null) {
+    setUser(state: AuthStateT, newUser: Model|null) {
       state.user = newUser
     },
     setWantsToLogin(state: AuthStateT, wanna: boolean) {
       state.wantsToLogin = wanna;
     },
     setTeams(state: AuthStateT, resp: any) {
-      console.log("setting auth teams", resp);
-      state.teams = resp.teams.filter((x: any)=>!!x);
+      state.teams = resp.teams.filter((x: any)=>!!x).map(toModel);
       state.teamPermissions = Object.assign(state.teamPermissions, resp.permissions);
     },
     addPermissions(state: AuthStateT, resp: any) {
@@ -58,7 +73,7 @@ export const AuthState = {
       context.commit("setWantsToLogin", true);
     },
     async loggedIn(context: any, newUser: Parse.User) {
-      context.commit("setUser", newUser);
+      context.commit("setUser", toModel(newUser));
       context.dispatch("dismissLogin");
 
       const resp = await Parse.Cloud.run("myTeams");
@@ -70,7 +85,7 @@ export const AuthState = {
     async fetchUser(context: any) {
       const user = await Parse.User.currentAsync();
       if(user) {
-        context.dispatch("loggedIn", user);
+        context.dispatch("loggedIn", toModel(user));
       } else {
         context.dispatch("refreshRoot", null, { root:true });
       }
@@ -94,7 +109,6 @@ export const AuthState = {
         const stopper = watch(
         () => [context.getters['user'], context.getters['wantsToLogin']],
         (newVals) => {
-          console.log("new watch changes", newVals);
           if (newVals[0]) {
             // login happened
             resolve(true);

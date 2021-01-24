@@ -2,7 +2,7 @@
 <ion-card>
   <ion-card-header>
     <div class="avatar-wrap">
-      <router-link v-if="showAuthor" :to="{name: 'ViewUser', params:{userId: author.id}}">
+      <router-link v-if="showAuthor" :to="{name: 'ViewUser', params:{userId: author.objectId}}">
         <avatar :profile="author" />
       </router-link>
       <router-link
@@ -29,12 +29,12 @@
     <div class="ion-padding">
       <render-md :source="text" />
     </div>
-    <div v-for="obj in objects" :key="obj.id" class="ion-padding">
+    <div v-for="obj in objects" :key="obj.objectId" class="ion-padding">
       <div v-if="obj.className == 'Poll'">
         <poll :poll="obj" />
       </div>
       <div v-if="obj.className == 'Picture'">
-        <ion-img :src="obj.file.url()" />
+        <ion-img :src="obj.file.url" />
       </div>
     </div>
   </div>
@@ -61,7 +61,7 @@ export default defineComponent({
   name: 'Activity',
   props: {
     activity: {
-      type: Object,
+      type: Model,
       required: true
     },
     showTeam: Boolean,
@@ -87,14 +87,10 @@ export default defineComponent({
   },
   computed: {
     link(): string {
-      return '/a/' + this.activity.id
+      return '/a/' + this.activity.objectId
     },
-    team(): any {
-      const team = this.activity.team;
-      if (team.isDataAvailable()) {
-        return team;
-      }
-      return this.objs[team.id]
+    team(): Model {
+      return this.objs[this.activity.team.objectId];
     },
     teamName(): string {
       return this.team.name
@@ -109,12 +105,8 @@ export default defineComponent({
       }
       return true
     },
-    author(): any {
-      const author = this.activity.author;
-      if (author.isDataAvailable()) {
-        return author;
-      }
-      return this.objs[author.id]
+    author(): Model {
+      return this.objs[this.activity.author.objectId]
     },
     since(): string {
       return since(this.activity.createdAt)
@@ -124,7 +116,7 @@ export default defineComponent({
     },
     objects(): Model[] {
       return (this.activity.objects || []).map(
-            (o: Model) => this.objs[o.id])
+            (o: Model) => this.objs[o.objectId])
     },
     pointer(): Parse.Pointer {
       return this.activity.toPointer()
@@ -133,7 +125,7 @@ export default defineComponent({
       const author = this.author;
       return author ? (author.name || author.username) : "(hidden)"
     },
-    interactivityObject(): any {
+    interactivityObject(): Model {
       if (this.objects.length == 1) {
         return this.objects[0]
       }
@@ -151,13 +143,12 @@ export default defineComponent({
     },
     setDraft(text: string) {
       this.store.commit("comments/setDraft", {
-        objectId: this.activity.id,
+        objectId: this.activity.objectId,
         text
       });
     },
     submitComment(){
       const text = this.comment;
-      console.log("submitting", text);
       this.store.dispatch("comments/submitDraft", {
         ptr: this.activity.toPointer(),
         text

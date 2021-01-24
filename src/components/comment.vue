@@ -107,11 +107,7 @@ export default defineComponent({
       return (this.comment.likedBy || []).indexOf(this.store.getters["auth/myId"]) !== -1;
     },
     author(): Model {
-      const author = this.comment.author;
-      if (author.isDataAvailable()) {
-        return author;
-      }
-      return this.objs[author.id]
+      return this.objs[this.comment.author.objectId]
     },
     since(): string {
       return dayjs(this.comment.createdAt).fromNow()
@@ -128,7 +124,7 @@ export default defineComponent({
     },
     objects(): any {
       return (this.comment.attachments || []).map(
-            (o: Model) => this.objs[o.id])
+            (o: Model) => this.objs[o.objectId])
     },
     likedColor(): string {
       return this.hasLiked ? "danger" : "light"

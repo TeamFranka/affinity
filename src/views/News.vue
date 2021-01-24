@@ -4,10 +4,10 @@
       <ion-spinner v-if="loading" />
       <div class="flip-in" ref="box">
         <news-item
-          v-for="(n, index) in feed"
+          v-for="(id, index) in feed"
           :z-index="index"
-          :item="n"
-          :key="n.id"
+          :itemId="id"
+          :key="id"
         />
       </div>
     </ion-content>
@@ -41,8 +41,7 @@ export default defineComponent({
     return {
       loading: computed(() => store.getters["news/loading"]),
       refresh(){ store.dispatch("news/refresh"); },
-      feed: computed(() => reversed(store.getters["news/latest"]
-        .map((id: string) => store.getters["objectsMap"][id]))),
+      feed: computed(() => reversed(store.getters["news/latest"])),
       chatbubbles, like: heartOutline, mail: mailOutline, plus: addOutline,
       teamSplitter: caretForwardOutline,
     }

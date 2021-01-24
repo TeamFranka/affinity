@@ -13,7 +13,7 @@
         <div
           :class="clsForMsg(m)"
           v-for="m in messages"
-          :key="m.id"
+          :key="m.objectId"
         >
           <div class="message">{{m.text}}</div>
           <div class="meta">{{smartTimestamp(m.createdAt)}}</div>
@@ -59,7 +59,7 @@ export default defineComponent({
     const route = useRoute();
     const objectId: any = route.params.conversationId;
     const loading = ref(true);
-    const isMine = (msg: Model) => msg.author.id == store.getters["auth/myId"];
+    const isMine = (msg: Model) => msg.author.objectId == store.getters["auth/myId"];
     store.commit("startLoading");
     const loaders = [
         store.dispatch("inbox/loadMessages", objectId)
@@ -89,7 +89,7 @@ export default defineComponent({
     sendMessage() {
       if (!this.currentMessage) { return }
       this.store.dispatch("inbox/sendMessage", {
-        conversationId: this.conversation.id, text: this.currentMessage
+        conversationId: this.conversation.objectId, text: this.currentMessage
       });
       this.currentMessage = '';
     },

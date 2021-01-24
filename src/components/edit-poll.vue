@@ -205,7 +205,7 @@ export default defineComponent({
       'showsResultsWithoutVote',
       'closesAt',
     ].forEach((key) => {
-      data[key] = props.poll.get(key)
+      data[key] = props.poll[key]
     });
     return data;
   },

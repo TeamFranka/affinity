@@ -37,7 +37,7 @@ export const Draft = {
       return state.objects;
     },
     selectedTeamId(state: DraftT, getters: any): string {
-      return getters.selectedTeam.id
+      return getters.selectedTeam.objectId
     },
     selectedTeamPerms(state: DraftT, getters: any, rootState: any): any {
       return rootState.auth.teamPermissions[getters.selectedTeamId]

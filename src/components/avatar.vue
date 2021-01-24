@@ -40,12 +40,12 @@ export default defineComponent({
     avatarUrl(): string | null {
       const avatar = this.profile && this.profile.avatar;
       if (avatar) {
-        return avatar.url()
+        return avatar.url
       }
       return null;
     },
     shownName(): string {
-      return this.name || this.profile.name || this.profile.username || this.profile.slug || this.profile.id;
+      return this.name || this.profile.name || this.profile.username || this.profile.slug || this.profile.objectId || "";
     },
     iconStyles(): any {
       if (this.size) {

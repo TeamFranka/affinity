@@ -1,5 +1,6 @@
 import { Parse, Verb } from "../config/Consts";
 import { Activity, Team } from "../db/models";
+import { Model } from "@/utils/model";
 
 export interface FeedT {
   loading: boolean;
@@ -7,7 +8,7 @@ export interface FeedT {
   latestPosts: Array<string>;
 }
 
-const MODEL_KEYS = ["objects", "author"];
+const MODEL_KEYS = ["objects", "author", "team"];
 
 export const Feed = {
   namespaced: true,
@@ -16,7 +17,7 @@ export const Feed = {
     latestPosts: [],
   }),
   getters: {
-    latestPosts(state: FeedT, getters: any, rootState: any, rootGetters: any) {
+    latestPosts(state: FeedT, getters: any, rootState: any, rootGetters: any): Model[] {
       const objs = rootGetters["objectsMap"];
 
       return state.latestPosts.map((id) => objs[id])
@@ -40,12 +41,7 @@ export const Feed = {
     async refresh(context: any) {
       context.commit("setLoading", true);
       context.dispatch("unsubscribe", 'feed', {root: true});
-      const defaultTeam = new Team({id:context.rootGetters["defaultTeamId"]})
-      let teams = [defaultTeam];
-      if (context.rootGetters["auth/isLoggedIn"]) {
-        teams = context.rootGetters["auth/myTeams"];
-      }
-      console.log("fetching feed for", teams);
+      const teams = context.rootGetters["auth/teamPointers"];
       const query = (new Parse.Query(Activity))
         .containedIn("team", teams)
         .containedIn("verb", [Verb.Post, Verb.Announce])

@@ -1,6 +1,6 @@
 import { Parse, Activity, Team, Verb } from "../config/Consts";
 
-const MODEL_KEYS = ['objects'];
+const MODEL_KEYS = ['objects', 'team'];
 export interface NewsT {
   loading: boolean;
   latest: Array<string>;
@@ -37,23 +37,25 @@ export const News = {
   actions: {
     async refresh(context: any) {
       context.commit("setLoading", true);
-      const teams = context.rootGetters["auth/myTeams"];
-      const defaultTeam = new Team();
-      defaultTeam.id = context.rootGetters.defaultTeamId;
-      teams.push(defaultTeam.toPointer());
+      const teams = context.rootGetters["auth/teamPointers"];
       const query = (new Parse.Query(Activity))
         .equalTo("verb", Verb.Announce)
         .containedIn("team", teams)
         .include(MODEL_KEYS)
-        .descending("createdAt")
-        const news = await query.find();
+        .descending("createdAt");
 
-      await context.dispatch("addItems", { items: news, keys: MODEL_KEYS }, { root: true });
-      context.dispatch("subscribe", {
-        id: 'news', keys: MODEL_KEYS, query, addCb: "news/addItem", rmCb: "newsItem"
+      const news = await query.find();
+
+      await context.dispatch("addItems",
+        { items: news, keys: MODEL_KEYS },
+        { root: true }
+      );
+      await context.commit("setNews", news.map((a) => a.id));
+      await context.commit("setLoading", false);
+      await context.dispatch("subscribe", {
+        id: 'news', keys: MODEL_KEYS, query,
+        addCb: "news/addItem", rmCb: "news/rmItem"
       }, {root: true});
-      context.commit("setNews", news.map((a) => a.id))
-      context.commit("setLoading", false);
     },
   },
 };

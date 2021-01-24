@@ -27,7 +27,7 @@ const app = createApp(Widget)
 const widgetId = "affinity-chat-widget-" + Math.floor((Math.random() * 100000) + 1);
 
 const elemDiv = document.createElement('div');
-elemDiv.id = widgetId;
+elemDiv.objectId = widgetId;
 document.body.appendChild(elemDiv)
 
 document.addEventListener("DOMContentLoaded", () => {

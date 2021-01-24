@@ -65,7 +65,7 @@ export default defineComponent({
     isSharedInbox(): boolean { return this.convo.type == "sharedInbox" },
     team(): any { return this.convo.team },
     showTeam(): boolean {
-        return this.isMe(this.convo.participants[0].id)
+        return this.isMe(this.convo.participants[0].objectId)
     },
     msgPreview(): string {
         const msg = this.convo.latestMessage;

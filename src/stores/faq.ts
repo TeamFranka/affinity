@@ -31,15 +31,14 @@ export const Faq = {
   actions: {
     async refresh(context: any) {
       context.commit("setLoading", true);
-      const teams = context.rootGetters["auth/myTeams"];
-      teams.push(context.state.defaultTeam);
-      console.log(teams);
+      const teams = context.rootGetters["auth/teamPointers"];
       const entries = await (new Parse.Query(FaqEntry))
         .containedIn("team", teams)
         .descending("createdAt")
         .find();
 
-      await context.dispatch("addItems", { items: entries }, { root: true });
+      await context.dispatch("addItems",
+          { items: entries }, { root: true });
       context.commit("setFaq", entries.map((a) => a.id))
       context.commit("setLoading", false);
     },

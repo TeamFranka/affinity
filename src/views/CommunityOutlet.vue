@@ -16,7 +16,7 @@
                 <ion-item-divider>
                   <ion-label>My Teams</ion-label>
                 </ion-item-divider>
-                <ion-item v-for="t in teams" :key="t.id">
+                <ion-item v-for="t in teams" :key="t.objectId">
                   <router-link :to="{name: 'ViewTeam', params:{teamSlug:t.slug}}">
                     <avatar :profile="t" :name="t.name" size="25px" withName />
                   </router-link>

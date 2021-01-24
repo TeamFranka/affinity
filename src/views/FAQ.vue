@@ -22,7 +22,7 @@
         <faq-entry
           v-for="e in visibleEntries"
           :title="e.title"
-          :key="e.id"
+          :key="e.objectId"
           :tags="e.tags"
           @tag-selected="searchValue = $event"
         >

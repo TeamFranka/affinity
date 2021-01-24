@@ -69,7 +69,7 @@
             </ul>
           </div>
           <div>
-            <activity v-for="activity in feed" :activity="activity" :key="activity.id" />
+            <activity v-for="activity in feed" :activity="activity" :key="activity.objectId" />
           </div>
         </template>
       </div>
@@ -146,7 +146,7 @@ export default defineComponent({
       if (!this.team) {
         return []
       }
-      const teamId = this.team.id;
+      const teamId = this.team.objectId;
       return this.store.state.teams.news[teamId]
         .map((id: string) => this.store.getters["objectsMap"][id])
     },
@@ -160,20 +160,20 @@ export default defineComponent({
       return this.team.footerLinks || []
     },
     permissions(): any {
-      return this.store.getters["auth/teamPermissions"][this.team.id] || {};
+      return this.store.getters["auth/teamPermissions"][this.team.objectId] || {};
     },
     canEdit(): boolean {
       return this.permissions.isAdmin
     },
     logo(): string | null {
-      return (this.team && this.team.avatar) ? this.team.avatar.url() : null
+      return (this.team && this.team.avatar) ? this.team.avatar.url : null
     },
     teamStyle(): any {
       const customStyles = this.team.customStyles;
       const extraStyles: any = {};
       const backgroundImage =  this.team.background;
       if (backgroundImage) {
-        extraStyles.backgroundImage = `url(${backgroundImage.url()})`;
+        extraStyles.backgroundImage = `url(${backgroundImage.url})`;
         extraStyles.backgroundSize = "cover";
       }
       return [DEFAULT_STYLES, customStyles, extraStyles];
@@ -274,7 +274,7 @@ export default defineComponent({
     },
     async setSetting(params: any) {
       await this.store.dispatch("teams/setSetting", Object.assign({
-        id: this.team.id
+        id: this.team.objectId
       }, params));
     },
     selectNewAvatar() {

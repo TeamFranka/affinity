@@ -24,8 +24,8 @@
         </div>
         <div v-if="convos.length" >
           <h3>Willkommen zurück <avatar :profile="user" with-name=true /> 👋!</h3>
-          <div @click="$emit('select-chat', convo)" v-for="convo in convos" v-bind:key="convo.id">
-            {{convo.id}}
+          <div @click="$emit('select-chat', convo)" v-for="convo in convos" v-bind:key="convo.objectId">
+            {{convo.objectId}}
           </div>
         </div>
 
@@ -69,7 +69,7 @@ export default defineComponent({
   },
   computed: {
     isAuthenticated(): boolean {
-      return this.user.id
+      return this.user.objectId
     }
   },
   methods: {
@@ -84,7 +84,7 @@ export default defineComponent({
     async startNewChat() {
       this.loading = true;
       await Parse.Cloud.run("newPublicInboxConversation", {
-        "groupId": this.community.id
+        "groupId": this.community.objectId
       }).then(chat => {
         console.log(chat);
         this.loading = false;

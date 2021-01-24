@@ -46,8 +46,8 @@ export const Teams = {
       });
     },
     async setSetting(context: any, params: any) {
-      const team = context.rootGetters.objectsMap[params.id]
-      delete params.id
+      const team = context.rootGetters.objectsMap[params.objectId]
+      delete params.objectId
       await team.save(params);
     }
   },

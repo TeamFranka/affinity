@@ -147,7 +147,7 @@
                     :placeholder="o.url"
                 />
               </div>
-              <ion-img v-if="o.previewImage" :src="o.previewImage.url()" />
+              <ion-img v-if="o.previewImage" :src="o.previewImage.url" />
               <ion-textarea
                 @ionChange="updateObject({index, data: {previewText: $event.target.value}})"
                 :value="o.previewText"

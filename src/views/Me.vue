@@ -5,7 +5,7 @@
           <div class="profile-img">
             <avatar :profile="user"  />
           </div>
-          <ion-chip @click="selectNewAvatar(user.id)">
+          <ion-chip @click="selectNewAvatar(user.objectId)">
             <ion-icon :icon="uploadIcon"></ion-icon>
           </ion-chip>
         </div>
@@ -36,7 +36,6 @@ export default defineComponent({
   methods: {
     selectNewAvatar(userId: string) {
       takePicture().then((img: typeof CameraPhoto) => {
-        // console.log("selected", img);
         const file = new Parse.File(userId +"_avatar", {uri: img.dataUrl}, "image/" + img.format);
         this.setUserAvatar(file);
       });

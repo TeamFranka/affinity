@@ -182,7 +182,7 @@ export default defineComponent({
               handler: async (data) => {
                 const { outcome } = data;
                 this.loading = true;
-                const pollItem = await Parse.Cloud.run("vote:close", { id: this.poll.id, outcome });
+                const pollItem = await Parse.Cloud.run("vote:close", { id: this.poll.objectId, outcome });
                 await this.store.commit("setItem", toModel(pollItem));
                 this.loading = false;
               },
@@ -210,20 +210,20 @@ export default defineComponent({
       this.selected.forEach((k) => {
         votes[k] = 1
       });
-      const pollItem = await Parse.Cloud.run("vote", { id: this.poll.id, votes });
+      const pollItem = await Parse.Cloud.run("vote", { id: this.poll.objectId, votes });
       await this.store.commit("setItem", toModel(pollItem));
       this.loading = false;
     },
     async resetVote() {
       this.loading = true;
-      const pollItem = await Parse.Cloud.run("vote:reset", { id: this.poll.id });
+      const pollItem = await Parse.Cloud.run("vote:reset", { id: this.poll.objectId });
       await this.store.commit("setItem", toModel(pollItem));
       this.loading = false;
     }
   },
   computed: {
     canEdit(): boolean {
-      if (!this.poll.id) {
+      if (!this.poll.objectId) {
         return false;
       }
       if (this.isClosed) {
@@ -233,20 +233,20 @@ export default defineComponent({
       // FIXME: use poll.canEdit here instead...
       if ((this.poll.hasVoted || []).length == 0) {
         // only for as long as no one" has voted.
-        const teamId = this.poll.team.id;
+        const teamId = this.poll.team.objectId;
         const teamPerms = this.store.getters["auth/teamPermissions"][teamId];
         if (teamPerms && teamPerms.isAdmin) {
           return true;
         }
         const userId = this.store.getters["auth/myId"];
         if (!userId) {
-          return this.poll.author.id === userId;
+          return this.poll.author.objectId === userId;
         }
       }
       return false
     },
     canClose(): boolean {
-      if (!this.poll.id) {
+      if (!this.poll.objectId) {
         return false;
       }
       if (this.poll.closedAt) {
@@ -255,7 +255,7 @@ export default defineComponent({
       const userId = this.store.getters["auth/myId"];
       if (!userId)  { return false }
 
-      if (this.poll.author.id === userId){
+      if (this.poll.author.objectId === userId){
         return true
       } else {
         return false

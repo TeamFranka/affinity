@@ -56,13 +56,13 @@ import Reactions from "./reactions.vue";
 import Comment from "./comment.vue";
 import { useStore } from '../stores/';
 import { defineComponent, computed } from 'vue';
-import { Parse } from "../config/Consts";
+import { Model } from "@/utils/model";
 
 export default defineComponent({
   name: 'Activity',
   props: {
     object: {
-      type: Object,
+      type: Model,
       required: true
     },
     link: {
@@ -101,21 +101,21 @@ export default defineComponent({
       return this.object.toPointer()
     },
     draft(): string {
-      const d = this.store.state.comments.drafts[this.object.id];
+      const d = this.store.state.comments.drafts[this.object.objectId];
       if (d) {
         return d[""]
       }
       return ""
     },
     commentsLoading(): boolean {
-      const s = this.store.state.comments.comments[this.object.id];
+      const s = this.store.state.comments.comments[this.object.objectId];
       if (s) {
         return s.loading
       }
       return false
     },
     comments(): Array<any> {
-      const s = this.store.state.comments.comments[this.object.id];
+      const s = this.store.state.comments.comments[this.object.objectId];
       if (s) {
         return s.comments
       }
@@ -136,7 +136,7 @@ export default defineComponent({
     },
     setDraft(text: string) {
       this.store.commit("comments/setDraft", {
-        objectId: this.object.id,
+        objectId: this.object.objectId,
         text
       });
     },

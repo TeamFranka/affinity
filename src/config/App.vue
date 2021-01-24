@@ -68,7 +68,7 @@ export default defineComponent({
       if (newVal && newVal != oldVal) {
         const toast = await toastController
           .create({
-            message: `Willkommen zurück, ${newVal.get('username')} 👋!`,
+            message: `Willkommen zurück, ${newVal.username} 👋!`,
             color: "success",
             duration: 3000
           })

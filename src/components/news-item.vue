@@ -72,8 +72,8 @@ export default defineComponent({
   name: 'NewsItem',
   emits: ['next'],
   props: {
-    item: {
-      type: Object,
+    itemId: {
+      type: String,
       required: true
     },
     zIndex:{
@@ -84,16 +84,17 @@ export default defineComponent({
     IonLabel, IonIcon, IonCard, IonImg,
     Avatar, ShareButton, Reactions, LikeButton, Poll, RenderMd
   },
-  setup() {
+  setup(props: { itemId:  string }) {
     const store = useStore();
     return {
+      item: computed(() => store.getters.objectsMap[props.itemId]),
       objs: computed(() => store.getters.objectsMap),
       store, commentsIcon, likeIcon
     }
   },
   computed: {
     link(): string {
-      return '/a/' + this.item.id
+      return '/a/' + this.item.objectId
     },
     fullLink(): string {
       return process.env.BASE_URL + this.link;
@@ -103,11 +104,7 @@ export default defineComponent({
       return (this.item.likedBy || []).indexOf(this.store.getters["auth/myId"]) !== -1;
     },
     team(): Model {
-      const team = this.item.team;
-      if (team.isDataAvailable()) {
-        return team;
-      }
-      return this.objs[team.id]
+      return this.objs[this.item.team.objectId]
     },
     teamName(): string {
       return this.team.name
@@ -123,7 +120,7 @@ export default defineComponent({
     },
     objects(): Model[] {
       return (this.item.objects || []).map(
-            (o: Model) => this.objs[o.id])
+            (o: Model) => this.objs[o.objectId])
     },
     interactivityObject(): any {
       if (this.objects.length == 1) {
@@ -135,13 +132,13 @@ export default defineComponent({
       return this.objects[0]
     },
     pointer(): Parse.Pointer {
-      return this.item.toPointer()
+      return this.item?.toPointer()
     },
     image(): Model | null {
         return this.item.objects.find((x: Model) => x.className == "Picture");
     },
     imageUrl(): string | null {
-        return this.image?.file?.url()
+        return this.image?.file?.url
     },
     extraStyle(): object {
       const style = (this.item.extra || {})['style'] || {

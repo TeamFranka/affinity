@@ -76,7 +76,7 @@ export default defineComponent({
     canReact(): boolean {
       return true;
       // const team = this.item.team;
-      // const settings = this.store.getters["auth/teamPermissions"][team.id];
+      // const settings = this.store.getters["auth/teamPermissions"][team.objectId];
       // return settings ? settings.canReact : false;
     },
   },
@@ -88,7 +88,6 @@ export default defineComponent({
         });
       popover.present();
       const result = await popover.onDidDismiss();
-      console.log("test", result);
       if (result.data) {
         this.react(result.data);
       }

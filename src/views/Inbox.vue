@@ -17,9 +17,9 @@
           <ion-item
             button
             details=false
-            @click="selectConversation  (convo.id)"
+            @click="selectConversation  (convo.objectId)"
             v-for="convo in convos"
-            :key="convo.id"
+            :key="convo.objectId"
             lines="inset"
             >
             <conversation-entry :convo="convo" />
@@ -30,7 +30,7 @@
             button
             details=false
             v-for="n in notifications"
-            :key="n.id"
+            :key="n.objectId"
             lines="none"
             >
             <avatar size="2em" with-name :profile="n.by" />
@@ -99,7 +99,6 @@ export default defineComponent({
   },
   mounted() {
     if (!this.loading && this.convos.length === 0) {
-      console.log("refreshing");
       this.refresh();
     }
   },

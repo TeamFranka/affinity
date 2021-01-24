@@ -37,7 +37,7 @@ export default defineComponent({
       if (this.type == "Activity") {
         return {
           name: "ViewActivity",
-          params: { activityId: this.object.id }
+          params: { activityId: this.object.objectId }
         };
       }
       return {}
