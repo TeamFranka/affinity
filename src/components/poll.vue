@@ -90,12 +90,13 @@ import {
   powerOutline as closeIcon,
   createOutline as editIcon,
 } from 'ionicons/icons';
+import { cloneDeep } from 'lodash';
 
 import RenderMd from './render-md.vue';
 import EditPoll from './edit-poll.vue';
 import { useStore } from '../stores/';
 import { Poll as PollModel } from '../db/models';
-import { toModel } from '@/utils/model';
+import { toModel, Model } from '@/utils/model';
 import { Parse } from '../config/Consts';
 import { until, hasPassed } from "../utils/time";
 import { defineComponent } from 'vue';
@@ -142,7 +143,7 @@ export default defineComponent({
       }
     },
     async editPoll(){
-      const intermedPoll = new PollModel(this.poll.toJSON());
+      const intermedPoll = cloneDeep(this.poll);
       const modal = await modalController
         .create({
           component: EditPoll,
@@ -154,10 +155,8 @@ export default defineComponent({
       await modal.present();
       const res = await modal.onDidDismiss();
       if (res.data) {
-        await this.poll.save(res.data);
-        // FIXME: updates here do not propagate b/c
-        //        vue reactivity doesn't notice it changed
-        //        https://github.com/TeamFranka/affinity/issues/53
+        const model = this.poll.prepareSave(res.data);
+        await this.store.dispatch("updateModel", model);
       }
     },
     async intendToClose() {

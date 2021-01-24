@@ -1,6 +1,5 @@
-
 import { Parse } from "@/config/Consts";
-import { Model, toModel } from '@/utils/model';
+import { Model, SaveModel, toModel } from '@/utils/model';
 
 export interface GlobalStateT {
   loadingCounter: number;
@@ -133,6 +132,11 @@ export const GlobalState = {
             context.commit("setItems", resp)
           });
       });
+    },
+    async updateModel(context: any, info: SaveModel) {
+      const model = info.toParse();
+      await model.save();
+      context.commit("setItem", toModel(model));
     },
     async fetchModel(context: any, info: any) {
       const { className, objectId, includes } = info;

@@ -1,5 +1,5 @@
 import { Parse, Verb } from "../config/Consts";
-import { Activity, Team } from "../db/models";
+import { Activity } from "../db/models";
 import { Model } from "@/utils/model";
 
 export interface FeedT {

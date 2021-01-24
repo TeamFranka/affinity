@@ -1,4 +1,4 @@
-import { Parse, Activity, Team, Verb } from "../config/Consts";
+import { Parse, Activity, Verb } from "../config/Consts";
 
 const MODEL_KEYS = ['objects', 'team'];
 export interface NewsT {

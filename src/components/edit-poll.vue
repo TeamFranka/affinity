@@ -162,6 +162,7 @@ import {
   addCircleOutline as addIcon,
 } from 'ionicons/icons';
 import { defineComponent } from 'vue';
+import { Model } from '@/utils/model';
 import dayjs from 'dayjs';
 import RichEditor from './rich-editor.vue';
 
@@ -177,7 +178,7 @@ export default defineComponent({
       type: String,
     },
     poll:  {
-      type: Object,
+      type: Model,
       required: true
     },
   },
