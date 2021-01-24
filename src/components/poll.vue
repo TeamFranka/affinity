@@ -95,6 +95,7 @@ import RenderMd from './render-md.vue';
 import EditPoll from './edit-poll.vue';
 import { useStore } from '../stores/';
 import { Poll as PollModel } from '../db/models';
+import { toModel } from '@/utils/model';
 import { Parse } from '../config/Consts';
 import { until, hasPassed } from "../utils/time";
 import { defineComponent } from 'vue';
@@ -182,7 +183,7 @@ export default defineComponent({
                 const { outcome } = data;
                 this.loading = true;
                 const pollItem = await Parse.Cloud.run("vote:close", { id: this.poll.id, outcome });
-                await this.store.commit("setItem", pollItem);
+                await this.store.commit("setItem", toModel(pollItem));
                 this.loading = false;
               },
             },
@@ -210,13 +211,13 @@ export default defineComponent({
         votes[k] = 1
       });
       const pollItem = await Parse.Cloud.run("vote", { id: this.poll.id, votes });
-      await this.store.commit("setItem", pollItem);
+      await this.store.commit("setItem", toModel(pollItem));
       this.loading = false;
     },
     async resetVote() {
       this.loading = true;
       const pollItem = await Parse.Cloud.run("vote:reset", { id: this.poll.id });
-      await this.store.commit("setItem", pollItem);
+      await this.store.commit("setItem", toModel(pollItem));
       this.loading = false;
     }
   },

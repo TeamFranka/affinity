@@ -1,4 +1,5 @@
-import { Parse } from '../config/Consts';
+import { Parse } from '@/config/Consts';
+import { toModel } from '@/utils/model';
 import { watch } from 'vue';
 
 export interface AuthStateT {
@@ -109,30 +110,30 @@ export const AuthState = {
     async like(context: any, params: any) {
       return context.dispatch("afterLogin").then(async () => {
         const obj = await Parse.Cloud.run("like", params);
-        await context.commit("setItem", obj, { root:true });
+        await context.commit("setItem", toModel(obj), { root:true });
       }, (e: string) => console.warn("Aborted liking: ", e))
     },
     async unlike(context: any, params: any) {
       return context.dispatch("afterLogin").then(async () => {
         const obj = await Parse.Cloud.run("unlike", params);
-        await context.commit("setItem", obj, { root:true });
+        await context.commit("setItem", toModel(obj), { root:true });
       }, (e: string) => console.warn("Aborted unliking: ", e))
     },
     async react(context: any, params: any) {
       return context.dispatch("afterLogin").then(async () => {
         const obj = await Parse.Cloud.run("react", params);
-        await context.commit("setItem", obj, { root:true });
+        await context.commit("setItem", toModel(obj), { root:true });
       }, (e: string) => console.warn("Aborted reacting: ", e))
     },
     async unreact(context: any, params: any) {
       return context.dispatch("afterLogin").then(async () => {
         const obj = await Parse.Cloud.run("unreact", params);
-        await context.commit("setItem", obj, { root:true });
+        await context.commit("setItem", toModel(obj), { root:true });
       }, (e: string) => console.warn("Aborted unreacting: ", e))
     },
     async logShared(context: any, params: any) {
       const obj = await Parse.Cloud.run("logShared", params);
-      await context.commit("setItem", obj, { root:true });
+      await context.commit("setItem", toModel(obj), { root:true });
     },
   }
 }

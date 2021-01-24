@@ -35,8 +35,8 @@
         </faq-entry>
       </template>
       <div class="ion-padding ion-text-center" v-if="visibleEntries.length == 0 && !loading && entries.length != 0">
-        <p>
-          <img style="width:45vw" src="../statics/undraw_No_data.svg"/>
+          <p>
+            <img style="width:45vw" src="../statics/undraw_No_data.svg"/>
         </p>
         <ion-note>Nichts gefunden...</ion-note>
         <p>
@@ -56,6 +56,7 @@ import { chatbubbles } from 'ionicons/icons';
 import { defineComponent, computed } from 'vue';
 import { useStore } from '../stores/';
 import { Parse, FaqEntry as FaqModel } from '../db/models';
+import { toModel } from '@/utils/model';
 import InteractionBar from '../components/interaction-bar.vue';
 import EditFaq from '../components/edit-faq.vue';
 import RenderMd from '../components/render-md.vue';
@@ -73,7 +74,7 @@ export default defineComponent({
         store.getters["auth/teamPermissions"][store.getters["defaultTeamId"]]?.canCreateFaqEntry
       ),
       setItem(entry: Parse.Object) {
-        store.commit("setItem", entry);
+        store.commit("setItem", toModel(entry));
       },
       refresh(){ store.dispatch("faq/refresh"); },
       entries: computed(() => store.getters["faq/entries"].map((id: string) => store.getters["objectsMap"][id])),

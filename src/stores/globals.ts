@@ -1,11 +1,12 @@
 
-import { Parse } from "../config/Consts";
+import { Parse } from "@/config/Consts";
+import { Model, toModel } from '@/utils/model';
 
 export interface GlobalStateT {
   loadingCounter: number;
-  defaultTeam: Parse.Object | null;
+  defaultTeam: Model | null;
   defaultTeamId: string;
-  objects: Record<string, Parse.Object>;
+  objects: Record<string, Model>;
   teamsBySlug: Record<string, string>;
   subscriptions: Record<string, any>;
 }
@@ -21,12 +22,12 @@ export const GlobalState = {
   }),
   getters: {
     defaultTeamId(state: GlobalStateT): string {
-      return state.defaultTeam ? state.defaultTeam.id : state.defaultTeamId;
+      return state.defaultTeam?.id || state.defaultTeamId;
     },
-    defaultTeam(state: GlobalStateT): Parse.Object | null {
+    defaultTeam(state: GlobalStateT): any | null {
       return state.defaultTeam;
     },
-    objectsMap(state: GlobalStateT): Record<string, Parse.Object> {
+    objectsMap(state: GlobalStateT): Record<string, any> {
       return state.objects;
     },
     teamsBySlug(state: GlobalStateT) {
@@ -39,19 +40,19 @@ export const GlobalState = {
   mutations: {
     setItems(state: GlobalStateT, items: Array<Parse.Object>) {
       items.forEach((item) => {
-        state.objects[item.id] = item;
-        if (item.className == "Team") {
-          state.teamsBySlug[item.get("slug")] = item.id;
-        }
+        this.setItem(state, toModel(item));
       })
     },
-    setItem(state: GlobalStateT, item: Parse.Object) {
-      state.objects[item.id] = item;
+    setItem(state: GlobalStateT, model: Model) {
+      state.objects[model.id] = model;
+      if (model.className == "Team") {
+        state.teamsBySlug[model.slug] = model.id;
+      }
     },
     setDefaltTeamId(state: GlobalStateT, teamId: string) {
       state.defaultTeamId = teamId;
     },
-    setGlobalTeam(state: GlobalStateT, team: Parse.Object) {
+    setGlobalTeam(state: GlobalStateT, team: Model) {
       state.defaultTeam = team;
       state.defaultTeamId = team.id;
       state.objects[team.id] = team;
