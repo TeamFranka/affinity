@@ -182,7 +182,7 @@ export const Draft = {
     async submit(context: any) {
       const author = context.rootGetters['auth/userPtr'];
       const state =  context.state;
-      const team = state.team || context.rootGetters["defaultTeam"];
+      const team = (state.team || context.rootGetters["defaultTeam"]).toPointer();
       const objects: Parse.Object[] = state.objects.map((p: Parse.Object) => {
         if (p.className == "Picture") {
           const img = p.get("img");
