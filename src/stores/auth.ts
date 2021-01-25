@@ -5,7 +5,7 @@ import { watch } from 'vue';
 export interface AuthStateT {
   wantsToLogin: boolean;
   user: Model | null;
-  teams: Array<Model>;
+  teams: Array<string>;
   teamPermissions: Record<string, any>;
 }
 
@@ -25,26 +25,28 @@ export const AuthState = {
   getters: {
     isLoggedIn: (state: AuthStateT) => !!state.user,
     myId: (state: AuthStateT) => state.user?.objectId,
-    defaultTeam: (state: AuthStateT, rootState: any, rootGetters: any) => rootGetters["defaultTeam"],
+    defaultTeam: (state: AuthStateT, getters: any, rootState: any, rootGetters: any) => rootGetters["defaultTeam"],
     user: (state: AuthStateT) => state.user,
     wantsToLogin: (state: AuthStateT) => state.wantsToLogin,
     userPtr: (state: AuthStateT) => state.user?.toPointer(),
-    myTeams: (state: AuthStateT) => state.teams.filter(x => !!x),
-    teamPointers: (state: AuthStateT, rootState: any, rootGetters: any) => {
+    myTeams: (state: AuthStateT, getters: any, rootState: any,rootGetters: any) => state
+      .teams
+      .map(x => rootGetters.objectsMap[x]),
+    teamPointers: (state: AuthStateT, getters: any, rootState: any, rootGetters: any) => {
       const teams = state.teams.filter(x => !!x)
       if (!teams.length) {
         return [{
           __type: "Pointer",
           className: "Team",
-          id: rootGetters["defaultTeamId"]
+          id: rootGetters.defaultTeamId
         }];
       }
-      return teams.map((x: Model) => x.toPointer());
+      return teams.map((id: string) => ({ __type: "Pointer", className: "Team", id }));
     },
     teamPermissions: (state: AuthStateT) => state.teamPermissions,
     hasManyTeams: (state: AuthStateT) => state.teams.length > 1,
-    postableTeams: (state: AuthStateT) =>  state.teams?.filter(t => t && state.teamPermissions[t.objectId].canPost) || [],
-    adminOfTeams: (state: AuthStateT) =>  state.teams?.filter(t => t && state.teamPermissions[t.objectId].isAdmin) || [],
+    postableTeams: (state: AuthStateT) =>  state.teams?.filter(t => t && state.teamPermissions[t].canPost) || [],
+    adminOfTeams: (state: AuthStateT) =>  state.teams?.filter(t => t && state.teamPermissions[t].isAdmin) || [],
   },
   mutations: {
     setUser(state: AuthStateT, newUser: Model|null) {
@@ -54,7 +56,7 @@ export const AuthState = {
       state.wantsToLogin = wanna;
     },
     setTeams(state: AuthStateT, resp: any) {
-      state.teams = resp.teams.filter((x: any)=>!!x).map(toModel);
+      state.teams = resp.teams.map((x: any) => x.id);
       state.teamPermissions = Object.assign(state.teamPermissions, resp.permissions);
     },
     addPermissions(state: AuthStateT, resp: any) {
@@ -77,8 +79,8 @@ export const AuthState = {
       context.dispatch("dismissLogin");
 
       const resp = await Parse.Cloud.run("myTeams");
-      await context.commit("setTeams", resp);
       await context.commit("setItems", resp.teams, {root: true});
+      await context.commit("setTeams", resp);
       context.dispatch("refreshRoot", null, { root:true });
 
     },

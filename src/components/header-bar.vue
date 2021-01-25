@@ -49,7 +49,7 @@ export default defineComponent({
       isLoggedIn: computed(() => store.getters["auth/isLoggedIn"]),
       openLoginModal: () => store.dispatch('auth/openLogin'),
       user: computed(() => store.state.auth.user),
-      title: computed(() => store.state.global.defaultTeam?.name || "affinity"),
+      title: computed(() => store.getters.defaultTeam?.name || "affinity"),
     }
   },
   methods: {

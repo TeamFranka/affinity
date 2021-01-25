@@ -3,7 +3,6 @@ import { Model, SaveModel, toModel } from '@/utils/model';
 
 export interface GlobalStateT {
   loadingCounter: number;
-  defaultTeam: Model | null;
   defaultTeamId: string;
   objects: Record<string, Model>;
   teamsBySlug: Record<string, string>;
@@ -14,17 +13,16 @@ export const GlobalState = {
   state: () => ({
     loadingCounter: 0,
     objects: {},
-    defaultTeam: null,
     defaultTeamId: (window as any) ? (window as any).AFFINITY_DEFAULT_TEAM : '',
     teamsBySlug: {},
     subscriptions: {}
   }),
   getters: {
     defaultTeamId(state: GlobalStateT): string {
-      return state.defaultTeam?.objectId || state.defaultTeamId;
+      return state.defaultTeamId;
     },
     defaultTeam(state: GlobalStateT): Model | null {
-      return state.defaultTeam;
+      return state.objects[state.defaultTeamId];
     },
     objectsMap(state: GlobalStateT): Record<string, Model> {
       return state.objects;
@@ -47,18 +45,19 @@ export const GlobalState = {
       })
     },
     setItem(state: GlobalStateT, model: Model) {
+      console.log(model);
       state.objects[model.objectId] = model;
       if (model.className == "Team") {
         state.teamsBySlug[model.slug] = model.objectId;
       }
     },
-    setDefaltTeamId(state: GlobalStateT, teamId: string) {
+    setDefaultTeamId(state: GlobalStateT, teamId: string) {
       state.defaultTeamId = teamId;
     },
     setGlobalTeam(state: GlobalStateT, team: Model) {
-      state.defaultTeam = team;
-      state.defaultTeamId = team.objectId;
       state.objects[team.objectId] = team;
+      state.defaultTeamId = team.objectId;
+      state.teamsBySlug[team.slug] = team.objectId;
     },
     setSubscription(state: GlobalStateT, data: any) {
       const { id, sub } = data;
@@ -73,7 +72,7 @@ export const GlobalState = {
   },
   actions: {
     fetchDefaultTeam(context: any, teamId: string) {
-      context.commit("setDefaltTeamId", teamId);
+      context.commit("setDefaultTeamId", teamId);
       context.commit("startLoading");
       (new Parse.Query("Team")).get(teamId).then((resp)=>{
         context.commit("setGlobalTeam", toModel(resp))
@@ -136,6 +135,7 @@ export const GlobalState = {
     async updateModel(context: any, info: SaveModel) {
       const model = info.toParse();
       await model.save();
+      console.log(model);
       context.commit("setItem", toModel(model));
     },
     async fetchModel(context: any, info: any) {

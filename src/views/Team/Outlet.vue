@@ -209,7 +209,7 @@ export default defineComponent({
       await modal.present();
       const res = await modal.onDidDismiss();
       if (res.data) {
-        await this.team.save({"name": res.data.value});
+        await this.setSetting({"name": res.data.value});
       }
     },
     async intendEditInfo() {
@@ -282,9 +282,8 @@ export default defineComponent({
       }
     },
     async setSetting(params: any) {
-      await this.store.dispatch("teams/setSetting", Object.assign({
-        id: this.team.objectId
-      }, params));
+      const model = this.team.prepareSave(params);
+      await this.store.dispatch("updateModel", model);
     },
     selectNewAvatar() {
       takePicture().then(async (img: typeof CameraPhoto) => {
