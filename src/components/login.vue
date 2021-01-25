@@ -65,6 +65,7 @@
           Passwort vergessen
         </ion-button>
         <ion-button
+          data-cy-role="loginSubmit"
           size="normal"
           slot="end"
           fill="outline"

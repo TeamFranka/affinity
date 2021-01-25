@@ -13,12 +13,12 @@
             <ion-icon size="large" color="secondary" :icon="chatIcon" />
             <notification-dot color="danger" slot="end" />
           </router-link>
-          <div @click="openUserPopover" style="position: relative">
+          <div data-cy="userMenu" :data-cy-usernam="user.username" @click="openUserPopover" style="position: relative">
             <avatar  size="45px" :profile="user" />
           </div>
         </template>
 
-        <ion-button fill="clear" v-else @click="openLoginModal">
+        <ion-button data-cy-role="loginModal" fill="clear" v-else @click="openLoginModal">
           <ion-icon :icon="logInIcon"/> Einloggen
         </ion-button>
       </div>

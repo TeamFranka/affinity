@@ -1,5 +1,5 @@
 <template>
-<ion-card>
+<ion-card data-cy-type="activity">
   <ion-card-header>
     <div class="avatar-wrap">
       <router-link v-if="showAuthor" :to="{name: 'ViewUser', params:{userId: author.objectId}}">
@@ -26,7 +26,7 @@
     </div>
   </ion-card-header>
   <div>
-    <div class="ion-padding">
+    <div class="ion-padding" data-cy-role="content">
       <render-md :source="text" />
     </div>
     <div v-for="obj in objects" :key="obj.objectId" class="ion-padding">

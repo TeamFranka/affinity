@@ -23,3 +23,16 @@
 //
 // -- This is will overwrite an existing command --
 // Cypress.Commands.overwrite("visit", (originalFn, url, options) => { ... })
+
+Cypress.Commands.add("loggedInAs", (username) => {
+    cy.visit('/inbox');
+    // cy.get('[data-cy-role=userMenu]').should('not.exist');
+    // cy.get('[data-cy-role=loginModal]').click();
+    cy.get('ion-modal').within(() => {
+        cy.wait(500);
+        cy.get('input[name=username]').type(username, {delay: 100});
+        cy.get('input[name=password]').type(username, {delay: 100});
+        cy.get('ion-button[data-cy-role=loginSubmit]').click();
+    });
+    cy.get('[data-cy-role=loginModal]').contains('Einloggen').should('not.exist')
+})

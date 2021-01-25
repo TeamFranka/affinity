@@ -1,5 +1,5 @@
 <template>
-  <ion-grid class="new-post">
+  <ion-grid class="new-post" data-cy="newPost">
     <ion-row>
       <ion-col size-md="11" size-xs="10">
         <rich-editor
@@ -11,7 +11,7 @@
         <p @click="showOptions = true" v-if="!showOptions">{{visibility}} <span v-if="showTypeSelector">{{selectedType}}</span> <span v-if="showTeamSelector">to <avatar size="1.5em" :profile="selectedTeam" withName /></span><ion-button size="small" fill="clear"><ion-icon :icon="editIcon"/></ion-button></p>
       </ion-col>
       <ion-col size-md="1" class="ion-hide-sm-down">
-        <ion-button @click="submit()" fill="outline" v-bind:disabled="!canSubmit" shape="round" size="small">
+        <ion-button @click="submit()" data-cy-role="submit" fill="outline" v-bind:disabled="!canSubmit" shape="round" size="small">
           <ion-icon :icon="sendIcon"></ion-icon>
         </ion-button>
       </ion-col>
@@ -214,7 +214,7 @@
         </ion-chip>
       </ion-col>
       <ion-col size-xs="2" class="ion-hide-md-up">
-        <ion-button @click="submit()" fill="outline" v-bind:disabled="!canSubmit" shape="round" size="small">
+        <ion-button @click="submit()" data-cy-role="submit" fill="outline" v-bind:disabled="!canSubmit" shape="round" size="small">
           <ion-icon :icon="sendIcon"></ion-icon>
         </ion-button>
       </ion-col>

@@ -16,6 +16,8 @@ $RECYCLE.BIN/
 /backend/.parse.*
 *.local
 *.local.template
+tests/e2e/screenshots
+tests/e2e/videos
 
 
 *.log
