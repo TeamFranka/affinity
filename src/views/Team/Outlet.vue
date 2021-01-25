@@ -12,9 +12,9 @@
               </ion-chip>
             </div>
             <div class="ion-padding">
-              <h1>
+              <h1 data-cy="title">
                 {{team.name}}
-                <ion-button v-if="canEdit" color="light" @click="intendEditTitle" fill="clear">
+                <ion-button data-cy-role="editModal" v-if="canEdit" color="light" @click="intendEditTitle" fill="clear">
                   <ion-icon size="small" :icon="editIcon" />
                 </ion-button>
               </h1>
@@ -25,10 +25,12 @@
                   </ion-button>
                 </li>
               </inline-link-list>
-              <render-md adminMd :source="info" />
-              <ion-button v-if="canEdit" color="light" @click="intendEditInfo" size="small" fill="clear">
-                Edit Text
-              </ion-button>
+              <div data-cy="description">
+                <render-md  adminMd :source="info" />
+                <ion-button data-cy-role="editModal" v-if="canEdit" color="light" @click="intendEditInfo" size="small" fill="clear">
+                  Edit Text
+                </ion-button>
+              </div>
             </div>
             <div class="extra-actions" v-if="canEdit">
               <ion-chip title="remove background" v-if="team.background" @click="removeBackground">
@@ -39,7 +41,14 @@
                 <ion-icon :icon="imageIcon" />
                 <ion-icon :icon="uploadIcon" />
               </ion-chip>
-              <ion-button color="light" @click="intendEditStyles" size="small" fill="clear">
+              <ion-button
+                data-cy-role="edit"
+                data-cy-edit-target="styles"
+                color="light"
+                @click="intendEditStyles"
+                size="small"
+                fill="clear"
+              >
                 Edit Custom Styles
               </ion-button>
             </div>

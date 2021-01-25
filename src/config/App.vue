@@ -1,5 +1,5 @@
 <template>
-  <ion-app :style="teamStyles">
+  <ion-app data-cy="customStyles" :style="teamStyles">
     <ion-progress-bar v-if="loading" color="secondary" type="indeterminate"></ion-progress-bar>
     <header-bar />
     <!-- FIXME: animation is broken -->
