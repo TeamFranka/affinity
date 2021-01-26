@@ -38,7 +38,7 @@ export const AuthState = {
         return [{
           __type: "Pointer",
           className: "Team",
-          id: rootGetters.defaultTeamId
+          objectId: rootGetters.defaultTeamId
         }];
       }
       return teams.map((id: string) => ({ __type: "Pointer", className: "Team", id }));
