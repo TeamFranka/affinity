@@ -12,7 +12,7 @@
     "lint": "vue-cli-service lint",
 
     "ci:run-parse": "cd backend/cloud/ && npm install && cd ../.. && docker-compose up -d && docker-compose logs --tail 10",
-    "ci:setup-db": "npm run dev:db && npm run dev:db:mock-data",
+    "ci:setup-db": "npm run dev:db && npm run dev:db:mock-data && cp .env.development.local.template .env.development.local",
 
     "dev:db": "node -r dotenv/config bin/update-db.js dotenv_config_path=.env.development",
     "dev:db:mock-data": "node -r dotenv/config bin/mock-data.js dotenv_config_path=.env.development with-faq with-posts",
