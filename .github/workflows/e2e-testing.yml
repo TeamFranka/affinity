@@ -28,6 +28,8 @@ jobs:
       - name: Install dependencies
         run: npm install
       # Runs
+      - name: Check docker
+        run: docker ps -a && docker-compose log --tail 10
       - name: Set up DB
         run: npm run dev:db && npm run dev:db:mock-data
       - name: Running e2e with cypress
