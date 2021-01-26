@@ -24,7 +24,7 @@ jobs:
       - name: Setup docker-compose stack
         run: docker-compose pull && docker-compose up -d
       - name: Install ionic
-        run: npm install -g @ionic/cli
+        run: npm install @ionic/cli
       - name: Install dependencies
         run: npm install
       # Runs
