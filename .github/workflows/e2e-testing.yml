@@ -22,7 +22,7 @@ jobs:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v2
       - name: Setup docker-compose stack
-        run: docker-compose pull && docker-compose up -d
+        run: 'npm run ci:run-parse'
       - name: Install ionic
         run: npm install @ionic/cli
       - name: Install dependencies
@@ -31,10 +31,11 @@ jobs:
       - name: Check docker
         run: docker ps -a && docker-compose logs --tail 10
       - name: Set up DB
-        run: npm run dev:db && npm run dev:db:mock-data
+        run: 'npm run ci:setup-db'
       - name: Running e2e with cypress
         uses: cypress-io/github-action@v2
         with:
+          ## FIXME: run this against the locally deployed version?
           start: npm run serve
           # quote the url to be safe against YML parsing surprises
           wait-on: 'http://localhost:8080'
