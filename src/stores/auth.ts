@@ -38,10 +38,10 @@ export const AuthState = {
         return [{
           __type: "Pointer",
           className: "Team",
-          id: rootGetters.defaultTeamId
+          objectId: rootGetters.defaultTeamId
         }];
       }
-      return teams.map((id: string) => ({ __type: "Pointer", className: "Team", id }));
+      return teams.map((objectId: string) => ({ __type: "Pointer", className: "Team", objectId }));
     },
     teamPermissions: (state: AuthStateT) => state.teamPermissions,
     hasManyTeams: (state: AuthStateT) => state.teams.length > 1,

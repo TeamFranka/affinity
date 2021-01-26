@@ -1,5 +1,5 @@
 <template>
-<ion-card data-cy-type="activity">
+<ion-card data-cy-type="activity" :data-cy-verb="activity.verb">
   <ion-card-header>
     <div class="avatar-wrap">
       <router-link v-if="showAuthor" :to="{name: 'ViewUser', params:{userId: author.objectId}}">
@@ -30,10 +30,10 @@
       <render-md :source="text" />
     </div>
     <div v-for="obj in objects" :key="obj.objectId" class="ion-padding">
-      <div v-if="obj.className == 'Poll'">
+      <div v-if="obj.className == 'Poll'" data-cy-obj="poll">
         <poll :poll="obj" />
       </div>
-      <div v-if="obj.className == 'Picture'">
+      <div v-if="obj.className == 'Picture'" data-cy-obj="picture">
         <ion-img :src="obj.file.url" />
       </div>
     </div>
