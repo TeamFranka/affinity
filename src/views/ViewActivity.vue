@@ -2,7 +2,7 @@
   <ion-page>
     <ion-content>
       <div class="wrap">
-        <activity v-if="!loading" startCommentsOpen :activity="activity" :key="activity.id" />
+        <activity v-if="!loading" startCommentsOpen :activity="activity" :key="activity.objectId" />
       </div>
     </ion-content>
   </ion-page>

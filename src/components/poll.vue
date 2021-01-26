@@ -90,11 +90,12 @@ import {
   powerOutline as closeIcon,
   createOutline as editIcon,
 } from 'ionicons/icons';
+import { cloneDeep } from 'lodash';
 
 import RenderMd from './render-md.vue';
 import EditPoll from './edit-poll.vue';
 import { useStore } from '../stores/';
-import { Poll as PollModel } from '../db/models';
+import { toModel } from '@/utils/model';
 import { Parse } from '../config/Consts';
 import { until, hasPassed } from "../utils/time";
 import { defineComponent } from 'vue';
@@ -109,7 +110,7 @@ export default defineComponent({
   },
   props: {
     poll:  {
-      type: Parse.Object,
+      type: Object,
       required: true
     },
   },
@@ -141,7 +142,7 @@ export default defineComponent({
       }
     },
     async editPoll(){
-      const intermedPoll = new PollModel(this.poll.toJSON());
+      const intermedPoll = cloneDeep(this.poll);
       const modal = await modalController
         .create({
           component: EditPoll,
@@ -153,10 +154,8 @@ export default defineComponent({
       await modal.present();
       const res = await modal.onDidDismiss();
       if (res.data) {
-        await this.poll.save(res.data);
-        // FIXME: updates here do not propagate b/c
-        //        vue reactivity doesn't notice it changed
-        //        https://github.com/TeamFranka/affinity/issues/53
+        const model = this.poll.prepareSave(res.data);
+        await this.store.dispatch("updateModel", model);
       }
     },
     async intendToClose() {
@@ -181,8 +180,8 @@ export default defineComponent({
               handler: async (data) => {
                 const { outcome } = data;
                 this.loading = true;
-                const pollItem = await Parse.Cloud.run("vote:close", { id: this.poll.id, outcome });
-                await this.store.commit("setItem", pollItem);
+                const pollItem = await Parse.Cloud.run("vote:close", { id: this.poll.objectId, outcome });
+                await this.store.commit("setItem", toModel(pollItem));
                 this.loading = false;
               },
             },
@@ -191,9 +190,9 @@ export default defineComponent({
       return alert.present();
     },
     calcResult(index: number): number {
-      const votersCount = (this.poll.get("hasVoted") || []).length;
+      const votersCount = (this.poll.hasVoted || []).length;
       if (votersCount === 0) { return 0 }
-      return ((this.poll.get("votes") || {})[index] || []).length / votersCount;
+      return ((this.poll.votes || {})[index] || []).length / votersCount;
     },
     hasVotedFor(index: number): boolean {
       if (!this.hasVoted) {
@@ -201,7 +200,7 @@ export default defineComponent({
       }
       const userId = this.store.getters["auth/myId"];
       // FIXME: add anonymous votes;
-      return !!((this.poll.get("votes") || {})[index] || []).find((x: any) => x.userId == userId)
+      return !!((this.poll.votes || {})[index] || []).find((x: any) => x.userId == userId)
     },
     async submit() {
       this.loading = true;
@@ -209,20 +208,20 @@ export default defineComponent({
       this.selected.forEach((k) => {
         votes[k] = 1
       });
-      const pollItem = await Parse.Cloud.run("vote", { id: this.poll.id, votes });
-      await this.store.commit("setItem", pollItem);
+      const pollItem = await Parse.Cloud.run("vote", { id: this.poll.objectId, votes });
+      await this.store.commit("setItem", toModel(pollItem));
       this.loading = false;
     },
     async resetVote() {
       this.loading = true;
-      const pollItem = await Parse.Cloud.run("vote:reset", { id: this.poll.id });
-      await this.store.commit("setItem", pollItem);
+      const pollItem = await Parse.Cloud.run("vote:reset", { id: this.poll.objectId });
+      await this.store.commit("setItem", toModel(pollItem));
       this.loading = false;
     }
   },
   computed: {
     canEdit(): boolean {
-      if (!this.poll.id) {
+      if (!this.poll.objectId) {
         return false;
       }
       if (this.isClosed) {
@@ -230,31 +229,31 @@ export default defineComponent({
       }
 
       // FIXME: use poll.canEdit here instead...
-      if ((this.poll.get("hasVoted") || []).length == 0) {
+      if ((this.poll.hasVoted || []).length == 0) {
         // only for as long as no one" has voted.
-        const teamId = this.poll.get("team").id;
+        const teamId = this.poll.team.objectId;
         const teamPerms = this.store.getters["auth/teamPermissions"][teamId];
         if (teamPerms && teamPerms.isAdmin) {
           return true;
         }
         const userId = this.store.getters["auth/myId"];
         if (!userId) {
-          return this.poll.get("author").id === userId;
+          return this.poll.author.objectId === userId;
         }
       }
       return false
     },
     canClose(): boolean {
-      if (!this.poll.id) {
+      if (!this.poll.objectId) {
         return false;
       }
-      if (this.poll.get("closedAt")) {
+      if (this.poll.closedAt) {
         return false
       }
       const userId = this.store.getters["auth/myId"];
       if (!userId)  { return false }
 
-      if (this.poll.get("author").id === userId){
+      if (this.poll.author.objectId === userId){
         return true
       } else {
         return false
@@ -265,7 +264,7 @@ export default defineComponent({
         return true
       }
 
-      if (!this.poll.get('showResults')) {
+      if (!this.poll.showResults) {
         return false
       }
       return this.hasVoted || (this.canShowResults && this.wantsToShowResult)
@@ -275,43 +274,43 @@ export default defineComponent({
         return false
       }
 
-      return (this.poll.get("hasVoted") || []).indexOf(this.store.getters["auth/myId"]) !== -1
+      return (this.poll.hasVoted || []).indexOf(this.store.getters["auth/myId"]) !== -1
     },
     votedCount(): number  {
-      return (this.poll.get("hasVoted") || "").length
+      return (this.poll.hasVoted || "").length
     },
     isClosed(): boolean {
-      return !!this.poll.get("closedAt") || this.poll.get("closesAt") && hasPassed(this.poll.get("closesAt"))
+      return !!this.poll.closedAt || this.poll.closesAt && hasPassed(this.poll.closesAt)
     },
     willClose(): boolean  {
-      return !!this.poll.get("closesAt")
+      return !!this.poll.closesAt
     },
     closesAt(): string {
-      return until(this.poll.get("closesAt"))
+      return until(this.poll.closesAt)
     },
     isAnonymous(): boolean {
-      return this.poll.get("isAnonymous");
+      return this.poll.isAnonymous;
     },
     canReset(): boolean {
-      return (!this.isClosed && !this.poll.get("isAnonymous") && this.poll.get("allowChange"))
+      return (!this.isClosed && !this.poll.isAnonymous && this.poll.allowChange)
     },
     title(): string {
-      return this.poll.get('title')
+      return this.poll.title
     },
     text(): string {
-      return this.poll.get('text')
+      return this.poll.text
     },
     outcome(): string {
-      return this.poll.get('outcome')
+      return this.poll.outcome
     },
     canMultiselect(): boolean {
-      return this.poll.get('isMultiselect')
+      return this.poll.isMultiselect
     },
     options(): Array<any> {
-      return this.poll.get('options')
+      return this.poll.options
     },
     canShowResults(): boolean {
-      return !this.isClosed && (this.poll.get('showResults') && this.poll.get("showsResultsWithoutVote"))
+      return !this.isClosed && (this.poll.showResults && this.poll.showsResultsWithoutVote)
     },
     canSubmit(): boolean {
       return !this.isClosed && this.selected.length > 0

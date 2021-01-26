@@ -21,12 +21,12 @@
       <template v-if="!loading && entries.length">
         <faq-entry
           v-for="e in visibleEntries"
-          :title="e.get('title')"
-          :key="e.id"
-          :tags="e.get('tags')"
+          :title="e.title"
+          :key="e.objectId"
+          :tags="e.tags"
           @tag-selected="searchValue = $event"
         >
-          <render-md admin :source="e.get('text')" />
+          <render-md admin :source="e.text" />
           <interaction-bar :object="e" link="">
             <template v-slot:extraButtons>
               <ion-button @click="intendToEdit(e)" fill="clear">Editieren</ion-button>
@@ -35,8 +35,8 @@
         </faq-entry>
       </template>
       <div class="ion-padding ion-text-center" v-if="visibleEntries.length == 0 && !loading && entries.length != 0">
-        <p>
-          <img style="width:45vw" src="../statics/undraw_No_data.svg"/>
+          <p>
+            <img style="width:45vw" src="../statics/undraw_No_data.svg"/>
         </p>
         <ion-note>Nichts gefunden...</ion-note>
         <p>
@@ -56,6 +56,7 @@ import { chatbubbles } from 'ionicons/icons';
 import { defineComponent, computed } from 'vue';
 import { useStore } from '../stores/';
 import { Parse, FaqEntry as FaqModel } from '../db/models';
+import { Model } from '@/utils/model';
 import InteractionBar from '../components/interaction-bar.vue';
 import EditFaq from '../components/edit-faq.vue';
 import RenderMd from '../components/render-md.vue';
@@ -72,9 +73,6 @@ export default defineComponent({
       canCreate: computed(() =>
         store.getters["auth/teamPermissions"][store.getters["defaultTeamId"]]?.canCreateFaqEntry
       ),
-      setItem(entry: Parse.Object) {
-        store.commit("setItem", entry);
-      },
       refresh(){ store.dispatch("faq/refresh"); },
       entries: computed(() => store.getters["faq/entries"].map((id: string) => store.getters["objectsMap"][id])),
     }
@@ -92,8 +90,8 @@ export default defineComponent({
 
       const keys = this.searchValue.split(" ");
 
-      return this.entries.filter((e: Parse.Object) => {
-        const allText = (e.get("tags") || []).join(" ").concat(e.get("title")).concat(e.get("text"));
+      return this.entries.filter((e: Model) => {
+        const allText = (e.tags || []).join(" ").concat(e.title).concat(e.text);
         for (let i = 0;i < keys.length; i++) {
           if (allText.indexOf(keys[i]) === -1) {
             return false
@@ -109,10 +107,10 @@ export default defineComponent({
         team: this.team
       }), "Erstellen");
     },
-    async intendToEdit(entry: Parse.Object) {
+    async intendToEdit(entry: Model) {
       await this.editModal(entry, "Save");
     },
-    async editModal(entry: Parse.Object, saveLabel: string): Promise<any> {
+    async editModal(entry: Model, saveLabel: string): Promise<any> {
       const modal = await modalController
         .create({
           component: EditFaq,

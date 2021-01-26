@@ -1,8 +1,8 @@
 <template>
-<ion-card>
+<ion-card data-cy-type="activity">
   <ion-card-header>
     <div class="avatar-wrap">
-      <router-link v-if="showAuthor" :to="{name: 'ViewUser', params:{userId: author.id}}">
+      <router-link v-if="showAuthor" :to="{name: 'ViewUser', params:{userId: author.objectId}}">
         <avatar :profile="author" />
       </router-link>
       <router-link
@@ -26,15 +26,15 @@
     </div>
   </ion-card-header>
   <div>
-    <div class="ion-padding">
+    <div class="ion-padding" data-cy-role="content">
       <render-md :source="text" />
     </div>
-    <div v-for="obj in objects" :key="obj.id" class="ion-padding">
+    <div v-for="obj in objects" :key="obj.objectId" class="ion-padding">
       <div v-if="obj.className == 'Poll'">
         <poll :poll="obj" />
       </div>
       <div v-if="obj.className == 'Picture'">
-        <ion-img :src="obj.get('file').url()" />
+        <ion-img :src="obj.file.url" />
       </div>
     </div>
   </div>
@@ -55,12 +55,13 @@ import { useStore } from '../stores/';
 import { defineComponent, computed } from 'vue';
 import { Parse } from "../config/Consts";
 import { since } from "../utils/time";
+import { Model } from '@/utils/model';
 
 export default defineComponent({
   name: 'Activity',
   props: {
     activity: {
-      type: Parse.Object,
+      type: Model,
       required: true
     },
     showTeam: Boolean,
@@ -86,53 +87,45 @@ export default defineComponent({
   },
   computed: {
     link(): string {
-      return '/a/' + this.activity.id
+      return '/a/' + this.activity.objectId
     },
-    team(): Parse.Object {
-      const team = this.activity.get("team");
-      if (team.isDataAvailable()) {
-        return team;
-      }
-      return this.objs[team.id]
+    team(): Model {
+      return this.objs[this.activity.team.objectId];
     },
     teamName(): string {
-      return this.team.get("name")
+      return this.team.name
     },
     teamLink(): string {
-      return '/t/' + this.team.get("slug")
+      return '/t/' + this.team.slug
     },
     showAuthor(): boolean {
-      if (this.activity.get("verb") == "announce") {
+      if (this.activity.verb == "announce") {
         // announcement show the team as author
         return false
       }
       return true
     },
-    author(): Parse.Object {
-      const author = this.activity.get("author");
-      if (author.isDataAvailable()) {
-        return author;
-      }
-      return this.objs[author.id]
+    author(): Model {
+      return this.objs[this.activity.author.objectId]
     },
     since(): string {
-      return since(this.activity.get("createdAt"))
+      return since(this.activity.createdAt)
     },
     text(): string {
-        return this.activity.get("text") || ""
+        return this.activity.text || ""
     },
-    objects(): Parse.Object[] {
-      return (this.activity.get("objects") || []).map(
-            (o: Parse.Object) => this.objs[o.id])
+    objects(): Model[] {
+      return (this.activity.objects || []).map(
+            (o: Model) => this.objs[o.objectId])
     },
     pointer(): Parse.Pointer {
       return this.activity.toPointer()
     },
     authorName(): string {
       const author = this.author;
-      return author ? (author.get("name") || author.get("username")) : "(hidden)"
+      return author ? (author.name || author.username) : "(hidden)"
     },
-    interactivityObject(): Parse.Object {
+    interactivityObject(): Model {
       if (this.objects.length == 1) {
         return this.objects[0]
       }
@@ -150,13 +143,12 @@ export default defineComponent({
     },
     setDraft(text: string) {
       this.store.commit("comments/setDraft", {
-        objectId: this.activity.id,
+        objectId: this.activity.objectId,
         text
       });
     },
     submitComment(){
       const text = this.comment;
-      console.log("submitting", text);
       this.store.dispatch("comments/submitDraft", {
         ptr: this.activity.toPointer(),
         text

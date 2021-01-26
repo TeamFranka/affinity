@@ -1,11 +1,10 @@
-
-import { Parse } from "../config/Consts";
+import { Parse } from "@/config/Consts";
+import { Model, SaveModel, toModel } from '@/utils/model';
 
 export interface GlobalStateT {
   loadingCounter: number;
-  defaultTeam: Parse.Object | null;
   defaultTeamId: string;
-  objects: Record<string, Parse.Object>;
+  objects: Record<string, Model>;
   teamsBySlug: Record<string, string>;
   subscriptions: Record<string, any>;
 }
@@ -14,19 +13,18 @@ export const GlobalState = {
   state: () => ({
     loadingCounter: 0,
     objects: {},
-    defaultTeam: null,
     defaultTeamId: (window as any) ? (window as any).AFFINITY_DEFAULT_TEAM : '',
     teamsBySlug: {},
     subscriptions: {}
   }),
   getters: {
     defaultTeamId(state: GlobalStateT): string {
-      return state.defaultTeam ? state.defaultTeam.id : state.defaultTeamId;
+      return state.defaultTeamId;
     },
-    defaultTeam(state: GlobalStateT): Parse.Object | null {
-      return state.defaultTeam;
+    defaultTeam(state: GlobalStateT): Model | null {
+      return state.objects[state.defaultTeamId];
     },
-    objectsMap(state: GlobalStateT): Record<string, Parse.Object> {
+    objectsMap(state: GlobalStateT): Record<string, Model> {
       return state.objects;
     },
     teamsBySlug(state: GlobalStateT) {
@@ -37,24 +35,29 @@ export const GlobalState = {
     }
   },
   mutations: {
-    setItems(state: GlobalStateT, items: Array<Parse.Object>) {
+    setItems(state: GlobalStateT, items: Array<Parse.Object|Model>) {
       items.forEach((item) => {
-        state.objects[item.id] = item;
-        if (item.className == "Team") {
-          state.teamsBySlug[item.get("slug")] = item.id;
+        const model: Model = item instanceof Model ? item : toModel(item);
+        state.objects[model.objectId] = model;
+        if (model.className == "Team") {
+          state.teamsBySlug[model.slug] = model.objectId;
         }
       })
     },
-    setItem(state: GlobalStateT, item: Parse.Object) {
-      state.objects[item.id] = item;
+    setItem(state: GlobalStateT, model: Model) {
+      console.log(model);
+      state.objects[model.objectId] = model;
+      if (model.className == "Team") {
+        state.teamsBySlug[model.slug] = model.objectId;
+      }
     },
-    setDefaltTeamId(state: GlobalStateT, teamId: string) {
+    setDefaultTeamId(state: GlobalStateT, teamId: string) {
       state.defaultTeamId = teamId;
     },
-    setGlobalTeam(state: GlobalStateT, team: Parse.Object) {
-      state.defaultTeam = team;
-      state.defaultTeamId = team.id;
-      state.objects[team.id] = team;
+    setGlobalTeam(state: GlobalStateT, team: Model) {
+      state.objects[team.objectId] = team;
+      state.defaultTeamId = team.objectId;
+      state.teamsBySlug[team.slug] = team.objectId;
     },
     setSubscription(state: GlobalStateT, data: any) {
       const { id, sub } = data;
@@ -69,11 +72,10 @@ export const GlobalState = {
   },
   actions: {
     fetchDefaultTeam(context: any, teamId: string) {
-      context.commit("setDefaltTeamId", teamId);
+      context.commit("setDefaultTeamId", teamId);
       context.commit("startLoading");
-      console.log("fetching  team", teamId);
       (new Parse.Query("Team")).get(teamId).then((resp)=>{
-        context.commit("setGlobalTeam", resp)
+        context.commit("setGlobalTeam", toModel(resp))
         context.commit("doneLoading");
       }, (err)=> {
         console.error("fetching default team failed", err);
@@ -94,17 +96,18 @@ export const GlobalState = {
     },
     addItems(context: any, inp: any) {
       const { items, key, keys } = inp;
-      const found: Array<Parse.Object> = [];
+      const found: Array<Parse.Object|Model> = [];
       const toLookUp: Record<string, Array<string>> = {};
-      const sort = (m: Parse.Object) => {
+      const sort = (p: Parse.Object) => {
+        const m = toModel(p);
         if (m.isDataAvailable()) {
             found.push(m);
         } else {
-          if (!context.state.objecsts[m.id]?.isDataAvailable()) {
+          if (!context.state.objects[m.objectId]?.isDataAvailable()) {
             if (!toLookUp[m.className]) {
-              toLookUp[m.className] = [m.id];
+              toLookUp[m.className] = [m.objectId];
             } else {
-              toLookUp[m.className].push(m.id);
+              toLookUp[m.className].push(m.objectId);
             }
           }
         }
@@ -120,13 +123,20 @@ export const GlobalState = {
         context.commit("setItems", found)
       }
 
-      console.log("Updating", toLookUp);
       Object.keys(toLookUp).forEach((k) => {
-        (new Parse.Query(k)).containedIn("id", toLookUp[k]).find().then((resp) => {
-          console.log("received results for ", k, resp);
-          context.commit("setItems", resp)
-        });
+        (new Parse.Query(k))
+          .containedIn("id", toLookUp[k])
+          .find()
+          .then((resp) => {
+            context.commit("setItems", resp)
+          });
       });
+    },
+    async updateModel(context: any, info: SaveModel) {
+      const model = info.toParse();
+      await model.save();
+      console.log(model);
+      context.commit("setItem", toModel(model));
     },
     async fetchModel(context: any, info: any) {
       const { className, objectId, includes } = info;

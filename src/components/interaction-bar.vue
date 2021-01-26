@@ -2,20 +2,20 @@
   <div class="ion-padding-top ion-padding-start">
     <ion-chip @click="toggleComments()" outline :color="showComments ? 'dark':'light'">
       <ion-icon :icon="commentsIcon" size="small" />
-      <ion-label>{{object.get("commentsCount")}}</ion-label>
+      <ion-label>{{object.commentsCount}}</ion-label>
     </ion-chip>
     <ion-chip outline color="light">
       <share-button
         :link="fullLink"
         :pointer="pointer"
-        :counter="object.get('sharesCount') || 0"
+        :counter="object.sharesCount || 0"
       />
     </ion-chip>
     <ion-chip outline :color="likedColor">
       <like-button
         :has-liked="hasLiked"
         :pointer="pointer"
-        :counter="object.get('likesCount') || 0"
+        :counter="object.likesCount || 0"
       />
     </ion-chip>
     <reactions :item="object" />
@@ -56,13 +56,13 @@ import Reactions from "./reactions.vue";
 import Comment from "./comment.vue";
 import { useStore } from '../stores/';
 import { defineComponent, computed } from 'vue';
-import { Parse } from "../config/Consts";
+import { Model } from "@/utils/model";
 
 export default defineComponent({
   name: 'Activity',
   props: {
     object: {
-      type: Parse.Object,
+      type: Model,
       required: true
     },
     link: {
@@ -95,27 +95,27 @@ export default defineComponent({
     },
     hasLiked(): boolean {
       if (!this.store.getters["auth/isLoggedIn"]) return false;
-      return (this.object.get("likedBy") || []).indexOf(this.store.getters["auth/myId"]) !== -1;
+      return (this.object.likedBy || []).indexOf(this.store.getters["auth/myId"]) !== -1;
     },
     pointer(): Parse.Pointer {
       return this.object.toPointer()
     },
     draft(): string {
-      const d = this.store.state.comments.drafts[this.object.id];
+      const d = this.store.state.comments.drafts[this.object.objectId];
       if (d) {
         return d[""]
       }
       return ""
     },
     commentsLoading(): boolean {
-      const s = this.store.state.comments.comments[this.object.id];
+      const s = this.store.state.comments.comments[this.object.objectId];
       if (s) {
         return s.loading
       }
       return false
     },
     comments(): Array<any> {
-      const s = this.store.state.comments.comments[this.object.id];
+      const s = this.store.state.comments.comments[this.object.objectId];
       if (s) {
         return s.comments
       }
@@ -136,7 +136,7 @@ export default defineComponent({
     },
     setDraft(text: string) {
       this.store.commit("comments/setDraft", {
-        objectId: this.object.id,
+        objectId: this.object.objectId,
         text
       });
     },

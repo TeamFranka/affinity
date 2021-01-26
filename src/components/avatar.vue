@@ -17,14 +17,13 @@
 import {
   IonAvatar,
 } from '@ionic/vue';
-import Parse from "parse";
 import { defineComponent } from 'vue';
 
 export default defineComponent({
   name: 'Avatar',
   props: {
     profile: {
-      type: Parse.Object,
+      type: Object,
       required: true
     },
     size: {
@@ -39,14 +38,14 @@ export default defineComponent({
   },
   computed: {
     avatarUrl(): string | null {
-      const avatar = this.profile && this.profile.get("avatar");
+      const avatar = this.profile && this.profile.avatar;
       if (avatar) {
-        return avatar.url()
+        return avatar.url
       }
       return null;
     },
     shownName(): string {
-      return this.name || this.profile.get("name") || this.profile.get("username") || this.profile.get("slug") || this.profile.id;
+      return this.name || this.profile.name || this.profile.username || this.profile.slug || this.profile.objectId || "";
     },
     iconStyles(): any {
       if (this.size) {

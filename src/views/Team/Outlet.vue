@@ -12,9 +12,9 @@
               </ion-chip>
             </div>
             <div class="ion-padding">
-              <h1>
-                {{team.get('name')}}
-                <ion-button v-if="canEdit" color="light" @click="intendEditTitle" fill="clear">
+              <h1 data-cy="title">
+                {{team.name}}
+                <ion-button data-cy-role="editModal" v-if="canEdit" color="light" @click="intendEditTitle" fill="clear">
                   <ion-icon size="small" :icon="editIcon" />
                 </ion-button>
               </h1>
@@ -25,13 +25,15 @@
                   </ion-button>
                 </li>
               </inline-link-list>
-              <render-md adminMd :source="info" />
-              <ion-button v-if="canEdit" color="light" @click="intendEditInfo" size="small" fill="clear">
-                Edit Text
-              </ion-button>
+              <div data-cy="description">
+                <render-md  adminMd :source="info" />
+                <ion-button data-cy-role="editModal" v-if="canEdit" color="light" @click="intendEditInfo" size="small" fill="clear">
+                  Edit Text
+                </ion-button>
+              </div>
             </div>
             <div class="extra-actions" v-if="canEdit">
-              <ion-chip title="remove background" v-if="team.get('background')" @click="removeBackground">
+              <ion-chip title="remove background" v-if="team.background" @click="removeBackground">
                 <ion-icon :icon="imageIcon" />
                 <ion-icon  :icon="trashIcon" />
               </ion-chip>
@@ -39,7 +41,14 @@
                 <ion-icon :icon="imageIcon" />
                 <ion-icon :icon="uploadIcon" />
               </ion-chip>
-              <ion-button color="light" @click="intendEditStyles" size="small" fill="clear">
+              <ion-button
+                data-cy-role="edit"
+                data-cy-edit-target="styles"
+                color="light"
+                @click="intendEditStyles"
+                size="small"
+                fill="clear"
+              >
                 Edit Custom Styles
               </ion-button>
             </div>
@@ -69,7 +78,7 @@
             </ul>
           </div>
           <div>
-            <activity v-for="activity in feed" :activity="activity" :key="activity.id" />
+            <activity v-for="activity in feed" :activity="activity" :key="activity.objectId" />
           </div>
         </template>
       </div>
@@ -102,6 +111,7 @@ import { useStore } from '@/stores/';
 import { useRoute } from 'vue-router';
 import Parse from 'parse';
 import { takePicture, CameraPhoto } from '@/utils/camera';
+import { Model } from '@/utils/model';
 
 const DEFAULT_STYLES = {
   "background": "transparent",
@@ -141,38 +151,38 @@ export default defineComponent({
     }
   },
   computed: {
-    feed(): Parse.Object[] {
+    feed(): Model[] {
       if (!this.team) {
         return []
       }
-      const teamId = this.team.id;
+      const teamId = this.team.objectId;
       return this.store.state.teams.news[teamId]
         .map((id: string) => this.store.getters["objectsMap"][id])
     },
     info(): string {
-      return this.team.get('info') || ""
+      return this.team.info || ""
     },
     socialLinks(): any[] {
-      return this.team.get("socialLinks") || []
+      return this.team.socialLinks || []
     },
     footerLinks(): any[] {
-      return this.team.get("footerLinks") || []
+      return this.team.footerLinks || []
     },
     permissions(): any {
-      return this.store.getters["auth/teamPermissions"][this.team.id] || {};
+      return this.store.getters["auth/teamPermissions"][this.team.objectId] || {};
     },
     canEdit(): boolean {
       return this.permissions.isAdmin
     },
     logo(): string | null {
-      return (this.team && this.team.get("avatar")) ? this.team.get("avatar").url() : null
+      return (this.team && this.team.avatar) ? this.team.avatar.url : null
     },
     teamStyle(): any {
-      const customStyles = this.team.get('customStyles');
+      const customStyles = this.team.customStyles;
       const extraStyles: any = {};
-      const backgroundImage =  this.team.get("background");
+      const backgroundImage =  this.team.background;
       if (backgroundImage) {
-        extraStyles.backgroundImage = `url(${backgroundImage.url()})`;
+        extraStyles.backgroundImage = `url(${backgroundImage.url})`;
         extraStyles.backgroundSize = "cover";
       }
       return [DEFAULT_STYLES, customStyles, extraStyles];
@@ -190,7 +200,7 @@ export default defineComponent({
         .create({
           component: GenericEditorModal,
           componentProps: {
-            value: this.team.get('name') || '',
+            value: this.team.name || '',
             type: "text",
             title: "Team Name",
             saveLabel: "Speichern",
@@ -199,7 +209,7 @@ export default defineComponent({
       await modal.present();
       const res = await modal.onDidDismiss();
       if (res.data) {
-        await this.team.save({"name": res.data.value});
+        await this.setSetting({"name": res.data.value});
       }
     },
     async intendEditInfo() {
@@ -207,7 +217,7 @@ export default defineComponent({
         .create({
           component: GenericEditorModal,
           componentProps: {
-            value: this.team.get('info') || '',
+            value: this.team.info || '',
             type: "richtext",
             isAdminMd: true,
             title: "Team Info",
@@ -225,7 +235,7 @@ export default defineComponent({
         .create({
           component: GenericEditorModal,
           componentProps: {
-            value: this.team.get('customStyles'),
+            value: this.team.customStyles,
             type: "textarea",
             help: "Hier kannst du die globalen css-Style-Variablen des Theme überschreiben. Siehe dazu [den Ionic Theming Guide](https://ionicframework.com/docs/theming/css-variables) und den [praktischen Color Generator](https://ionicframework.com/docs/theming/color-generator)",
             title: "Eigene Styles",
@@ -272,13 +282,12 @@ export default defineComponent({
       }
     },
     async setSetting(params: any) {
-      await this.store.dispatch("teams/setSetting", Object.assign({
-        id: this.team.id
-      }, params));
+      const model = this.team.prepareSave(params);
+      await this.store.dispatch("updateModel", model);
     },
     selectNewAvatar() {
       takePicture().then(async (img: typeof CameraPhoto) => {
-        const file = new Parse.File(this.team.get("slug") +"_avatar", {uri: img.dataUrl}, "image/" + img.format);
+        const file = new Parse.File(this.team.slug +"_avatar", {uri: img.dataUrl}, "image/" + img.format);
         await file.save();
         await this.setSetting({avatar: file});
       });
@@ -306,7 +315,7 @@ export default defineComponent({
     },
     selectBackground() {
       takePicture().then(async (img: typeof CameraPhoto) => {
-        const file = new Parse.File(this.team.get("slug") + "_background", {uri: img.dataUrl}, "image/" + img.format);
+        const file = new Parse.File(this.team.slug + "_background", {uri: img.dataUrl}, "image/" + img.format);
         await file.save();
         await this.setSetting({background: file});
       });

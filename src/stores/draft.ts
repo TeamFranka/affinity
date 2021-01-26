@@ -37,7 +37,7 @@ export const Draft = {
       return state.objects;
     },
     selectedTeamId(state: DraftT, getters: any): string {
-      return getters.selectedTeam.id
+      return getters.selectedTeam.objectId
     },
     selectedTeamPerms(state: DraftT, getters: any, rootState: any): any {
       return rootState.auth.teamPermissions[getters.selectedTeamId]
@@ -182,7 +182,7 @@ export const Draft = {
     async submit(context: any) {
       const author = context.rootGetters['auth/userPtr'];
       const state =  context.state;
-      const team = state.team || context.rootGetters["defaultTeam"];
+      const team = (state.team || context.rootGetters["defaultTeam"]).toPointer();
       const objects: Parse.Object[] = state.objects.map((p: Parse.Object) => {
         if (p.className == "Picture") {
           const img = p.get("img");

@@ -132,7 +132,6 @@ export const Inbox = {
         .include(keys)
         .descending("createdAt");
       const feed = await query.find();
-      console.log("found notifications feed:", feed);
 
       await context.dispatch("addItems", {keys, items: feed}, { root: true });
       context.dispatch("subscribe", {
@@ -146,7 +145,6 @@ export const Inbox = {
         .include(keys)
         .descending("updatedAt");
       const feed = await query.find();
-      console.log("found conversations feed:", feed);
 
       await context.dispatch("addItems", {keys, items: feed}, { root: true });
       context.dispatch("subscribe", {

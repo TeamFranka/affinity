@@ -77,8 +77,7 @@ export default defineComponent({
     IonButton,
   },
   setup(props) {
-    const chatIcon = props.config.get("buttonIcon") || "chatbubbles";
-    console.log("chatIcon", chatIcon);
+    const chatIcon = props.config.buttonIcon || "chatbubbles";
     return {
       chatbubbles, logoFacebook, logoTwitter, logoInstagram, logoWhatsapp,
       logoTelegram: paperPlaneOutline, chatIcon,
@@ -97,7 +96,7 @@ export default defineComponent({
   },
   computed: {
     community(): any {
-        return this.config.get("team");
+        return this.config.team;
     },
   },
   mounted() {
@@ -126,7 +125,7 @@ export default defineComponent({
     // install.save(null, {
     //   success: (install: any) => {
     //     // Execute any logic that should take place after the object is saved.
-    //     console.log('New object created with objectId: ' + install.id);
+    //     console.log('New object created with objectId: ' + install.objectId);
     //   },
     //   error: (install: any, error: any) => {
     //     // Execute any logic that should take place if the save fails.

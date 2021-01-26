@@ -44,11 +44,6 @@ export const Teams = {
         teamId: team.objectId,
         news: news.map((a) => a.id)
       });
-    },
-    async setSetting(context: any, params: any) {
-      const team = context.rootGetters.objectsMap[params.id]
-      delete params.id
-      await team.save(params);
     }
   },
 };

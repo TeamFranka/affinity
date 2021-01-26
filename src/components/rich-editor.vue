@@ -15,6 +15,7 @@
     class="ion-padding-bottom"
     :data-placeholder="placeholder"
     ref="content"
+    data-cy="richEditor"
     contenteditable="true"
     @input="oninput"
     @keydown="onkeydown"

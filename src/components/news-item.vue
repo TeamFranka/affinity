@@ -31,13 +31,13 @@
         icon-size="large"
         :link="fullLink"
         :pointer="pointer"
-        :counter="interactivityObject.get('sharesCount') || 0"
+        :counter="interactivityObject.sharesCount || 0"
       />
     </div>
     <div class="interaction">
       <router-link :to="link">
         <ion-icon :icon="commentsIcon" size="large" />
-        <ion-label>{{interactivityObject.get("commentsCount") || 0}}</ion-label>
+        <ion-label>{{interactivityObject.commentsCount || 0}}</ion-label>
       </router-link>
     </div>
     <div class="interaction">
@@ -45,7 +45,7 @@
           icon-size="large"
           :has-liked="hasLiked"
           :pointer="pointer"
-          :counter="interactivityObject.get('likesCount') || 0"
+          :counter="interactivityObject.likesCount || 0"
       />
     </div>
   </div>
@@ -66,13 +66,14 @@ import { defineComponent, computed } from 'vue';
 import { useStore } from '../stores/';
 import RenderMd from './render-md.vue';
 import Reactions from './reactions.vue';
+import { Model } from '@/utils/model';
 
 export default defineComponent({
   name: 'NewsItem',
   emits: ['next'],
   props: {
-    item: {
-      type: Parse.Object,
+    itemId: {
+      type: String,
       required: true
     },
     zIndex:{
@@ -83,67 +84,64 @@ export default defineComponent({
     IonLabel, IonIcon, IonCard, IonImg,
     Avatar, ShareButton, Reactions, LikeButton, Poll, RenderMd
   },
-  setup() {
+  setup(props: { itemId:  string }) {
     const store = useStore();
     return {
+      item: computed(() => store.getters.objectsMap[props.itemId]),
       objs: computed(() => store.getters.objectsMap),
       store, commentsIcon, likeIcon
     }
   },
   computed: {
     link(): string {
-      return '/a/' + this.item.id
+      return '/a/' + this.item.objectId
     },
     fullLink(): string {
       return process.env.BASE_URL + this.link;
     },
     hasLiked(): boolean {
       if (!this.store.getters["auth/isLoggedIn"]) return false;
-      return (this.item.get("likedBy") || []).indexOf(this.store.getters["auth/myId"]) !== -1;
+      return (this.item.likedBy || []).indexOf(this.store.getters["auth/myId"]) !== -1;
     },
-    team(): Parse.Object {
-      const team = this.item.get("team");
-      if (team.isDataAvailable()) {
-        return team;
-      }
-      return this.objs[team.id]
+    team(): Model {
+      return this.objs[this.item.team.objectId]
     },
     teamName(): string {
-      return this.team.get("name")
+      return this.team.name
     },
     teamLink(): string {
-      return '/t/' + this.team.get("slug")
+      return '/t/' + this.team.slug
     },
     since(): string {
-      return since(this.item.get("createdAt"))
+      return since(this.item.createdAt)
     },
     text(): string {
-        return this.item.get("text") || ""
+        return this.item.text || ""
     },
-    objects(): Parse.Object[] {
-      return (this.item.get("objects") || []).map(
-            (o: Parse.Object) => this.objs[o.id])
+    objects(): Model[] {
+      return (this.item.objects || []).map(
+            (o: Model) => this.objs[o.objectId])
     },
-    interactivityObject(): Parse.Object {
+    interactivityObject(): any {
       if (this.objects.length == 1) {
         return this.objects[0]
       }
       return this.item
     },
-    obj(): Parse.Object {
+    obj(): Model {
       return this.objects[0]
     },
     pointer(): Parse.Pointer {
-      return this.item.toPointer()
+      return this.item?.toPointer()
     },
-    image(): Parse.Object | null {
-        return this.item.get("objects").find((x: Parse.Object) => x.className == "Picture");
+    image(): Model | null {
+        return this.item.objects.find((x: Model) => x.className == "Picture");
     },
     imageUrl(): string | null {
-        return this.image?.get("file")?.url()
+        return this.image?.file?.url
     },
     extraStyle(): object {
-      const style = (this.item.get("extra") || {})['style'] || {
+      const style = (this.item.extra || {})['style'] || {
         'background': "var(--ion-color-tertiary )"
       };
       const localStyle = {

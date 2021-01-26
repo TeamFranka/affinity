@@ -12,7 +12,7 @@
       <div>
         <ion-chip @click="toggleLike" outline size="small" :color="likedColor">
           <ion-icon :icon="likeIcon" size="small"/>
-          <ion-label>{{comment.get("likesCount") }}</ion-label>
+          <ion-label>{{comment.likesCount }}</ion-label>
         </ion-chip>
         <ion-chip outline v-for="r in reactions" :key="r.key" @click="unreact(r.key)">
           <ion-label>{{r.key}}</ion-label>
@@ -62,7 +62,8 @@ import {
 import Avatar from "./avatar.vue";
 import { useStore } from '../stores/';
 import { defineComponent, computed } from 'vue';
-import { Parse, dayjs } from "../config/Consts";
+import { dayjs } from "../config/Consts";
+import { Model } from '@/utils/model';
 import InlineText from './inline-text.vue';
 
 export default defineComponent({
@@ -103,20 +104,16 @@ export default defineComponent({
   computed: {
     hasLiked(): boolean {
       if (!this.store.getters["auth/isLoggedIn"]) return false;
-      return (this.comment.get("likedBy") || []).indexOf(this.store.getters["auth/myId"]) !== -1;
+      return (this.comment.likedBy || []).indexOf(this.store.getters["auth/myId"]) !== -1;
     },
-    author(): Parse.Object {
-      const author = this.comment.get("author");
-      if (author.isDataAvailable()) {
-        return author;
-      }
-      return this.objs[author.id]
+    author(): Model {
+      return this.objs[this.comment.author.objectId]
     },
     since(): string {
-      return dayjs(this.comment.get("createdAt")).fromNow()
+      return dayjs(this.comment.createdAt).fromNow()
     },
     text(): string {
-        return this.comment.get("text") || ""
+        return this.comment.text || ""
     },
     draft(): string {
       const d = this.store.state.comments.drafts[this.object.objectId];
@@ -125,20 +122,20 @@ export default defineComponent({
       }
       return ""
     },
-    objects(): Parse.Object {
-      return (this.comment.get("attachments") || []).map(
-            (o: Parse.Object) => this.objs[o.id])
+    objects(): any {
+      return (this.comment.attachments || []).map(
+            (o: Model) => this.objs[o.objectId])
     },
     likedColor(): string {
       return this.hasLiked ? "danger" : "light"
     },
     authorName(): string {
       const author = this.author;
-      return author.get("name") || author.get("username")
+      return author.name || author.username
     },
     reactions(): Array<any> {
-      return Object.keys(this.comment.get("reactions") || {}).map((key) => {
-        const reactors = this.comment.get("reactions")[key];
+      return Object.keys(this.comment.reactions || {}).map((key) => {
+        const reactors = this.comment.reactions[key];
         return {
           key,
           color: reactors.indexOf(this.store.getters["auth/myId"]) === -1 ? "light" : "dark",

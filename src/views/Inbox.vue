@@ -17,9 +17,9 @@
           <ion-item
             button
             details=false
-            @click="selectConversation  (convo.id)"
+            @click="selectConversation  (convo.objectId)"
             v-for="convo in convos"
-            :key="convo.id"
+            :key="convo.objectId"
             lines="inset"
             >
             <conversation-entry :convo="convo" />
@@ -30,30 +30,30 @@
             button
             details=false
             v-for="n in notifications"
-            :key="n.id"
+            :key="n.objectId"
             lines="none"
             >
-            <avatar size="2em" with-name :profile="n.get('by')" />
-            <div v-if="n.get('verb') == 'react'"
+            <avatar size="2em" with-name :profile="n.by" />
+            <div v-if="n.verb == 'react'"
               class="ion-padding-start"
             >
-              reacted with {{(n.get('specifics')||{})["reaction"]}}
-              on <object-link mine :object="n.get('objects')[0]" />
+              reacted with {{(n.specifics||{})["reaction"]}}
+              on <object-link mine :object="n.objects[0]" />
             </div>
-            <div v-else-if="n.get('verb') == 'like'"
+            <div v-else-if="n.verb == 'like'"
               class="ion-padding-start"
             >
-              ❤️ <object-link mine :object="n.get('objects')[0]" />
+              ❤️ <object-link mine :object="n.objects[0]" />
             </div>
-            <div v-else-if="n.get('verb') == 'comment'"
+            <div v-else-if="n.verb == 'comment'"
               class="ion-padding-start"
             >
-              kommentierte <object-link mine :object="n.get('objects')[0]" />
+              kommentierte <object-link mine :object="n.objects[0]" />
             </div>
             <div v-else>
               {{n}}
             </div>
-            <span class="meta" slot="start">{{smartTimestamp(n.get('createdAt'))}}</span>
+            <span class="meta" slot="start">{{smartTimestamp(n.createdAt)}}</span>
           </ion-item>
 
         </template>
@@ -99,7 +99,6 @@ export default defineComponent({
   },
   mounted() {
     if (!this.loading && this.convos.length === 0) {
-      console.log("refreshing");
       this.refresh();
     }
   },

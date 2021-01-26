@@ -16,12 +16,12 @@
                 <ion-item-divider>
                   <ion-label>My Teams</ion-label>
                 </ion-item-divider>
-                <ion-item v-for="t in teams" :key="t.id">
-                  <router-link :to="{name: 'ViewTeam', params:{teamSlug:t.get('slug')}}">
-                    <avatar :profile="t" :name="t.get('name')" size="25px" withName />
+                <ion-item v-for="t in teams" :key="t.objectId">
+                  <router-link :to="{name: 'ViewTeam', params:{teamSlug:t.slug}}">
+                    <avatar :profile="t" :name="t.name" size="25px" withName />
                   </router-link>
                   <div slot="end">
-                    <router-link :to="{name: 'ViewTeam', params:{teamSlug:t.get('slug')}}"><ion-icon :icon="settingsIcon" /></router-link>
+                    <router-link :to="{name: 'ViewTeam', params:{teamSlug:t.slug}}"><ion-icon :icon="settingsIcon" /></router-link>
                   </div>
                 </ion-item>
               </ion-item-group>
@@ -84,10 +84,10 @@ export default defineComponent({
   },
   computed: {
     socialLinks(): any[]{
-      return this.defaultTeam?.get("socialLinks")
+      return this.defaultTeam?.socialLinks
     },
     footerLinks(): any[]{
-      return this.defaultTeam?.get("footerLinks")
+      return this.defaultTeam?.footerLinks
     }
   },
   components: {

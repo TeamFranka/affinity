@@ -1,5 +1,5 @@
 <template>
-  <ion-app :style="teamStyles">
+  <ion-app data-cy="customStyles" :style="teamStyles">
     <ion-progress-bar v-if="loading" color="secondary" type="indeterminate"></ion-progress-bar>
     <header-bar />
     <!-- FIXME: animation is broken -->
@@ -68,7 +68,7 @@ export default defineComponent({
       if (newVal && newVal != oldVal) {
         const toast = await toastController
           .create({
-            message: `Willkommen zurück, ${newVal.get('username')} 👋!`,
+            message: `Willkommen zurück, ${newVal.username} 👋!`,
             color: "success",
             duration: 3000
           })
@@ -92,7 +92,7 @@ export default defineComponent({
       loginModalOpened: computed(() => {
         return store.state.auth.wantsToLogin
       }),
-      teamStyles: computed(() => store.getters["defaultTeam"]?.get("customStyles")),
+      teamStyles: computed(() => store.getters.defaultTeam?.customStyles),
       openLoginModal: () => store.dispatch('auth/openLogin'),
       loading: store.getters.isLoading,
       // openLoginModal: () => store.dispatch("auth/openLogin"),

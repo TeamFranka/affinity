@@ -13,10 +13,10 @@
         <div
           :class="clsForMsg(m)"
           v-for="m in messages"
-          :key="m.id"
+          :key="m.objectId"
         >
-          <div class="message">{{m.get("text")}}</div>
-          <div class="meta">{{smartTimestamp(m.get("createdAt"))}}</div>
+          <div class="message">{{m.text}}</div>
+          <div class="meta">{{smartTimestamp(m.createdAt)}}</div>
         </div>
       </main>
       <ion-spinner v-if="loading" />
@@ -40,6 +40,7 @@ import {
   IonHeader, IonItem,
 } from '@ionic/vue';
 import { defineComponent, computed, ref } from 'vue';
+import { Model } from '@/utils/model';
 import { useStore } from '../stores/';
 import { useRoute } from 'vue-router';
 import { smartTimestamp } from '../utils/time';
@@ -58,7 +59,7 @@ export default defineComponent({
     const route = useRoute();
     const objectId: any = route.params.conversationId;
     const loading = ref(true);
-    const isMine = (msg: Parse.Object) => msg.get("author").id == store.getters["auth/myId"];
+    const isMine = (msg: Model) => msg.author.objectId == store.getters["auth/myId"];
     store.commit("startLoading");
     const loaders = [
         store.dispatch("inbox/loadMessages", objectId)
@@ -78,7 +79,7 @@ export default defineComponent({
       store, isMine, smartTimestamp,
       conversation: computed(() => store.getters.objectsMap[objectId]),
       messages: computed(() => (store.getters["inbox/messages"][objectId]||[]).map((x:  string) => store.getters.objectsMap[x])),
-      clsForMsg(msg: Parse.Object) {
+      clsForMsg(msg: Model) {
         return isMine(msg) ? "entry mine" : "entry";
       },
       loading,
@@ -88,7 +89,7 @@ export default defineComponent({
     sendMessage() {
       if (!this.currentMessage) { return }
       this.store.dispatch("inbox/sendMessage", {
-        conversationId: this.conversation.id, text: this.currentMessage
+        conversationId: this.conversation.objectId, text: this.currentMessage
       });
       this.currentMessage = '';
     },

@@ -1,12 +1,12 @@
 <template>
 <ion-list>
-    <ion-item lines="full" button @click="select({name: 'Profile', params: {username: user.get('username')} })">
+    <ion-item lines="full" button @click="select({name: 'Profile', params: {username: user.username} })">
         <ion-label>My Profile</ion-label>
     </ion-item>
     <ion-item button @click="select({name: 'MySettings'})">
         <ion-label>Settings</ion-label>
     </ion-item>
-    <ion-item button @click="logout">
+    <ion-item dataCyRole="logout" button @click="logout">
         <ion-label>Logout</ion-label>
     </ion-item>
 </ion-list>

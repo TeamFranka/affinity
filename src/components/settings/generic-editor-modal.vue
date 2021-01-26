@@ -26,6 +26,7 @@
       />
       <ion-textarea
         v-else-if="type == 'textarea'"
+        data-cy-role="edit"
         :placeholder="placeholder"
         :value="currentValue"
         auto-grow
@@ -33,6 +34,7 @@
       />
       <ion-input
         v-else
+        data-cy-role="edit"
         :type="type"
         :value="currentValue"
         :placeholder="placeholder"
@@ -42,7 +44,7 @@
   </ion-content>
   <ion-footer>
     <ion-toolbar>
-      <ion-button fill="outline" @click="saveAndClose" slot="end">
+      <ion-button data-cy-role="submit" fill="outline" @click="saveAndClose" slot="end">
         <ion-icon :icon="saveIcon" />
         <ion-label> {{saveLabel || "Speichern"}}</ion-label>
       </ion-button>
