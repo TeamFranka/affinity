@@ -15,6 +15,8 @@
     "ci:setup-db": "npm run dev:db && npm run dev:db:mock-data && cp .env.development.local.template .env.development.local",
 
     "dev:db": "node -r dotenv/config bin/update-db.js dotenv_config_path=.env.development",
+    "dev:db:destroy": "docker-compose stop && docker-compose rm -f",
+    "dev:db:reset": "npm run dev:db:destroy && docker-compose up -d && npm run dev:db && npm run dev:db:mock-data && cp .env.development.local.template .env.development.local",
     "dev:db:mock-data": "node -r dotenv/config bin/mock-data.js dotenv_config_path=.env.development with-faq with-posts",
     "dev:db:add-posts": "node -r dotenv/config bin/mock-data.js dotenv_config_path=.env.development with-posts",
     "dev:db:add-faqs": "node -r dotenv/config bin/mock-data.js dotenv_config_path=.env.development with-faq",
