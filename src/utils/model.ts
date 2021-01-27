@@ -19,6 +19,23 @@ export class SaveModel {
   }
 }
 
+export class CreateModel {
+  readonly className: string;
+  [attr: string]: any;
+
+  constructor(className: string, data: any){
+    this.className = className;
+    Object.assign(this, data);
+  }
+
+  toParse(): Parse.Object {
+    const Model = Parse.Object.extend(this.className);
+    const model = new Model(this);
+    model.unset("className");
+    return model
+  }
+}
+
 export class Model {
   readonly className: string;
   readonly objectId: string;

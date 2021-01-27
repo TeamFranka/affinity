@@ -10,10 +10,8 @@
     "test:unit": "vue-cli-service test:unit",
     "test:e2e": "vue-cli-service test:e2e --url http://localhost:8080/",
     "lint": "vue-cli-service lint",
-
     "ci:run-parse": "cd backend/cloud/ && npm install && cd ../.. && docker-compose up -d && docker-compose logs --tail 10",
     "ci:setup-db": "npm run dev:db && npm run dev:db:mock-data && cp .env.development.local.template .env.development.local",
-
     "dev:db": "node -r dotenv/config bin/update-db.js dotenv_config_path=.env.development",
     "dev:db:destroy": "docker-compose stop && docker-compose rm -f",
     "dev:db:reset": "npm run dev:db:destroy && docker-compose up -d && npm run dev:db && npm run dev:db:mock-data && cp .env.development.local.template .env.development.local",
@@ -22,7 +20,6 @@
     "dev:db:add-faqs": "node -r dotenv/config bin/mock-data.js dotenv_config_path=.env.development with-faq",
     "dev:run-parse": "docker-compose pull && docker-compose up -d && docker-compose logs -f --tail 10 parse",
     "dev:restart-parse": "cd backend/cloud/  && npm install && cd ../.. && docker-compose stop parse && docker-compose up -d && docker-compose logs -f --tail 10 parse",
-
     "deploy:db": "node -r dotenv/config bin/update-db.js dotenv_config_path=.env.production.local",
     "deploy:web": "ionic build --engine browser && cd backend/cloud && npm install && cd ../ && b4a deploy",
     "deploy:b4a": "npm run deploy:web && npm run deploy:web"
@@ -40,6 +37,7 @@
     "core-js": "^3.6.5",
     "dayjs": "^1.9.7",
     "easyqrcodejs": "^4.1.0",
+    "get-urls": "^10.0.0",
     "ionicons": "^5.2.3",
     "lodash": "^4.17.20",
     "markdown-it": "^12.0.4",
@@ -72,7 +70,7 @@
     "eslint-plugin-vue": "^7.0.0-0",
     "ts-node": "^9.1.1",
     "typescript": "~3.9.3",
-    "vue-jest": "^5.0.0-0",
+    "vue-jest": "^5.0.0-alpha.8",
     "webpack-chain": "^6.5.1"
   },
   "description": "Affinity Progressive Communities Network App"
