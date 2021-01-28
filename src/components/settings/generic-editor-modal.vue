@@ -22,6 +22,7 @@
         :startText="currentValue"
         :isAdminMd="isAdminMd"
         :enabledActions="isAdminMd ? AllActions : DefaultActions"
+        :debounce="0"
         @change="(x) => { currentValue = x}"
       />
       <ion-textarea
