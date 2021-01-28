@@ -31,7 +31,7 @@ describe('Posting to the feed as regular User', () => {
         cy.get('[data-cy-role=submit]').first().click();
       })
 
-      cy.get('[data-cy-type=activity] [data-cy-role=link] a')
+      cy.get('[data-cy-type=activity] [data-cy-obj=link] a')
         .should('have.attr', 'href')
         .and('contain',"https://twitter.com/bbcdoctorwho")
     })
