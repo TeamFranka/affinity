@@ -2,7 +2,6 @@
 // eslint-disable @typescript-eslint/no-var-requires
 
 const Objects = require("./consts.js").Objects;
-const url = require("url");
 const path = require('path');
 const ogs = require("open-graph-scraper");
 
@@ -15,8 +14,8 @@ for (let index = 0; index < Objects.length; index++) {
 }
 
 Parse.Cloud.define("fetchLinkMetadata", async (request) => {
-  const { error, result, response } = await ogs({url: request.params.url});
-  //console.log(error, result, response);
+  const url = request.params.url.trim();
+  const { error, result, response } = await ogs({ url });
   if  (error) {
     throw result
   }
