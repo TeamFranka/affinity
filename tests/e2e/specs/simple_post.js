@@ -4,7 +4,7 @@ describe('Posting to the feed as regular User', () => {
     beforeEach(() => {
       cy.loggedInAs("clara");
     })
-    it.skip('Posts a simple message', () => {
+    it('Posts a simple message', () => {
       const testStr = `Whatever, dude ${Math.abs(Math.random()*  1000000)}!`;
       cy.visit('/feed');
       cy.get('[data-cy=newPost]').within(()=>{
