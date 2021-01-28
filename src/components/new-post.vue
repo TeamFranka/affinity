@@ -206,9 +206,9 @@
             <ion-icon :icon="imageIcon" color="secondary"></ion-icon>
             <ion-label>Image</ion-label>
           </ion-chip>
-          <ion-chip v-if="canCreatePoll" @click="addPoll()" color="secondary" outline>
+          <ion-chip v-if="canCreatePoll" data-cy="addPoll" @click="addPoll()" color="secondary" outline>
             <ion-icon :icon="listIcon" color="secondary"></ion-icon>
-            <ion-label>Umfrage  </ion-label>
+            <ion-label>Umfrage </ion-label>
           </ion-chip>
           <ion-chip v-if="canCreateLink" @click="addLink('addLink')" color="secondary" outline>
             <ion-icon :icon="linkIcon" color="secondary"></ion-icon>
