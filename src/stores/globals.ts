@@ -45,7 +45,6 @@ export const GlobalState = {
       })
     },
     setItem(state: GlobalStateT, model: Model) {
-      console.log(model);
       state.objects[model.objectId] = model;
       if (model.className == "Team") {
         state.teamsBySlug[model.slug] = model.objectId;
@@ -114,9 +113,9 @@ export const GlobalState = {
       };
       const sortMany = (i: any) => Array.isArray(i) ? i.forEach(sort) : sort(i);
       items.forEach((i: Parse.Object) => {
-        sort(i);
         key && sortMany(i.get(key) || []);
         keys && (keys.forEach((key: string) => sortMany(i.get(key) || [])));
+        sort(i);
       });
 
       if (found.length > 0) {
