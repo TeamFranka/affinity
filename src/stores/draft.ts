@@ -217,7 +217,6 @@ export const Draft = {
       await activity.save();
 
       context.commit("clear");
-      context.dispatch("feed/refresh", null, {root: true});
     }
   }
 };
