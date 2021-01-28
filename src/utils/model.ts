@@ -1,5 +1,12 @@
 import { Parse } from "../config/Consts";
 
+export function cleanData(data: any): any {
+  for (const key of ["className", "objectId"]) {
+    delete data[key];
+  }
+  return data;
+}
+
 export class SaveModel {
   readonly className: string;
   readonly objectId: string;
@@ -46,7 +53,7 @@ export class Model {
   constructor(className: string, objectId: string, obj: any){
     this.className = className;
     this.objectId = objectId;
-    Object.assign(this, obj);
+    Object.assign(this, cleanData(obj));
   }
 
   toPointer(): Parse.Pointer {
