@@ -203,9 +203,7 @@ export const Draft = {
           p.file = file;
         }
         delete p.loading;
-        p.team = team;
-        p.author = author;
-        return p.toParse();
+        return p.toParse({ team, author });
       });
 
       const activity = new Activity({
