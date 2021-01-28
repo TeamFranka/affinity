@@ -78,6 +78,5 @@ export class Model {
 
 
 export function toModel(o: Parse.Object | Parse.User): Model {
-  const m = new Model(o.className, o.id, o.toJSON ? o.toJSON() : o);
-  return m
+  return new Model(o.className, o.id ? o.id : (o as any).objectId, o.toJSON ? o.toJSON() : o);
 }
