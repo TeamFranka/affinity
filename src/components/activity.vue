@@ -33,9 +33,20 @@
       <div v-if="obj.className == 'Poll'" data-cy-obj="poll">
         <poll :poll="obj" />
       </div>
-      <div v-if="obj.className == 'Picture'" data-cy-obj="picture">
+      <div v-else-if="obj.className == 'Picture'" data-cy-obj="picture">
         <ion-img :src="obj.file.url" />
       </div>
+      <div v-else-if="obj.className == 'Link'" data-cy-obj="link">
+        <ion-icon :icon="linkIcon" color="secondary"></ion-icon>
+        <a :href="obj.url">{{obj.title}}</a>
+        <ion-img v-if="obj.previewImage" :src="obj.previewImage.url" />
+        <p v-if="obj.description">{{obj.description}}</p>
+      </div>
+      <div v-else-if="obj.className == 'Document'" data-cy-obj="document">
+        <ion-icon :icon="documentIcon" color="secondary"></ion-icon>
+        <a :href="obj.url">{{obj.title}}</a>
+      </div>
+      <div v-else>{{obj}}</div>
     </div>
   </div>
   <interaction-bar :object="interactivityObject" :link="link" />
@@ -45,7 +56,11 @@
 import {
   IonCard, IonImg, IonCardHeader, IonIcon, IonNote,
 } from '@ionic/vue';
-import { chatbubblesOutline, addOutline, arrowRedoOutline, heartOutline } from 'ionicons/icons';
+import {
+  chatbubblesOutline, addOutline, arrowRedoOutline, heartOutline,
+  linkOutline as linkIcon,
+  documentOutline as documentIcon,
+} from 'ionicons/icons';
 
 import Avatar from "./avatar.vue";
 import InteractionBar from "./interaction-bar.vue";
@@ -83,6 +98,7 @@ export default defineComponent({
       shareIcon: arrowRedoOutline,
       plusIcon: addOutline,
       likeIcon: heartOutline,
+      linkIcon, documentIcon,
     }
   },
   computed: {

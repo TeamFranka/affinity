@@ -155,14 +155,20 @@ export default defineComponent({
     placeholder: {
       type: String,
       default: "Type your text here"
+    },
+    debounce: {
+      type: Number,
+      default: 500,
     }
   },
   data(props) {
     const r = props.isAdminMd ? adminMd : userMd;
     const startingContent = r.render(props.startText);
+    const timeoutId: any = null;
     return {
       selected: [''],
       startingContent,
+      timeoutId,
     }
   },
   computed: {
@@ -184,6 +190,14 @@ export default defineComponent({
     clear(){
       this.content.innerHTML = '';
     },
+    emitChanged() {
+      this.timeoutId && clearTimeout(this.timeoutId);
+
+      this.timeoutId = setTimeout(() => {
+        this.$emit("change", td.turndown(this.content.innerHTML));
+        this.timeoutId = null;
+      }, this.debounce);
+    },
     execute(action: any) {
       action();
       this.refreshSelected();
@@ -201,7 +215,7 @@ export default defineComponent({
       if (firstChild && firstChild.nodeType === 3) exec(formatBlock, this.paragrapher)
       else if (content.innerHTML === '<br>') content.innerHTML = ''
       this.refreshSelected();
-      this.$emit("change", td.turndown(content.innerHTML));
+      this.emitChanged();
     },
     onkeydown(event: KeyboardEvent) {
       if (event.key === 'Enter' && queryCommandValue(formatBlock) === 'blockquote') {

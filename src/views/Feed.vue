@@ -4,7 +4,7 @@
       <div class="wrap">
         <ion-card v-if="canPost">
           <ion-card-content>
-            <new-post :teams="canPostInTeams" @submit="submitPost($event)" />
+            <new-post :teams="canPostInTeams" />
           </ion-card-content>
         </ion-card>
         <ion-spinner v-if="loading" name="dots"></ion-spinner>

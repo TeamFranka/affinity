@@ -1,5 +1,12 @@
 import { Parse } from "../config/Consts";
 
+export function cleanData(data: any): any {
+  for (const key of ["className", "objectId"]) {
+    delete data[key];
+  }
+  return data;
+}
+
 export class SaveModel {
   readonly className: string;
   readonly objectId: string;
@@ -19,6 +26,22 @@ export class SaveModel {
   }
 }
 
+export class CreateModel {
+  readonly className: string;
+  [attr: string]: any;
+
+  constructor(className: string, data: any){
+    this.className = className;
+    Object.assign(this, data);
+  }
+
+  toParse(overwrite: any): Parse.Object {
+    const Model = Parse.Object.extend(this.className);
+    const model = new Model(cleanData(Object.assign({}, this, overwrite)));
+    return model
+  }
+}
+
 export class Model {
   readonly className: string;
   readonly objectId: string;
@@ -29,7 +52,7 @@ export class Model {
   constructor(className: string, objectId: string, obj: any){
     this.className = className;
     this.objectId = objectId;
-    Object.assign(this, obj);
+    Object.assign(this, cleanData(obj));
   }
 
   toPointer(): Parse.Pointer {
@@ -55,6 +78,5 @@ export class Model {
 
 
 export function toModel(o: Parse.Object | Parse.User): Model {
-  const m = new Model(o.className, o.id, o.toJSON ? o.toJSON() : o);
-  return m
+  return new Model(o.className, o.id ? o.id : (o as any).objectId, o.toJSON ? o.toJSON() : o);
 }

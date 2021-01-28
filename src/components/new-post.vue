@@ -1,225 +1,232 @@
 <template>
-  <ion-grid class="new-post" data-cy="newPost">
-    <ion-row>
-      <ion-col size-md="11" size-xs="10">
-        <rich-editor
-          ref="editor"
-          :enabledActions="richActions"
-          :startText="text"
-          @change="updateText"
-        ></rich-editor>
-        <p @click="showOptions = true" v-if="!showOptions">{{visibility}} <span v-if="showTypeSelector">{{selectedType}}</span> <span v-if="showTeamSelector">to <avatar size="1.5em" :profile="selectedTeam" withName /></span><ion-button size="small" fill="clear"><ion-icon :icon="editIcon"/></ion-button></p>
-      </ion-col>
-      <ion-col size-md="1" class="ion-hide-sm-down">
-        <ion-button @click="submit()" data-cy-role="submit" fill="outline" v-bind:disabled="!canSubmit" shape="round" size="small">
-          <ion-icon :icon="sendIcon"></ion-icon>
+  <form @submit="submit" >
+    <ion-grid class="new-post" data-cy="newPost">
+      <ion-row>
+        <ion-col size-md="11" size-xs="10">
+          <rich-editor
+            ref="editor"
+            :enabledActions="richActions"
+            :startText="text"
+            @change="updateText"
+          ></rich-editor>
+          <p @click="showOptions = true" v-if="!showOptions">{{visibility}} <span v-if="showTypeSelector">{{selectedType}}</span> <span v-if="showTeamSelector">to <avatar size="1.5em" :profile="selectedTeam" withName /></span><ion-button size="small" fill="clear"><ion-icon :icon="editIcon"/></ion-button></p>
+        </ion-col>
+        <ion-col size-md="1" class="ion-hide-sm-down">
+          <ion-button type="submit" data-cy-role="submit" fill="outline" v-bind:disabled="!canSubmit" shape="round" size="small">
+            <ion-icon :icon="sendIcon"></ion-icon>
+          </ion-button>
+        </ion-col>
+      </ion-row>
+      <ion-row v-if="showOptions">
+        <ion-col size-md="4" size-xs="12" v-if="showTeamSelector">
+          <selector
+              label="Team"
+              popoverTitle="Team"
+              @select="selectTeam($event)"
+              :items="teams"
+          >
+            <template #current>
+              <avatar :profile="selectedTeam" size="2em" withName />
+            </template>
+            <template #item="sProps">
+              <ion-item
+                @click="sProps.select(sProps.item)"
+                button
+              >
+                <avatar :profile="sProps.item" size="2em" withName />
+                <ion-icon v-if="sProps.item == selectedTeam" slot="end" :icon="selectedIcon" />
+              </ion-item>
+            </template>
+          </selector>
+        </ion-col><ion-col size-md="3" size-xs="12" v-if="showTypeSelector">
+          <selector
+              label="Type"
+              popoverTitle="Post Type"
+              @select="selectType($event)"
+              :items="selectableTypes"
+          >
+            <template #current>
+              <ion-label>
+                <ion-icon :icon="VERB_ICONS[selectedType]"></ion-icon>
+                {{selectedType}}
+              </ion-label>
+            </template>
+            <template #item="sProps">
+              <ion-item
+                @click="sProps.select(sProps.item)"
+                :key="sProps.item"
+                button
+              >
+                <ion-icon slot="start" :icon="VERB_ICONS[sProps.item]" />
+                {{sProps.item}}
+                <ion-icon v-if="sProps.item == selectedType" slot="end" :icon="selectedIcon" />
+              </ion-item>
+            </template>
+          </selector>
+        </ion-col>
+        <ion-col size-md="4" size-xs="12">
+          <selector
+              @select="setVisibility($event)"
+              popoverTitle="Visibility"
+              :items="selectableVisibility"
+          >
+            <template #label>
+                <ion-icon :icon="eyeOutline" />
+                <ion-label>Sichtbar: </ion-label>
+            </template>
+            <template #current>
+              <ion-label>
+                <ion-icon :icon="VISIBILITY_ICONS[visibility]"></ion-icon>
+                {{visibility}}
+              </ion-label>
+            </template>
+            <template #item="sProps">
+              <ion-item
+                @click="sProps.select(sProps.item)"
+                :key="sProps.item"
+                button
+              >
+                <ion-icon slot="start" :icon="VISIBILITY_ICONS[sProps.item]"></ion-icon>
+                {{sProps.item}}
+                <ion-icon v-if="sProps.item == visibility" slot="end" :icon="selectedIcon" />
+              </ion-item>
+            </template>
+          </selector>
+        </ion-col>
+        <ion-button
+          :style="{position: 'absolute', right: '1em', 'z-index': 1}"
+          size="small"
+          fill="clear"
+          @click="showOptions = false"
+        >
+          <ion-icon :icon="closeIcon"/>
         </ion-button>
-      </ion-col>
-    </ion-row>
-    <ion-row v-if="showOptions">
-      <ion-col size-md="4" size-xs="12" v-if="showTeamSelector">
-        <selector
-            label="Team"
-            popoverTitle="Team"
-            @select="selectTeam($event)"
-            :items="teams"
-        >
-          <template #current>
-            <avatar :profile="selectedTeam" size="2em" withName />
-          </template>
-          <template #item="sProps">
-            <ion-item
-              @click="sProps.select(sProps.item)"
-              button
-            >
-              <avatar :profile="sProps.item" size="2em" withName />
-              <ion-icon v-if="sProps.item == selectedTeam" slot="end" :icon="selectedIcon" />
-            </ion-item>
-          </template>
-        </selector>
-      </ion-col><ion-col size-md="3" size-xs="12" v-if="showTypeSelector">
-        <selector
-            label="Type"
-            popoverTitle="Post Type"
-            @select="selectType($event)"
-            :items="selectableTypes"
-        >
-          <template #current>
-            <ion-label>
-              <ion-icon :icon="VERB_ICONS[selectedType]"></ion-icon>
-              {{selectedType}}
-            </ion-label>
-          </template>
-          <template #item="sProps">
-            <ion-item
-              @click="sProps.select(sProps.item)"
-              :key="sProps.item"
-              button
-            >
-              <ion-icon slot="start" :icon="VERB_ICONS[sProps.item]" />
-              {{sProps.item}}
-              <ion-icon v-if="sProps.item == selectedType" slot="end" :icon="selectedIcon" />
-            </ion-item>
-          </template>
-        </selector>
-      </ion-col>
-      <ion-col size-md="4" size-xs="12">
-        <selector
-            @select="setVisibility($event)"
-            popoverTitle="Visibility"
-            :items="selectableVisibility"
-        >
-          <template #label>
-              <ion-icon :icon="eyeOutline" />
-              <ion-label>Sichtbar: </ion-label>
-          </template>
-          <template #current>
-            <ion-label>
-              <ion-icon :icon="VISIBILITY_ICONS[visibility]"></ion-icon>
-              {{visibility}}
-            </ion-label>
-          </template>
-          <template #item="sProps">
-            <ion-item
-              @click="sProps.select(sProps.item)"
-              :key="sProps.item"
-              button
-            >
-              <ion-icon slot="start" :icon="VISIBILITY_ICONS[sProps.item]"></ion-icon>
-              {{sProps.item}}
-              <ion-icon v-if="sProps.item == visibility" slot="end" :icon="selectedIcon" />
-            </ion-item>
-          </template>
-        </selector>
-      </ion-col>
-      <ion-button
-        :style="{position: 'absolute', right: '1em', 'z-index': 1}"
-        size="small"
-        fill="clear"
-        @click="showOptions = false"
-      >
-        <ion-icon :icon="closeIcon"/>
-      </ion-button>
-    </ion-row>
-    <ion-row>
-      <ion-col size-md="6" v-for="(o, index) in objects" v-bind:key="o._localId">
-        <ion-card>
-          <div class="ion-text-end">
-            <ion-button v-if="index != 0" @click="moveLeft(index)" size="small" fill="clear" color="medium">
-              <ion-icon :icon="leftIcon"/>
-            </ion-button>
-            <ion-button v-if="index+1 !== objects.length" @click="moveRight(index)" size="small" fill="clear" color="medium">
-              <ion-icon :icon="rightIcon"/>
-            </ion-button>
-            <ion-button @click="removeObject(index)" size="small" fill="clear" color="medium">
-              <ion-icon :icon="deleteIcon"/>
-            </ion-button>
-          </div>
-        <ion-card-content>
-          <div v-if="o.className == 'Picture'">
-            <!-- FIXME: this renders incorrectly while saving... -->
-            <ion-img v-if="o.img" :src="o.img.dataUrl" />
-            <ion-input placeholder="description"
-              @ionChange="updateObject({index, data: {description: $event.target.value}})"
-              :value="o.description"
-            />
-          </div>
-          <div v-else-if="o.className == 'Poll'">
-            <poll :poll="o">
-              <template v-slot:extraButtons>
-                <ion-button @click="editPoll(index)" size="small" fill="clear" color="dark">
-                  <ion-icon :icon="editIcon"/>
-                </ion-button>
-              </template>
-            </poll>
-          </div>
-          <div v-else-if="o.className == 'Link'">
-            <div v-if="o.loading">
-              <ion-spinner /><ion-icon :icon="linkIcon"/><a :href="o.url">{{o.url}}</a>
+      </ion-row>
+      <ion-row>
+        <ion-col size-md="6" v-for="(o, index) in objects" v-bind:key="o._localId">
+          <ion-card>
+            <div class="ion-text-end">
+              <ion-button v-if="index != 0" @click="moveLeft(index)" size="small" fill="clear" color="medium">
+                <ion-icon :icon="leftIcon"/>
+              </ion-button>
+              <ion-button v-if="index+1 !== objects.length" @click="moveRight(index)" size="small" fill="clear" color="medium">
+                <ion-icon :icon="rightIcon"/>
+              </ion-button>
+              <ion-button @click="removeObject(index)" size="small" fill="clear" color="medium">
+                <ion-icon :icon="deleteIcon"/>
+              </ion-button>
             </div>
-            <div v-else>
-              <span class="text-muted" v-if="o.siteName">{{o.siteName}}</span>
-              <div style="display: flex; align-items: center">
-                <ion-icon :icon="linkIcon"/>
-                <ion-input
-                  @ionChange="updateObject({index, data: {title: $event.target.value}})"
-                    :value="o.title"
-                    :placeholder="o.url"
-                />
-              </div>
-              <ion-img v-if="o.previewImage" :src="o.previewImage.url" />
-              <ion-textarea
-                @ionChange="updateObject({index, data: {previewText: $event.target.value}})"
-                :value="o.previewText"
-                placeholder="information about this link to preview"
-              />
-              <ion-button
-                v-if="canCreateDocument"
-                @click="convertLinkToDocument(index)"
-                size="small"
-                fill="clear"
-              >zu Dokument umwandeln</ion-button>
-            </div>
-          </div>
-          <div v-else-if="o.className == 'Document'">
-            <div v-if="o.loading">
-              <ion-spinner /><ion-icon :icon="documentIcon"/><a :href="o.url">{{o.url}}</a>
-            </div>
-            <div v-else>
-              <span class="text-muted" v-if="o.siteName">{{o.siteName}}</span>
-              <div style="display: flex; align-items: center">
-                <ion-icon :icon="documentIcon"/>
-                <ion-input
-                  @ionChange="updateObject({index, data: {title: $event.target.value}})"
-                    :value="o.title"
-                    :placeholder="o.url"
-                />
-              </div>
-              <ion-textarea
+          <ion-card-content>
+            <div v-if="o.className == 'Picture'">
+              <!-- FIXME: this renders incorrectly while saving... -->
+              <ion-img v-if="o.img" :src="o.img.dataUrl" />
+              <ion-input placeholder="description"
                 @ionChange="updateObject({index, data: {description: $event.target.value}})"
                 :value="o.description"
-                placeholder="description text..."
               />
             </div>
-          </div>
-        </ion-card-content>
-        </ion-card>
-      </ion-col>
-    </ion-row>
-    <ion-row>
-      <ion-col size-sm="12" size-xs="10">
-        <input
-          type="file"
-          ref="fileSelector"
-          style="display:none"
-          v-if="canCreateDocument"
-          multiple
-          @change="uploadDocs($event.target.files)"
-          />
-        <ion-chip v-if="canCreatePicture" @click="addPicture()" color="secondary" outline>
-          <ion-icon :icon="imageIcon" color="secondary"></ion-icon>
-          <ion-label>Image</ion-label>
-        </ion-chip>
-        <ion-chip v-if="canCreatePoll" @click="addPoll()" color="secondary" outline>
-          <ion-icon :icon="listIcon" color="secondary"></ion-icon>
-          <ion-label>Umfrage  </ion-label>
-        </ion-chip>
-        <ion-chip v-if="canCreateLink" @click="addLink('addLink')" color="secondary" outline>
-          <ion-icon :icon="linkIcon" color="secondary"></ion-icon>
-          <ion-label>Link</ion-label>
-        </ion-chip>
-        <ion-chip v-if="canCreateDocument" @click="addDocument()" color="secondary" outline>
-          <ion-icon :icon="documentIcon" color="secondary"></ion-icon>
-          <ion-label>Dokument</ion-label>
-        </ion-chip>
-      </ion-col>
-      <ion-col size-xs="2" class="ion-hide-md-up">
-        <ion-button @click="submit()" data-cy-role="submit" fill="outline" v-bind:disabled="!canSubmit" shape="round" size="small">
-          <ion-icon :icon="sendIcon"></ion-icon>
-        </ion-button>
-      </ion-col>
-    </ion-row>
-  </ion-grid>
+            <div v-else-if="o.className == 'Poll'">
+              <poll :poll="o">
+                <template v-slot:extraButtons>
+                  <ion-button @click="editPoll(index)" size="small" fill="clear" color="dark">
+                    <ion-icon :icon="editIcon"/>
+                  </ion-button>
+                </template>
+              </poll>
+            </div>
+            <div v-else-if="o.className == 'Link'" data-cy-type="link">
+              <div v-if="o.loading">
+                <ion-spinner /><ion-icon :icon="linkIcon"/><a :href="o.url">{{o.url}}</a>
+              </div>
+              <div v-else>
+                <span class="text-muted" v-if="o.siteName">{{o.siteName}}</span>
+                <div style="display: flex; align-items: center">
+                  <ion-icon :icon="linkIcon"/>
+                  <ion-input
+                    @ionChange="updateObject({index, data: {title: $event.target.value}})"
+                      :value="o.title"
+                      required
+                      name="title"
+                      :placeholder="o.url"
+                  />
+                </div>
+                <a :href="o.url">{{o.url}}</a>
+                <ion-img v-if="o.previewImage" :src="o.previewImage.url" />
+                <ion-textarea
+                  @ionChange="updateObject({index, data: {previewText: $event.target.value}})"
+                  :value="o.previewText"
+                  placeholder="information about this link to preview"
+                />
+                <ion-button
+                  v-if="canCreateDocument"
+                  @click="convertLinkToDocument(index)"
+                  size="small"
+                  fill="clear"
+                >zu Dokument umwandeln</ion-button>
+              </div>
+            </div>
+            <div v-else-if="o.className == 'Document'">
+              <div v-if="o.loading">
+                <ion-spinner /><ion-icon :icon="documentIcon"/><a :href="o.url">{{o.url}}</a>
+              </div>
+              <div v-else>
+                <span class="text-muted" v-if="o.siteName">{{o.siteName}}</span>
+                <div style="display: flex; align-items: center">
+                  <ion-icon :icon="documentIcon"/>
+                  <ion-input
+                    @ionChange="updateObject({index, data: {title: $event.target.value}})"
+                      :value="o.title"
+                      name="title"
+                      required
+                      :placeholder="o.url"
+                  />
+                </div>
+                <ion-textarea
+                  @ionChange="updateObject({index, data: {description: $event.target.value}})"
+                  :value="o.description"
+                  placeholder="description text..."
+                />
+              </div>
+            </div>
+          </ion-card-content>
+          </ion-card>
+        </ion-col>
+      </ion-row>
+      <ion-row>
+        <ion-col size-sm="12" size-xs="10">
+          <input
+            type="file"
+            ref="fileSelector"
+            style="display:none"
+            v-if="canCreateDocument"
+            multiple
+            @change="uploadDocs($event.target.files)"
+            />
+          <ion-chip v-if="canCreatePicture" @click="addPicture()" color="secondary" outline>
+            <ion-icon :icon="imageIcon" color="secondary"></ion-icon>
+            <ion-label>Image</ion-label>
+          </ion-chip>
+          <ion-chip v-if="canCreatePoll" @click="addPoll()" color="secondary" outline>
+            <ion-icon :icon="listIcon" color="secondary"></ion-icon>
+            <ion-label>Umfrage  </ion-label>
+          </ion-chip>
+          <ion-chip v-if="canCreateLink" @click="addLink('addLink')" color="secondary" outline>
+            <ion-icon :icon="linkIcon" color="secondary"></ion-icon>
+            <ion-label>Link</ion-label>
+          </ion-chip>
+          <ion-chip v-if="canCreateDocument" @click="addDocument()" color="secondary" outline>
+            <ion-icon :icon="documentIcon" color="secondary"></ion-icon>
+            <ion-label>Dokument</ion-label>
+          </ion-chip>
+        </ion-col>
+        <ion-col size-xs="2" class="ion-hide-md-up">
+          <ion-button type="submit" data-cy-role="submit" fill="outline" v-bind:disabled="!canSubmit" shape="round" size="small">
+            <ion-icon :icon="sendIcon"></ion-icon>
+          </ion-button>
+        </ion-col>
+      </ion-row>
+    </ion-grid>
+  </form>
 </template>
 
 
@@ -333,7 +340,8 @@ export default defineComponent({
     IonCard, IonCardContent, RichEditor,
   },
   methods: {
-    async submit() {
+    async submit(e: Event) {
+      e.preventDefault();
       await this.store.dispatch("draft/submit");
       console.log(this.$refs.editor);
       (this.$refs.editor as any).clear();
