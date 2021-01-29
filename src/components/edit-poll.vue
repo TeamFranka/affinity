@@ -54,6 +54,7 @@
               <ion-button
                 color="dark"
                 fill="clear"
+                :data-cy="`opt-${index}-remove`"
                 @click="removeOption(index)"
                 slot="end"
               >

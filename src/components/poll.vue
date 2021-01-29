@@ -5,7 +5,7 @@
       <ion-title data-cy-role="title">{{title}}</ion-title>
     </ion-col>
     <ion-col class="ion-text-end">
-      <ion-button fill="clear" @click="editPoll" size="small" v-if="canEdit" title="Editieren"><ion-icon :icon="editIcon"/></ion-button>
+      <ion-button data-cy="editPoll" fill="clear" @click="editPoll" size="small" v-if="canEdit" title="Editieren"><ion-icon :icon="editIcon"/></ion-button>
       <ion-button @click="intendToClose" fill="clear" size="small" v-if="canClose" title="Schließen"><ion-icon :icon="closeIcon"/></ion-button>
       <slot name="extraButtons"></slot>
     </ion-col>
@@ -21,7 +21,7 @@
     <ion-col size="12">
       <ion-list>
         <ion-item v-for="(e, index) in options" :key="e" @click="toggleSelection(index)">
-          <ion-checkbox v-if="!hasVoted && !showingResults" slot="start" :checked="selected.indexOf(index) !== -1" />
+          <ion-checkbox :data-cy="`opt-${index}-select`" v-if="!hasVoted && !showingResults" slot="start" :checked="selected.indexOf(index) !== -1" />
           <ion-checkbox disabled v-if="showingResults || hasVoted" slot="start" :checked="hasVotedFor(index)" />
           <div class="entry">
             <ion-label :data-cy="`opt-${index}-title`">{{e.title}}</ion-label>
@@ -50,6 +50,7 @@
         <ion-button
           v-if="!hasVoted"
           :disabled="!canSubmit"
+          data-cy-role="submit"
           @click="submit"
           size="small"
           fill="outline"
@@ -70,6 +71,7 @@
         >ausblenden</ion-button>
         <ion-button
           v-if="hasVoted && canReset"
+          data-cy-role="reset"
           @click="resetVote"
           fill="outline"
           size="small"
