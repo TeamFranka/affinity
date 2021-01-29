@@ -24,7 +24,23 @@
 // -- This is will overwrite an existing command --
 // Cypress.Commands.overwrite("visit", (originalFn, url, options) => { ... })
 
+const LOGINS = {};
+
+const KEYS = ['Parse/APPLICATION_ID/installationId', 'Parse/APPLICATION_ID/currentUser'];
+
 Cypress.Commands.add("loggedInAs", (username) => {
+    if (LOGINS[username]) {
+        for (const key of KEYS) {
+            localStorage[key] = LOGINS[username][key];
+        }
+        return;
+    } else {
+        for (const key of KEYS) {
+            // resetting
+            delete localStorage[key];
+        }
+    }
+
     cy.visit('/inbox');
     // cy.get('[data-cy-role=userMenu]').should('not.exist');
     // cy.get('[data-cy-role=loginModal]').click();
@@ -34,5 +50,10 @@ Cypress.Commands.add("loggedInAs", (username) => {
         cy.get('input[name=password]').type(username, {delay: 100});
         cy.get('ion-button[data-cy-role=loginSubmit]').click();
     });
-    cy.get('[data-cy-role=loginModal]').contains('Einloggen').should('not.exist')
+    cy.get('[data-cy-role=loginModal]').contains('Einloggen').should('not.exist');
+
+    LOGINS[username] = {};
+    for (const key of KEYS) {
+        LOGINS[username][key] = localStorage[key]
+    }
 })

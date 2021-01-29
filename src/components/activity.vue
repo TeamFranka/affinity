@@ -20,7 +20,7 @@
       <div v-if="!showAuthor">
         <router-link :to="teamLink">{{teamName}}</router-link>
       </div>
-      <router-link :to="link">
+      <router-link data-cy="activityLink" :to="link">
           <ion-note color="medium">{{since}}</ion-note>
         </router-link>
     </div>
