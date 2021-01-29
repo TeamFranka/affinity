@@ -3,6 +3,7 @@
     <ion-toolbar>
       <ion-input
         :value="title"
+        name="title"
         @ionChange="title = $event.target.value"
         placeholder="Umfragen-Titel"
       />
@@ -38,11 +39,14 @@
               <div>
                 <ion-input
                   :value="e.title"
+                  :name="`opt-${index}-title`"
+                  required
                   @ionChange="e.title = $event.target.value"
                   placeholder="Optionstitel"
                 />
                 <ion-input
                   :value="e.text"
+                  :name="`opt-${index}-desc`"
                   @ionChange="e.text = $event.target.value"
                   placeholder="optionale Beschreibung"
                 />
@@ -57,7 +61,7 @@
               </ion-button>
             </ion-item>
             <ion-item>
-              <ion-button @click="addOption" fill="outline">
+              <ion-button @click="addOption" data-cy="addOption" fill="outline">
                 <ion-icon :icon="addIcon" />
                 weitere hinzufügen
               </ion-button>
@@ -142,7 +146,13 @@
   </ion-content>
   <ion-footer>
     <ion-toolbar>
-      <ion-button fill="outline" :disabled='!canSubmit' @click="saveAndClose" slot="end">
+      <ion-button
+        data-cy-role="submit"
+        fill="outline"
+        :disabled='!canSubmit'
+        @click="saveAndClose"
+        slot="end"
+      >
         <ion-icon :icon="saveIcon" />
         <ion-label> {{saveLabel || "Save"}}</ion-label>
       </ion-button>
@@ -212,7 +222,7 @@ export default defineComponent({
   },
   computed: {
     canSubmit(): boolean {
-      return  this.title.length > 0 && this.options.length > 0
+      return  this.title.length > 0 && this.options.length > 0 && !this.options.find((x: any) => !x.title)
     },
   },
   methods: {
