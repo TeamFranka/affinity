@@ -12,7 +12,7 @@
           <p @click="showOptions = true" v-if="!showOptions">{{visibility}} <span v-if="showTypeSelector">{{selectedType}}</span> <span v-if="showTeamSelector">to <avatar size="1.5em" :profile="selectedTeam" withName /></span><ion-button size="small" fill="clear"><ion-icon :icon="editIcon"/></ion-button></p>
         </ion-col>
         <ion-col size-md="1" class="ion-hide-sm-down">
-          <ion-button type="submit" data-cy-role="submit" fill="outline" v-bind:disabled="!canSubmit" shape="round" size="small">
+          <ion-button  data-cy="submitPost" type="submit" data-cy-role="submit" fill="outline" v-bind:disabled="!canSubmit" shape="round" size="small">
             <ion-icon :icon="sendIcon"></ion-icon>
           </ion-button>
         </ion-col>
@@ -117,7 +117,7 @@
               </ion-button>
             </div>
           <ion-card-content>
-            <div v-if="o.className == 'Picture'">
+            <div v-if="o.className == 'Picture'" data-cy-obj="picture">
               <!-- FIXME: this renders incorrectly while saving... -->
               <ion-img v-if="o.img" :src="o.img.dataUrl" />
               <ion-input placeholder="description"
@@ -125,7 +125,7 @@
                 :value="o.description"
               />
             </div>
-            <div v-else-if="o.className == 'Poll'">
+            <div v-else-if="o.className == 'Poll'" data-cy-obj="poll">
               <poll :poll="o">
                 <template v-slot:extraButtons>
                   <ion-button @click="editPoll(index)" size="small" fill="clear" color="dark">
@@ -134,7 +134,7 @@
                 </template>
               </poll>
             </div>
-            <div v-else-if="o.className == 'Link'" data-cy-type="link">
+            <div v-else-if="o.className == 'Link'" data-cy-obj="link">
               <div v-if="o.loading">
                 <ion-spinner /><ion-icon :icon="linkIcon"/><a :href="o.url">{{o.url}}</a>
               </div>
@@ -165,7 +165,7 @@
                 >zu Dokument umwandeln</ion-button>
               </div>
             </div>
-            <div v-else-if="o.className == 'Document'">
+            <div v-else-if="o.className == 'Document'" data-cy-obj="document">
               <div v-if="o.loading">
                 <ion-spinner /><ion-icon :icon="documentIcon"/><a :href="o.url">{{o.url}}</a>
               </div>
@@ -220,7 +220,7 @@
           </ion-chip>
         </ion-col>
         <ion-col size-xs="2" class="ion-hide-md-up">
-          <ion-button type="submit" data-cy-role="submit" fill="outline" v-bind:disabled="!canSubmit" shape="round" size="small">
+          <ion-button type="submit" data-cy="submitPost" data-cy-role="submit" fill="outline" v-bind:disabled="!canSubmit" shape="round" size="small">
             <ion-icon :icon="sendIcon"></ion-icon>
           </ion-button>
         </ion-col>
@@ -260,10 +260,9 @@ import EditPoll from "./edit-poll.vue";
 import Poll from "./poll.vue";
 import { useStore } from '../stores/';
 import { Verb, Visibility } from '../config/Consts';
-import { Poll as PollModel } from '../db/models';
 import { AllActions, DefaultActions } from './rich-editor.vue';
 import RichEditor from './rich-editor.vue';
-import { Model } from '@/utils/model';
+import { Model, CreateModel } from '@/utils/model';
 
 const VERB_ICONS: Record<string, any>= {};
 VERB_ICONS[Verb.Post] = readerOutline;
@@ -347,7 +346,7 @@ export default defineComponent({
       (this.$refs.editor as any).clear();
     },
     async addPoll() {
-      const newPoll = new PollModel({options:[{title: 'Option 1'}, {title: 'Option 2'}, {title: 'Option 3'}]});
+      const newPoll = {options:[{title: 'Option 1'}, {title: 'Option 2'}, {title: 'Option 3'}]};
       const modal = await modalController
         .create({
           component: EditPoll,
@@ -359,7 +358,7 @@ export default defineComponent({
       await modal.present();
       const res = await modal.onDidDismiss();
       if (res.data) {
-        this.store.commit("draft/addObject", new PollModel(res.data));
+        this.store.commit("draft/addObject", new CreateModel('Poll', res.data));
       }
     },
 

@@ -146,7 +146,13 @@
   </ion-content>
   <ion-footer>
     <ion-toolbar>
-      <ion-button fill="outline" :disabled='!canSubmit' @click="saveAndClose" slot="end">
+      <ion-button
+        data-cy-role="submit"
+        fill="outline"
+        :disabled='!canSubmit'
+        @click="saveAndClose"
+        slot="end"
+      >
         <ion-icon :icon="saveIcon" />
         <ion-label> {{saveLabel || "Save"}}</ion-label>
       </ion-button>
@@ -216,7 +222,7 @@ export default defineComponent({
   },
   computed: {
     canSubmit(): boolean {
-      return  this.title.length > 0 && this.options.length > 0
+      return  this.title.length > 0 && this.options.length > 0 && !this.options.find((x: any) => !x.title)
     },
   },
   methods: {

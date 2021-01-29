@@ -2,7 +2,7 @@
 <ion-grid>
   <ion-row>
     <ion-col>
-      <ion-title>{{title}}</ion-title>
+      <ion-title data-cy-role="title">{{title}}</ion-title>
     </ion-col>
     <ion-col class="ion-text-end">
       <ion-button fill="clear" @click="editPoll" size="small" v-if="canEdit" title="Editieren"><ion-icon :icon="editIcon"/></ion-button>
@@ -11,7 +11,7 @@
     </ion-col>
   </ion-row>
   <ion-row>
-    <ion-col size="12" class="ion-padding-start" v-if="text">
+    <ion-col data-cy-role="desc" size="12" class="ion-padding-start" v-if="text">
       <render-md :source="text" />
     </ion-col>
     <ion-col size="12" class="ion-padding-start" v-if="outcome">
@@ -24,8 +24,8 @@
           <ion-checkbox v-if="!hasVoted && !showingResults" slot="start" :checked="selected.indexOf(index) !== -1" />
           <ion-checkbox disabled v-if="showingResults || hasVoted" slot="start" :checked="hasVotedFor(index)" />
           <div class="entry">
-            <ion-label>{{e.title}}</ion-label>
-            <ion-note v-if="e.text">{{e.text}}</ion-note>
+            <ion-label :data-cy="`opt-${index}-title`">{{e.title}}</ion-label>
+            <ion-note v-if="e.text" :data-cy="`opt-${index}-desc`">{{e.text}}</ion-note>
             <ion-progress-bar color="secondary" v-if="showingResults" :value="calcResult(index)" />
           </div>
           <ion-note class="number" v-if="showingResults" slot="end">{{Math.abs(calcResult(index) * 100)}}% </ion-note>

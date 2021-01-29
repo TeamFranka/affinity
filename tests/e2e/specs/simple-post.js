@@ -21,10 +21,10 @@ describe('Posting to the feed as regular User', () => {
       cy.visit('/feed');
       cy.get('[data-cy=newPost]').within(()=>{
         cy.get('[data-cy=richEditor]').type(testStr);
-        cy.get('[data-cy-type=link] a')
+        cy.get('[data-cy-obj=link] a')
           .should('have.attr', 'href')
           .and('contain',"https://twitter.com/bbcdoctorwho")
-        cy.get('[data-cy-type=link]').within(()=>{
+        cy.get('[data-cy-obj=link]').within(()=>{
           cy.get('ion-spinner').should("not.exist");
           cy.get('input[name=title]').clear().type("Twitter: @BBCDoctorWho");
         });

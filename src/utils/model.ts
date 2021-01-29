@@ -35,6 +35,14 @@ export class CreateModel {
     Object.assign(this, data);
   }
 
+  get(attribute: string): any {
+    return this[attribute]
+  }
+
+  set(attribute: string, value: any){
+    this[attribute] = value
+  }
+
   toParse(overwrite: any): Parse.Object {
     const Model = Parse.Object.extend(this.className);
     const model = new Model(cleanData(Object.assign({}, this, overwrite)));
