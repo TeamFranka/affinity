@@ -50,6 +50,8 @@ flexible enough.
 
 # Contributor Covenant Code of Conduct
 
+[Deutsche Übersetzung hier (German transltion available here)](./Code-of-Conduct.de.md)
+
 ## Our Pledge
 
 We as members, contributors, and leaders pledge to make participation in our
