@@ -1,43 +1,20 @@
-// ***********************************************
-// This example commands.js shows you how to
-// create various custom commands and overwrite
-// existing commands.
-//
-// For more comprehensive examples of custom
-// commands please read more here:
-// https://on.cypress.io/custom-commands
-// ***********************************************
-//
-//
-// -- This is a parent command --
-// Cypress.Commands.add("login", (email, password) => { ... })
-//
-//
-// -- This is a child command --
-// Cypress.Commands.add("drag", { prevSubject: 'element'}, (subject, options) => { ... })
-//
-//
-// -- This is a dual command --
-// Cypress.Commands.add("dismiss", { prevSubject: 'optional'}, (subject, options) => { ... })
-//
-//
-// -- This is will overwrite an existing command --
-// Cypress.Commands.overwrite("visit", (originalFn, url, options) => { ... })
+import "cypress-localstorage-commands"
 
 const LOGINS = {};
+let CURRENT_USER = null;
 
 const KEYS = ['Parse/APPLICATION_ID/installationId', 'Parse/APPLICATION_ID/currentUser'];
 
 Cypress.Commands.add("loggedInAs", (username) => {
     if (LOGINS[username]) {
         for (const key of KEYS) {
-            localStorage[key] = LOGINS[username][key];
+            cy.setLocalStorage(key, LOGINS[username][key]);
         }
         return;
     } else {
         for (const key of KEYS) {
             // resetting
-            delete localStorage[key];
+            cy.removeLocalStorage(key);
         }
     }
 
@@ -52,8 +29,11 @@ Cypress.Commands.add("loggedInAs", (username) => {
     });
     cy.get('[data-cy-role=loginModal]').contains('Einloggen').should('not.exist');
 
+    CURRENT_USER = username;
     LOGINS[username] = {};
     for (const key of KEYS) {
-        LOGINS[username][key] = localStorage[key]
+        cy.getLocalStorage(key).then(value => {
+            LOGINS[username][key] = value
+        })
     }
 })
