@@ -36,7 +36,7 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     needs: tests # only when tests passed
-    if: ${{github.event == 'push'}} # only if this was a push on 'main'
+    if: github.event_name == 'push' # only if this was a push on 'main'
     steps:
       - name: Push changes to production branch
         uses: ad-m/github-push-action@master
