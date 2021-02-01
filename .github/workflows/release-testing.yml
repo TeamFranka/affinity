@@ -162,7 +162,7 @@ jobs:
 
   deploy:
     runs-on: ubuntu-latest
-    needs: [ release-build, android-app ] # ios-app
+    needs: [ tests, release-build, android-app ] # ios-app
     if: github.event_name == 'push' # only if this was a push on 'main'
     steps:
       - uses: actions/checkout@v2
