@@ -1,6 +1,6 @@
 {
   "appId": "jetzt.franka.affinity",
-  "appName": "affinity",
+  "appName": "Team Franka Community",
   "bundledWebRuntime": false,
   "npmClient": "npm",
   "webDir": "dist",
