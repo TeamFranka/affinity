@@ -77,7 +77,7 @@ jobs:
           VUE_APP_PARSE_JS_KEY: ${{ secrets.VUE_APP_PARSE_JS_KEY}}
           VUE_APP_PARSE_URL: ${{ secrets.VUE_APP_PARSE_URL}}
           VUE_APP_PARSE_LIVE_URL: ${{ secrets.VUE_APP_PARSE_LIVE_URL }}
-      - name: Archive production artifacts
+      - name: Archive /dist
         uses: actions/upload-artifact@v2
         with:
           name: dist-production
@@ -89,10 +89,11 @@ jobs:
     needs: release-build
     steps:
       - uses: actions/checkout@v2
-      - name: Download a single artifact
+      - name: Download /dist
         uses: actions/download-artifact@v2
         with:
           name: dist-production
+          path: dist
       - name: Cache node modules
         uses: actions/cache@v2
         env:
@@ -112,7 +113,7 @@ jobs:
         with:
           project-path: android
           output-path: android-app.apk
-      - name: Archive production artifacts
+      - name: Archive Android App
         uses: actions/upload-artifact@v2
         with:
           name: android-app
@@ -124,10 +125,11 @@ jobs:
     needs: release-build
     steps:
       - uses: actions/checkout@v2
-      - name: Download a single artifact
+      - name: Download /dist
         uses: actions/download-artifact@v2
         with:
           name: dist-production
+          path: dist
       - name: Cache node modules
         uses: actions/cache@v2
         env:
@@ -153,7 +155,7 @@ jobs:
           team-id: ${{ secrets.TEAM_ID }}
           workspace-path: ios/App/App.xcworkspace # optional
           output-path: 'ios-app.ipa'
-      - name: Archive production artifacts
+      - name: Archive iOS App
         uses: actions/upload-artifact@v2
         with:
           name: ios-app
