@@ -52,6 +52,8 @@ jobs:
     steps:
       # checkout
       - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
       #  push to production branch
       - name: Push changes to production branch
         uses: ad-m/github-push-action@master
