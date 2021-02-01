@@ -1,0 +1,28 @@
+name: Deploying to production
+on:
+  push:
+    branches: [ production ]
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment: b4a_deploy
+
+    steps:
+      - uses:  actions/checkout@v2
+      - name: Install ionic
+        run: npm install @ionic/cli
+      - name: Install dependencies
+        run: npm install
+      - name: Install Back4Appp
+        run: curl https://raw.githubusercontent.com/back4app/parse-cli/back4app/installer.sh | sudo /bin/bash
+      - name: Configure Back4App
+        run: b4a configure accountkey ${{ secret.B4A_ACCOUNT_KEY}}
+      - name: Deploy Cloud Code
+        run: npm run deploy
+        env:
+          VUE_APP_PARSE_APP_ID: ${{ secret.VUE_APP_PARSE_APP_ID}}
+          VUE_APP_PARSE_JS_KEY: ${{ secret.VUE_APP_PARSE_JS_KEY}}
+          VUE_APP_PARSE_MASTER_KEY: ${{ secret.VUE_APP_PARSE_MASTER_KEY}}
+          VUE_APP_PARSE_URL: ${{ secret.VUE_APP_PARSE_URL}}
