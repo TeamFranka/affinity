@@ -145,7 +145,7 @@ jobs:
         run: npm install capacitor
       - name: Sync assets
         run: npx cap sync ios
-      - uses: sparkfabrik/ios-build-action@v1.0.0
+      - uses: sparkfabrik/ios-build-action@v1.1.0
         continue-on-error: true
         with:
           project-path: ios/App/App.xcodeproj
@@ -195,6 +195,7 @@ jobs:
         uses: actions/download-artifact@v2
         with:
           name: android-app
+          path: android-app.apk
       - name: Copy App to asset
         run: |
           mkdir -p dist/assets/apps
