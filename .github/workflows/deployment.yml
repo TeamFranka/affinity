@@ -21,11 +21,27 @@ jobs:
           alias b4a=/usr/local/bin/b4a
       - name: Configure Back4App
         run: echo ${{ secrets.B4A_ACCOUNT_KEY}} | b4a configure accountkey
-      - name: Deploy Cloud Code
-        run: 'npm run deploy:b4a'
+      - name: Build Cloud
+        run: |
+          npm run build
+          cd backend/cloud
+          npm install
         env:
           VUE_APP_DEFAULT_TEAM: ${{ secrets.VUE_APP_DEFAULT_TEAM}}
           VUE_APP_PARSE_APP_ID: ${{ secrets.VUE_APP_PARSE_APP_ID}}
           VUE_APP_PARSE_JS_KEY: ${{ secrets.VUE_APP_PARSE_JS_KEY}}
           VUE_APP_PARSE_MASTER_KEY: ${{ secrets.VUE_APP_PARSE_MASTER_KEY}}
           VUE_APP_PARSE_URL: ${{ secrets.VUE_APP_PARSE_URL}}
+      - name: Deploy db
+        run: |
+          npm run deploy:db
+        env:
+          VUE_APP_DEFAULT_TEAM: ${{ secrets.VUE_APP_DEFAULT_TEAM}}
+          VUE_APP_PARSE_APP_ID: ${{ secrets.VUE_APP_PARSE_APP_ID}}
+          VUE_APP_PARSE_JS_KEY: ${{ secrets.VUE_APP_PARSE_JS_KEY}}
+          VUE_APP_PARSE_MASTER_KEY: ${{ secrets.VUE_APP_PARSE_MASTER_KEY}}
+          VUE_APP_PARSE_URL: ${{ secrets.VUE_APP_PARSE_URL}}
+      - name: Deploy Cloud Code
+        run: |
+          cd backend
+          b4a deploy affinity
