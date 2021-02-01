@@ -109,7 +109,8 @@ jobs:
         run: npm install capacitor
       - name: Sync assets
         run: npx cap sync android
-      - uses: sparkfabrik/android-build-action@v1.0.0
+      - name: Build Android App
+        uses: sparkfabrik/android-build-action@v1.0.0
         with:
           project-path: android
           output-path: android-app.apk
@@ -145,7 +146,8 @@ jobs:
         run: npm install capacitor
       - name: Sync assets
         run: npx cap sync ios
-      - uses: sparkfabrik/ios-build-action@v1.1.0
+      - name: Build iOS App
+        uses: sparkfabrik/ios-build-action@v1.1.0
         continue-on-error: true
         with:
           project-path: ios/App/App.xcodeproj
