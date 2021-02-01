@@ -20,7 +20,7 @@ jobs:
       - name: Configure Back4App
         run: echo ${{ secrets.B4A_ACCOUNT_KEY}} | b4a configure accountkey
       - name: Deploy Cloud Code
-        run: npm run deploy
+        run: 'npm run deploy:b4a'
         env:
           VUE_APP_PARSE_APP_ID: ${{ secrets.VUE_APP_PARSE_APP_ID}}
           VUE_APP_PARSE_JS_KEY: ${{ secrets.VUE_APP_PARSE_JS_KEY}}
