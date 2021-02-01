@@ -30,8 +30,8 @@ jobs:
           VUE_APP_DEFAULT_TEAM: ${{ secrets.VUE_APP_DEFAULT_TEAM}}
           VUE_APP_PARSE_APP_ID: ${{ secrets.VUE_APP_PARSE_APP_ID}}
           VUE_APP_PARSE_JS_KEY: ${{ secrets.VUE_APP_PARSE_JS_KEY}}
-          VUE_APP_PARSE_MASTER_KEY: ${{ secrets.VUE_APP_PARSE_MASTER_KEY}}
           VUE_APP_PARSE_URL: ${{ secrets.VUE_APP_PARSE_URL}}
+          VUE_APP_PARSE_LIVE_URL: ${{ secrets.VUE_APP_PARSE_LIVE_URL }}
       - name: Deploy db
         run: |
           npm run deploy:db
@@ -41,6 +41,7 @@ jobs:
           VUE_APP_PARSE_JS_KEY: ${{ secrets.VUE_APP_PARSE_JS_KEY}}
           VUE_APP_PARSE_MASTER_KEY: ${{ secrets.VUE_APP_PARSE_MASTER_KEY}}
           VUE_APP_PARSE_URL: ${{ secrets.VUE_APP_PARSE_URL}}
+          VUE_APP_PARSE_LIVE_URL: ${{ secrets.VUE_APP_PARSE_LIVE_URL }}
       - name: Deploy Cloud Code
         run: |
           cd backend
