@@ -1,0 +1,10 @@
+{
+  "applications": {
+    "_default": {
+      "link": "affinity"
+    },
+    "affinity": {
+      "applicationId": "pJ63XHNU3C14XQpdLVYDbQR3mSU4aye4LQhxap3R"
+    }
+  }
+}
