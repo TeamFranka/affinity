@@ -18,7 +18,7 @@ jobs:
       - name: Install Back4Appp
         run: curl https://raw.githubusercontent.com/back4app/parse-cli/back4app/installer.sh | sudo /bin/bash
       - name: Configure Back4App
-        run: b4a configure accountkey ${{ secrets.B4A_ACCOUNT_KEY}}
+        run: echo ${{ secrets.B4A_ACCOUNT_KEY}} | b4a configure accountkey
       - name: Deploy Cloud Code
         run: npm run deploy
         env:
