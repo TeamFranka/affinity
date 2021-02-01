@@ -24,6 +24,7 @@ tests/e2e/videos
 log.txt
 npm-debug.log*
 
+/android/.idea
 /.idea
 /.ionic
 /.envs
