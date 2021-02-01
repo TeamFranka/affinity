@@ -22,6 +22,7 @@ jobs:
       - name: Deploy Cloud Code
         run: 'npm run deploy:b4a'
         env:
+          VUE_APP_DEFAULT_TEAM: ${{ secrets.VUE_APP_DEFAULT_TEAM}}
           VUE_APP_PARSE_APP_ID: ${{ secrets.VUE_APP_PARSE_APP_ID}}
           VUE_APP_PARSE_JS_KEY: ${{ secrets.VUE_APP_PARSE_JS_KEY}}
           VUE_APP_PARSE_MASTER_KEY: ${{ secrets.VUE_APP_PARSE_MASTER_KEY}}
