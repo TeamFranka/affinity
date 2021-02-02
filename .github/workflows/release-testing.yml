@@ -215,7 +215,9 @@ jobs:
       - name: Build Cloud
         run: |
           cd backend/cloud
+          mkdir './node_modules'
           npm install
+          ls
       - name: Deploy db
         run: |
           npm run deploy:db
