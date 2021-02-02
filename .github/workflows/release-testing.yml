@@ -200,11 +200,12 @@ jobs:
             ${{ runner.os }}-
       - name: Install capacitor
         run: npm install
-      - name: Download a single artifact
+      - name: Download /dist
         uses: actions/download-artifact@v2
         with:
           name: dist-production
-      - name: Download a single artifact
+          path: dist
+      - name: Download signed Android App
         uses: actions/download-artifact@v2
         with:
           name: android-app
@@ -217,7 +218,7 @@ jobs:
           cd backend/cloud
           mkdir './node_modules'
           npm install
-          ls
+          ls node_modules
       - name: Deploy db
         run: |
           npm run deploy:db
