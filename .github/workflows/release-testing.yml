@@ -87,6 +87,7 @@ jobs:
   android-app:
     runs-on: ubuntu-latest
     needs: release-build
+    environment: android_app
     steps:
       - uses: actions/checkout@v2
       - name: Download /dist
@@ -114,12 +115,21 @@ jobs:
         with:
           project-path: android
           output-path: android-app.apk
+      - uses: r0adkll/sign-android-release@v1
+        name: Sign app APK
+        # ID used to access action output
+        id: sign_app
+        with:
+          releaseDirectory: ./
+          signingKeyBase64: ${{ secrets.ANDROID_KEYSTORE }}
+          alias: ${{ secrets.ANDROID_KEY_ALIAS }}
+          keyStorePassword: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          keyPassword: ${{ secrets.ANDROID_KEY_PASSWORD }}
       - name: Archive Android App
         uses: actions/upload-artifact@v2
         with:
           name: android-app
-          path: |
-            android-app.apk
+          path: ${{steps.sign_app.outputs.signedReleaseFile}}
 
   ios-app:
     runs-on: macos-latest
@@ -198,11 +208,10 @@ jobs:
         uses: actions/download-artifact@v2
         with:
           name: android-app
-          path: android-app.apk
       - name: Copy App to asset
         run: |
           mkdir -p dist/assets/apps
-          mv android-app.apk dist/assets/apps
+          mv *.apk dist/assets/apps
       - name: Build Cloud
         run: |
           cd backend/cloud
