@@ -1,7 +1,7 @@
 <template>
   <div class="ion-padding-top ion-padding-start">
-    <ion-chip @click="toggleComments()" outline :color="showComments ? 'dark':'light'">
-      <ion-icon :icon="commentsIcon" size="small" />
+    <ion-chip @click="toggleComments()" outline color="medium">
+      <ion-icon :icon="showComments ? commentsIconB : commentsIcon" size="small" />
       <ion-label>{{object.commentsCount}}</ion-label>
     </ion-chip>
     <ion-chip outline color="light">
@@ -47,7 +47,7 @@ import {
   IonLabel, IonSpinner, IonIcon, IonChip, IonGrid,
 } from '@ionic/vue';
 import {
-  chatbubblesOutline, addOutline, arrowRedoOutline, heartOutline
+  chatbubbles, chatbubblesOutline, addOutline, arrowRedoOutline, heartOutline
 } from 'ionicons/icons';
 import InlineText from "./inline-text.vue";
 import ShareButton from "./share-button.vue";
@@ -83,6 +83,7 @@ export default defineComponent({
       objs: computed(() => store.getters.objectsMap),
       store,
       commentsIcon: chatbubblesOutline,
+      commentsIconB: chatbubbles,
       teamSplitterIcon: arrowRedoOutline,
       shareIcon: arrowRedoOutline,
       plusIcon: addOutline,
