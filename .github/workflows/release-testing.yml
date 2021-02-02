@@ -213,12 +213,6 @@ jobs:
         run: |
           mkdir -p dist/assets/apps
           mv *.apk dist/assets/apps
-      - name: Build Cloud
-        run: |
-          cd backend/cloud
-          mkdir './node_modules'
-          npm install
-          ls node_modules
       - name: Deploy db
         run: |
           npm run deploy:db
