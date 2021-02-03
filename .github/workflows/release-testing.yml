@@ -165,6 +165,7 @@ jobs:
           p12-base64: ${{ secrets.P12_BASE64 }}
           mobileprovision-base64: ${{ secrets.MOBILEPROVISION_BASE64 }}
           code-signing-identity: ${{ secrets.CODE_SIGNING_IDENTITY }}
+          certificate-password: ${{ secrets.CREDENTIALS_PASSWORD }}
           team-id: ${{ secrets.TEAM_ID }}
           workspace-path: ios/App/App.xcworkspace # optional
           output-path: 'ios-app.ipa'
