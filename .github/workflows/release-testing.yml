@@ -164,8 +164,7 @@ jobs:
           project-path: ios/App/App.xcodeproj
           p12-base64: ${{ secrets.P12_BASE64 }}
           mobileprovision-base64: ${{ secrets.MOBILEPROVISION_BASE64 }}
-          code-signing-identity: 'iOS Distribution'
-          certificate-password: ${{ secrets.CERT_PASSWORD }}
+          code-signing-identity: ${{ secrets.CODE_SIGNING_IDENTITY }}
           team-id: ${{ secrets.TEAM_ID }}
           workspace-path: ios/App/App.xcworkspace # optional
           output-path: 'ios-app.ipa'
