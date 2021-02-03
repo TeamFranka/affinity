@@ -132,6 +132,7 @@ jobs:
           path: ${{steps.sign_app.outputs.signedReleaseFile}}
 
   ios-app:
+    environment: ios_app
     runs-on: macos-latest
     needs: release-build
     steps:
