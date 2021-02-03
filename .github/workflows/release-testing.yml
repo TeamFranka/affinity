@@ -162,7 +162,7 @@ jobs:
         continue-on-error: false
         with:
           project-path: ios/App/App.xcodeproj
-          p12-key-base64: ${{ secrets.P12_KEY_BASE64 }}
+          p12-base64: ${{ secrets.P12_BASE64 }}
           mobileprovision-base64: ${{ secrets.MOBILEPROVISION_BASE64 }}
           code-signing-identity: ${{ secrets.CODE_SIGNING_IDENTITY }}
           certificate-password: ${{ secrets.CERT_PASSWORD }}
