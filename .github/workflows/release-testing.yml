@@ -176,7 +176,7 @@ jobs:
           path: |
             ios-app.ipa
 
-  deploy:
+  deploy-parse:
     environment: b4a_deploy
     runs-on: ubuntu-latest
     needs: [ tests, release-build, android-app, ios-app ]
@@ -211,10 +211,6 @@ jobs:
         uses: actions/download-artifact@v2
         with:
           name: android-app
-      - name: Download signed iOS App
-        uses: actions/download-artifact@v2
-        with:
-          name: ios-app
       - name: Copy App to asset
         run: |
           mkdir -p dist/assets/apps
@@ -233,6 +229,16 @@ jobs:
         run: |
           cd backend
           b4a deploy affinity
+
+  deploy-ios:
+    environment: ios_deploy
+    runs-on: macos-latest
+    needs: [ ios-app, deploy-parse ]
+    steps:
+      - name: Download signed iOS App
+        uses: actions/download-artifact@v2
+        with:
+          name: ios-app
       - name: 'Upload app to TestFlight'
         uses: apple-actions/upload-testflight-build@v1
         with:
