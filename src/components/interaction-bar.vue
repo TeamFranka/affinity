@@ -1,27 +1,29 @@
 <template>
   <div class="ion-padding-top ion-padding-start">
-    <ion-chip @click="toggleComments()" outline color="medium">
-      <ion-icon :icon="showComments ? commentsIconB : commentsIcon" size="small" />
+    <comment-button
+      :object="object"
+      :pointer="pointer"
+      :counter="object.commentsCount || 0"
+    />
+
+    <!-- <ion-chip @click="toggleComments()" color="medium">
+      <ion-icon :icon="showComments ? commentsIconB : commentsIcon" :color="showComments ? 'primary' : '' " size="small" />
       <ion-label>{{object.commentsCount}}</ion-label>
-    </ion-chip>
-    <ion-chip outline color="light">
-      <share-button
-        :link="fullLink"
-        :pointer="pointer"
-        :counter="object.sharesCount || 0"
-      />
-    </ion-chip>
-    <ion-chip outline :color="likedColor">
-      <like-button
-        :has-liked="hasLiked"
-        :pointer="pointer"
-        :counter="object.likesCount || 0"
-      />
-    </ion-chip>
+    </ion-chip> -->
+    <share-button
+      :link="fullLink"
+      :pointer="pointer"
+      :counter="object.sharesCount || 0"
+    />
+    <like-button
+      :has-liked="hasLiked"
+      :pointer="pointer"
+      :counter="object.likesCount || 0"
+    />
     <reactions :item="object" />
     <slot name="extraButtons" />
   </div>
-  <div v-if="showComments">
+  <!-- <div v-if="showComments">
     <ion-spinner v-if="commentsLoading" />
     <inline-text
       :value="draft"
@@ -39,27 +41,28 @@
         :object="pointer"
       />
     </ion-grid>
-  </div>
+  </div> -->
 </template>
 
 <script lang="ts">
-import {
-  IonLabel, IonSpinner, IonIcon, IonChip, IonGrid,
-} from '@ionic/vue';
+// import {
+//   IonSpinner,
+// } from '@ionic/vue';
 import {
   chatbubbles, chatbubblesOutline, addOutline, arrowRedoOutline, heartOutline
 } from 'ionicons/icons';
-import InlineText from "./inline-text.vue";
+// import InlineText from "./inline-text.vue";
 import ShareButton from "./share-button.vue";
 import LikeButton from "./like-button.vue";
+import CommentButton from './comment-button.vue';
 import Reactions from "./reactions.vue";
-import Comment from "./comment.vue";
+// import Comment from "./comment.vue";
 import { useStore } from '../stores/';
 import { defineComponent, computed } from 'vue';
 import { Model } from "@/utils/model";
 
 export default defineComponent({
-  name: 'Activity',
+  name: 'InteractionBar',
   props: {
     object: {
       type: Model,
@@ -80,7 +83,7 @@ export default defineComponent({
   setup() {
     const store = useStore();
     return {
-      objs: computed(() => store.getters.objectsMap),
+      // objs: computed(() => store.getters.objectsMap),
       store,
       commentsIcon: chatbubblesOutline,
       commentsIconB: chatbubbles,
@@ -101,69 +104,60 @@ export default defineComponent({
     pointer(): Parse.Pointer {
       return this.object.toPointer()
     },
-    draft(): string {
-      const d = this.store.state.comments.drafts[this.object.objectId];
-      if (d) {
-        return d[""]
-      }
-      return ""
-    },
-    commentsLoading(): boolean {
-      const s = this.store.state.comments.comments[this.object.objectId];
-      if (s) {
-        return s.loading
-      }
-      return false
-    },
-    comments(): Array<any> {
-      const s = this.store.state.comments.comments[this.object.objectId];
-      if (s) {
-        return s.comments
-      }
-      return []
-    },
+    // draft(): string {
+    //   const d = this.store.state.comments.drafts[this.object.objectId];
+    //   if (d) {
+    //     return d[""]
+    //   }
+    //   return ""
+    // },
+    // commentsLoading(): boolean {
+    //   const s = this.store.state.comments.comments[this.object.objectId];
+    //   if (s) {
+    //     return s.loading
+    //   }
+    //   return false
+    // },
+    // comments(): Array<any> {
+    //   const s = this.store.state.comments.comments[this.object.objectId];
+    //   if (s) {
+    //     return s.comments
+    //   }
+    //   return []
+    // },
     likedColor(): string {
       return this.hasLiked ? "danger" : "light"
     },
   },
   methods: {
-    async toggleComments() {
-      if (this.showComments) {
-        this.showComments = false;
-        return
-      }
-      await this.store.dispatch("comments/loadComments", this.object.toPointer());
-      this.showComments = true;
-    },
-    setDraft(text: string) {
-      this.store.commit("comments/setDraft", {
-        objectId: this.object.objectId,
-        text
-      });
-    },
-    submitComment(){
-      const text = this.comment;
-      console.log("submitting", text);
-      this.store.dispatch("comments/submitDraft", {
-        ptr: this.object.toPointer(),
-        text
-      });
-    }
+    // async toggleComments() {
+    //   if (this.showComments) {
+    //     this.showComments = false;
+    //     return
+    //   }
+    //   await this.store.dispatch("comments/loadComments", this.object.toPointer());
+    //   this.showComments = true;
+    // },
+    // setDraft(text: string) {
+    //   this.store.commit("comments/setDraft", {
+    //     objectId: this.object.objectId,
+    //     text
+    //   });
+    // },
+    // submitComment(){
+    //   const text = this.comment;
+    //   console.log("submitting", text);
+    //   this.store.dispatch("comments/submitDraft", {
+    //     ptr: this.object.toPointer(),
+    //     text
+    //   });
+    // }
   },
   components: {
-    IonChip, IonLabel, IonSpinner, Comment,
-    IonIcon, IonGrid, InlineText, ShareButton, Reactions, LikeButton
+    ShareButton, Reactions, LikeButton, CommentButton
   },
 });
 </script>
 <style scoped>
-.like-icon {
-  position: absolute;
-  transform-origin: bottom;
-  opacity: 0;
-  width: 3em;
-  height: 3em;
-  color: #900;
-  z-index: 1;
-}
+
 </style>
