@@ -125,6 +125,7 @@ export default defineComponent({
   },
   props: {
     withCloser: Boolean,
+    signupExtra: Object,
   },
   data() {
     return {
@@ -202,10 +203,12 @@ export default defineComponent({
     signUp(event: Event) {
       event.preventDefault();
       this.resetError();
-
-      Parse.User.signUp(this.input.username, this.input.password, {
+      const attrs = Object.assign({}, this.signupExtra, {
         name: this.input.name, email: this.input.email
-      }, {}).then(async (resp) => {
+      });
+
+      Parse.User.signUp(this.input.username, this.input.password, attrs, {})
+      .then(async (resp) => {
         console.log('Logged in successfully', resp);
 
         // Clears up the form

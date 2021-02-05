@@ -17,6 +17,17 @@ const Defaults = {
 const Levels = ["anyone", "members", "publishers", "mods", "leaders", "nobody"];
 
 const Team = Parse.Object.extend("Team", {
+    applyForMembership: async function(user) {
+        const accessLevel = this.get("membershipAccess") || 'open';
+        switch(accessLevel) {
+            case "open":
+                await this.get("members").getUsers().add(user).save(null, {useMasterKey: true});
+                console.log("done for", user);
+                break
+            default:
+                throw "Access to team denied. Level not implemeted: " + accessLevel;
+        }
+    },
     isMember: function(groupName, userId) {
         return this
             .get(groupName)
