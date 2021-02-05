@@ -1,6 +1,6 @@
 /// <reference types="Cypress" />
 describe('Sign up', () => {
-  it('Visits the feed', () => {
+  it('Applies for membership of default team', () => {
     const username = `sontaran-${Math.floor(Math.random()*  1000000)}`;
 
     cy.visit('/news');
@@ -21,7 +21,7 @@ describe('Sign up', () => {
 
     // Make sure we are a member of the default team
     cy.get('[data-cy=my-teams]').within(() => {
-        cy.get('a[href=/t/doctor-who]').should('be.visible');
+        cy.get('a').should('have.attr', 'href').and('include', '/t/');
     })
   })
 })

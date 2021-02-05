@@ -9,7 +9,7 @@
             <ion-icon :icon="uploadIcon"></ion-icon>
           </ion-chip>
         </div>
-        <div>
+        <div data-cy="my-teams">
           <h2>You are a member of</h2>
           <router-link
               v-for="t in myTeams"
