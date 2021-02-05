@@ -9,6 +9,16 @@
             <ion-icon :icon="uploadIcon"></ion-icon>
           </ion-chip>
         </div>
+        <div>
+          <h2>You are a member of</h2>
+          <router-link
+              v-for="t in myTeams"
+              :key="t.id"
+              :to="{name: 'ViewTeam', params: { teamSlug: t.slug } }"
+            >
+              <avatar :profile="t" withName />
+          </router-link>
+        </div>
     </ion-content>
   </ion-page>
 </template>
@@ -29,6 +39,7 @@ export default defineComponent({
 
     return {
       user: computed(() => store.state.auth.user ),
+      myTeams: computed(() => store.getters['auth/myTeams'] ),
       setUserAvatar: (f: Parse.File) => store.dispatch("auth/setAvatar", f),
       chatbubbles, logoWhatsapp, uploadIcon: cloudUploadOutline
     }
