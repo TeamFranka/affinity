@@ -4,8 +4,8 @@ describe('Posting poll to the feed as an Admin', () => {
 
     it('Posts a Poll and edit it', () => {
       cy.loggedInAs("river");
-      const testTitle = `How awesome is Dr Who ${Math.abs(Math.random()*  1000000)}?`;
-      const testDesc = `Test Description ${Math.abs(Math.random()*  1000000)}?`;
+      const testTitle = `How awesome is Dr Who ${Math.floor(Math.random()*  1000000)}?`;
+      const testDesc = `Test Description ${Math.floor(Math.random()*  1000000)}?`;
       cy.visit('/feed');
 
       cy.get('[data-cy=newPost] [data-cy=addPoll]').click();
