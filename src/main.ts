@@ -3,6 +3,8 @@ import App from './config/App.vue'
 import router from './router';
 import { store, key } from './stores/'
 
+import './registerServiceWorker'
+
 import { IonicVue } from '@ionic/vue';
 
 /* Core CSS required for Ionic components to work properly */
