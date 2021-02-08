@@ -116,23 +116,6 @@ export default defineComponent({
       console.log('Error getting logged user', err);
     });
 
-    // const install = new Parse.Installation();
-    // install.set("deviceType", getPlatforms().toString());
-    // install.set("appName", "affinity");
-    // install.set("appVersion", __VERSION);
-    // // install.set("parseVersion", Parse.version);
-
-    // install.save(null, {
-    //   success: (install: any) => {
-    //     // Execute any logic that should take place after the object is saved.
-    //     console.log('New object created with objectId: ' + install.objectId);
-    //   },
-    //   error: (install: any, error: any) => {
-    //     // Execute any logic that should take place if the save fails.
-    //     // error is a Parse.Error with an error code and message.
-    //     console.log('Failed to create new object, with error code:' + error.message.toString());
-    //   }
-    // });
   }
 });
 </script>

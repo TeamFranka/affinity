@@ -28,7 +28,6 @@ import LoginModal from '../components/login-modal.vue';
 import HeaderBar from '../components/header-bar.vue';
 import { useStore } from '../stores/';
 
-
 export default defineComponent({
   name: 'App',
   components: {
