@@ -1,103 +1,59 @@
 import Parse from 'parse';
-import { isPlatform, getPlatforms } from '@ionic/vue';
 
-import {
-  Plugins,
-  PushNotification,
-  PushNotificationToken,
-  PushNotificationActionPerformed,
-} from '@capacitor/core';
+import { Plugins, PushNotificationToken } from '@capacitor/core';
 
 const { PushNotifications, Device } = Plugins;
 
-export async function setupNotificationInfra(token: string) {
-
+export async function generateInstallation(opts: any): Promise<Parse.Installation> {
   const info = await Device.getInfo();
-  console.log(info);
-
   const install = new Parse.Installation();
-  install.set("deviceType", getPlatforms().toString());
-  install.set("deviceName", info.name);
-  install.set("deviceModel", info.model);
-  install.set("appIdentifier", info.appId);
-  install.set("appName", info.appName);
-  install.set("appVersion", info.appVersion);
-  install.set("appBuild", info.appBuild);
-  install.set("deviceType", info.platform);
-  install.set("installationId", info.uuid);
-  install.set("GCMSenderId", process.env.VUE_APP_GCM_SENDER_ID);
-  install.set("deviceToken", token);
-  // install.set("appVersion", __VERSION);
-  // install.set("parseVersion", Parse.version);
-
-  await install.save(null).then((install: any) => {
-      // Execute any logic that should take place after the object is saved.
-      console.log('New Installation object created: ',install.toJSON());
-      if (window.localStorage) {
-          window.localStorage.setItem('sysInstall', install.toJSON());
-      }
-
-      return true
-    }, (error: any) => {
-      // Execute any logic that should take place if the save fails.
-      // error is a Parse.Error with an error code and message.
-      console.log('Failed to create new object, with error code:' + error.message.toString());
-      return false
-    }
-  );
+  install.set({
+    "deviceName": info.name,
+    "deviceModel": info.model,
+    "appIdentifier": info.appId,
+    "appName": info.appName,
+    "appVersion": info.appVersion,
+    "appBuild": info.appBuild,
+    "deviceType": info.platform,
+    "installationId": info.uuid,
+    // "localeIdentifier": info,
+    "GCMSenderId": process.env.VUE_APP_GCM_SENDER_ID,
+  });
+  install.set(opts);
+  return install;
 }
 
-export function setupNotifications() {
-
-  console.log("checking for notifications");
-  if (!isPlatform('mobile')) {
-    console.log("we are not mobile");
-    return;
+export function setupNotificationsActions(
+  onNotification: any, onNotificationAction: any
+) {
+  if (onNotification) {
+    PushNotifications.addListener('pushNotificationReceived', onNotification);
   }
 
-  // we currently ignore Web
-  // if (window.localStorage) {
-  //   const install = window.localStorage.getItem('sysInstall');
+  if (onNotificationAction) {
+    PushNotifications.addListener('pushNotificationActionPerformed',onNotificationAction);
+  }
+}
 
-  //   if (install){
-  //     console.log("Installation already found", install);
-  //     return  true;
-  //   }
-  // }
+export function initInstallation(): Promise<Parse.Installation> {
+  const promise: Promise<Parse.Installation> = new Promise((resolve, reject) => {
+    PushNotifications.addListener('registration', (token: PushNotificationToken) => {
+      generateInstallation({"deviceToken": token.value})
+        .then((x: Parse.Installation) => resolve(x))
+        .catch((x: any) => reject(x));
+    });
 
-  console.log("localstorage", window.localStorage);
-
-  PushNotifications.addListener(
-    'registration',
-    (token: PushNotificationToken) => {
-      setupNotificationInfra(token.value);
-    },
-  );
-
-  PushNotifications.addListener('registrationError', (error: any) => {
-    alert('Error on registration: ' + JSON.stringify(error));
+    PushNotifications.addListener('registrationError', (error: any) => {
+      console.warn('Error on registration', error);
+      reject(error);
+    });
   });
-
-  PushNotifications.addListener(
-    'pushNotificationReceived',
-    (notification: PushNotification) => {
-      alert('Push received: ' + JSON.stringify(notification));
-    },
-  );
-
-  PushNotifications.addListener(
-    'pushNotificationActionPerformed',
-    (notification: PushNotificationActionPerformed) => {
-      alert('Push action performed: ' +  JSON.stringify(notification));
-    },
-  );
-
 
   // Request permission to use push notifications
   // iOS will prompt user and return if they granted permission or not
   // Android will just grant without prompting
   PushNotifications.requestPermission().then(result => {
-    console.log("fake", result);
+    console.log("received permission for push", result);
     if (result.granted) {
       // Register with Apple / Google to receive push via APNS/FCM
       PushNotifications.register();
@@ -105,10 +61,6 @@ export function setupNotifications() {
       // Show some error
     }
   });
-}
 
-export async function setupAll() {
-  await Promise.all([
-    setupNotifications()
-  ]);
+  return promise
 }

@@ -6,7 +6,6 @@ import { store, key } from './stores/'
 import './registerServiceWorker'
 
 import { IonicVue } from '@ionic/vue';
-import { setupAll } from './utils/setup';
 /* Core CSS required for Ionic components to work properly */
 import '@ionic/vue/css/core.css';
 
@@ -33,6 +32,5 @@ const app = createApp(App)
   .use(router);
 
 router.isReady().then(() => {
-  setupAll();
   app.mount('#app');
 });

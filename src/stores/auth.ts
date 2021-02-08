@@ -1,10 +1,13 @@
 import { Parse } from '@/config/Consts';
+import { isPlatform } from '@ionic/vue';
 import { Model, toModel } from '@/utils/model';
+import { initInstallation } from '@/utils/setup';
 import { watch } from 'vue';
 
 export interface AuthStateT {
   wantsToLogin: boolean;
   user: Model | null;
+  installation: Model | null;
   teams: Array<string>;
   teamPermissions: Record<string, any>;
 }
@@ -52,6 +55,9 @@ export const AuthState = {
     setUser(state: AuthStateT, newUser: Model|null) {
       state.user = newUser
     },
+    setInstallation(state: AuthStateT, installation: Model|null) {
+      state.installation = installation
+    },
     setWantsToLogin(state: AuthStateT, wanna: boolean) {
       state.wantsToLogin = wanna;
     },
@@ -64,6 +70,18 @@ export const AuthState = {
     }
   },
   actions: {
+    init(context: any) {
+      if (isPlatform('mobile')) {
+        initInstallation().then(async (i: Parse.Installation) => {
+          if (context.state.user) {
+            i.set("user", context.state.user.toPointer())
+          }
+
+          await i.save()
+          context.commit("setInstallation", toModel(i));
+        });
+      }
+    },
     dismissLogin(context: any) {
       context.commit("setWantsToLogin", false);
     },
@@ -75,7 +93,13 @@ export const AuthState = {
       context.commit("setWantsToLogin", true);
     },
     async loggedIn(context: any, newUser: Parse.User) {
+      const userPointer = newUser.toPointer();
       context.commit("setUser", toModel(newUser));
+      if (context.state.installation && !context.state.user) {
+        context.state.prepareSave({user: userPointer}).save(); // fire and forget
+        context.state.installation.user = userPointer;
+        context.commit("setInstallation", context.state.installation);
+      }
       context.dispatch("dismissLogin");
 
       const resp = await Parse.Cloud.run("myTeams");

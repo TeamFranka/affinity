@@ -41,6 +41,7 @@ export default defineComponent({
   },
   setup() {
     const store = useStore();
+    store.dispatch("init");
     let loginModal: any = null;
     store.dispatch("fetchDefaultTeam", (window as any).AFFINITY_DEFAULT_TEAM);
 
