@@ -1,5 +1,5 @@
 import { InjectionKey } from 'vue'
-import { createStore, Store, useStore as baseUseStore } from 'vuex'
+import { createStore, Store, useStore as baseUseStore, createLogger } from 'vuex'
 
 import { GlobalStateT, GlobalState } from './globals';
 import { AuthStateT, AuthState } from './auth';
@@ -26,7 +26,10 @@ export interface State {
 // define injection key
 export const key: InjectionKey<Store<State>> = Symbol()
 
+const plugins = process.env.NODE_ENV === "development" ? [createLogger()] : []
+
 export const store = createStore<State>({
+  plugins,
   modules:{
     global: GlobalState,
     comments: Comments,
