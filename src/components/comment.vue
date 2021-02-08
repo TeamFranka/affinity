@@ -26,7 +26,8 @@
         <div class="authorText">
           {{ text }}
         </div>
-        <share-button
+        
+        <!-- <share-button
           :link="nix"
           :pointer="pointer"
           :counter="comment.sharesCount || 0"
@@ -35,7 +36,8 @@
           :has-liked="hasLiked"
           :pointer="pointer"
           :counter="comment.likesCount || 0"
-          />
+          /> -->
+
           <!--
           <ion-chip @click="toggleLike" outline size="small" :color="likedColor">
             <ion-icon :icon="likeIcon" size="small"/>
@@ -56,7 +58,7 @@
         </ion-chip>
       </ion-col>
       <ion-col offset="1" size="11">
-        <!-- <inline-text
+        <inline-text
           v-if="showInput"
           :value="draft"
           :canSubmit="!!(draft && draft.length >= 3)"
@@ -64,7 +66,9 @@
           @submit="submitComment()"
           @changed="setDraft($event)"
         />
-        -->
+      </ion-col>
+
+       <!--
         <comment
           v-for="c in children"
           :children="c.comments"
@@ -72,7 +76,7 @@
           :commentId="c.objectId"
           :object="object"
         />
-      </ion-col>
+      </ion-col> -->
     </ion-row>
   </ion-grid>
 </template>
@@ -93,7 +97,9 @@ import { useStore } from '../stores/';
 import { defineComponent, computed } from 'vue';
 import { dayjs } from "../config/Consts";
 import { Model } from '@/utils/model';
-// import InlineText from './inline-text.vue';
+import InteractionBar from "./interaction-bar.vue";
+
+import InlineText from './inline-text.vue';
 import LikeButton from './like-button.vue';
 import ShareButton from './share-button.vue';
 
@@ -215,7 +221,7 @@ export default defineComponent({
   },
   components: {
     IonRow, IonChip, IonLabel, IonCol,
-    IonIcon, IonNote, Avatar, LikeButton, ShareButton
+    IonIcon, IonNote, Avatar, InlineText
   },
 });
 </script>

@@ -1,8 +1,8 @@
 <template>
-    <span @click="toggleLike()" :disabled="disabled">
-      <ion-icon :icon="hasLiked  ? hasLikedIcon : likeIcon" :color="hasLiked ? 'danger' : '' " :size="iconSize" />
-      <ion-label>{{counter}}</ion-label>
-    </span>
+  <ion-chip @click="toggleLike()" :disabled="disabled" color ="medium">
+    <ion-icon :icon="hasLiked  ? hasLikedIcon : likeIcon" :color="hasLiked ? 'danger' : 'medium' " :size="iconSize" />
+    <ion-label>{{counter}}</ion-label>
+  </ion-chip>
 </template>
 <script>
 import {
@@ -54,6 +54,7 @@ export default defineComponent({
       } else {
         this.store.dispatch("auth/like", Object.assign({}, this.pointer));
       }
+      console.log("liked from like button");
     },
   },
   components: {
@@ -61,3 +62,5 @@ export default defineComponent({
   },
 });
 </script>
+<style scoped>
+</style>
