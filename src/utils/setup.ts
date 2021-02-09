@@ -23,7 +23,7 @@ export async function generateInstallation(opts: any): Promise<Parse.Installatio
   return install;
 }
 
-export function setupNotificationsActions(
+export function setupNotificationActions(
   onNotification: any, onNotificationAction: any
 ) {
   if (onNotification) {

@@ -44,30 +44,53 @@ Parse.Cloud.afterSave(Activity, async (request) => {
     const team = activity.get("team");
     await team.fetch();
     const verb = activity.get("verb");
+
+    const notification = {};
+    const channels = [];
     // FIXME: filter visiblity for users
 
     if (verb == "announce") {
-        const title = `News in ${team.get('name')}`;
-        const body = team.get("text");
-        return Parse.Push.send({
-            channels: [`${team.id}:news`],
-            notification: { title, body }
-        }, { useMasterKey: true });
-
+        channels.push(`${team.id}:news`);
+        notification.title = `News in ${team.get('name')}`;
+        notification.body = activity.get("text");
+        const body = activity.get("text");
+        if (body) {
+            notification.body = body;
+        }
 
     } else if (verb == "post" ) {
-        const author = activity.get("author");
-        await author.fetch();
-        const title = `Neuer Beitrag in ${team.get('name')}`;
-        const body = `${team.get("author").get("name")|team.get("author").get("username")}: ${team.get("text")}`;
-
-        return Parse.Push.send({
-            channels: [`${team.id}:posts`],
-            notification: { title, body }
-        }, { useMasterKey: true });
-
+        channels.push(`${team.id}:posts`);
+        notification.title = `Neuer Beitrag in ${team.get('name')}`;
+        const body = activity.get("text");
+        if (body) {
+            const author = activity.get("author");
+            await author.fetch();
+            const username = author.get("name") || author.get("username");
+            notification.body = `${username}: ${body}`;
+        }
     } else {
         console.log("Not pushing", activity);
         return
     }
+
+    if (!notification.image) {
+        for (const o of activity.get("objects")) {
+            if (o.className == "Picture") {
+                await o.fetch();
+                notification.image = o.get("file").url()
+                break;
+            }
+        }
+    }
+
+    if (!notification.image) {
+        const teamAvatar = team.get("avatar");
+        if (teamAvatar) {
+            notification.image = teamAvatar.url();
+        }
+    }
+
+    console.log("sending", notification);
+
+    return Parse.Push.send({ channels, notification }, { useMasterKey: true });
 });

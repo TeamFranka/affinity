@@ -23,10 +23,11 @@ import {
 import { defineComponent, computed, watch } from 'vue'
 
 // import SideMenu from '../components/side-menu.vue';
-import FooterMenu from '../components/footer-menu.vue';
-import LoginModal from '../components/login-modal.vue';
-import HeaderBar from '../components/header-bar.vue';
-import { useStore } from '../stores/';
+import FooterMenu from '@/components/footer-menu.vue';
+import LoginModal from '@/components/login-modal.vue';
+import HeaderBar from '@/components/header-bar.vue';
+import { setupNotificationActions } from '@/utils/setup';
+import { useStore } from '@/stores/';
 
 export default defineComponent({
   name: 'App',
@@ -44,6 +45,12 @@ export default defineComponent({
     store.dispatch("init");
     let loginModal: any = null;
     store.dispatch("fetchDefaultTeam", (window as any).AFFINITY_DEFAULT_TEAM);
+
+    setupNotificationActions((x: any) => {
+      console.log("received", x);
+    }, (x: any) => {
+      console.log("action", x);
+    }, );
 
     const updateLoginModal = async (newVal: boolean, oldVal: boolean) => {
       if (newVal && newVal != oldVal) {
