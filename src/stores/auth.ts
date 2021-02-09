@@ -32,7 +32,7 @@ export const AuthState = {
     user: (state: AuthStateT) => state.user,
     wantsToLogin: (state: AuthStateT) => state.wantsToLogin,
     userPtr: (state: AuthStateT) => state.user?.toPointer(),
-    myTeams: (state: AuthStateT, getters: any, rootState: any,rootGetters: any) => state
+    myTeams: (state: AuthStateT, getters: any, rootState: any, rootGetters: any) => state
       .teams
       .map(x => rootGetters.objectsMap[x]),
     teamPointers: (state: AuthStateT, getters: any, rootState: any, rootGetters: any) => {
@@ -73,10 +73,7 @@ export const AuthState = {
     init(context: any) {
       if (isPlatform('mobile')) {
         initInstallation().then(async (i: Parse.Installation) => {
-          if (context.state.user) {
-            i.set("user", context.state.user.toPointer())
-          }
-
+          i.set("defaultTeamId", context.rootGetters["defaultTeamId"])
           await i.save()
           context.commit("setInstallation", toModel(i));
         });
