@@ -34,3 +34,40 @@ Parse.Cloud.beforeSave(Activity, async (request) => {
 }, {
     requireUser: true
 });
+
+// We want to push news and actiities
+Parse.Cloud.afterSave(Activity, async (request) => {
+    if (request.original) {
+      return // update, let's ignore
+    }
+    const activity = request.object;
+    const team = activity.get("team");
+    await team.fetch();
+    const verb = activity.get("verb");
+    // FIXME: filter visiblity for users
+
+    if (verb == "announce") {
+        const title = `News in ${team.get('name')}`;
+        const body = team.get("text");
+        return Parse.Push.send({
+            channels: [`${team.id}:news`],
+            notification: { title, body }
+        }, { useMasterKey: true });
+
+
+    } else if (verb == "post" ) {
+        const author = activity.get("author");
+        await author.fetch();
+        const title = `Neuer Beitrag in ${team.get('name')}`;
+        const body = `${team.get("author").get("name")|team.get("author").get("username")}: ${team.get("text")}`;
+
+        return Parse.Push.send({
+            channels: [`${team.id}:posts`],
+            notification: { title, body }
+        }, { useMasterKey: true });
+
+    } else {
+        console.log("Not pushing", activity);
+        return
+    }
+});
