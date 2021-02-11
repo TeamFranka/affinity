@@ -40,8 +40,11 @@
             </router-link>
           </ion-col>
           <ion-col>
-            <router-link style="position: relative" to="/login">
-              <ion-icon size="large" :icon="loginIcon" />
+            <ion-button v-if="hasPush" color="medium" fill="clear" @click="openMenuPopover" >
+              <ion-icon size="large" :icon="settingsIcon" />
+            </ion-button>
+            <router-link v-else style="position: relative" to="/login">
+              <ion-icon :icon="loginIcon" />
             </router-link>
           </ion-col>
         </template>
@@ -72,12 +75,14 @@ import { createGesture } from "@ionic/core";
 import {
   planetOutline, addCircleOutline, chatbubbleEllipsesOutline,
   fileTrayFullOutline, personCircleOutline,
+  settings as settingsIcon,
   logInOutline as loginIcon,
   compassOutline as faqIcon, peopleCircleOutline, walletOutline
 } from 'ionicons/icons';
 import NotificationDot from '@/components/notification-dot.vue';
 import Avatar from '@/components/avatar.vue';
 import MyMenu from '@/components/my-menu.vue';
+import AnonMenu from '@/components/anon-menu.vue';
 import { defineComponent, computed } from 'vue';
 import { useStore } from '@/stores/';
 
@@ -89,6 +94,7 @@ export default defineComponent({
     const store = useStore();
     return {
       isLoggedIn: computed(() => !!store.getters["auth/isLoggedIn"]),
+      hasPush: computed(() => !!store.state.auth.installation),
       user: computed(() => store.state.auth.user),
       homeIcon: planetOutline,
       feedIcon: peopleCircleOutline,
@@ -98,6 +104,7 @@ export default defineComponent({
       chatIcon: fileTrayFullOutline,
       newChatIcon: chatbubbleEllipsesOutline,
       meIcon: personCircleOutline,
+      settingsIcon,
     }
   },
   components: {
@@ -114,6 +121,15 @@ export default defineComponent({
       const popover = await popoverController
         .create({
           component: MyMenu,
+          event: ev,
+          translucent: true
+        })
+      return popover.present();
+    },
+    async openMenuPopover(ev: Event) {
+      const popover = await popoverController
+        .create({
+          component: AnonMenu,
           event: ev,
           translucent: true
         })
