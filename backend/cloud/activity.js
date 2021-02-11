@@ -35,6 +35,7 @@ Parse.Cloud.beforeSave(Activity, async (request) => {
     requireUser: true
 });
 
+const CHANNELS_MAP = {'announce': 'news', 'post': 'posts'};
 // We want to push news and actiities
 Parse.Cloud.afterSave(Activity, async (request) => {
     if (request.original) {
@@ -46,20 +47,25 @@ Parse.Cloud.afterSave(Activity, async (request) => {
     const verb = activity.get("verb");
 
     const notification = {};
-    const channels = [];
-    // FIXME: filter visiblity for users
+    const data = {
+        "urlTarget": {
+            name: 'ViewActivity',
+            params: {
+                activityId: activity.id
+            }
+        }
+    };
 
     if (verb == "announce") {
-        channels.push(`${team.id}:news`);
+        notification.tag = `${team.id}:news`;
         notification.title = `News in ${team.get('name')}`;
         notification.body = activity.get("text");
         const body = activity.get("text");
         if (body) {
             notification.body = body;
         }
-
     } else if (verb == "post" ) {
-        channels.push(`${team.id}:posts`);
+        notification.tag = `${team.id}:posts`;
         notification.title = `Neuer Beitrag in ${team.get('name')}`;
         const body = activity.get("text");
         if (body) {
@@ -90,7 +96,21 @@ Parse.Cloud.afterSave(Activity, async (request) => {
         }
     }
 
-    console.log("sending", notification);
+    const visibility = request.context.visibility;
+    const message = { notification, data };
+    const channel = `${team.id}:${CHANNELS_MAP[verb]}`;
+    if (visibility == "public") {
+        message.channels = channel;
+    } else {
+        const targetMembers = team.get(visibility);
+        await targetMembers.fetch({useMasterKey: true});
+        const query = new Parse.Query(Parse.Installation)
+        query.equalTo('channels', channel)
+        query.matchesQuery('user', targetMembers.getUsers().query())
+        message.where = query;
+    }
 
-    return Parse.Push.send({ channels, notification }, { useMasterKey: true });
+    console.log("sending push notification", message);
+
+    return Parse.Push.send(message, { useMasterKey: true });
 });
