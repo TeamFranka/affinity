@@ -2,10 +2,10 @@
   <ion-header>
     <ion-toolbar>
       <ion-segment :value="action" @ionChange="switchAction($event.target.value)">
-        <ion-segment-button value="login">
+        <ion-segment-button data-cy="loginTab" value="login">
           <ion-label>Einloggen</ion-label>
         </ion-segment-button>
-        <ion-segment-button value="register">
+        <ion-segment-button data-cy="registerTab" value="register">
           <ion-label>Registrieren</ion-label>
         </ion-segment-button>
       </ion-segment>
@@ -95,7 +95,7 @@
         <ion-input type="text" name="name" v-model="input.name" placeholder="" />
       </ion-item>
       <div class="ion-text-end">
-        <ion-button fill="outline" color="primary" type="submit">
+        <ion-button fill="outline" color="primary" type="submit" data-cy-role="registerSubmit">
           Registrieren
         </ion-button>
       </div>
@@ -125,6 +125,7 @@ export default defineComponent({
   },
   props: {
     withCloser: Boolean,
+    signupExtra: Object,
   },
   data() {
     return {
@@ -202,10 +203,12 @@ export default defineComponent({
     signUp(event: Event) {
       event.preventDefault();
       this.resetError();
-
-      Parse.User.signUp(this.input.username, this.input.password, {
+      const attrs = Object.assign({}, this.signupExtra, {
         name: this.input.name, email: this.input.email
-      }, {}).then(async (resp) => {
+      });
+
+      Parse.User.signUp(this.input.username, this.input.password, attrs, {})
+      .then(async (resp) => {
         console.log('Logged in successfully', resp);
 
         // Clears up the form

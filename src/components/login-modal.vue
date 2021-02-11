@@ -1,6 +1,7 @@
 <template>
   <login
     with-closer
+    :signup-extra="signUpExtra"
     @close="closeModal"
     @user-updated="userUpdated($event)"
   />
@@ -11,7 +12,7 @@ import {
 } from "@ionic/vue";
 import Login from "./login.vue";
 import { useStore } from '../stores/';
-import { defineComponent } from 'vue';
+import { defineComponent, computed } from 'vue';
 
 export default defineComponent({
   name: 'LoginModal',
@@ -21,6 +22,7 @@ export default defineComponent({
   setup(){
     const store = useStore();
     return {
+      signUpExtra: computed(()=> ( { signUpForTeams: [store.getters.defaultTeamId] } )),
       closeModal: () => modalController.dismiss(),
       userUpdated: (newUser: any) => store.dispatch("auth/loggedIn", newUser)
     }
