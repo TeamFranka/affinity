@@ -11,10 +11,11 @@ import { Conversation } from './conversation';
 import { Poll } from './poll';
 import { Comment } from './comment';
 import { Activity } from './activity';
+import { Installation } from './installation';
 import { Notification } from './notification';
 
 export const All = [
-    User, Role, Team,
+    User, Installation, Role, Team,
     // objects
     Document, Poll, FaqEntry, Picture, Video, Link,
     // interaction

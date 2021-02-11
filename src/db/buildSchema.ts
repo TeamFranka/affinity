@@ -137,7 +137,11 @@ export const lib = {
 	},
 
 	isDefaultSchema: (className: string) =>
-		['_Session', '_PushStatus', '_Installation'].indexOf(className) !== -1,
+		[
+			'_Session',
+			'_PushStatus',
+		//	'_Installation'
+		].indexOf(className) !== -1,
 
 	isDefaultFields: (className: string, fieldName: string) => {
 		if (className === '_Role') return true
