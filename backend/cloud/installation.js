@@ -7,10 +7,12 @@ Parse.Cloud.beforeSave(Parse.Installation, async (request) => {
   const defaultTeamId = request.object.get("defaultTeamId");
   request.object.unset("defaultTeamId");
 
-  if (request.user) {
-    request.object.set("user", request.user);
-  } else {
-    request.object.unset("user");
+  if (!request.master) {
+    if (request.user) {
+      request.object.set("user", request.user);
+    } else {
+      request.object.unset("user");
+    }
   }
 
   if (request.original) {
