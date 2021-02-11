@@ -27,6 +27,7 @@ import FooterMenu from '@/components/footer-menu.vue';
 import LoginModal from '@/components/login-modal.vue';
 import HeaderBar from '@/components/header-bar.vue';
 import { setupNotificationActions } from '@/utils/setup';
+import { PushNotification, PushNotificationActionPerformed } from '@capacitor/core';
 import { useStore } from '@/stores/';
 
 export default defineComponent({
@@ -45,12 +46,6 @@ export default defineComponent({
     store.dispatch("init");
     let loginModal: any = null;
     store.dispatch("fetchDefaultTeam", (window as any).AFFINITY_DEFAULT_TEAM);
-
-    setupNotificationActions((x: any) => {
-      console.log("received", x);
-    }, (x: any) => {
-      console.log("action", x);
-    }, );
 
     const updateLoginModal = async (newVal: boolean, oldVal: boolean) => {
       if (newVal && newVal != oldVal) {
@@ -108,6 +103,24 @@ export default defineComponent({
   },
   mounted() {
     this.fetchUser();
+
+    setupNotificationActions((x: PushNotification) => {
+      console.log("received", x);
+    }, (n: PushNotificationActionPerformed) => {
+      console.log("action", n);
+      let data = n.notification.data.data;
+      if (typeof data === 'string' || data instanceof String) {
+        try {
+          data = JSON.parse(data as string);
+        } catch (e) {
+          console.error("received incorrect data in notification action", data, e)
+          return
+        }
+      }
+      if (data.urlTarget) {
+        this.$router.push(data.urlTarget);
+      }
+    });
   }
 });
 </script>
