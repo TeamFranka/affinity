@@ -91,12 +91,12 @@ export const AuthState = {
     },
     async loggedIn(context: any, newUser: Parse.User) {
       const userPointer = newUser.toPointer();
-      context.commit("setUser", toModel(newUser));
       if (context.state.installation && !context.state.user) {
         context.state.prepareSave({user: userPointer}).save(); // fire and forget
         context.state.installation.user = userPointer;
         context.commit("setInstallation", context.state.installation);
       }
+      context.commit("setUser", toModel(newUser));
       context.dispatch("dismissLogin");
 
       const resp = await Parse.Cloud.run("myTeams");
