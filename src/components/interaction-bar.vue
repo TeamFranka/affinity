@@ -1,29 +1,25 @@
 <template>
-  <div class="ion-padding-top ion-padding-start">
-    <ion-chip @click="toggleComments()" outline :color="showComments ? 'dark':'light'">
-      <ion-icon :icon="commentsIcon" size="small" />
+  <div class="interactionBar">
+    <ion-chip @click="toggleComments()" color="medium">
+      <ion-icon :icon="showComments ? commentsIconB : commentsIcon" :color="showComments ? 'primary' : '' " size="small" />
       <ion-label>{{object.commentsCount}}</ion-label>
     </ion-chip>
-    <ion-chip outline color="light">
-      <share-button
-        :link="fullLink"
-        :pointer="pointer"
-        :counter="object.sharesCount || 0"
-      />
-    </ion-chip>
-    <ion-chip outline :color="likedColor">
-      <like-button
-        :has-liked="hasLiked"
-        :pointer="pointer"
-        :counter="object.likesCount || 0"
-      />
-    </ion-chip>
+    <share-button
+      :link="fullLink"
+      :pointer="pointer"
+      :counter="object.sharesCount || 0"
+    />
+    <like-button
+      :has-liked="hasLiked"
+      :pointer="pointer"
+      :counter="object.likesCount || 0"
+    />
     <reactions :item="object" />
     <slot name="extraButtons" />
   </div>
   <div v-if="showComments">
     <ion-spinner v-if="commentsLoading" />
-    <inline-text
+    <inline-text style="padding-top: 0px" 
       :value="draft"
       :canSubmit="!!(draft && draft.length >= 3)"
       placeholder="comment here"
@@ -47,7 +43,7 @@ import {
   IonLabel, IonSpinner, IonIcon, IonChip, IonGrid,
 } from '@ionic/vue';
 import {
-  chatbubblesOutline, addOutline, arrowRedoOutline, heartOutline
+  chatbubblesOutline, addOutline, arrowRedoOutline, heartOutline, chatbubbles
 } from 'ionicons/icons';
 import InlineText from "./inline-text.vue";
 import ShareButton from "./share-button.vue";
@@ -83,6 +79,7 @@ export default defineComponent({
       objs: computed(() => store.getters.objectsMap),
       store,
       commentsIcon: chatbubblesOutline,
+      commentsIconB: chatbubbles,
       teamSplitterIcon: arrowRedoOutline,
       shareIcon: arrowRedoOutline,
       plusIcon: addOutline,
@@ -156,7 +153,7 @@ export default defineComponent({
 });
 </script>
 <style scoped>
-.like-icon {
+/* .like-icon {
   position: absolute;
   transform-origin: bottom;
   opacity: 0;
@@ -164,5 +161,10 @@ export default defineComponent({
   height: 3em;
   color: #900;
   z-index: 1;
+} */
+
+.interactionBar {
+  padding-left: 12px;
+  padding-bottom: 12px;
 }
 </style>

@@ -1,8 +1,8 @@
 <template>
-    <span @click="shareEntry()" :disabled="disabled">
+    <ion-chip @click="shareEntry()" :disabled="disabled" color="medium">
       <ion-icon :icon="shareIcon" :size="iconSize" />
       <ion-label>{{counter}}</ion-label>
-    </span>
+    </ion-chip>
 </template>
 <script>
 import {

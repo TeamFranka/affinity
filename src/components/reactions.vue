@@ -1,6 +1,5 @@
 <template>
     <ion-chip
-        outline
         v-for="r in reactions"
         :disabled="!canReact"
         :color="r.selected ? selectedColor : unselectedColor"
@@ -9,13 +8,15 @@
     >
       <ion-label>{{r.key}} {{r.count}}</ion-label>
     </ion-chip>
-    <ion-button @click="selectEmoji" v-if="canReact" fill="clear" color="medium">
-      <ion-icon :icon="plusIcon" size="small"/>
-    </ion-button>
+    <ion-chip color="medium" size="small">
+      <ion-button @click="selectEmoji" v-if="canReact" fill="clear" size="small">
+        <ion-icon :icon="plusIcon" size="small"/>
+      </ion-button>
+    </ion-chip>
 </template>
 <script lang="ts">
 import {
-  IonChip, IonLabel, IonIcon, modalController, IonButton,
+  IonChip, IonLabel, IonIcon, modalController,
 } from '@ionic/vue';
 
 import EmojiPickerModal from  "./emoji-picker-modal.vue";
@@ -34,16 +35,16 @@ export default defineComponent({
   name: 'Activity',
   emits: ['react', 'unreact'],
   components: {
-    IonChip, IonLabel, IonIcon, IonButton,
+    IonChip, IonLabel, IonIcon,
   },
   props: {
       selectedColor: {
         type: String,
-        default: 'dark'
+        default: 'medium'
       },
       unselectedColor: {
         type: String,
-        default: 'light'
+        default: 'medium'
       },
       item: {
         type: Object,

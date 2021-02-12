@@ -1,6 +1,6 @@
 <template>
 <ion-card data-cy-type="activity" :data-cy-verb="activity.verb">
-  <ion-card-header>
+  <ion-card-header style="padding-bottom: 0px">
     <div class="avatar-wrap">
       <router-link v-if="showAuthor" :to="{name: 'ViewUser', params:{userId: author.objectId}}">
         <avatar :profile="author" />
@@ -26,7 +26,7 @@
     </div>
   </ion-card-header>
   <div>
-    <div class="ion-padding" data-cy-role="content">
+    <div class="activityBody" data-cy-role="content">
       <render-md :source="text" />
     </div>
     <div v-for="obj in objects" :key="obj.objectId" class="ion-padding">
@@ -183,6 +183,9 @@ ion-card-header {
   align-items: center;
 }
 .avatar-wrap {
-  width: 5em;
+  width: 65px;
+}
+.activityBody {
+  padding-left:16px;
 }
 </style>

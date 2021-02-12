@@ -1,8 +1,8 @@
 <template>
-    <span @click="toggleLike()" :disabled="disabled">
-      <ion-icon :icon="hasLiked  ? hasLikedIcon : likeIcon" :color="hasLiked ? 'danger' : '' " :size="iconSize" />
+    <ion-chip @click="toggleLike()" :disabled="disabled" color="medium">
+      <ion-icon :icon="hasLiked  ? hasLikedIcon : likeIcon" :color="hasLiked ? 'danger' : 'medium' " :size="iconSize" />
       <ion-label>{{counter}}</ion-label>
-    </span>
+    </ion-chip>
 </template>
 <script>
 import {

@@ -1,49 +1,78 @@
 <template>
   <ion-row ref="doubleTapRef">
-    <ion-col size="1">
-      <avatar :profile="author"/>
+    <ion-col size="1.33">
+      <div class="authorAvatar" >
+        <avatar :profile="author"/>
+      </div>
     </ion-col>
-    <ion-col size="10">
-      <div> {{authorName}} <ion-note color="medium">{{since}}</ion-note>
+    <ion-col size="10" style="padding-top: 0px;">
+      <ion-row size="10">
+        <ion-col class="authorTitle"> {{authorName}} 
+        </ion-col>
+        <ion-col size="0.5" style="padding: 0">
+          <div>/
+          </div>
+        </ion-col>
+        <ion-chip size="small" style="margin: 1px"> 
+          <ion-label>Group Name
+          </ion-label>
+        </ion-chip>
+      </ion-row>
+      <ion-row>
+        <ion-note class="since" color="medium">{{since}}
+        </ion-note>
+      </ion-row>
+      <div class="authorText">
+        {{ text }}
       </div>
-      <div>
-          {{ text }}
-      </div>
-      <div>
-        <ion-chip @click="toggleLike" outline size="small" :color="likedColor">
-          <ion-icon :icon="likeIcon" size="small"/>
+      <div style="padding-bottom: 10px">
+        <ion-chip @click="showInput = !showInput" color="medium">
+          <ion-icon :icon="showInput ? commentsIconB : commentsIcon" :color="showInput ? 'primary' : '' " size="small" />
+          <ion-label>{{comment.commentsCount}}</ion-label>
+        </ion-chip>
+        <share-button
+          :link="fullLink"
+          :pointer="pointer"
+          :counter="object.sharesCount || 0"
+        />
+        <ion-chip @click="toggleLike" color="medium">
+          <ion-icon :icon="hasLiked  ? hasLikedIcon : likeIcon" :color="hasLiked ? 'danger' : 'medium' " :size="iconSize" />
           <ion-label>{{comment.likesCount }}</ion-label>
         </ion-chip>
-        <ion-chip outline v-for="r in reactions" :key="r.key" @click="unreact(r.key)">
+        <reactions :item="object" />
+        <slot name="extraButtons" />
+        <!-- <ion-chip v-for="r in reactions" :key="r.key" @click="unreact(r.key)" color="medium">
           <ion-label>{{r.key}}</ion-label>
           <ion-label>{{r.count}}</ion-label>
-        </ion-chip>
-        <ion-chip outline color="light">
-          <ion-icon :icon="plusIcon" size="small"/>
-        </ion-chip>
+        </ion-chip> -->
+        <!-- <ion-chip color="medium" size="small">
+          <ion-button @click="selectEmoji" v-if="canReact" fill="clear" size="small">
+            <ion-icon :icon="plusIcon" size="small"/>
+          </ion-button>
+        </ion-chip> -->
       </div>
-    </ion-col>
-    <ion-col size="1">
-      <ion-chip @click="showInput = !showInput" outline color="light">
-        <ion-icon :icon="replyIcon" size="small"/>
-      </ion-chip>
-    </ion-col>
-    <ion-col offset="1" size="11">
-      <inline-text
-        v-if="showInput"
-        :value="draft"
-        :canSubmit="!!(draft && draft.length >= 3)"
-        placeholder="comment here"
-        @submit="submitComment()"
-        @changed="setDraft($event)"
-      />
-      <comment
-        v-for="c in children"
-        :children="c.comments"
-        :key="c.objectId"
-        :commentId="c.objectId"
-        :object="object"
-      />
+    
+    <!-- </ion-col>
+    <ion-col offset="1" size="11" style="margin-left: 80px"> -->
+    <div v-if="showInput">
+        <inline-text style="padding-top: 0px" 
+          v-if="showInput"
+          :value="draft"
+          :canSubmit="!!(draft && draft.length >= 3)"
+          placeholder="comment here"
+          @submit="submitComment()"
+          @changed="setDraft($event)"
+        />
+        <ion-grid>
+          <comment
+            v-for="c in children"
+            :children="c.comments"
+            :key="c.objectId"
+            :commentId="c.objectId"
+            :object="object"
+          />
+        </ion-grid>
+      </div>
     </ion-col>
   </ion-row>
 </template>
@@ -55,7 +84,7 @@ import {
   IonIcon, IonNote, IonChip,
 } from '@ionic/vue';
 import {
-  chatbubblesOutline, heartOutline, addOutline, arrowRedoOutline, arrowUndoOutline
+  chatbubbles, chatbubblesOutline, heart, heartOutline, addOutline, arrowRedoOutline, arrowUndoOutline
 } from 'ionicons/icons';
 // import { createGesture } from "@ionic/core";
 
@@ -65,6 +94,7 @@ import { defineComponent, computed } from 'vue';
 import { dayjs } from "../config/Consts";
 import { Model } from '@/utils/model';
 import InlineText from './inline-text.vue';
+import Reactions from "./reactions.vue";
 
 export default defineComponent({
   name: 'Comment',
@@ -81,10 +111,12 @@ export default defineComponent({
     children: {
       type: Array
     },
+    startCommentsOpen: Boolean,
   },
   data() {
     return {
-        showInput: false,
+      showInput: false,
+      // showComments: props.startCommentsOpen,
     }
   },
   setup(props) {
@@ -94,8 +126,10 @@ export default defineComponent({
       objs: computed(() => store.getters.objectsMap),
       store,
       commentsIcon: chatbubblesOutline,
+      commentsIconB: chatbubbles,
       teamSplitterIcon: arrowRedoOutline,
       likeIcon: heartOutline,
+      hasLikedIcon: heart,
       shareIcon: arrowRedoOutline,
       plusIcon: addOutline,
       replyIcon: arrowUndoOutline,
@@ -177,8 +211,7 @@ export default defineComponent({
     },
   },
   components: {
-    IonRow, IonChip, IonLabel, IonCol, InlineText,
-    IonIcon, IonNote, Avatar,
+    IonRow, IonChip, IonLabel, IonCol, InlineText, IonNote, Avatar, Reactions
   },
 });
 </script>
@@ -186,5 +219,31 @@ export default defineComponent({
 ion-card-header {
   display: flex;
   align-items: center;
+}
+.authorAvatar {
+  padding-left: 6px;
+}
+.authorTitle {
+  /* font-size:3vw; */
+  color: #428cff;
+  font-size: 1.2em;
+  padding-top: 0px;
+  padding-left: 4px;
+  padding-right: 10px;
+  padding-bottom: 0px; 
+}
+
+.authorText {
+  padding-top: 14px;
+  padding-bottom: 14px;
+  padding-left: 4px;
+}
+.since {
+  /* font-size:1.5vw; */
+  padding-left: 4px;
+  font-size: 0.8em;
+}
+[size="small"]{
+  height: 5px;
 }
 </style>
