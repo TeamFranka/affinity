@@ -16,7 +16,11 @@ Parse.Cloud.beforeSave(Parse.Installation, async (request) => {
   }
 
   if (request.original) {
-    return // an update not a create, ignore startingFollows
+    // an update not a create, ignore startingFollows
+    // but let it return the existing set of channels:
+    console.log("known");
+    request.object.set('channels', request.original.get('channels'));
+    return
   }
 
   const channels = []
