@@ -232,7 +232,7 @@ jobs:
 
   deploy-code-push:
     environment: appcenter_deploy
-    runs-on: ubuntu
+    runs-on: ubuntu-latest
     # needs: [ deploy-parse ]
     needs: [ tests, release-build, android-app, ios-app ]
     steps:
