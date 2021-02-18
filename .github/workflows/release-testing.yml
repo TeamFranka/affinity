@@ -249,17 +249,17 @@ jobs:
       #   uses: actions/download-artifact@v2
       #   with:
       #     name: android-app
-    - name: Codepush Android
-      uses: joabalea/App-Center-action@v1.0.2
-      with:
-        command: codepush release -m -a TeamFranka/Affinity-Live -d Production -c dist
-        token: ${{secrets.APPCENTER_ACCESS_TOKEN}}
+      - name: Codepush Android
+        uses: joabalea/App-Center-action@v1.0.2
+        with:
+          command: codepush release -m -a TeamFranka/Affinity-Live -d Production -c dist
+          token: ${{secrets.APPCENTER_ACCESS_TOKEN}}
 
-    - name: Codepush iOS
-      uses: joabalea/App-Center-action@v1.0.2
-      with:
-        command: codepush release -m -a TeamFranka/Affinity-Live-iOS -d Production -c dist
-        token: ${{secrets.APPCENTER_ACCESS_TOKEN}}
+      - name: Codepush iOS
+        uses: joabalea/App-Center-action@v1.0.2
+        with:
+          command: codepush release -m -a TeamFranka/Affinity-Live-iOS -d Production -c dist
+          token: ${{secrets.APPCENTER_ACCESS_TOKEN}}
 
   deploy-ios:
     environment: ios_deploy
