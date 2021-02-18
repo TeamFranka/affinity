@@ -261,7 +261,7 @@ jobs:
         with:
           args: release -m -a TeamFranka/Affinity-Live-iOS -d Production -c dist  -t 1.0.0
         env:
-          token: ${{secrets.APPCENTER_ACCESS_TOKEN}}
+          APPCENTER_ACCESS_TOKEN: ${{secrets.APPCENTER_ACCESS_TOKEN}}
 
   deploy-ios:
     environment: ios_deploy
