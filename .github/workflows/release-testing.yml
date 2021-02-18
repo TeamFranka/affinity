@@ -233,22 +233,13 @@ jobs:
   deploy-code-push:
     environment: appcenter_deploy
     runs-on: ubuntu-latest
-    # needs: [ deploy-parse ]
-    needs: [ tests, release-build, android-app, ios-app ]
+    needs: [ tests, release-build, deploy-parse, android-app, ios-app ]
     steps:
       - name: Download /dist
         uses: actions/download-artifact@v2
         with:
           name: dist-production
           path: dist
-      # - name: Download signed iOS App
-      #   uses: actions/download-artifact@v2
-      #   with:
-      #     name: ios-app
-      # - name: Download signed Android App
-      #   uses: actions/download-artifact@v2
-      #   with:
-      #     name: android-app
       - name: Codepush Android
         uses: NishanthShankar/codepush-action@master
         with:
