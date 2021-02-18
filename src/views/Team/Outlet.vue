@@ -110,7 +110,7 @@ import { defineComponent, computed, ref } from 'vue';
 import { useStore } from '@/stores/';
 import { useRoute } from 'vue-router';
 import Parse from 'parse';
-import { takePicture, CameraPhoto } from '@/utils/camera';
+import { takePicture, Photo } from '@/utils/camera';
 import { Model } from '@/utils/model';
 
 const DEFAULT_STYLES = {
@@ -286,7 +286,7 @@ export default defineComponent({
       await this.store.dispatch("updateModel", model);
     },
     selectNewAvatar() {
-      takePicture().then(async (img: typeof CameraPhoto) => {
+      takePicture().then(async (img: Photo) => {
         const file = new Parse.File(this.team.slug +"_avatar", {uri: img.dataUrl}, "image/" + img.format);
         await file.save();
         await this.setSetting({avatar: file});
@@ -314,7 +314,7 @@ export default defineComponent({
       return alert.present();
     },
     selectBackground() {
-      takePicture().then(async (img: typeof CameraPhoto) => {
+      takePicture().then(async (img: Photo) => {
         const file = new Parse.File(this.team.slug + "_background", {uri: img.dataUrl}, "image/" + img.format);
         await file.save();
         await this.setSetting({background: file});

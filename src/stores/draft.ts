@@ -1,6 +1,6 @@
 import { Parse, Verb, Visibility } from "../config/Consts";
 import { Activity } from "../db/models";
-import { takePicture, CameraPhoto } from '../utils/camera';
+import { takePicture, Photo } from '../utils/camera';
 import { CreateModel } from '@/utils/model';
 import getUrls from 'get-urls';
 export interface DraftT {
@@ -101,7 +101,7 @@ export const Draft = {
   },
   actions: {
     addPicture(context: any) {
-      takePicture().then((img: typeof CameraPhoto) => {
+      takePicture().then((img: Photo) => {
         const picture = new CreateModel("Picture", { description: "", img });
         context.commit("addObject", picture);
       });

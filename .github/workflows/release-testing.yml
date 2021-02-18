@@ -230,6 +230,30 @@ jobs:
           cd backend
           b4a deploy affinity
 
+  deploy-code-push:
+    environment: appcenter_deploy
+    runs-on: ubuntu-latest
+    needs: [ tests, release-build, deploy-parse, android-app, ios-app ]
+    steps:
+      - name: Download /dist
+        uses: actions/download-artifact@v2
+        with:
+          name: dist-production
+          path: dist
+      - name: Codepush Android
+        uses: NishanthShankar/codepush-action@master
+        with:
+          args: release -m -a TeamFranka/Affinity-Live -d Production -c dist -t 1.0.0
+        env:
+          APPCENTER_ACCESS_TOKEN: ${{ secrets.APPCENTER_ACCESS_TOKEN }}
+
+      - name: Codepush iOS
+        uses: NishanthShankar/codepush-action@master
+        with:
+          args: release -m -a TeamFranka/Affinity-Live-iOS -d Production -c dist  -t 1.0.0
+        env:
+          APPCENTER_ACCESS_TOKEN: ${{secrets.APPCENTER_ACCESS_TOKEN}}
+
   deploy-ios:
     environment: ios_deploy
     runs-on: macos-latest

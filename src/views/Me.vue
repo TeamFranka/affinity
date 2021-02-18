@@ -30,7 +30,7 @@ import { chatbubbles, logoWhatsapp, cloudUploadOutline } from 'ionicons/icons';
 import { defineComponent, computed } from 'vue';
 import { useStore } from '../stores/';
 import Parse from 'parse';
-import { takePicture, CameraPhoto } from '../utils/camera';
+import { takePicture, Photo } from '../utils/camera';
 
 export default defineComponent({
   name: 'Me',
@@ -46,7 +46,7 @@ export default defineComponent({
   },
   methods: {
     selectNewAvatar(userId: string) {
-      takePicture().then((img: typeof CameraPhoto) => {
+      takePicture().then((img: Photo) => {
         const file = new Parse.File(userId +"_avatar", {uri: img.dataUrl}, "image/" + img.format);
         this.setUserAvatar(file);
       });

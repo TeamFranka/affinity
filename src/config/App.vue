@@ -28,6 +28,16 @@ import LoginModal from '../components/login-modal.vue';
 import HeaderBar from '../components/header-bar.vue';
 import { useStore } from '../stores/';
 
+import { codePush } from 'capacitor-codepush';
+import { App, AppState } from '@capacitor/app';
+
+App.addListener('appStateChange', (state: AppState) => {
+  // state.isActive contains the active state
+  if (state.isActive) {
+      codePush.sync();
+  }
+});
+
 
 export default defineComponent({
   name: 'App',

@@ -1,15 +1,17 @@
+import { Camera, CameraResultType } from '@capacitor/camera';
+export { Camera, CameraResultType };
 
+export interface Photo {
+  dataUrl: string;
+  exif: any;
+  format: string;
+}
 
-import { Plugins, CameraResultType } from '@capacitor/core';
-const { Camera, CameraPhoto } = Plugins;
-
-export { CameraPhoto, Camera,  CameraResultType };
-
-export const takePicture = async () => {
+export const takePicture = async () =>  {
   const image = await Camera.getPhoto({
     quality: 90,
     allowEditing: true,
     resultType: CameraResultType.DataUrl
   });
-  return image
+  return (image as Photo)
 }
