@@ -236,7 +236,6 @@ jobs:
     # needs: [ deploy-parse ]
     needs: [ tests, release-build, android-app, ios-app ]
     steps:
-      - uses: actions/checkout@v2
       - name: Download /dist
         uses: actions/download-artifact@v2
         with:
@@ -253,14 +252,14 @@ jobs:
       - name: Codepush Android
         uses: NishanthShankar/codepush-action@master
         with:
-          args: release -m -a TeamFranka/Affinity-Live -d Production -c dist
+          args: release -m -a TeamFranka/Affinity-Live -d Production -c dist -t 1.0.0
         env:
           APPCENTER_ACCESS_TOKEN: ${{ secrets.APPCENTER_ACCESS_TOKEN }}
 
       - name: Codepush iOS
         uses: NishanthShankar/codepush-action@master
         with:
-          args: release -m -a TeamFranka/Affinity-Live-iOS -d Production -c dist
+          args: release -m -a TeamFranka/Affinity-Live-iOS -d Production -c dist  -t 1.0.0
         env:
           token: ${{secrets.APPCENTER_ACCESS_TOKEN}}
 
