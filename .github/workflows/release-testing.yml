@@ -267,8 +267,8 @@ jobs:
       #     name: android-app
       - name: Code Push
         run: |
-          appcenter codepush release -m -a TeamFranka/Affinity-Live -d Production -c dist  --token ${{ secrets.APPCENTER_ACCESS_TOKEN }}
-          appcenter codepush release -m -a TeamFranka/Affinity-Live-iOS -d Production -c dist  --token ${{ secrets.APPCENTER_ACCESS_TOKEN }}
+          npx appcenter codepush release -m -a TeamFranka/Affinity-Live -d Production -c dist  --token ${{ secrets.APPCENTER_ACCESS_TOKEN }}
+          npx appcenter codepush release -m -a TeamFranka/Affinity-Live-iOS -d Production -c dist  --token ${{ secrets.APPCENTER_ACCESS_TOKEN }}
 
   deploy-ios:
     environment: ios_deploy
