@@ -236,27 +236,11 @@ jobs:
     # needs: [ deploy-parse ]
     needs: [ tests, release-build, android-app, ios-app ]
     steps:
-      - name: Cache node modules
-        uses: actions/cache@v2
-        env:
-          cache-name: cache-node-modules
-        with:
-          path: './node_modules'
-          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-build-${{ env.cache-name }}-
-            ${{ runner.os }}-build-
-            ${{ runner.os }}-
-      - name: Install capacitor
-        run: npm install
-      - name: Install appcenter
-        run: npm install appcenter appcenter-cli
       - name: Download /dist
         uses: actions/download-artifact@v2
         with:
           name: dist-production
           path: dist
-
       # - name: Download signed iOS App
       #   uses: actions/download-artifact@v2
       #   with:
@@ -265,10 +249,17 @@ jobs:
       #   uses: actions/download-artifact@v2
       #   with:
       #     name: android-app
-      - name: Code Push
-        run: |
-          npx appcenter codepush release -m -a TeamFranka/Affinity-Live -d Production -c dist  --token ${{ secrets.APPCENTER_ACCESS_TOKEN }}
-          npx appcenter codepush release -m -a TeamFranka/Affinity-Live-iOS -d Production -c dist  --token ${{ secrets.APPCENTER_ACCESS_TOKEN }}
+    - name: Codepush Android
+      uses: joabalea/App-Center-action@v1.0.2
+      with:
+        command: codepush release -m -a TeamFranka/Affinity-Live -d Production -c dist
+        token: ${{secrets.APPCENTER_ACCESS_TOKEN}}
+
+    - name: Codepush iOS
+      uses: joabalea/App-Center-action@v1.0.2
+      with:
+        command: codepush release -m -a TeamFranka/Affinity-Live-iOS -d Production -c dist
+        token: ${{secrets.APPCENTER_ACCESS_TOKEN}}
 
   deploy-ios:
     environment: ios_deploy
