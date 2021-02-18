@@ -250,7 +250,7 @@ jobs:
       - name: Install capacitor
         run: npm install
       - name: Install appcenter
-        run: npm install appcenter
+        run: npm install appcenter appcenter-cli
       - name: Download /dist
         uses: actions/download-artifact@v2
         with:
