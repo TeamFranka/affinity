@@ -5,10 +5,12 @@
         <router-link to="/">{{title}}</router-link>
       </ion-title>
       <div class="menu" slot="end">
-        <router-link to="/faq">faq</router-link>
+        <router-link style="position: relative" to="/faq">
+          <ion-icon size="large" color="medium" :icon="faqIcon" />
+        </router-link>
 
         <template v-if="isLoggedIn" >
-          <router-link style="position: relative" to="/inbox">
+          <router-link v-if="false" style="position: relative" to="/inbox">
             <notification-dot color="warning" slot="start" />
             <ion-icon size="large" color="secondary" :icon="chatIcon" />
             <notification-dot color="danger" slot="end" />
@@ -33,6 +35,7 @@ import {
 import {
   logInOutline as logInIcon,
   chatboxOutline as chatIcon,
+  compassOutline as faqIcon,
 } from 'ionicons/icons';
 import NotificationDot from '../components/notification-dot.vue';
 import Avatar from '../components/avatar.vue';
@@ -45,7 +48,7 @@ export default defineComponent({
   setup() {
     const store = useStore();
     return {
-      logInIcon, chatIcon,
+      logInIcon, chatIcon, faqIcon,
       isLoggedIn: computed(() => store.getters["auth/isLoggedIn"]),
       openLoginModal: () => store.dispatch('auth/openLogin'),
       user: computed(() => store.state.auth.user),
