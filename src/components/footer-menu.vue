@@ -44,7 +44,7 @@
               <ion-icon size="large" :icon="settingsIcon" />
             </ion-button>
             <router-link v-else style="position: relative" to="/login">
-              <ion-icon :icon="loginIcon" />
+              <ion-icon size="large" :icon="loginIcon" />
             </router-link>
           </ion-col>
         </template>

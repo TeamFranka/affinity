@@ -55,10 +55,11 @@ export function initInstallation(): Promise<Parse.Installation> {
   // Android will just grant without prompting
   PushNotifications.requestPermissions().then((result: any) => {
     console.log("received permission for push", result);
-    if (result.granted) {
+    if (result.receive == "granted") {
       // Register with Apple / Google to receive push via APNS/FCM
       PushNotifications.register();
     } else {
+      console.warn("request for push notifications failed", result);
       // Show some error
     }
   });

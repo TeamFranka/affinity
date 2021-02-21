@@ -48,6 +48,9 @@ export const Installation = {
             deviceModel: {
                 type: "String"
             },
+            deviceName: {
+                type: "String"
+            },
             appBuild: {
                 type: "String"
             },
