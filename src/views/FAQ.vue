@@ -39,7 +39,7 @@
             <img style="width:45vw" src="../statics/undraw_No_data.svg"/>
         </p>
         <ion-note>Nichts gefunden...</ion-note>
-        <p>
+        <p v-if="false">
           <ion-button @click="intendToAskQuestion" fill="outline">Frage stellen</ion-button>
         </p>
       </div>
