@@ -87,6 +87,9 @@ export const GlobalState = {
       context.dispatch("faq/refresh");
       context.dispatch("inbox/refresh");
     },
+    init(context: any) {
+      context.dispatch("auth/init");
+    },
     routingStart(context: any) {
         context.commit("startLoading");
     },

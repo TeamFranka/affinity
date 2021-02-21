@@ -2,17 +2,12 @@
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const CONSTS = require("./consts.js");
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const { fetchMyTeams } = require("./utils.js");
 const Team = CONSTS.Team;
 
 Parse.Cloud.define("myTeams", async (request) => {
-    const user = request.user;
-    const roles = await (new Parse.Query(Parse.Role))
-        .equalTo("users", user).find({ useMasterKey: true });
-
-    const roleIds = roles.map(r => r.id);
-    const teams = await ((new Parse.Query(Team))
-        .containedIn("members", roles)
-        .find({ useMasterKey: true }));
+    const {teams, roleIds} = await fetchMyTeams(request.user);
 
     const permissions = {};
 

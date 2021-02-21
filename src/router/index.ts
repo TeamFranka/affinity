@@ -13,6 +13,7 @@ import TeamOutlet from '../views/Team/Outlet.vue';
 import ViewActivity from '../views/ViewActivity.vue';
 import ViewUser from '../views/ViewUser.vue';
 import ViewConversation from '../views/ViewConversation.vue';
+import SettingsNotifications from '../views/settings/Notifications.vue';
 import { store } from '../stores/';
 
 const ensureLoggedIn = (to: any, from: any, next: any) => {
@@ -90,6 +91,11 @@ const routes: Array<RouteRecordRaw> = [
         path: 'feed',
         name: 'Feed',
         component: Feed
+      },
+      {
+        path: '/settings/notifications',
+        name: 'SettingsNotifications',
+        component: SettingsNotifications
       },
       {
         path: '/',

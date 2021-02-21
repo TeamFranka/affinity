@@ -7,6 +7,7 @@ const CANT_BE_CHANGED = ["team", "author", "ACL"];
 
 const enforcACL = async (request, team) => {
   const visibility = request.object.get("visibility") || "public";
+  request.context.visibility = visibility; // keep for later usage
   await team.fetchWithInclude(["leaders", visibility], {useMasterKey: true});
   const leadersRole = team.get("leaders");
   const user = request.user;
@@ -48,7 +49,7 @@ const enforcACL = async (request, team) => {
         throw "Only team leaders and members of the same role can set visibility to it"
     }
     console.log("setting role");
-    acl.setRoleReadAccess(role);
+    acl.setRoleReadAccess(role, true);
   }
 
   console.log("setting admin", leadersRole);

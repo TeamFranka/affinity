@@ -1,15 +1,18 @@
 import { Parse } from '@/config/Consts';
+import { isPlatform } from '@ionic/vue';
 import { Model, toModel } from '@/utils/model';
+import { initInstallation } from '@/utils/setup';
 import { watch } from 'vue';
 
 export interface AuthStateT {
   wantsToLogin: boolean;
   user: Model | null;
+  installation: Model | null;
   teams: Array<string>;
   teamPermissions: Record<string, any>;
 }
 
-function currentUser(): Model | null{
+function currentUser(): Model | null {
   const u = Parse.User.current();
   return u ? toModel(u): null;
 }
@@ -29,7 +32,7 @@ export const AuthState = {
     user: (state: AuthStateT) => state.user,
     wantsToLogin: (state: AuthStateT) => state.wantsToLogin,
     userPtr: (state: AuthStateT) => state.user?.toPointer(),
-    myTeams: (state: AuthStateT, getters: any, rootState: any,rootGetters: any) => state
+    myTeams: (state: AuthStateT, getters: any, rootState: any, rootGetters: any) => state
       .teams
       .map(x => rootGetters.objectsMap[x]),
     teamPointers: (state: AuthStateT, getters: any, rootState: any, rootGetters: any) => {
@@ -52,6 +55,9 @@ export const AuthState = {
     setUser(state: AuthStateT, newUser: Model|null) {
       state.user = newUser
     },
+    setInstallation(state: AuthStateT, installation: Model|null) {
+      state.installation = installation
+    },
     setWantsToLogin(state: AuthStateT, wanna: boolean) {
       state.wantsToLogin = wanna;
     },
@@ -64,6 +70,15 @@ export const AuthState = {
     }
   },
   actions: {
+    init(context: any) {
+      if (isPlatform('mobile')) {
+        initInstallation().then(async (i: Parse.Installation) => {
+          i.set("defaultTeamId", context.rootGetters["defaultTeamId"])
+          await i.save()
+          context.commit("setInstallation", toModel(i));
+        });
+      }
+    },
     dismissLogin(context: any) {
       context.commit("setWantsToLogin", false);
     },
@@ -75,6 +90,12 @@ export const AuthState = {
       context.commit("setWantsToLogin", true);
     },
     async loggedIn(context: any, newUser: Parse.User) {
+      const userPointer = newUser.toPointer();
+      if (context.state.installation && !context.state.user) {
+        context.state.prepareSave({user: userPointer}).save(); // fire and forget
+        context.state.installation.user = userPointer;
+        context.commit("setInstallation", context.state.installation);
+      }
       context.commit("setUser", toModel(newUser));
       context.dispatch("dismissLogin");
 
