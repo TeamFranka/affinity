@@ -1,3 +1,4 @@
+import '@capacitor/core';
 import { createApp } from 'vue'
 import App from './config/App.vue'
 import router from './router';

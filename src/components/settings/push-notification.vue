@@ -52,7 +52,7 @@ export default defineComponent({
 
     return {
       currentDevice: computed(() => store.state.auth.installation ),
-      teams: computed(() => store.getters["auth/teamPointers"].map((x) => store.getters['objectsMap'][x.objectId])),
+      teams: computed(() => store.getters["auth/teamPointers"].map((x: any) => store.getters['objectsMap'][x.objectId])),
       fields: TEAM_FIELDS,
       notificationIcon, logoWhatsapp, uploadIcon: cloudUploadOutline
     }

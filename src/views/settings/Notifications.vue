@@ -19,7 +19,6 @@ import { notificationsOutline as notificationIcon , logoWhatsapp, cloudUploadOut
 import { defineComponent, computed } from 'vue';
 import { useStore } from '@/stores/';
 import PushNotificationSetting from '@/components/settings/push-notification.vue';
-import Parse from 'parse';
 
 const TEAM_FIELDS = [
   {key: 'news', title: 'Team Neuigkeiten'},
@@ -35,7 +34,7 @@ export default defineComponent({
 
     return {
       currentDevice: computed(() => store.state.auth.installation ),
-      teams: computed(() => store.getters["auth/teamPointers"].map((x) => store.getters['objectsMap'][x.objectId])),
+      teams: computed(() => store.getters["auth/teamPointers"].map((x: any) => store.getters['objectsMap'][x.objectId])),
       fields: TEAM_FIELDS,
       notificationIcon, logoWhatsapp, uploadIcon: cloudUploadOutline
     }

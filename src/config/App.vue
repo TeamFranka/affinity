@@ -22,13 +22,22 @@ import {
 } from 'ionicons/icons';
 import { defineComponent, computed, watch } from 'vue'
 
-// import SideMenu from '../components/side-menu.vue';
 import FooterMenu from '@/components/footer-menu.vue';
 import LoginModal from '@/components/login-modal.vue';
 import HeaderBar from '@/components/header-bar.vue';
 import { setupNotificationActions } from '@/utils/setup';
-import { PushNotification, PushNotificationActionPerformed } from '@capacitor/core';
-import { useStore } from '@/stores/';
+import { PushNotification, PushNotificationActionPerformed } from '@capacitor/push-notifications';
+import { useStore } from '../stores/';
+
+import { codePush } from 'capacitor-codepush';
+import { App, AppState } from '@capacitor/app';
+
+App.addListener('appStateChange', (state: AppState) => {
+  // state.isActive contains the active state
+  if (state.isActive) {
+      codePush.sync();
+  }
+});
 
 export default defineComponent({
   name: 'App',
