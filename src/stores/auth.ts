@@ -12,7 +12,7 @@ export interface AuthStateT {
   teamPermissions: Record<string, any>;
 }
 
-function currentUser(): Model | null{
+function currentUser(): Model | null {
   const u = Parse.User.current();
   return u ? toModel(u): null;
 }

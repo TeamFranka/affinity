@@ -54,7 +54,7 @@ export default defineComponent({
       logInIcon, chatIcon, notificationIcon,
       isLoggedIn: computed(() => store.getters["auth/isLoggedIn"]),
       openLoginModal: () => store.dispatch('auth/openLogin'),
-      hasPush: computed(() => !!store.state.auth.installation),
+      hasPush: computed(() => false), //!!store.state.auth.installation),
       user: computed(() => store.state.auth.user),
       title: computed(() => store.getters.defaultTeam?.name || "affinity"),
     }
