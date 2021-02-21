@@ -26,7 +26,8 @@ import FooterMenu from '@/components/footer-menu.vue';
 import LoginModal from '@/components/login-modal.vue';
 import HeaderBar from '@/components/header-bar.vue';
 import { setupNotificationActions } from '@/utils/setup';
-import { PushNotification, PushNotificationActionPerformed } from '@capacitor/push-notifications';
+import { ActionPerformed, PushNotificationSchema } from '@capacitor/push-notifications';
+
 import { useStore } from '../stores/';
 
 import { codePush } from 'capacitor-codepush';
@@ -113,9 +114,9 @@ export default defineComponent({
   mounted() {
     this.fetchUser();
 
-    setupNotificationActions((x: PushNotification) => {
+    setupNotificationActions((x: PushNotificationSchema) => {
       console.log("received", x);
-    }, (n: PushNotificationActionPerformed) => {
+    }, (n:  ActionPerformed) => {
       console.log("action", n);
       let data = n.notification.data.data;
       if (typeof data === 'string' || data instanceof String) {
