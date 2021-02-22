@@ -22,10 +22,12 @@ import {
 } from 'ionicons/icons';
 import { defineComponent, computed, watch } from 'vue'
 
-// import SideMenu from '../components/side-menu.vue';
-import FooterMenu from '../components/footer-menu.vue';
-import LoginModal from '../components/login-modal.vue';
-import HeaderBar from '../components/header-bar.vue';
+import FooterMenu from '@/components/footer-menu.vue';
+import LoginModal from '@/components/login-modal.vue';
+import HeaderBar from '@/components/header-bar.vue';
+import { setupNotificationActions } from '@/utils/setup';
+import { ActionPerformed, PushNotificationSchema } from '@capacitor/push-notifications';
+
 import { useStore } from '../stores/';
 
 import { codePush } from 'capacitor-codepush';
@@ -37,7 +39,6 @@ App.addListener('appStateChange', (state: AppState) => {
       codePush.sync();
   }
 });
-
 
 export default defineComponent({
   name: 'App',
@@ -52,6 +53,7 @@ export default defineComponent({
   },
   setup() {
     const store = useStore();
+    store.dispatch("init");
     let loginModal: any = null;
     store.dispatch("fetchDefaultTeam", (window as any).AFFINITY_DEFAULT_TEAM);
 
@@ -111,6 +113,24 @@ export default defineComponent({
   },
   mounted() {
     this.fetchUser();
+
+    setupNotificationActions((x: PushNotificationSchema) => {
+      console.log("received", x);
+    }, (n:  ActionPerformed) => {
+      console.log("action", n);
+      let data = n.notification.data.data;
+      if (typeof data === 'string' || data instanceof String) {
+        try {
+          data = JSON.parse(data as string);
+        } catch (e) {
+          console.error("received incorrect data in notification action", data, e)
+          return
+        }
+      }
+      if (data.urlTarget) {
+        this.$router.push(data.urlTarget);
+      }
+    });
   }
 });
 </script>

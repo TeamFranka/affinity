@@ -20,9 +20,14 @@
           </div>
         </template>
 
-        <ion-button data-cy-role="loginModal" fill="clear" v-else @click="openLoginModal">
-          <ion-icon :icon="logInIcon"/> Einloggen
-        </ion-button>
+        <template v-else>
+          <router-link v-if="hasPush" style="position: relative" :to="{name: 'SettingsNotifications'}">
+            <ion-icon :icon="notificationIcon" /> Push Einstellungen
+          </router-link>
+          <ion-button data-cy-role="loginModal" fill="clear" @click="openLoginModal">
+            <ion-icon :icon="logInIcon"/> Einloggen
+          </ion-button>
+        </template>
       </div>
     </ion-toolbar>
   </ion-header>
@@ -36,6 +41,7 @@ import {
   logInOutline as logInIcon,
   chatboxOutline as chatIcon,
   compassOutline as faqIcon,
+  notificationsOutline as notificationIcon,
 } from 'ionicons/icons';
 import NotificationDot from '../components/notification-dot.vue';
 import Avatar from '../components/avatar.vue';
@@ -48,9 +54,10 @@ export default defineComponent({
   setup() {
     const store = useStore();
     return {
-      logInIcon, chatIcon, faqIcon,
+      logInIcon, chatIcon, faqIcon, notificationIcon,
       isLoggedIn: computed(() => store.getters["auth/isLoggedIn"]),
       openLoginModal: () => store.dispatch('auth/openLogin'),
+      hasPush: computed(() => false), //!!store.state.auth.installation),
       user: computed(() => store.state.auth.user),
       title: computed(() => store.getters.defaultTeam?.name || "affinity"),
     }

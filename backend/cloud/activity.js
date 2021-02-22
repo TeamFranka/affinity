@@ -34,3 +34,83 @@ Parse.Cloud.beforeSave(Activity, async (request) => {
 }, {
     requireUser: true
 });
+
+// const CHANNELS_MAP = {'announce': 'news', 'post': 'posts'};
+// // We want to push news and actiities
+// Parse.Cloud.afterSave(Activity, async (request) => {
+//     if (request.original) {
+//       return // update, let's ignore
+//     }
+//     const activity = request.object;
+//     const team = activity.get("team");
+//     await team.fetch();
+//     const verb = activity.get("verb");
+
+//     const notification = {};
+//     const data = {
+//         "urlTarget": {
+//             name: 'ViewActivity',
+//             params: {
+//                 activityId: activity.id
+//             }
+//         }
+//     };
+
+//     if (verb == "announce") {
+//         notification.tag = `${team.id}:news`;
+//         notification.title = `News in ${team.get('name')}`;
+//         notification.body = activity.get("text");
+//         const body = activity.get("text");
+//         if (body) {
+//             notification.body = body;
+//         }
+//     } else if (verb == "post" ) {
+//         notification.tag = `${team.id}:posts`;
+//         notification.title = `Neuer Beitrag in ${team.get('name')}`;
+//         const body = activity.get("text");
+//         if (body) {
+//             const author = activity.get("author");
+//             await author.fetch();
+//             const username = author.get("name") || author.get("username");
+//             notification.body = `${username}: ${body}`;
+//         }
+//     } else {
+//         console.log("Not pushing", activity);
+//         return
+//     }
+
+//     if (!notification.image) {
+//         for (const o of activity.get("objects")) {
+//             if (o.className == "Picture") {
+//                 await o.fetch();
+//                 notification.image = o.get("file").url()
+//                 break;
+//             }
+//         }
+//     }
+
+//     if (!notification.image) {
+//         const teamAvatar = team.get("avatar");
+//         if (teamAvatar) {
+//             notification.image = teamAvatar.url();
+//         }
+//     }
+
+//     const visibility = request.context.visibility;
+//     const message = { notification, data };
+//     const channel = `${team.id}:${CHANNELS_MAP[verb]}`;
+//     if (visibility == "public") {
+//         message.channels = channel;
+//     } else {
+//         const targetMembers = team.get(visibility);
+//         await targetMembers.fetch({useMasterKey: true});
+//         const query = new Parse.Query(Parse.Installation)
+//         query.equalTo('channels', channel)
+//         query.matchesQuery('user', targetMembers.getUsers().query())
+//         message.where = query;
+//     }
+
+//     console.log("sending push notification", message);
+
+//     return Parse.Push.send(message, { useMasterKey: true });
+// });

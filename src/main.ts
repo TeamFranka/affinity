@@ -4,8 +4,9 @@ import App from './config/App.vue'
 import router from './router';
 import { store, key } from './stores/'
 
-import { IonicVue } from '@ionic/vue';
+import './registerServiceWorker'
 
+import { IonicVue } from '@ionic/vue';
 /* Core CSS required for Ionic components to work properly */
 import '@ionic/vue/css/core.css';
 

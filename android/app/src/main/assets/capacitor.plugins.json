@@ -8,6 +8,14 @@
 		"classpath": "com.capacitorjs.plugins.camera.CameraPlugin"
 	},
 	{
+		"pkg": "@capacitor/device",
+		"classpath": "com.capacitorjs.plugins.device.DevicePlugin"
+	},
+	{
+		"pkg": "@capacitor/push-notifications",
+		"classpath": "com.capacitorjs.plugins.pushnotifications.PushNotificationsPlugin"
+	},
+	{
 		"pkg": "capacitor-codepush",
 		"classpath": "com.microsoft.capacitor.CodePush"
 	}
