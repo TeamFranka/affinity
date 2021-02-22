@@ -1,5 +1,5 @@
 import Parse from 'parse';
-
+import { isPlatform } from '@ionic/vue';
 import { PushNotifications, Token } from '@capacitor/push-notifications';
 import { Device } from '@capacitor/device';
 import { App as AppInfo } from '@capacitor/app';
@@ -27,6 +27,10 @@ export async function generateInstallation(opts: any): Promise<Parse.Installatio
 export function setupNotificationActions(
   onNotification: any, onNotificationAction: any
 ) {
+  if (!isPlatform('android') && !isPlatform('iphone') && !isPlatform('ipad')) {
+    console.log("Not a mobile device with push notification support");
+    return;
+  }
   if (onNotification) {
     PushNotifications.addListener('pushNotificationReceived', onNotification);
   }
