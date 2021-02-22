@@ -51,8 +51,14 @@
     </div>
 
     <form @submit="login($event)" v-if="action =='login'" class="ion-padding">
-      <ion-item>
+      <ion-item class="ion-hide-sm-down">
         <ion-input type="text" required name="username" v-model="input.username" placeholder="Username / E-Mail" />
+        <ion-input type="password" required name="password" v-model="input.password" placeholder="Password" />
+      </ion-item>
+      <ion-item class="ion-hide-sm-up">
+        <ion-input type="text" required name="username" v-model="input.username" placeholder="Username / E-Mail" />
+        </ion-item>
+      <ion-item class="ion-hide-sm-up">
         <ion-input type="password" required name="password" v-model="input.password" placeholder="Password" />
       </ion-item>
       <ion-item lines="none">
@@ -61,6 +67,7 @@
           slot="end"
           fill="none"
           color="medium"
+          class="ion-hide-sm-down"
         >
           Passwort vergessen
         </ion-button>
@@ -73,6 +80,16 @@
           type="submit"
         >
           Einloggen
+        </ion-button>
+      </ion-item>
+      <ion-item class="ion-hide-sm-up" lines="none">
+        <ion-button
+          @click="passwortReset"
+          slot="end"
+          fill="none"
+          color="light"
+        >
+          Passwort vergessen
         </ion-button>
       </ion-item>
     </form>
