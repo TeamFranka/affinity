@@ -200,6 +200,8 @@ export default defineComponent({
   right: 0;
   transition: 0.25s ease-out;
   overflow: hidden;
+  display: flex;
+  align-content: center;
 }
 .slidebox.hidden {
   transform: translateY(-100%);
