@@ -4,6 +4,10 @@ import { PushNotifications, Token } from '@capacitor/push-notifications';
 import { Device } from '@capacitor/device';
 import { App as AppInfo } from '@capacitor/app';
 
+export function isMobileInstallation() {
+  return isPlatform('mobile') && !document.URL.startsWith('http')
+}
+
 export async function generateInstallation(opts: any): Promise<Parse.Installation> {
   const deviceInfo = await Device.getInfo();
   const appInfo = await AppInfo.getInfo();
@@ -27,7 +31,7 @@ export async function generateInstallation(opts: any): Promise<Parse.Installatio
 export function setupNotificationActions(
   onNotification: any, onNotificationAction: any
 ) {
-  if (!isPlatform('android') && !isPlatform('iphone') && !isPlatform('ipad')) {
+  if (!isMobileInstallation()) {
     console.log("Not a mobile device with push notification support");
     return;
   }
