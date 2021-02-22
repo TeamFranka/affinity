@@ -30,6 +30,7 @@
     "@capacitor/camera": "^0.4.0",
     "@capacitor/core": "3.0.0-beta.2",
     "@capacitor/device": "^0.5.3",
+    "@capacitor/filesystem": "^0.4.0",
     "@capacitor/ios": "^3.0.0-beta.3",
     "@capacitor/push-notifications": "^0.3.3",
     "@ionic/vue": "^5.5.2",

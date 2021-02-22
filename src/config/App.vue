@@ -21,6 +21,7 @@ import {
   logInOutline as logInIcon,
 } from 'ionicons/icons';
 import { defineComponent, computed, watch } from 'vue'
+import { ANDROID_INSTALL_URL, IOS_INSTALL_URL } from '@/config/Consts';
 
 import FooterMenu from '@/components/footer-menu.vue';
 import LoginModal from '@/components/login-modal.vue';
@@ -33,12 +34,14 @@ import { useStore } from '../stores/';
 import { codePush } from 'capacitor-codepush';
 import { App, AppState } from '@capacitor/app';
 
-App.addListener('appStateChange', (state: AppState) => {
-  // state.isActive contains the active state
-  if (state.isActive) {
-      codePush.sync();
-  }
-});
+if (isPlatform('mobile') && !isPlatform('mobileweb')) {
+  App.addListener('appStateChange', (state: AppState) => {
+    // state.isActive contains the active state
+    if (state.isActive) {
+        codePush.sync();
+    }
+  });
+}
 
 export default defineComponent({
   name: 'App',
@@ -111,6 +114,71 @@ export default defineComponent({
       fetchUser: () => store.dispatch("auth/fetchUser")
      }
   },
+  methods: {
+    async showAppPopup() {
+      if (this.user) {
+        return
+        // if they logged in, they know and have access to the info in their user sub menu
+      }
+
+      if (isPlatform('mobile') && !isPlatform('mobileweb') ) {
+        console.log("we are installed");
+        return;
+      }
+
+      const buttons: any[] = [];
+
+      if (isPlatform('mobileweb')) {
+        if (isPlatform('android')) {
+          buttons.push({
+              side: 'start',
+              // icon: 'android',
+              text: 'Installieren',
+              handler: () => {
+                window.open(ANDROID_INSTALL_URL)
+              }
+            }
+          )
+        }
+        else if (isPlatform('ios')) {
+          buttons.push({
+              side: 'start',
+              // icon: 'apple',
+              text: 'Installieren',
+              handler: () => {
+                window.open(IOS_INSTALL_URL)
+              }
+            }
+          )
+        }
+      }
+      if (buttons.length == 0) {
+        buttons.push({
+          side: 'end',
+          text: 'Mehr erfahren',
+          handler: () => {
+            this.$router.push({name: "App"})
+          }
+        });
+      }
+
+      buttons.push({
+        side: 'end',
+        role: 'cancel',
+        text: 'x',
+      });
+
+
+      const toast = await toastController
+        .create({
+          header: "Jetzt die mobile App Beta ausprobieren!",
+          position: 'top',
+          duration: 0,
+          buttons: buttons as any[],
+        })
+      return toast.present();
+    }
+  },
   mounted() {
     this.fetchUser();
 
@@ -131,6 +199,8 @@ export default defineComponent({
         this.$router.push(data.urlTarget);
       }
     });
+
+    this.showAppPopup();
   }
 });
 </script>
