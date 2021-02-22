@@ -21,6 +21,7 @@ import {
   logInOutline as logInIcon,
 } from 'ionicons/icons';
 import { defineComponent, computed, watch } from 'vue'
+import { ANDROID_INSTALL_URL, IOS_INSTALL_URL } from '@/config/Consts';
 
 import FooterMenu from '@/components/footer-menu.vue';
 import LoginModal from '@/components/login-modal.vue';
@@ -32,9 +33,6 @@ import { useStore } from '../stores/';
 
 import { codePush } from 'capacitor-codepush';
 import { App, AppState } from '@capacitor/app';
-
-const ANDROID_INSTALL_URL = "https://install.appcenter.ms/orgs/teamfranka/apps/affinity-live/distribution_groups/public%20beta";
-const IOS_INSTALL_URL = "https://install.appcenter.ms/orgs/teamfranka/apps/affinity-live-ios/distribution_groups/public%20beta";
 
 if (isPlatform('mobile') && !isPlatform('mobileweb')) {
   App.addListener('appStateChange', (state: AppState) => {
@@ -157,18 +155,9 @@ export default defineComponent({
       if (buttons.length == 0) {
         buttons.push({
           side: 'end',
-          // icon: 'apple',
-          text: 'iPhone/iPad',
+          text: 'Mehr erfahren',
           handler: () => {
-            window.open(IOS_INSTALL_URL)
-          }
-        });
-        buttons.push({
-          side: 'end',
-          // icon: 'android',
-          text: 'Android',
-          handler: () => {
-            window.open(ANDROID_INSTALL_URL)
+            this.$router.push({name: "App"})
           }
         });
       }

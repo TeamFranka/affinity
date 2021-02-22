@@ -27,6 +27,10 @@ export const Comment = Models.Comment;
 export const ChatWidgetSettings = Models.ChatWidgetSettings;
 export const Conversation = Models.Conversation;
 
+export const ANDROID_INSTALL_URL = "https://install.appcenter.ms/orgs/teamfranka/apps/affinity-live/distribution_groups/public%20beta";
+export const IOS_INSTALL_URL = "https://install.appcenter.ms/orgs/teamfranka/apps/affinity-live-ios/distribution_groups/public%20beta";
+
+
 export enum Verb {
     Post = "post",
     Announce = "announce",

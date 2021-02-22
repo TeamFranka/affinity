@@ -2,6 +2,7 @@ import { createRouter, createWebHistory } from '@ionic/vue-router';
 import { RouteRecordRaw } from 'vue-router';
 import { isPlatform } from '@ionic/core';
 import News from '../views/News.vue';
+import App from '../views/App.vue';
 import Inbox from '../views/Inbox.vue';
 import CommunityOutlet from '../views/CommunityOutlet.vue';
 import Feed from '../views/Feed.vue';
@@ -58,6 +59,11 @@ const routes: Array<RouteRecordRaw> = [
     name: "CommunityOutlet",
     component: CommunityOutlet,
     children: [
+      {
+        path: '/app',
+        name: 'App',
+        component: App
+      },
       {
         path: '/faq',
         name: 'FAQ',
