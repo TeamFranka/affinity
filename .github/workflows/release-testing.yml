@@ -230,10 +230,10 @@ jobs:
           cd backend
           b4a deploy affinity
 
-  deploy-code-push:
+  deploy-code-push-android:
     environment: appcenter_deploy
     runs-on: ubuntu-latest
-    needs: [ tests, release-build, deploy-parse, android-app, ios-app ]
+    needs: [ deploy-parse ]
     steps:
       - name: Download /dist
         uses: actions/download-artifact@v2
@@ -247,12 +247,52 @@ jobs:
         env:
           APPCENTER_ACCESS_TOKEN: ${{ secrets.APPCENTER_ACCESS_TOKEN }}
 
+  deploy-code-push-ios:
+    environment: appcenter_deploy
+    runs-on: ubuntu-latest
+    needs: [ deploy-parse ]
+    steps:
+      - name: Download /dist
+        uses: actions/download-artifact@v2
+        with:
+          name: dist-production
+          path: dist
       - name: Codepush iOS
         uses: NishanthShankar/codepush-action@master
         with:
           args: release -m -a TeamFranka/Affinity-Live-iOS -d Production -c dist  -t 1.0.0
         env:
           APPCENTER_ACCESS_TOKEN: ${{secrets.APPCENTER_ACCESS_TOKEN}}
+
+  deploy-ios-beta:
+    environment: appcenter_deploy
+    runs-on: ubuntu-latest
+    needs: [ deploy-parse, ios-app ]
+    steps:
+      - name: Download signed iOS App
+        uses: actions/download-artifact@v2
+        with:
+          name: ios-app
+      - name: Publish to AppCenter
+        uses: joabalea/App-Center-action@v1.0.2
+        with:
+          command: appcenter distribute release --app TeamFranka/Affinity-iOS --group "Public Beta" -f ios-app.ipa
+          token: ${{secrets.APPCENTER_ACCESS_TOKEN}}
+
+  deploy-android-beta:
+    environment: appcenter_deploy
+    runs-on: ubuntu-latest
+    needs: [ deploy-parse, android-app ]
+    steps:
+      - name: Download signed Android App
+        uses: actions/download-artifact@v2
+        with:
+          name: android-app
+      - name: Publish to AppCenter
+        uses: joabalea/App-Center-action@v1.0.2
+        with:
+          command: appcenter distribute release --app TeamFranka/Affinity-Android --group "Public Beta" -f android-app-signed.apk
+          token: ${{secrets.APPCENTER_ACCESS_TOKEN}}
 
   deploy-ios:
     environment: ios_deploy
