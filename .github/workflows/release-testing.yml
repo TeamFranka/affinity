@@ -273,11 +273,15 @@ jobs:
         uses: actions/download-artifact@v2
         with:
           name: ios-app
-      - name: Publish to AppCenter
-        uses: joabalea/App-Center-action@v1.0.2
+      - name: upload artefact to App Center
+        uses: wzieba/AppCenter-Github-Action@v1
         with:
-          command: appcenter distribute release --app TeamFranka/Affinity-iOS --group "Public Beta" -f ios-app.ipa
+          appName: TeamFranka/Affinity-Live-iOS
           token: ${{secrets.APPCENTER_ACCESS_TOKEN}}
+          group: "Public Beta"
+          file: ios-app.ipa
+          notifyTesters: false
+          debug: false
 
   deploy-android-beta:
     environment: appcenter_deploy
@@ -288,11 +292,15 @@ jobs:
         uses: actions/download-artifact@v2
         with:
           name: android-app
-      - name: Publish to AppCenter
-        uses: joabalea/App-Center-action@v1.0.2
+      - name: upload artefact to App Center
+        uses: wzieba/AppCenter-Github-Action@v1
         with:
-          command: appcenter distribute release --app TeamFranka/Affinity-Android --group "Public Beta" -f android-app-signed.apk
+          appName: TeamFranka/Affinity-Live
           token: ${{secrets.APPCENTER_ACCESS_TOKEN}}
+          group: "Public Beta"
+          file: android-app-signed.apk
+          notifyTesters: false
+          debug: false
 
   deploy-ios:
     environment: ios_deploy
