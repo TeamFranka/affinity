@@ -1,9 +1,11 @@
-import { Parse, Verb } from "../config/Consts";
-import { Activity } from "../db/models";
+import { Parse, Verb } from "@/config/Consts";
+import { Activity, Team } from "@/db/models";
+import { toModel, Model } from "@/utils/model";
 
 export interface TeamsT {
   loading: boolean;
   news: Record<string, Array<string>>;
+  subteams: Record<string, Array<string>>;
 }
 
 const MODEL_KEYS = ['objects'];
@@ -12,7 +14,8 @@ export const Teams = {
   namespaced: true,
   state: () => ({
     loading: true,
-    news: {}
+    news: {},
+    subteams: {},
   }),
   getters: {
   },
@@ -20,6 +23,10 @@ export const Teams = {
     setNews(state: TeamsT, res: any){
       const { teamId, news } = res;
       state.news[teamId] = news;
+    },
+    setSubteams(state: TeamsT, res: any){
+      const { teamId, teams } = res;
+      state.subteams[teamId] = teams;
     }
   },
   actions: {
@@ -27,6 +34,24 @@ export const Teams = {
       const resp = await Parse.Cloud.run("getTeam", { slug });
       await context.commit("setItems", resp.teams, {root: true});
       await context.commit("auth/addPermissions", resp.permissions, { root: true });
+    },
+    async fetchSubteams(context: any, parentTeam: Parse.Pointer) {
+      const query = (new Parse.Query(Team))
+        .equalTo("subOf", parentTeam);
+      const teams = await query.find();
+
+      await context.commit("setItems", teams.map(toModel), {root: true});
+      await context.commit("setSubteams", {
+        teamId: parentTeam.objectId,
+        teams: teams.map((x: any) => x.id)
+      });
+    },
+    async createSubteam(context: any, data: any): Promise<Model> {
+      const team = new Team(data);
+      await team.save();
+      const converted = toModel(team);
+      await context.commit("setItems", [converted], { root: true });
+      return converted
     },
     async fetchNews(context: any, team: Parse.Pointer) {
       const query = (new Parse.Query(Activity))
