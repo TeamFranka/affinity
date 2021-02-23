@@ -160,27 +160,24 @@ Parse.Cloud.beforeSave("Team", async (request) => {
     agents.set("type", "agents");
     publishers.set("type", "publishers");
 
-
-    await Parse.Object.saveAll([leaders, mods, agents, publishers, members], { useMasterKey: true });
-
     leaders.getUsers().add(user);
     members.getUsers().add(user);
+
+    await Parse.Object.saveAll([leaders, mods, agents, publishers, members], { useMasterKey: true });
 
     acl.setRoleReadAccess(members, true);
     acl.setRoleReadAccess(leaders, true);
     acl.setRoleWriteAccess(leaders, true);
 
-
     if (parentTeam) {
-      console.log("parent adding");
       const parentLeaders = parentTeam.get('leaders');
       const parentMembers = parentTeam.get('members');
       await Promise.all([parentLeaders.fetch({ useMasterKey: true }), parentMembers.fetch({ useMasterKey: true })]);
       leaders.getRoles().add(parentLeaders);
+      await leaders.save(null, { useMasterKey: true });
+
       acl.setRoleReadAccess(parentMembers, true);
-      console.log("parent added");
     }
-    console.log("ending");
 
     request.object.set({
       "ACL": acl,
