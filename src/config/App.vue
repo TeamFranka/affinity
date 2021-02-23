@@ -26,7 +26,7 @@ import { ANDROID_INSTALL_URL, IOS_INSTALL_URL } from '@/config/Consts';
 import FooterMenu from '@/components/footer-menu.vue';
 import LoginModal from '@/components/login-modal.vue';
 import HeaderBar from '@/components/header-bar.vue';
-import { setupNotificationActions } from '@/utils/setup';
+import { isMobileInstallation, setupNotificationActions } from '@/utils/setup';
 import { ActionPerformed, PushNotificationSchema } from '@capacitor/push-notifications';
 
 import { useStore } from '../stores/';
@@ -121,37 +121,35 @@ export default defineComponent({
         // if they logged in, they know and have access to the info in their user sub menu
       }
 
-      if (isPlatform('mobile') && !isPlatform('mobileweb') ) {
+      if (isMobileInstallation()) {
         console.log("we are installed");
         return;
       }
 
       const buttons: any[] = [];
 
-      if (isPlatform('mobileweb')) {
-        if (isPlatform('android')) {
-          buttons.push({
-              side: 'start',
-              // icon: 'android',
-              text: 'Installieren',
-              handler: () => {
-                window.open(ANDROID_INSTALL_URL)
-              }
+      if (isPlatform('android')) {
+        buttons.push({
+            side: 'end',
+            // icon: 'android',
+            text: 'Installieren',
+            handler: () => {
+              window.open(ANDROID_INSTALL_URL)
             }
-          )
-        }
-        else if (isPlatform('ios')) {
-          buttons.push({
-              side: 'start',
-              // icon: 'apple',
-              text: 'Installieren',
-              handler: () => {
-                window.open(IOS_INSTALL_URL)
-              }
+          }
+        )
+      } else if (isPlatform('ios')) {
+        buttons.push({
+            side: 'end',
+            // icon: 'apple',
+            text: 'Installieren',
+            handler: () => {
+              window.open(IOS_INSTALL_URL)
             }
-          )
-        }
+          }
+        )
       }
+
       if (buttons.length == 0) {
         buttons.push({
           side: 'end',
