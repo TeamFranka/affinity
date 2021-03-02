@@ -100,7 +100,13 @@ Parse.Cloud.beforeSave("Team", async (request) => {
       .get(request.object.get("admin"), { useMasterKey:true });
     request.object.unset("admin");
   }
-  const name = request.object.get("name");
+
+  const slug = (request.object.get('slug')||"").toLowerCase().trim()
+      .replace(/&/g, '-and-')         // Replace & with 'and'
+      .replace(/[\s\W-]+/g, '-')      // Replace spaces, non-word characters and dashes with a single dash (-)
+  if (!slug.length) {
+    throw "Invalid slug";
+  }
 
   if (request.original) {
     // enforce some fields can't be changed
@@ -114,28 +120,23 @@ Parse.Cloud.beforeSave("Team", async (request) => {
       }
     });
   } else {
-
     const query = new Parse.Query(Team);
-    query.equalTo("slug", request.object.get('slug'))
+    query.equalTo("slug", slug)
     const alreadyThere = await query.first({ useMasterKey: true });
-    if (alreadyThere) {
+    if (alreadyThere > 0) {
       throw "Slug already in use"
     }
 
     // creating,
-    const parentId = request.object.get("subOf");
+    const parentTeam = request.object.get("subOf");
     const acl = new Parse.ACL();
 
-    let parentTeam = false;
-
-    if (!parentId && !request.master) {
+    if (!parentTeam && !request.master) {
       throw "Sorry, only master-key can create new root Level teams."
     }
 
-    if (parentId) {
-      console.log("parentId", parentId);
-      parentTeam = await (new Parse.Query(Team))
-        .get(parentId, { useMasterKey: true });
+    if (parentTeam) {
+      await parentTeam.fetch({ useMasterKey: true });
 
       if (!parentTeam.isMember("leaders", user.id)) {
         throw "Only admins can create sub teams"
@@ -147,35 +148,36 @@ Parse.Cloud.beforeSave("Team", async (request) => {
       acl.setPublicReadAccess(true);
     }
 
-    // creating the roles
-    const leaders = new Parse.Role(name + " Leaders", (new Parse.ACL()));
+    const leaders = new Parse.Role(`${slug} Leaders`, (new Parse.ACL()));
+    const members = new Parse.Role(`${slug} Members`, (new Parse.ACL()));
+    const mods = new Parse.Role(`${slug} Mods`, (new Parse.ACL()));
+    const agents = new Parse.Role(`${slug} Agents`, (new Parse.ACL()));
+    const publishers = new Parse.Role(`${slug} Publishers`, (new Parse.ACL()));
+
     leaders.set("type", "leaders");
-    leaders.getUsers().add(user);
-
-    if (parentTeam) {
-        leaders.getRoles().add(parentTeam.leaders);
-    }
-    await leaders.save(null, { useMasterKey: true });
-
-    acl.setRoleReadAccess(leaders, true);
-    acl.setRoleWriteAccess(leaders, true);
-    const mods = new Parse.Role(name + " Mods", (new Parse.ACL()));
-    const agents = new Parse.Role(name + " Agents", (new Parse.ACL()));
-    const publishers = new Parse.Role(name + " Publishers", (new Parse.ACL()));
-    const members = new Parse.Role(name + " Members", (new Parse.ACL()));
-
+    members.set("type", "members");
     mods.set("type", "mods");
     agents.set("type", "agents");
     publishers.set("type", "publishers");
-    members.set("type", "members");
 
+    leaders.getUsers().add(user);
     members.getUsers().add(user);
 
-    // FIXME: can we just add them and have them created in one go instead?
-    await mods.save(null, { useMasterKey: true });
-    await agents.save(null, { useMasterKey: true });
-    await publishers.save(null, { useMasterKey: true });
-    await members.save(null, { useMasterKey: true });
+    await Parse.Object.saveAll([leaders, mods, agents, publishers, members], { useMasterKey: true });
+
+    acl.setRoleReadAccess(members, true);
+    acl.setRoleReadAccess(leaders, true);
+    acl.setRoleWriteAccess(leaders, true);
+
+    if (parentTeam) {
+      const parentLeaders = parentTeam.get('leaders');
+      const parentMembers = parentTeam.get('members');
+      await Promise.all([parentLeaders.fetch({ useMasterKey: true }), parentMembers.fetch({ useMasterKey: true })]);
+      leaders.getRoles().add(parentLeaders);
+      await leaders.save(null, { useMasterKey: true });
+
+      acl.setRoleReadAccess(parentMembers, true);
+    }
 
     request.object.set({
       "ACL": acl,

@@ -1,0 +1,101 @@
+<template>
+  <ion-header>
+    <ion-toolbar>
+      <ion-title>Unterteam erstellen</ion-title>
+      <ion-button
+        color="dark"
+        fill="clear"
+        @click="closeModal"
+        slot="end"
+      >
+        <ion-icon :icon="closeIcon" />
+      </ion-button>
+    </ion-toolbar>
+  </ion-header>
+  <ion-content>
+    <ion-item>
+      <ion-label position="stacked">Name</ion-label>
+      <ion-input
+        data-cy-role="name"
+        :value="name"
+        required
+        @ionchange="name = $event.target.value"
+      />
+    </ion-item>
+    <ion-item>
+      <ion-label position="stacked">Slug</ion-label>
+      <ion-input
+        data-cy-role="slug"
+        required
+        :value="slug"
+        @ionchange="setSlug($event.target.value)"
+      />
+    </ion-item>
+      <ion-label>Details</ion-label>
+      <rich-editor
+        :isAdminMd="true"
+        :enabledActions="AllActions"
+        :debounce="0"
+        @change="(x) => { info = x}"
+      />
+  </ion-content>
+  <ion-footer>
+    <ion-toolbar>
+      <ion-button data-cy-role="submit" fill="outline" @click="saveAndClose" slot="end">
+        <ion-icon :icon="saveIcon" />
+        <ion-label>Erstelllen</ion-label>
+      </ion-button>
+    </ion-toolbar>
+  </ion-footer>
+</template>
+<script lang="ts">
+import {
+  IonContent, IonHeader, IonToolbar, IonInput, IonIcon, IonButton, modalController,
+  IonFooter, IonLabel, IonItem, IonTitle
+} from '@ionic/vue';
+import {
+  closeOutline as closeIcon,
+  saveOutline as saveIcon,
+  listOutline as listIcon,
+  addCircleOutline as addIcon,
+  trashOutline as removeIcon,
+} from 'ionicons/icons';
+import { defineComponent } from 'vue';
+import { DefaultActions, AllActions } from '../rich-editor.vue';
+import RichEditor from '../rich-editor.vue';
+
+export default defineComponent({
+  name: 'IconSelector',
+  components: {
+    IonContent, IonToolbar, IonInput, IonHeader, IonIcon,
+    IonButton, IonFooter, IonLabel, IonItem, IonTitle, RichEditor,
+  },
+  data() {
+    return {
+        name: '',
+        slug: '',
+        info: '',
+    }
+  },
+  setup() {
+    return {
+      closeModal() {
+        modalController.dismiss()
+      },
+      saveIcon, closeIcon, addIcon, listIcon, removeIcon,
+      DefaultActions, AllActions,
+    }
+  },
+  methods: {
+    setSlug(text: string) {
+      const stripped = text.toLowerCase().trim()
+          .replace(/&/g, '-and-')         // Replace & with 'and'
+          .replace(/[\s\W-]+/g, '-')      // Replace spaces, non-word characters and dashes with a single dash (-)
+      this.slug = stripped;
+    },
+    saveAndClose() {
+      modalController.dismiss({name: this.name, slug: this.slug, info: this.info});
+    },
+  },
+});
+</script>
