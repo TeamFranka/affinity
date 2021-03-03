@@ -24,6 +24,9 @@ export const Role = {
         roles: {
             type: "Relation",
             targetClass: "_Role"
+        },
+        type: {
+            type: "String",
         }
     },
     classLevelPermissions: {
