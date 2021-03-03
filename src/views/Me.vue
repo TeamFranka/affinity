@@ -2,12 +2,12 @@
   <ion-page>
     <ion-content>
         <div class="ion-text-center">
-          <div class="profile-img">
+          <div data-role="myAvatar" class="profile-img">
             <avatar :profile="user"  />
           </div>
-          <ion-chip @click="selectNewAvatar(user.objectId)">
+          <ion-button data-cy="setAvatar" fill="clear" color="medium" @click="selectNewAvatar(user.objectId)">
             <ion-icon :icon="uploadIcon"></ion-icon>
-          </ion-chip>
+          </ion-button>
         </div>
         <div data-cy="my-teams">
           <h2>You are a member of</h2>
@@ -25,7 +25,7 @@
 
 <script lang="ts">
 import Avatar from '../components/avatar.vue';
-import { IonContent, IonPage,  IonIcon, IonChip,} from '@ionic/vue';
+import { IonContent, IonPage,  IonIcon, IonButton,} from '@ionic/vue';
 import { chatbubbles, logoWhatsapp, cloudUploadOutline } from 'ionicons/icons';
 import { defineComponent, computed } from 'vue';
 import { useStore } from '../stores/';
@@ -57,7 +57,7 @@ export default defineComponent({
     IonPage,
     IonContent,
     IonIcon,
-    IonChip,
+    IonButton,
   }
 });
 </script>

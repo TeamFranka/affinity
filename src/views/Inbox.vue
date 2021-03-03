@@ -3,7 +3,7 @@
     <ion-content fullscreen>
       <ion-list>
         <ion-list-header>
-          <ion-segment @ionChange="selectedSegment = $event.target.value" :value="selectedSegment">
+          <ion-segment @ion-change="selectedSegment = $event.target.value" :value="selectedSegment">
               <ion-segment-button value="convos">
                 <ion-label>Conversations</ion-label>
               </ion-segment-button>

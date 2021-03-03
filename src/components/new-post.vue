@@ -121,7 +121,7 @@
               <!-- FIXME: this renders incorrectly while saving... -->
               <ion-img v-if="o.img" :src="o.img.dataUrl" />
               <ion-input placeholder="description"
-                @ionChange="updateObject({index, data: {description: $event.target.value}})"
+                @ion-change="updateObject({index, data: {description: $event.target.value}})"
                 :value="o.description"
               />
             </div>
@@ -143,7 +143,7 @@
                 <div style="display: flex; align-items: center">
                   <ion-icon :icon="linkIcon"/>
                   <ion-input
-                    @ionChange="updateObject({index, data: {title: $event.target.value}})"
+                    @ion-change="updateObject({index, data: {title: $event.target.value}})"
                       :value="o.title"
                       required
                       name="title"
@@ -153,7 +153,7 @@
                 <a :href="o.url">{{o.url}}</a>
                 <ion-img v-if="o.previewImage" :src="o.previewImage.url" />
                 <ion-textarea
-                  @ionChange="updateObject({index, data: {previewText: $event.target.value}})"
+                  @ion-change="updateObject({index, data: {previewText: $event.target.value}})"
                   :value="o.previewText"
                   placeholder="information about this link to preview"
                 />
@@ -174,7 +174,7 @@
                 <div style="display: flex; align-items: center">
                   <ion-icon :icon="documentIcon"/>
                   <ion-input
-                    @ionChange="updateObject({index, data: {title: $event.target.value}})"
+                    @ion-change="updateObject({index, data: {title: $event.target.value}})"
                       :value="o.title"
                       name="title"
                       required
@@ -182,7 +182,7 @@
                   />
                 </div>
                 <ion-textarea
-                  @ionChange="updateObject({index, data: {description: $event.target.value}})"
+                  @ion-change="updateObject({index, data: {description: $event.target.value}})"
                   :value="o.description"
                   placeholder="description text..."
                 />

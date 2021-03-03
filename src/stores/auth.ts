@@ -115,10 +115,9 @@ export const AuthState = {
     },
     async setAvatar(context: any, f: Parse.File) {
       await f.save();
-      const user = context.state.user;
-      user.set("avatar", f);
+      const user = context.state.user.prepareSave({"avatar": f}).toParse();
       await user.save();
-      context.commit("setUser", user);
+      context.commit("setUser", toModel(user));
     },
     async afterLogin(context: any) {
       if (context.getters["isLoggedIn"]) {

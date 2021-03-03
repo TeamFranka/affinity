@@ -10,7 +10,7 @@
                 inputmode="search"
                 enterkeyhint="search"
                 :value="searchValue"
-                @ionChange="searchValue = $event.target.value"
+                @ion-change="searchValue = $event.target.value"
             />
         </ion-toolbar>
         <ion-segment :value="selectedGroup" scrollable>

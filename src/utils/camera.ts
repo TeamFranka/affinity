@@ -8,6 +8,12 @@ export interface Photo {
 }
 
 export const takePicture = async () =>  {
+  if (window && (window as any).CYPRESS && (window as any).CYPRESS.nextImage) {
+    // hack for testing image selecting
+    const image = ((window as any).CYPRESS.nextImage as Photo);
+    delete (window as any).CYPRESS.nextImage;
+    return image
+  }
   const image = await Camera.getPhoto({
     quality: 90,
     allowEditing: true,

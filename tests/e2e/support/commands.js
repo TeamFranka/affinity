@@ -1,9 +1,26 @@
 import "cypress-localstorage-commands"
 
 const LOGINS = {};
-let CURRENT_USER = null;
 
 const KEYS = ['Parse/APPLICATION_ID/installationId', 'Parse/APPLICATION_ID/currentUser'];
+
+Cypress.Commands.add("signUpAsNewUser", (u) => {
+    const username = u || `sontaran-${Math.floor(Math.random()*  1000000)}`;
+
+    cy.visit('/news');
+    cy.get('[data-cy-role=loginModal]').contains('Einloggen').click()
+    cy.get('ion-modal').within(() => {
+        cy.wait(500);
+        cy.get('[data-cy=registerTab]').click();
+        cy.get('input[name=email]').should("be.visible");
+        cy.get('input[name=email]').clear().type(`${username}@example.org`, {delay: 50});
+        cy.get('input[name=username]').clear().type(username, {delay: 50});
+        cy.get('input[name=password]').clear().type(username, {delay: 50});
+        cy.get('input[name=name]').clear().type(username, {delay: 50});
+        cy.get('ion-button[data-cy-role=registerSubmit]').click();
+    });
+    cy.get('[data-cy-role=loginModal]').contains('Einloggen').should('not.exist', { timeout: 10000 });
+});
 
 Cypress.Commands.add("loggedInAs", (username) => {
     if (LOGINS[username]) {
@@ -27,9 +44,8 @@ Cypress.Commands.add("loggedInAs", (username) => {
         cy.get('input[name=password]:visible').type(username, {delay: 100});
         cy.get('ion-button[data-cy-role=loginSubmit]').click();
     });
-    cy.get('[data-cy-role=loginModal]').contains('Einloggen').should('not.exist');
+    cy.get('[data-cy-role=loginModal]').contains('Einloggen').should('not.exist', { timeout: 10000 });
 
-    CURRENT_USER = username;
     LOGINS[username] = {};
     for (const key of KEYS) {
         cy.getLocalStorage(key).then(value => {

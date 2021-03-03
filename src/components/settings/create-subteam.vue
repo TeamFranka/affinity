@@ -19,7 +19,7 @@
         data-cy-role="name"
         :value="name"
         required
-        @ionchange="name = $event.target.value"
+        @ion-change="name = $event.target.value"
       />
     </ion-item>
     <ion-item>
@@ -28,7 +28,7 @@
         data-cy-role="slug"
         required
         :value="slug"
-        @ionchange="setSlug($event.target.value)"
+        @ion-change="setSlug($event.target.value)"
       />
     </ion-item>
       <ion-label>Details</ion-label>
