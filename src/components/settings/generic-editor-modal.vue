@@ -31,7 +31,7 @@
         :placeholder="placeholder"
         :value="currentValue"
         auto-grow
-        @ionchange="currentValue = $event.target.value"
+        @ion-change="currentValue = $event.target.value"
       />
       <ion-input
         v-else
@@ -39,7 +39,7 @@
         :type="type"
         :value="currentValue"
         :placeholder="placeholder"
-        @ionchange="currentValue = $event.target.value"
+        @ion-change="currentValue = $event.target.value"
       />
     </ion-item>
   </ion-content>
