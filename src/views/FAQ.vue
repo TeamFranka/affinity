@@ -6,7 +6,7 @@
         :value="searchValue"
         placholder="Suchen"
         show-cancel-button="focus"
-        @ionChange="searchValue = $event.target.value"
+        @ion-change="searchValue = $event.target.value"
       />
       <ion-spinner v-if="loading" />
       <div class="ion-padding ion-text-center" v-if="!loading && entries.length == 0">

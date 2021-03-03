@@ -3,7 +3,7 @@
     <ion-toolbar>
       <ion-input
         :value="title"
-        @ionChange="title = $event.target.value"
+        @ion-change="title = $event.target.value"
         placeholder="Fragen-Titel"
       />
       <ion-button

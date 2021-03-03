@@ -4,7 +4,7 @@
       <ion-input
         :value="title"
         name="title"
-        @ionChange="title = $event.target.value"
+        @ion-change="title = $event.target.value"
         placeholder="Umfragen-Titel"
       />
       <ion-button
@@ -41,13 +41,13 @@
                   :value="e.title"
                   :name="`opt-${index}-title`"
                   required
-                  @ionChange="e.title = $event.target.value"
+                  @ion-change="e.title = $event.target.value"
                   placeholder="Optionstitel"
                 />
                 <ion-input
                   :value="e.text"
                   :name="`opt-${index}-desc`"
-                  @ionChange="e.text = $event.target.value"
+                  @ion-change="e.text = $event.target.value"
                   placeholder="optionale Beschreibung"
                 />
               </div>
@@ -78,7 +78,7 @@
           <ion-item>
             <ion-toggle
               :checked="isMultiselect"
-              @ionChange="isMultiselect = !isMultiselect"
+              @ion-change="isMultiselect = !isMultiselect"
             />
             <ion-label>Mehrfach-Antwort erlauben</ion-label>
           </ion-item>
@@ -87,7 +87,7 @@
           <ion-item>
             <ion-toggle
               :checked="isAnonymous"
-              @ionChange="isAnonymous = !isAnonymous"
+              @ion-change="isAnonymous = !isAnonymous"
             />
             <ion-label>Anonyme Abstimmung</ion-label>
           </ion-item>
@@ -97,7 +97,7 @@
             <ion-toggle
               :disabled="isAnonymous"
               :checked="allowChange"
-              @ionChange="allowChange = !allowChange"
+              @ion-change="allowChange = !allowChange"
             />
             <ion-label>Antwort kann geändert werden</ion-label>
           </ion-item>
@@ -106,7 +106,7 @@
           <ion-item>
             <ion-toggle
               :checked="showResults"
-              @ionChange="showResults = !showResults"
+              @ion-change="showResults = !showResults"
             />
             <ion-label>Zwischenergebnis anzeigen</ion-label>
           </ion-item>
@@ -116,7 +116,7 @@
             <ion-toggle
               :disabled="!showResults"
               :checked="showsResultsWithoutVote"
-              @ionChange="showsResultsWithoutVote = !showsResultsWithoutVote"
+              @ion-change="showsResultsWithoutVote = !showsResultsWithoutVote"
             />
             <ion-label>ZW-Ergenbisanzeigen ohne Abstimmmung  </ion-label>
           </ion-item>
@@ -129,7 +129,7 @@
               placeholder="(opt) Schließt..."
               :min="(new Date()).toISOString()"
               :value="closesAt"
-              @ionChange="closesAt = $event.target.value"
+              @ion-change="closesAt = $event.target.value"
             ></ion-datetime>
           </ion-item>
           <ion-button

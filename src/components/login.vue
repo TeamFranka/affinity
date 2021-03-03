@@ -1,7 +1,7 @@
 <template>
   <ion-header>
     <ion-toolbar>
-      <ion-segment :value="action" @ionChange="switchAction($event.target.value)">
+      <ion-segment :value="action" @ion-change="switchAction($event.target.value)">
         <ion-segment-button data-cy="loginTab" value="login">
           <ion-label>Einloggen</ion-label>
         </ion-segment-button>
