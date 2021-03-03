@@ -71,7 +71,17 @@ npm run dev:restart-parse
 
 We use `cypress` (can be found in `tests/e2e/specs`) for end-2-end-integration testing. You can run them manually by running `npx cypress open tests/e2e/specs/`.
 
-You need to have the backend (docker) and frontend runnig and served at `localhost:8080` for that to work. It relies heavily for the mock-data in the assertions, so if it fails that might not be a bug but different state you currently have locally. To reset the database (CAREFUL THIS PERMANANTLY DELETED YOUR CURRENT DATA!) you can run `npm run dev:db:reset`. Be sure to restart any dev-serve `npm run serve` after, because the default Team ID will have changed.
+You need to have the backend (docker) and frontend runnig and served at `localhost:8080` for that to work. It relies heavily for the mock-data in the assertions, so if it fails that might not be a bug but different state you currently have locally. To reset the database (CAREFUL THIS PERMANANTLY DELETES YOUR CURRENT DATA!) you can run `npm run dev:db:reset`. Be sure to restart any dev-serve `npm run serve` after, because the default Team ID will have changed.
+
+### Contributing
+
+See [the Contributions Guide](./.github/CONTRIBUTING.md). Tl;dr:
+
+1. Raise a PR with your changes
+   Please add tests whenever possible!
+2. Sign the CLA
+3. All Tests/CI checks must pass
+4. Review crumbles must be addressed.
 
 
 ## License
