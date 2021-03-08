@@ -1,15 +1,15 @@
 <template>
-  <ion-row ref="doubleTapRef">
-    <ion-col size="1">
+  <ion-row ref="doubleTapRef" class="" v-if="!comment.replyTo">
+    <ion-col size="2" >
       <avatar :profile="author"/>
     </ion-col>
-    <ion-col size="10">
-      <div> {{authorName}} <ion-note color="medium">{{since}}</ion-note>
+    <ion-col size="8">
+      <div class="authorName" > {{authorName}} <ion-note color="medium">{{since}}</ion-note>
       </div>
-      <div>
-          {{ text }}
+      <div class="description">
+          {{ text }} 
       </div>
-      <div>
+      <div class="chip-button-row">
         <ion-chip @click="toggleLike" outline size="small" :color="likedColor">
           <ion-icon :icon="likeIcon" size="small"/>
           <ion-label>{{comment.likesCount }}</ion-label>
@@ -23,11 +23,23 @@
         </ion-chip>
       </div>
     </ion-col>
-    <ion-col size="1">
+
+    <ion-col size="2" class="reply-chip" >
       <ion-chip @click="showInput = !showInput" outline color="light">
         <ion-icon :icon="replyIcon" size="small"/>
       </ion-chip>
     </ion-col>
+
+  </ion-row>
+
+
+<ion-row v-if="comment.replyTo">
+    <ion-col offset="2" size="10" class="comment-row">
+      {{text}} <avatar :profile="author" class="comment-avatar" />  <div class="authorName" v-if="comment.replyTo"> <div class="OnlyAutherName">{{authorName}}</div> &nbsp;<ion-note color="medium">{{since}}</ion-note></div>
+    </ion-col>
+</ion-row>
+
+  <ion-row>
     <ion-col offset="1" size="11">
       <inline-text
         v-if="showInput"
@@ -46,6 +58,7 @@
       />
     </ion-col>
   </ion-row>
+
 </template>
 
 
@@ -90,7 +103,7 @@ export default defineComponent({
   setup(props) {
     const store = useStore();
     return {
-      comment: computed(() => store.getters.objectsMap[props.commentId]),
+      comment: computed(() =>store.getters.objectsMap[props.commentId]),
       objs: computed(() => store.getters.objectsMap),
       store,
       commentsIcon: chatbubblesOutline,
@@ -186,5 +199,36 @@ export default defineComponent({
 ion-card-header {
   display: flex;
   align-items: center;
+}
+.authorName {
+    line-height: normal;
+    color: #737373;
+    margin: 0 0 3px;
+    font-size: 14px;
+    letter-spacing: 0.8px;
+}
+.authorName .ion-color-medium{ color:#92949c; }
+.description{line-height: normal;
+    color: #737373;
+    margin: 0 0 10px;
+    font-size: 14px;
+    letter-spacing: 0.8px;}
+
+.chip-button-row ion-chip{ margin: 0 8px 0 0; border-color: rgba(0,0,0,0.1); color: rgba(0,0,0,0.2); }
+.chip-button-row ion-chip:last-child{ margin: 0;}
+.reply-chip  ion-chip{ margin:0 0; border-color: rgba(0,0,0,0.1); color: rgba(0,0,0,0.2); }
+.comment-row {     color: #737373;
+    margin: 0 0;
+    font-size: 14px;
+    padding: 10px 0 0;
+    letter-spacing: 0.8px;
+    border-top: 1px solid rgba(0,0,0,0.2); }
+.OnlyAutherName{
+  color: #2386bf;
+  text-decoration: underline;
+  display: contents;
+}
+.authorName{
+  display: inline-flex;
 }
 </style>

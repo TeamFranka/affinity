@@ -86,7 +86,7 @@ export default defineComponent({
 });
 </script>
 <style scoped>
-.profile-wrap {
+.profile-wrap { width: 100% !important; height: auto !important;
   position: relative;
   display: inline-block;
 }
@@ -94,8 +94,8 @@ export default defineComponent({
   border-radius: 100%;
   display: inline-block;
   border: 2px solid #aaa;
-  width: 100%;
-  height: 100%;
+  width: 75%;
+  height: 75%;
 }
 ion-avatar {
   --border-radius: 100%;
@@ -104,4 +104,9 @@ ion-avatar {
   width: 100%;
   height: 100%;
 }
+
+.comment-row .profile-wrap{     width: 30px !important;
+    height: 30px !important;
+    margin: -1px 0 0 0;
+    vertical-align: middle; }
 </style>
