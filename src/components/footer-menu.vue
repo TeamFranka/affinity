@@ -20,11 +20,11 @@
         </router-link>
         </ion-col>
         <template v-if="isLoggedIn">
-          <ion-col v-if="false">
+          <ion-col>
             <router-link style="position: relative" to="/inbox">
-              <notification-dot color="warning" slot="start" />
+              <notification-dot v-if="false" color="warning" slot="start" />
               <ion-icon size="large" :icon="chatIcon" />
-              <notification-dot color="danger" slot="end" />
+              <notification-dot v-if="false" color="danger" slot="end" />
             </router-link>
           </ion-col>
           <ion-col>
