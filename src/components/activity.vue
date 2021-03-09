@@ -1,6 +1,6 @@
 <template>
 <ion-card data-cy-type="activity" :data-cy-verb="activity.verb">
-  <ion-card-header>
+  <ion-card-header v-if="(objects[0].className != 'Link' && text != '') || objects.length > 1">
     <div class="avatar-wrap">
       <router-link v-if="showAuthor" :to="{name: 'ViewUser', params:{userId: author.objectId}}">
         <avatar :profile="author" />
@@ -25,11 +25,35 @@
         </router-link>
     </div>
   </ion-card-header>
+  
+  <ion-card-header v-else>
+    <div class="avatar-wrap-sml">
+      <router-link v-if="showAuthor" :to="{name: 'ViewUser', params:{userId: author.objectId}}">
+        <avatar :profile="author" size="2em"/>
+      </router-link>
+      <router-link
+        v-else
+        :to="teamLink"
+      >
+          <avatar :profile="team" :name="teamName" v-if="!showAuthor" size="2em"/>
+      </router-link>
+    </div>
+      <div v-if="showAuthor" class="marginRgt">
+        {{authorName}}<span v-if="showTeam"><ion-icon :icon="teamSplitterIcon" /> <router-link :to="teamLink">{{teamName}}</router-link
+        ></span>
+      </div>
+      <div v-if="!showAuthor" class="marginRgt">
+        <router-link :to="teamLink">{{teamName}}</router-link>
+      </div>
+      <router-link data-cy="activityLink" :to="link">
+          <ion-note color="medium">shared  {{since}} </ion-note>
+        </router-link>
+  </ion-card-header>
   <div>
     <div class="ion-padding" data-cy-role="content">
       <render-md :source="text" />
     </div>
-    <div v-for="obj in objects" :key="obj.objectId" class="ion-padding">
+    <div v-for="obj in objects" :key="obj.objectId"  v-bind:class="[text != '' ? ion-padding : 'no-padding']">
       <div v-if="obj.className == 'Poll'" data-cy-obj="poll">
         <poll :poll="obj" />
       </div>
@@ -181,6 +205,15 @@ export default defineComponent({
 ion-card-header {
   display: flex;
   align-items: center;
+}
+.no-padding{
+  padding: 0px 13px;
+}
+.marginRgt{
+  margin-right: 10px;
+}
+.avatar-wrap-sml{
+  width: 2.3em;
 }
 .avatar-wrap {
   width: 5em;
