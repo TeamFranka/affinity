@@ -30,6 +30,7 @@ const getUserToken = async (username) => {
 const REMAPPINGS = {
     "author": getUser,
     "team": getTeam,
+    "subOf": getTeam,
     "participants": (x) => x.map(getUser),
 };
 
@@ -81,7 +82,7 @@ console.log('myArgs: ', args);
                 slug: data.slug,
                 name: data.name,
                 admin: getUser(data.admin).id
-            }, data.params));
+            }, remap(data.params)));
             await team.save(null, { useMasterKey: true });
         }
         if (index === 0){

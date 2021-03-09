@@ -61,6 +61,17 @@ export const Teams = [
         params: {
             avatar: makeFile('doctor.png')
         }
+    },
+    {
+        slug: "team-earth",
+        name: "Team Earth",
+        admin: 'graham',
+        members: ['graham', 'yaz'],
+        agents: ['yaz'],
+        params: {
+            subOf: "doctor-who",
+            avatar: makeFile('doctor.png')
+        }
     }
 ];
 
