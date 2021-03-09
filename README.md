@@ -67,6 +67,13 @@ If you've done changes to the cloud-code, you have to restart the parse backend 
 npm run dev:restart-parse
 ```
 
+### Development accounts
+
+The mock data creates some default data and logins for local development. The password always equals the username (also for other accounts created during e2e-tests). Here's the two most important accounts to tests with:
+
+ - River Song (user & password: `river`) is admin of the default main team "Team Doctor Who";
+ - Clara Oswald (user & password: `clara`) is a regular user in the same team
+
 ### Running Tests
 
 We use `cypress` (can be found in `tests/e2e/specs`) for end-2-end-integration testing. You can run them manually by running `npx cypress open tests/e2e/specs/`.
