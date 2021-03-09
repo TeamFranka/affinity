@@ -102,26 +102,25 @@ Parse.Cloud.beforeSave("Conversation", async (request) => {
   }
 
   if (request.object.get("type") == "sharedInbox") {
-    console.log("in shared");
     const participants = request.object.get("participants");
-    console.log("participants", participants, request.object.get("team").id);
     const group = await (new Parse.Query(Team)
       .include("agents")
       .get(request.object.get("team").id, { useMasterKey: true }));
     const agents = group.get("agents");
-    console.log("agents", agents);
 
     const conversationAcl = new Parse.ACL();
     conversationAcl.setRoleReadAccess(agents, true);
-    console.log("set acl");
 
     participants.forEach((p) => {
-      console.log("set acl for ", p, p.id);
       conversationAcl.setReadAccess(p.id, true);
     });
 
-    console.log("save acl");
     request.object.setACL(conversationAcl);
+  } else if (request.object.get("type") == "team") {
+    if (!request.master) {
+      throw "Please use masterKey to create team conversations"
+    }
+
   } else {
     throw "Not supported"
   }
