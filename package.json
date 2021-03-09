@@ -22,7 +22,7 @@
     "dev:db:mock-data": "node -r dotenv/config bin/mock-data.js dotenv_config_path=.env.development with-faq with-posts",
     "dev:db:reset": "npm run dev:db:destroy && docker-compose up -d && npm run dev:db && npm run dev:db:mock-data && cp .env.development.local.template .env.development.local",
     "dev:restart-parse": "cd backend/cloud/  && npm install && cd ../.. && docker-compose stop parse && docker-compose up -d && docker-compose logs -f --tail 10 parse",
-    "dev:run-parse": "docker-compose pull && docker-compose up -d && docker-compose logs -f --tail 10 parse"
+    "dev:run-parse": "cd backend/cloud/ && npm install && cd ../.. && docker-compose pull && docker-compose up -d && docker-compose logs -f --tail 10 parse"
   },
   "dependencies": {
     "@capacitor/android": "^3.0.0-beta.3",
