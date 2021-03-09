@@ -32,6 +32,9 @@ describe('Create a new sub team as an admin', () => {
       cy.get('span').should('contain', testStr);
     });
 
+    // Team Leaders conversation should exist
+    cy.visit(`/inbox`);
+    cy.get("ion-item").contains(`${testStr} Leaders`);
   })
 
 })

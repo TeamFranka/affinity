@@ -4,7 +4,8 @@
 const CONSTS = require("./consts.js");
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const { fetchMyTeams } = require("./utils.js");
-const Team = CONSTS.Team;
+const { Team, Conversation } = CONSTS;
+
 
 Parse.Cloud.define("myTeams", async (request) => {
     const {teams, roleIds} = await fetchMyTeams(request.user);
@@ -93,7 +94,6 @@ const CANT_BE_CHANGED = [
 
 // Ensure the ACL are set correctly when created
 Parse.Cloud.beforeSave("Team", async (request) => {
-  console.log("starting", request.master);
   let user = request.user;
   if (!user && request.master && request.object.get("admin")){
     user = await (new Parse.Query(Parse.User))
@@ -120,6 +120,7 @@ Parse.Cloud.beforeSave("Team", async (request) => {
       }
     });
   } else {
+    // not applying an update
     const query = new Parse.Query(Team);
     query.equalTo("slug", slug)
     const alreadyThere = await query.first({ useMasterKey: true });
@@ -188,4 +189,29 @@ Parse.Cloud.beforeSave("Team", async (request) => {
       "members": members,
     });
   }
+});
+
+const CONVO_TEAMS = ['leaders', 'mods', 'agents', 'publishers'];
+
+// Ensure the ACL are set correctly when created
+Parse.Cloud.afterSave("Team", async (request) => {
+  if (request.original) {
+    return // we don't do anything on an update
+  }
+  console.log(request.object);
+  await request.object.fetchWithInclude(CONVO_TEAMS, { useMasterKey: true });
+  // create team internal conversations:
+  await Parse.Object.saveAll(CONVO_TEAMS.map((roleName) => {
+    const role = request.object.get(roleName);
+    const roleType = role.get('type');
+    const ACL = new Parse.ACL();
+    ACL.setRoleReadAccess(role, true);
+    return new Conversation({
+      team: request.object,
+      type: "team",
+      among: roleType,
+      participants: [],
+      ACL,
+    });
+  }), { useMasterKey: true });
 });
