@@ -112,10 +112,11 @@ console.log('myArgs: ', args);
     if (args.includes("with-faq")) {
         console.info("Adding FAQ")
         const FaqEntry = Parse.Object.extend("FaqEntry");
-        await Promise.all(mocks.FAQs.map(async (d) => {
+        for (let i = 0; i < mocks.FAQs.length; i++) {
+            const d = mocks.FAQs[i]
             const sessionToken = await getUserToken(d.author);
-            (new FaqEntry(remap(d))).save(null, {sessionToken})
-        }))
+            await (new FaqEntry(remap(d))).save(null, {sessionToken})
+        }
     }
 
     if (args.includes("with-posts")) {
