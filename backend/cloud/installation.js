@@ -37,8 +37,6 @@ Parse.Cloud.define("claimInstallation", async (request) => {
   if (!installation) {
     // we create our own
     installation = new Parse.Installation();
-    const acl = new Parse.ACL();
-    installation.setACL(acl);
     setTeams = true;
   }
 

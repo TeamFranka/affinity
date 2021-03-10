@@ -70,6 +70,14 @@ export const AuthState = {
     setInstallationId(state: AuthStateT, installationId: string | null) {
       state.currentInstallationId = installationId
     },
+    updateInstallation(state: AuthStateT, installation: Model) {
+      const idx = state.installations.findIndex((i: Model) => i.id == installation.id);
+      if (idx === -1) {
+        state.installations.push(installation);
+      } else {
+        state.installations.splice(idx, 1, installation)
+      }
+    },
     setWantsToLogin(state: AuthStateT, wanna: boolean) {
       state.wantsToLogin = wanna;
     },
@@ -111,6 +119,12 @@ export const AuthState = {
     },
     openLogin(context: any) {
       context.commit("setWantsToLogin", true);
+    },
+    async updateInstallation(context: any, installationUpdate: Parse.Object) {
+      await installationUpdate.save();
+      const model = toModel(installationUpdate);
+      context.commit("updateInstallation", model);
+
     },
     async loggedIn(context: any, newUser: Parse.User) {
       const userPointer = newUser.toPointer();

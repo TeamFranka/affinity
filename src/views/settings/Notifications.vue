@@ -4,13 +4,15 @@
         <h2><ion-icon :icon="notificationIcon" /> Einstellungen</h2>
         <push-notification-setting
           :title="currentDeviceTitle"
-          :installation="currentDevice"
+          :channels="currentDevice.channels"
+          @channels-updated="channelsUpdated(currentDevice, $event)"
           v-if="currentDevice"
         />
         <push-notification-setting
           v-for="i in otherInstallations"
           :key="i.id"
-          :installation="i"
+          @channels-updated="channelsUpdated(i, $event)"
+          :channels="i.channels"
         />
     </ion-content>
   </ion-page>
@@ -40,6 +42,9 @@ export default defineComponent({
     return {
       currentDevice: computed(() => store.getters["auth/currentInstallation"] ),
       otherInstallations: computed(() => store.getters["auth/otherInstallations"] ),
+      channelsUpdated: (installation: any, channels: any) => {
+        store.dispatch("auth/updateInstallation", installation.prepareSave({channels}).toParse());
+      },
       teams: computed(() => store.getters["auth/teamPointers"].map((x: any) => store.getters['objectsMap'][x.objectId])),
       fields: TEAM_FIELDS,
       notificationIcon, logoWhatsapp, uploadIcon: cloudUploadOutline
