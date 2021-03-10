@@ -12,7 +12,7 @@
       <ion-item v-for="entry in fields" :key="entry.key">
         <ion-toggle
           slot="start"
-          :checked="isChecked(currentDevice, t, entry.key)"
+          :checked="isChecked(t, entry.key)"
         />
         <ion-label>{{entry.title}}</ion-label>
       </ion-item>
@@ -51,7 +51,6 @@ export default defineComponent({
     const store = useStore();
 
     return {
-      currentDevice: computed(() => store.state.auth.installation ),
       teams: computed(() => store.getters["auth/teamPointers"].map((x: any) => store.getters['objectsMap'][x.objectId])),
       fields: TEAM_FIELDS,
       notificationIcon, logoWhatsapp, uploadIcon: cloudUploadOutline
@@ -64,10 +63,10 @@ export default defineComponent({
       if (!installation.channels || installation.channels.length == 0) {
         return false
       }
-      return installation.channels.indexOf(`${team.id}:${field}`) !== -1
+      return installation.channels.indexOf(`${team.objectId}:${field}`) !== -1
     },
     teamSelected(team: any) {
-      return this.installation.channels && this.installation.channels.any((x: string) => x.startsWith(team.id))
+      return this.installation.channels && this.installation.channels.find((x: string) => x.startsWith(team.objectId))
     }
   },
   components: {

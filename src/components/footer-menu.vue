@@ -94,7 +94,7 @@ export default defineComponent({
     const store = useStore();
     return {
       isLoggedIn: computed(() => !!store.getters["auth/isLoggedIn"]),
-      hasPush: computed(() => false), //!!store.state.auth.installation),
+      hasPush: computed(() => !!store.getters['auth/currentInstallation']),
       user: computed(() => store.state.auth.user),
       homeIcon: planetOutline,
       feedIcon: peopleCircleOutline,

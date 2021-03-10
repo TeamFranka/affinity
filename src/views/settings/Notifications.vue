@@ -7,6 +7,11 @@
           :installation="currentDevice"
           v-if="currentDevice"
         />
+        <push-notification-setting
+          v-for="i in otherInstallations"
+          :key="i.id"
+          :installation="i"
+        />
     </ion-content>
   </ion-page>
 </template>
@@ -33,7 +38,8 @@ export default defineComponent({
     const store = useStore();
 
     return {
-      currentDevice: computed(() => store.state.auth.installation ),
+      currentDevice: computed(() => store.getters["auth/currentInstallation"] ),
+      otherInstallations: computed(() => store.getters["auth/otherInstallations"] ),
       teams: computed(() => store.getters["auth/teamPointers"].map((x: any) => store.getters['objectsMap'][x.objectId])),
       fields: TEAM_FIELDS,
       notificationIcon, logoWhatsapp, uploadIcon: cloudUploadOutline
