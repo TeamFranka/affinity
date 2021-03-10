@@ -11,7 +11,7 @@ Parse.Cloud.define("claimInstallation", async (request) => {
   let installation;
   let setTeams = params.setTeams || false;
 
-  delete params.defaultTeam;
+  delete params.defaultTeamId;
   delete params.setTeams;
   params.installationId = params.installationId.toLowerCase();
 
@@ -44,7 +44,7 @@ Parse.Cloud.define("claimInstallation", async (request) => {
 
   if (request.user) {
     const userP = request.user.toPointer();
-    const ACL = new Parse.ACL(userP);
+    const ACL = new Parse.ACL(request.user);
     installation.set({"user": userP, ACL});
   }
 
@@ -70,8 +70,8 @@ Parse.Cloud.define("claimInstallation", async (request) => {
 
   if (request.user) {
     return (new Parse.Query(Parse.Installation))
-      .equalToTo('user', request.user)
-      .findAll({useMasterKey: true})
+      .equalTo('user', request.user)
+      .find({useMasterKey: true})
   }
 
   return [installation]
