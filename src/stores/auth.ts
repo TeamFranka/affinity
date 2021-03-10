@@ -119,6 +119,12 @@ export const AuthState = {
       await user.save();
       context.commit("setUser", toModel(user));
     },
+    async setSetting(context: any, updates: any) {
+      const settings = Object.assign({}, context.state.user.settings, updates);
+      const user = context.state.user.prepareSave({ settings }).toParse();
+      await user.save();
+      context.commit("setUser", toModel(user));
+    },
     async afterLogin(context: any) {
       if (context.getters["isLoggedIn"]) {
         // all good, continue

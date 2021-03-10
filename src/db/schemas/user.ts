@@ -16,6 +16,7 @@ export const User = {
             },
             name: { type: 'String' },
             avatar: { type: 'File' },
+            settings: { type: 'Object' },
         }),
 	indexes: {
         username_1: {
@@ -50,7 +51,8 @@ export const User = {
         protectedFields: {
             '*': [
                 'email',
-                'password'
+                'password',
+                'settings',
             ]
         }
     },
