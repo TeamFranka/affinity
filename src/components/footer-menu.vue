@@ -40,7 +40,7 @@
             </router-link>
           </ion-col>
           <ion-col>
-            <ion-button v-if="hasPush" color="medium" fill="clear" @click="openMenuPopover" >
+            <ion-button data-cy="anon-menu-trigger" v-if="hasPush" color="medium" fill="clear" @click="openMenuPopover" >
               <ion-icon size="large" :icon="settingsIcon" />
             </ion-button>
             <router-link v-else style="position: relative" to="/login">

@@ -2,6 +2,7 @@ import { Parse } from '@/config/Consts';
 import { isPlatform } from '@ionic/vue';
 import { Model, toModel } from '@/utils/model';
 import { initInstallation } from '@/utils/setup';
+import { getCypressEntry } from "@/utils/env";
 import { watch } from 'vue';
 
 export interface AuthStateT {
@@ -91,7 +92,7 @@ export const AuthState = {
   },
   actions: {
     init(context: any) {
-      if (isPlatform('mobile')) {
+      if (getCypressEntry("isMobile") || isPlatform('mobile')) {
         initInstallation().then(async (i: Parse.Installation) => {
           context.commit("setInstallationId", i.get("installationId").toLowerCase());
           const params: any = i.toJSON();
