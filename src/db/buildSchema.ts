@@ -1,6 +1,37 @@
 
 import Parse from 'parse/node';
 
+const EXTRA_DEFAULT_FIELDS: Record<string, string[]> = {
+	'_Role': [
+		'name',
+		'users',
+		'roles',
+	],
+	'_User': [
+		'emailVerified',
+		'authData',
+		'username',
+		'password',
+		'email',
+	],
+	'_Installation': [
+		'installationId',
+		'deviceToken',
+		'deviceType',
+		'pushType',
+		'GCMSenderId',
+		'timeZone',
+		'localeIdentifier',
+		'badge',
+		'appVersion',
+		'appName',
+		'parseVersion',
+		'appIdentifier',
+		'channelUris',
+		'channels',
+	]
+};
+
 // This function update, migrate and create Classes
 export const buildSchemas = async (localSchemas: any[]) => {
 	try {
@@ -144,25 +175,15 @@ export const lib = {
 		].indexOf(className) !== -1,
 
 	isDefaultFields: (className: string, fieldName: string) => {
-		if (className === '_Role') return true
-		return (
-			[
-				'objectId',
-				'createdAt',
-				'updatedAt',
-				'ACL',
-				'emailVerified',
-				'authData',
-				'username',
-				'password',
-				'email',
-			]
-				.filter(
-					(value) =>
-						(className !== '_User' && value !== 'email') || className === '_User',
-				)
-				.indexOf(fieldName) !== -1
-		)
+		if ([
+			'objectId',
+			'createdAt',
+			'updatedAt',
+			'ACL',
+		].indexOf(fieldName) !== -1) {
+			return true
+		}
+		return ((EXTRA_DEFAULT_FIELDS[className] || []).indexOf(fieldName) !== -1)
 	},
 
 	fixCloudIndexes: (cloudSchemaIndexes: any) => {

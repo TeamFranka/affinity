@@ -2,12 +2,14 @@ import { Parse } from '@/config/Consts';
 import { isPlatform } from '@ionic/vue';
 import { Model, toModel } from '@/utils/model';
 import { initInstallation } from '@/utils/setup';
+import { getCypressEntry } from "@/utils/env";
 import { watch } from 'vue';
 
 export interface AuthStateT {
   wantsToLogin: boolean;
   user: Model | null;
-  installation: Model | null;
+  installations: Model[];
+  currentInstallationId: string|null;
   teams: Array<string>;
   teamPermissions: Record<string, any>;
 }
@@ -23,6 +25,8 @@ export const AuthState = {
     wantsToLogin: false,
     user: currentUser(),
     teams: [],
+    installations: [],
+    currentInstallationId: null,
     teamPermissions: {},
   }),
   getters: {
@@ -50,13 +54,30 @@ export const AuthState = {
     hasManyTeams: (state: AuthStateT) => state.teams.length > 1,
     postableTeams: (state: AuthStateT) =>  state.teams?.filter(t => t && state.teamPermissions[t].canPost) || [],
     adminOfTeams: (state: AuthStateT) =>  state.teams?.filter(t => t && state.teamPermissions[t].isAdmin) || [],
+
+    // Devices // Installations
+
+    currentInstallation: (state: AuthStateT) => state.installations.find((x) => x.installationId === state.currentInstallationId),
+    otherInstallations: (state: AuthStateT) => state.installations.filter((x) => x.installationId !== state.currentInstallationId),
+
   },
   mutations: {
     setUser(state: AuthStateT, newUser: Model|null) {
       state.user = newUser
     },
-    setInstallation(state: AuthStateT, installation: Model|null) {
-      state.installation = installation
+    setInstallations(state: AuthStateT, installations: Model[]) {
+      state.installations = installations
+    },
+    setInstallationId(state: AuthStateT, installationId: string | null) {
+      state.currentInstallationId = installationId
+    },
+    updateInstallation(state: AuthStateT, installation: Model) {
+      const idx = state.installations.findIndex((i: Model) => i.id == installation.id);
+      if (idx === -1) {
+        state.installations.push(installation);
+      } else {
+        state.installations.splice(idx, 1, installation)
+      }
     },
     setWantsToLogin(state: AuthStateT, wanna: boolean) {
       state.wantsToLogin = wanna;
@@ -71,12 +92,23 @@ export const AuthState = {
   },
   actions: {
     init(context: any) {
-      if (isPlatform('mobile')) {
+      if (getCypressEntry("isMobile") || isPlatform('mobile')) {
         initInstallation().then(async (i: Parse.Installation) => {
-          i.set("defaultTeamId", context.rootGetters["defaultTeamId"])
-          await i.save()
-          context.commit("setInstallation", toModel(i));
+          context.commit("setInstallationId", i.get("installationId").toLowerCase());
+          const params: any = i.toJSON();
+          params.defaultTeamId = context.rootGetters["defaultTeamId"];
+          Parse.Cloud.run("claimInstallation", params)
+          .then((i: Array<Parse.Installation>) => {
+            context.commit("setInstallations", i.map(toModel))
+          });
         });
+      } else if (context.state.user) {
+        (new Parse.Query(Parse.Installation))
+          .equalTo('user', context.state.user.toPointer())
+          .findAll()
+          .then((i: Array<Parse.Installation>) => {
+            context.commit("setInstallations", i.map(toModel))
+          });
       }
     },
     dismissLogin(context: any) {
@@ -89,12 +121,20 @@ export const AuthState = {
     openLogin(context: any) {
       context.commit("setWantsToLogin", true);
     },
+    async updateInstallation(context: any, installationUpdate: Parse.Object) {
+      await installationUpdate.save();
+      const model = toModel(installationUpdate);
+      context.commit("updateInstallation", model);
+
+    },
     async loggedIn(context: any, newUser: Parse.User) {
       const userPointer = newUser.toPointer();
-      if (context.state.installation && !context.state.user) {
-        context.state.prepareSave({user: userPointer}).save(); // fire and forget
-        context.state.installation.user = userPointer;
-        context.commit("setInstallation", context.state.installation);
+      if (context.getters.currentInstallation && !context.state.user) {
+        const i = context.getters.currentInstallation.prepareSave({user: userPointer, setTeams: true});
+        // fire and forget
+        Parse.Cloud.run("claimInstallation", i.toJSON()).then((response: any) => {
+          context.commit("setInstallations", response.map(toModel));
+        })
       }
       context.commit("setUser", toModel(newUser));
       context.dispatch("dismissLogin");
@@ -115,10 +155,15 @@ export const AuthState = {
     },
     async setAvatar(context: any, f: Parse.File) {
       await f.save();
-      const user = context.state.user;
-      user.set("avatar", f);
+      const user = context.state.user.prepareSave({"avatar": f}).toParse();
       await user.save();
-      context.commit("setUser", user);
+      context.commit("setUser", toModel(user));
+    },
+    async setSetting(context: any, updates: any) {
+      const settings = Object.assign({}, context.state.user.settings, updates);
+      const user = context.state.user.prepareSave({ settings }).toParse();
+      await user.save();
+      context.commit("setUser", toModel(user));
     },
     async afterLogin(context: any) {
       if (context.getters["isLoggedIn"]) {

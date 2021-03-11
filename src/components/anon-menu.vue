@@ -1,9 +1,9 @@
 <template>
-<ion-list>
+<ion-list data-cy="anon-menu">
     <ion-item dataCyRole="login" button @click="login">
         <ion-label><ion-icon :icon="logInIcon"/> Anmelden</ion-label>
     </ion-item>
-    <ion-item button @click="select({name: 'SettingsNotifications'})">
+    <ion-item button data-cy="push-settings-link" @click="select({name: 'SettingsNotifications'})">
         <ion-label><ion-icon :icon="notificationIcon"/> Push-Einstellungen</ion-label>
     </ion-item>
 </ion-list>
@@ -30,7 +30,7 @@ export default defineComponent({
     const store = useStore();
     return {
         login() {
-            store.dispatch("auth/login");
+            store.dispatch("auth/openLogin");
             popoverController.dismiss();
         },
         notificationIcon, logInIcon

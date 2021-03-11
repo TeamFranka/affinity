@@ -29,7 +29,15 @@ const getUserToken = async (username) => {
 
 const REMAPPINGS = {
     "author": getUser,
+    "user": getUser,
     "team": getTeam,
+    "subOf": getTeam,
+    "channels": (channel) => {
+        const splitted = channel.split(':', 1);
+        const teamName = splitted[0];
+        const item = splitted[1];
+        return `${getTeam(teamName)}:${item}`
+    },
     "participants": (x) => x.map(getUser),
 };
 
@@ -81,7 +89,7 @@ console.log('myArgs: ', args);
                 slug: data.slug,
                 name: data.name,
                 admin: getUser(data.admin).id
-            }, data.params));
+            }, remap(data.params)));
             await team.save(null, { useMasterKey: true });
         }
         if (index === 0){
@@ -108,13 +116,22 @@ console.log('myArgs: ', args);
         teams[data.slug] = team
     }));
 
+    console.info("Ensuring Devices");
+    for (let i = 0; i < mocks.Devices.length; i++) {
+        const d = mocks.Devices[i]
+        const sessionToken = await getUserToken(d.user);
+        await Parse.Cloud.run("claimInstallation", d, {sessionToken});
+    }
+
+
     if (args.includes("with-faq")) {
         console.info("Adding FAQ")
         const FaqEntry = Parse.Object.extend("FaqEntry");
-        await Promise.all(mocks.FAQs.map(async (d) => {
+        for (let i = 0; i < mocks.FAQs.length; i++) {
+            const d = mocks.FAQs[i]
             const sessionToken = await getUserToken(d.author);
-            (new FaqEntry(remap(d))).save(null, {sessionToken})
-        }))
+            await (new FaqEntry(remap(d))).save(null, {sessionToken})
+        }
     }
 
     if (args.includes("with-posts")) {

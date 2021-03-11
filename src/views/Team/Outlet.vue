@@ -78,6 +78,20 @@
             </ul>
           </div>
           <div>
+            <ul v-if="subteams" class="subteams" data-cy="subteams">
+              <li v-for="t in subteams" :key="t.id">
+                <router-link :to="{name: 'ViewTeam', params: {teamSlug: t.slug}}">
+                  <avatar withName :profile="t" size="2em"/>
+                </router-link>
+              </li>
+              <li>
+                <ion-button data-cy="addSubTeamModal"  v-if="canEdit" @click="intendToCreateSubTeam" size="small" fill="clear">
+                  <ion-icon size="small" :icon="addIcon" />
+                </ion-button>
+              </li>
+            </ul>
+          </div>
+          <div>
             <activity v-for="activity in feed" :activity="activity" :key="activity.objectId" />
           </div>
         </template>
@@ -92,6 +106,7 @@ import Avatar from '@/components/avatar.vue';
 import { DefaultIcon, Icons } from '@/components/generic/inline-link-list.vue';
 import InlineLinkList from '@/components/generic/inline-link-list.vue';
 import EditLinks from '@/components/settings/edit-links.vue';
+import CreateSubTeam from '@/components/settings/create-subteam.vue';
 import GenericEditorModal from '@/components/settings/generic-editor-modal.vue';
 import Activity from '@/components/activity.vue';
 import Qrcode from '@/components/qrcode.vue';
@@ -105,13 +120,14 @@ import {
   imageOutline as imageIcon,
   qrCodeOutline as qrCodeIcon,
   createOutline as editIcon,
+  addCircleOutline as addIcon,
 } from 'ionicons/icons';
-import { defineComponent, computed, ref } from 'vue';
+import { defineComponent } from 'vue';
 import { useStore } from '@/stores/';
-import { useRoute } from 'vue-router';
 import Parse from 'parse';
 import { takePicture, Photo } from '@/utils/camera';
 import { Model } from '@/utils/model';
+import { absoluteUrl } from '@/utils/url';
 
 const DEFAULT_STYLES = {
   "background": "transparent",
@@ -122,41 +138,42 @@ export default defineComponent({
   name: 'Team',
   data(){
     return {
-      showQr: false
+      showQr: false,
+      loading: true,
     }
   },
   setup() {
     const store = useStore();
-    const route = useRoute();
-    const slug: any = route.params.teamSlug;
-    const loading = ref(true);
-    let promise;
-    if (store.getters.teamsBySlug[slug]) {
-        promise = Promise.resolve()
-    } else {
-      promise = store.dispatch("teams/fetch", slug);
-    }
-
-    promise.then(()=>
-      store.dispatch("teams/fetchNews", store.getters.objectsMap[store.getters.teamsBySlug[slug]].toPointer())
-    ).then(() => {
-        loading.value = false;
-    })
 
     return {
-      team: computed(() => store.getters.objectsMap[store.getters.teamsBySlug[slug]]),
-      store, loading,
+      store,
       chatbubbles, logoWhatsapp, uploadIcon: cloudUploadOutline,
-      editIcon, qrCodeIcon, imageIcon, trashIcon,
+      editIcon, qrCodeIcon, imageIcon, trashIcon, addIcon,
     }
   },
+  watch: {
+    // call again the method if the route changes
+    '$route': 'fetchData'
+  },
   computed: {
+    team(): Model {
+      const slug: any = this.$route.params.teamSlug;
+      return this.store.getters.objectsMap[this.store.getters.teamsBySlug[slug]]
+    },
     feed(): Model[] {
       if (!this.team) {
         return []
       }
       const teamId = this.team.objectId;
       return this.store.state.teams.news[teamId]
+        .map((id: string) => this.store.getters["objectsMap"][id])
+    },
+    subteams(): Model[] {
+      if (!this.team) {
+        return []
+      }
+      const teamId = this.team.objectId;
+      return (this.store.state.teams.subteams[teamId] || [])
         .map((id: string) => this.store.getters["objectsMap"][id])
     },
     info(): string {
@@ -188,12 +205,46 @@ export default defineComponent({
       return [DEFAULT_STYLES, customStyles, extraStyles];
     },
     fullLink(): string {
-      return "https://yup"
+      return absoluteUrl(this.$router, {name: "ViewTeam", params: {teamSlug: this.team.slug}});
     }
   },
   methods: {
+    fetchData() {
+      this.loading = true
+      const slug: any = this.$route.params.teamSlug;
+      let promise;
+      if (this.store.getters.teamsBySlug[slug]) {
+          promise = Promise.resolve()
+      } else {
+        promise = this.store.dispatch("teams/fetch", slug);
+      }
+
+      promise.then(() => {
+        const teamPointer = this.store.getters.objectsMap[this.store.getters.teamsBySlug[slug]].toPointer();
+        return Promise.all([
+          this.store.dispatch("teams/fetchNews", teamPointer),
+          this.store.dispatch("teams/fetchSubteams", teamPointer)
+        ]);
+      }).then(() => {
+          this.loading = false;
+      });
+    },
     getSocialIcon(l: string): any {
       return (Icons[l] || {icon: DefaultIcon}).icon;
+    },
+    async intendToCreateSubTeam() {
+      const modal = await modalController
+        .create({
+          component: CreateSubTeam,
+        })
+      await modal.present();
+      const res = await modal.onDidDismiss();
+      if (res.data) {
+        const data = res.data;
+        data.subOf  = this.team.toPointer();
+        const subteam = await this.store.dispatch("teams/createSubteam", data);
+        this.$router.push({"name": "ViewTeam", params: {"teamSlug": subteam.slug}});
+      }
     },
     async intendEditTitle() {
       const modal = await modalController
@@ -321,6 +372,9 @@ export default defineComponent({
       });
     }
   },
+  mounted(){
+    this.fetchData();
+  },
   components: {
     Avatar, Qrcode, RenderMd, InlineLinkList, Activity,
     IonPage, IonContent, IonIcon, IonChip, IonSpinner,
@@ -369,5 +423,23 @@ ion-toolbar {
 }
 ion-chip ion-icon {
   margin: 0
+}
+.subteams {
+  display: flex;
+  flex-wrap: wrap;
+  padding-left: 0.5rem;
+}
+.subteams li {
+  list-style: none;
+  padding: 0 1rem 0.5rem 0;
+  display: inline-block;
+}
+.subteams a {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.subteams a > *:not(:first-child) {
+  padding-left: 0.2rem;
 }
 </style>

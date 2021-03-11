@@ -4,15 +4,25 @@
     <ion-item-group v-for="t in teams" :key="t.id">
       <ion-item-divider>
         <ion-label><avatar with-name :profile="t" /></ion-label>
-          <ion-toggle
+          <ion-button
+            fill="clear"
+            color="medium"
             slot="end"
-            :checked="teamSelected(t)"
-          />
+            @click="disableTeam(t)"
+            :disabled="!checked[t.id]"
+          >
+            <ion-icon :icon="clearIcon" />
+          </ion-button>
       </ion-item-divider>
-      <ion-item v-for="entry in fields" :key="entry.key">
+      <ion-item
+        v-for="entry in fields"
+        :key="entry.key"
+        :data-cy-channel="entry.key"
+      >
         <ion-toggle
           slot="start"
-          :checked="isChecked(currentDevice, t, entry.key)"
+          @ion-change="entryToggle($event.detail.checked, t, entry.key)"
+          :checked="checked[`${t.objectId}:${entry.key}`]"
         />
         <ion-label>{{entry.title}}</ion-label>
       </ion-item>
@@ -21,9 +31,12 @@
 </template>
 <script lang="ts">
 import {
-  IonList, IonItem, IonItemGroup, IonToggle, IonItemDivider, IonLabel,
+  IonList, IonItem, IonItemGroup, IonToggle, IonItemDivider, IonLabel, IonButton, IonIcon,
 } from '@ionic/vue';
-import { notificationsOutline as notificationIcon , logoWhatsapp, cloudUploadOutline } from 'ionicons/icons';
+import {
+  notificationsOutline as notificationIcon , logoWhatsapp, cloudUploadOutline,
+  notificationsOffOutline as clearIcon,
+  } from 'ionicons/icons';
 import Avatar from '@/components/avatar.vue';
 import { useStore } from '@/stores/';
 import { defineComponent, computed } from 'vue';
@@ -37,13 +50,14 @@ const TEAM_FIELDS = [
 
 export default defineComponent({
   name: 'PushNotificationSetting',
+  emits: ["channels-updated"],
   props: {
     title: {
       type: String,
       required: true,
     },
-    installation: {
-      type: Object,
+    channels: {
+      type: Array,
       required: true
     }
   },
@@ -51,27 +65,46 @@ export default defineComponent({
     const store = useStore();
 
     return {
-      currentDevice: computed(() => store.state.auth.installation ),
       teams: computed(() => store.getters["auth/teamPointers"].map((x: any) => store.getters['objectsMap'][x.objectId])),
       fields: TEAM_FIELDS,
-      notificationIcon, logoWhatsapp, uploadIcon: cloudUploadOutline
+      notificationIcon, logoWhatsapp, uploadIcon: cloudUploadOutline, clearIcon
+    }
+  },
+  computed: {
+    checked(): Record<string, boolean> {
+      const mapped: Record<string, boolean> = {};
+      (this.channels as Array<string>).forEach((x: string) => {
+        mapped[x] = true;
+        mapped[x.split(":", 1)[0]] = true;
+      });
+      return mapped;
     }
   },
   methods: {
-    isChecked(team: any, field: string) {
-      const installation = this.installation;
-      console.log("checking for", installation, team, field);
-      if (!installation.channels || installation.channels.length == 0) {
-        return false
-      }
-      return installation.channels.indexOf(`${team.id}:${field}`) !== -1
+    disableTeam(team: any) {
+      const newList = (this.channels as Array<string>).filter((x: string) => !x.startsWith(`${team.objectId}:`))
+      this.$emit("channels-updated", newList);
     },
-    teamSelected(team: any) {
-      return this.installation.channels && this.installation.channels.any((x: string) => x.startsWith(team.id))
+    entryToggle(checked: boolean, team: any, field: string) {
+      const key = `${team.objectId}:${field}`;
+      let newList;
+      if (checked) {
+        if (this.checked[key]) {
+          return
+        }
+        newList = Array.from(this.channels);
+        newList.push(key);
+      } else {
+        if (!this.checked[key]) {
+          return
+        }
+        newList = (this.channels as Array<string>).filter((x: string) => x != key);
+      }
+      this.$emit("channels-updated", newList);
     }
   },
   components: {
-    IonList, IonItem, IonItemGroup, IonToggle, IonItemDivider, IonLabel,
+    IonList, IonItem, IonItemGroup, IonToggle, IonItemDivider, IonLabel, IonButton, IonIcon,
     Avatar,
   }
 

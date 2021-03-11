@@ -1,4 +1,5 @@
 import { Camera, CameraResultType } from '@capacitor/camera';
+import { popCypressEntry } from "@/utils/env";
 export { Camera, CameraResultType };
 
 export interface Photo {
@@ -8,7 +9,7 @@ export interface Photo {
 }
 
 export const takePicture = async () =>  {
-  const image = await Camera.getPhoto({
+  const image = popCypressEntry("nextImage") || await Camera.getPhoto({
     quality: 90,
     allowEditing: true,
     resultType: CameraResultType.DataUrl
