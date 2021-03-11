@@ -18,6 +18,9 @@ export const Conversation = {
                 targetClass: "Team",
                 required: false
             },
+            among: { // only if type == team
+                type: "String",
+            },
             participants: {
                 type: "Array",
                 required: true

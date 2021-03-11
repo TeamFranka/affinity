@@ -20,11 +20,11 @@
         </router-link>
         </ion-col>
         <template v-if="isLoggedIn">
-          <ion-col v-if="false">
+          <ion-col>
             <router-link style="position: relative" to="/inbox">
-              <notification-dot color="warning" slot="start" />
+              <notification-dot v-if="false" color="warning" slot="start" />
               <ion-icon size="large" :icon="chatIcon" />
-              <notification-dot color="danger" slot="end" />
+              <notification-dot v-if="false" color="danger" slot="end" />
             </router-link>
           </ion-col>
           <ion-col>
@@ -40,7 +40,7 @@
             </router-link>
           </ion-col>
           <ion-col>
-            <ion-button v-if="hasPush" color="medium" fill="clear" @click="openMenuPopover" >
+            <ion-button data-cy="anon-menu-trigger" v-if="hasPush" color="medium" fill="clear" @click="openMenuPopover" >
               <ion-icon size="large" :icon="settingsIcon" />
             </ion-button>
             <router-link v-else style="position: relative" to="/login">
@@ -94,7 +94,7 @@ export default defineComponent({
     const store = useStore();
     return {
       isLoggedIn: computed(() => !!store.getters["auth/isLoggedIn"]),
-      hasPush: computed(() => false), //!!store.state.auth.installation),
+      hasPush: computed(() => !!store.getters['auth/currentInstallation']),
       user: computed(() => store.state.auth.user),
       homeIcon: planetOutline,
       feedIcon: peopleCircleOutline,

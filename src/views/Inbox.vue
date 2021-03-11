@@ -14,10 +14,18 @@
         </ion-list-header>
 
         <template v-if="selectedSegment == 'convos'">
+
+          <ion-spinner v-if="loading" />
+          <div class="ion-padding ion-text-center" v-if="!loading && convos.length == 0">
+            <p>
+              <img style="width:45vw" src="../statics/undraw_empty.svg"/>
+            </p>
+            <ion-note>No Messages</ion-note>
+          </div>
           <ion-item
             button
             details=false
-            @click="selectConversation  (convo.objectId)"
+            @click="selectConversation(convo.objectId)"
             v-for="convo in convos"
             :key="convo.objectId"
             lines="inset"
@@ -26,6 +34,14 @@
           </ion-item>
         </template>
         <template v-else>
+
+          <ion-spinner v-if="loading" />
+          <div class="ion-padding ion-text-center" v-if="!loading && notifications.length == 0">
+            <p>
+              <img style="width:45vw" src="../statics/undraw_empty.svg"/>
+            </p>
+            <ion-note>No Notifications</ion-note>
+          </div>
           <ion-item
             button
             details=false
@@ -65,6 +81,7 @@
 <script lang="ts">
 import {
   IonPage, IonContent, IonSegment, IonSegmentButton, IonLabel, IonList, IonListHeader, IonItem,
+  IonSpinner, IonNote,
 } from '@ionic/vue';
 import { chatbubbles, logoWhatsapp, folderOpenOutline, mailOutline } from 'ionicons/icons';
 import { defineComponent, computed } from 'vue';
@@ -103,7 +120,7 @@ export default defineComponent({
     }
   },
   components: {
-    IonContent, IonPage,
+    IonContent, IonPage, IonSpinner, IonNote,
     ConversationEntry, Avatar, ObjectLink,
     IonSegment, IonSegmentButton, IonLabel, IonList, IonListHeader, IonItem,
   }

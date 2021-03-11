@@ -3,9 +3,14 @@ import { isPlatform } from '@ionic/vue';
 import { PushNotifications, Token } from '@capacitor/push-notifications';
 import { Device } from '@capacitor/device';
 import { App as AppInfo } from '@capacitor/app';
+import { popCypressEntry, getCypressEntry } from "@/utils/env";
 
 export function isMobileInstallation() {
-  return isPlatform('mobile') && !document.URL.startsWith('http')
+  if (getCypressEntry('isMobile')) { return true }
+  // isPlatform("mobile") should do, but it doesn't detect installations correctly
+  // so we do the lucky guess, that when 'hosted' locally, we are _inside_ the app.
+  // however, this also falls true for the development environment _shrugs_
+  return document.location.hostname === "localhost"
 }
 
 export async function generateInstallation(opts: any): Promise<Parse.Installation> {
@@ -45,6 +50,13 @@ export function setupNotificationActions(
 }
 
 export function initInstallation(): Promise<Parse.Installation> {
+  const cypressDevice = popCypressEntry('device');
+  console.log("device", cypressDevice);
+  if (cypressDevice) {
+    const installation = new Parse.Installation();
+    installation.set(cypressDevice);
+    return Promise.resolve(installation)
+  }
   const promise: Promise<Parse.Installation> = new Promise((resolve, reject) => {
     PushNotifications.addListener('registration', (token: Token) => {
       generateInstallation({"deviceToken": token.value})

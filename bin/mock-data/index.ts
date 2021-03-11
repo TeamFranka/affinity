@@ -51,6 +51,65 @@ export const Users = [
 ]
 
 
+export const Devices = [
+    { // Clara's Android
+        "channels": [
+            "doctor-who:notifications",
+            "doctor-who:news"
+        ],
+        "defaultTeamId": "doctor-who",
+        "user": "clara",
+        "deviceName": "Galaxy A40",
+        "deviceModel": "SM-A405FN",
+        "appIdentifier": "jetzt.franka.affinity",
+        "appName": "TeamFranka",
+        "appVersion": "1.0",
+        "appBuild": "1",
+        "deviceType": "android",
+        "installationId": "adsfasdf12",
+        "GCMSenderId": "11215447asdfasdfasd3685",
+        "deviceToken": "56oH2ElRDQ9GYOgb4RMS61b:asdfadsfasdf-EbFHPKNwrNPbdmfVZt00nr370xa3nDXRRuI-JD",
+    },
+    { // Grahams's iPhone
+        "channels": [
+            "doctor-who:notifications",
+            "doctor-who:news",
+            "team-earth:news"
+        ],
+        "defaultTeamId": "doctor-who",
+        "user": "graham",
+        "deviceName": "iPhone 6",
+        "deviceModel": "as-asdf",
+        "appIdentifier": "jetzt.franka.affinity",
+        "appName": "TeamFranka",
+        "appVersion": "1.0",
+        "appBuild": "1",
+        "deviceType": "ios",
+        "installationId": "adsfasdf23",
+        "GCMSenderId": "11215447asdfasdfasd3685",
+        "deviceToken": "foH2ElRDQ9GY34Ogb4RMS61b:asdfadsfasdf-EbFHPKNwrNPbdmfVZt00nr370xa3nDXRRuI-JD",
+    },
+    { // Grahams's iPad (news only)
+        "channels": [
+            "doctor-who:news",
+            "team-earth:news"
+        ],
+        "defaultTeamId": "doctor-who",
+        "user": "graham",
+        "deviceName": "iPad Mini",
+        "deviceModel": "as-asdf",
+        "appIdentifier": "jetzt.franka.affinity",
+        "appName": "TeamFranka",
+        "appVersion": "1.0",
+        "appBuild": "1",
+        "deviceType": "ios",
+        "installationId": "adsfasdf34",
+        "GCMSenderId": "11215447asdfasdfasd3685",
+        "deviceToken": "foH212ElRDQ9GYOgb4RMS61b:asdfadsfasdf-EbFHPKNwrNPbdmfVZt00nr370xa3nDXRRuI-JD",
+    },
+]
+
+
 export const Teams = [
     {
         slug: "doctor-who",

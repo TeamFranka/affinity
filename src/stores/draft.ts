@@ -133,9 +133,10 @@ export const Draft = {
       context.commit("addObject", newLink);
       Parse.Cloud.run("fetchLinkMetadata", { url })
         .then( (res) => {
-          newLink.title = res.ogTitle || res.title;
-          newLink.siteName = res.ogSiteName;
-          newLink.previewText = res.ogDescription;
+          newLink.url = res.url;
+          newLink.title = res.title;
+          newLink.siteName = res.publisher;
+          newLink.previewText = res.description;
           if (res.previewImage) {
             newLink.previewImage = res.previewImage;
             delete res.previewImage;

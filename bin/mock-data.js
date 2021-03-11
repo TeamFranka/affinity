@@ -29,8 +29,16 @@ const getUserToken = async (username) => {
 
 const REMAPPINGS = {
     "author": getUser,
+    "user": getUser,
     "team": getTeam,
+    "defaultTeamId": (x) => getTeam(x).id ,
     "subOf": getTeam,
+    "channels": (channel) => {
+        const splitted = channel.split(':', 1);
+        const teamName = splitted[0];
+        const item = splitted[1];
+        return `${getTeam(teamName)}:${item}`
+    },
     "participants": (x) => x.map(getUser),
 };
 
@@ -108,6 +116,14 @@ console.log('myArgs: ', args);
 
         teams[data.slug] = team
     }));
+
+    console.info("Ensuring Devices");
+    for (let i = 0; i < mocks.Devices.length; i++) {
+        const d = mocks.Devices[i]
+        const sessionToken = await getUserToken(d.user);
+        await Parse.Cloud.run("claimInstallation", d, {sessionToken});
+    }
+
 
     if (args.includes("with-faq")) {
         console.info("Adding FAQ")

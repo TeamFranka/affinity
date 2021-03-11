@@ -3,7 +3,21 @@
 
 const Objects = require("./consts.js").Objects;
 const path = require('path');
-const ogs = require("open-graph-scraper");
+const fetch = require('node-fetch');
+
+const metascraper = require('metascraper')([
+  require('metascraper-author')(),
+  require('metascraper-date')(),
+  require('metascraper-description')(),
+  require('metascraper-image')(),
+  require('metascraper-logo')(),
+  require('metascraper-logo-favicon')(),
+  require('metascraper-video')(),
+  require('metascraper-soundcloud')(),
+  require('metascraper-publisher')(),
+  require('metascraper-title')(),
+  require('metascraper-url')()
+]);
 
 const genericObjectsPreSave = require("./common.js").genericObjectsPreSave;
 
@@ -13,17 +27,29 @@ for (let index = 0; index < Objects.length; index++) {
   });
 }
 
-Parse.Cloud.define("fetchLinkMetadata", async (request) => {
-  const url = request.params.url.trim();
-  const { error, result, response } = await ogs({ url });
-  if  (error) {
-    throw result
-  }
 
-  const imgPath = result.ogImage && result.ogImage.url ? result.ogImage.url : null;
+
+Parse.Cloud.define("fetchLinkMetadata", async (request) => {
+  const stripped = request.params.url.trim();
+
+  const response = await fetch(stripped, {
+    // FIX for twitter:
+    // https://github.com/microlinkhq/metascraper/issues/260#issuecomment-581141258
+    headers: {
+      'User-Agent': 'Mozilla/5.0 (Windows NT 6.3; Trident/7.0; rv:11.0) like Gecko',
+      'X-Requested-With': 'XMLHttpRequest',
+    }
+  });
+  const html = await response.text();
+  const result = await metascraper({ html, url: stripped });
+
+  console.log("results", result);
+
+  const imgPath = result.image;
 
   if (imgPath) {
-    const filename = path.basename(((new url.Url(imgPath))||{}).pathname || "og_file.jpg");
+    const filename = path.basename(((new URL(imgPath))||{}).pathname || ""
+      ).replace(/[^a-zA-Z.]/g, "") || "og_file.jpg";
     result.previewImage = new Parse.File(filename, {uri: imgPath});
     await result.previewImage.save();
   }
