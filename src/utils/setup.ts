@@ -5,7 +5,10 @@ import { Device } from '@capacitor/device';
 import { App as AppInfo } from '@capacitor/app';
 
 export function isMobileInstallation() {
-  return isPlatform('mobile') && !document.URL.startsWith('http')
+  // isPlatform("mobile") should do, but it doesn't detect installations correctly
+  // so we do the lucky guess, that when 'hosted' locally, we are _inside_ the app.
+  // however, this also falls true for the development environment _shrugs_
+  return document.location.hostname === "localhost"
 }
 
 export async function generateInstallation(opts: any): Promise<Parse.Installation> {
