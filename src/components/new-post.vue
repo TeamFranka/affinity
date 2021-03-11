@@ -151,7 +151,7 @@
                   />
                 </div>
                 <a :href="o.url">{{o.url}}</a>
-                <ion-img v-if="o.previewImage" :src="o.previewImage.url" />
+                <ion-img v-if="o.previewImage" :src="o.previewImage._url" />
                 <ion-textarea
                   @ion-change="updateObject({index, data: {previewText: $event.target.value}})"
                   :value="o.previewText"
@@ -210,7 +210,7 @@
             <ion-icon :icon="listIcon" color="secondary"></ion-icon>
             <ion-label>Umfrage </ion-label>
           </ion-chip>
-          <ion-chip v-if="canCreateLink" @click="addLink('addLink')" color="secondary" outline>
+          <ion-chip v-if="canCreateLink" data-cy="addLink" @click="addLink('addLink')" color="secondary" outline>
             <ion-icon :icon="linkIcon" color="secondary"></ion-icon>
             <ion-label>Link</ion-label>
           </ion-chip>
