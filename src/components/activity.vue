@@ -36,11 +36,15 @@
       <div v-else-if="obj.className == 'Picture'" data-cy-obj="picture">
         <ion-img :src="obj.file.url" />
       </div>
-      <div v-else-if="obj.className == 'Link'" data-cy-obj="link">
-        <ion-icon :icon="linkIcon" color="secondary"></ion-icon>
-        <a :href="obj.url">{{obj.title}}</a>
-        <ion-img v-if="obj.previewImage" :src="obj.previewImage.url" />
-        <p v-if="obj.description">{{obj.description}}</p>
+      <div v-else-if="obj.className == 'Link'" data-cy-obj="link" class="link-preview" >
+        <ion-thumbnail v-if="obj.previewImage">
+          <ion-img :src="obj.previewImage.url" />
+        </ion-thumbnail>
+        <div class="ion-padding-start">
+          <ion-icon :icon="linkIcon" color="secondary"></ion-icon> <span v-if="obj.siteName">{{obj.siteName}}: </span>
+          <a :href="obj.url">{{obj.title}}</a>
+          <p v-if="obj.previewText" class="ion-padding-start">{{obj.previewText}}</p>
+        </div>
       </div>
       <div v-else-if="obj.className == 'Document'" data-cy-obj="document">
         <ion-icon :icon="documentIcon" color="secondary"></ion-icon>
@@ -54,7 +58,7 @@
 </template>
 <script lang="ts">
 import {
-  IonCard, IonImg, IonCardHeader, IonIcon, IonNote,
+  IonCard, IonImg, IonCardHeader, IonIcon, IonNote, IonThumbnail,
 } from '@ionic/vue';
 import {
   chatbubblesOutline, addOutline, arrowRedoOutline, heartOutline,
@@ -172,7 +176,7 @@ export default defineComponent({
     }
   },
   components: {
-    IonCard, IonImg, InteractionBar, IonCardHeader, Poll,
+    IonCard, IonImg, InteractionBar, IonCardHeader, Poll, IonThumbnail,
     IonIcon, IonNote, Avatar, RenderMd,
   },
 });
@@ -184,5 +188,8 @@ ion-card-header {
 }
 .avatar-wrap {
   width: 5em;
+}
+.link-preview {
+  display: flex;
 }
 </style>
