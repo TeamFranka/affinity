@@ -57,6 +57,7 @@ export const Devices = [
             "doctor-who:notifications",
             "doctor-who:news"
         ],
+        "defaultTeamId": "doctor-who",
         "user": "clara",
         "deviceName": "Galaxy A40",
         "deviceModel": "SM-A405FN",
@@ -75,6 +76,7 @@ export const Devices = [
             "doctor-who:news",
             "team-earth:news"
         ],
+        "defaultTeamId": "doctor-who",
         "user": "graham",
         "deviceName": "iPhone 6",
         "deviceModel": "as-asdf",
@@ -92,6 +94,7 @@ export const Devices = [
             "doctor-who:news",
             "team-earth:news"
         ],
+        "defaultTeamId": "doctor-who",
         "user": "graham",
         "deviceName": "iPad Mini",
         "deviceModel": "as-asdf",

@@ -86,7 +86,7 @@ Parse.Cloud.define("claimInstallation", async (request) => {
       type: String,
       required: true,
     },
-    defaultTeam: {
+    defaultTeamId: {
       type: String,
       required: true,
     }
