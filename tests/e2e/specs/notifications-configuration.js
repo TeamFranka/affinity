@@ -29,6 +29,8 @@ describe('Notification Configuration', () => {
         cy.get('[data-cy=push-settings-link]').click();
     })
 
+    cy.url().should('match', /settings\/notifications/)
+
     // Team News is enabled by default
     cy.get('ion-item[data-cy-channel=news] ion-toggle').should("have.attr", "aria-checked", "true");
     cy.get('ion-item[data-cy-channel=news] ion-toggle').click();

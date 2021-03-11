@@ -9,16 +9,20 @@
             color="medium"
             slot="end"
             @click="disableTeam(t)"
-            :disabled="!teamSelected"
+            :disabled="!checked[t.id]"
           >
             <ion-icon :icon="clearIcon" />
           </ion-button>
       </ion-item-divider>
-      <ion-item v-for="entry in fields" :key="entry.key">
+      <ion-item
+        v-for="entry in fields"
+        :key="entry.key"
+        :data-cy-channel="entry.key"
+      >
         <ion-toggle
           slot="start"
           @ion-change="entryToggle($event.detail.checked, t, entry.key)"
-          :checked="isChecked(t, entry.key)"
+          :checked="checked[`${t.objectId}:${entry.key}`]"
         />
         <ion-label>{{entry.title}}</ion-label>
       </ion-item>
@@ -66,13 +70,17 @@ export default defineComponent({
       notificationIcon, logoWhatsapp, uploadIcon: cloudUploadOutline, clearIcon
     }
   },
+  computed: {
+    checked(): Record<string, boolean> {
+      const mapped: Record<string, boolean> = {};
+      (this.channels as Array<string>).forEach((x: string) => {
+        mapped[x] = true;
+        mapped[x.split(":", 1)[0]] = true;
+      });
+      return mapped;
+    }
+  },
   methods: {
-    isChecked(team: any, field: string) {
-      return this.channels.indexOf(`${team.objectId}:${field}`) !== -1
-    },
-    teamSelected(team: any) {
-      return (this.channels as Array<string>).find((x: string) => x.startsWith(`${team.objectId}:`))
-    },
     disableTeam(team: any) {
       const newList = (this.channels as Array<string>).filter((x: string) => !x.startsWith(`${team.objectId}:`))
       this.$emit("channels-updated", newList);
@@ -81,18 +89,17 @@ export default defineComponent({
       const key = `${team.objectId}:${field}`;
       let newList;
       if (checked) {
-        if (this.isChecked(team, field)) {
+        if (this.checked[key]) {
           return
         }
         newList = Array.from(this.channels);
         newList.push(key);
       } else {
-        if (!this.isChecked(team, field)) {
+        if (!this.checked[key]) {
           return
         }
         newList = (this.channels as Array<string>).filter((x: string) => x != key);
       }
-      console.log("updating", newList);
       this.$emit("channels-updated", newList);
     }
   },
