@@ -3,8 +3,10 @@ import { isPlatform } from '@ionic/vue';
 import { PushNotifications, Token } from '@capacitor/push-notifications';
 import { Device } from '@capacitor/device';
 import { App as AppInfo } from '@capacitor/app';
+import { popCypressEntry, getCypressEntry } from "@/utils/env";
 
 export function isMobileInstallation() {
+  if (getCypressEntry('isMobile')) { return true }
   return isPlatform('mobile') && !document.URL.startsWith('http')
 }
 
@@ -45,6 +47,13 @@ export function setupNotificationActions(
 }
 
 export function initInstallation(): Promise<Parse.Installation> {
+  const cypressDevice = popCypressEntry('device');
+  console.log("device", cypressDevice);
+  if (cypressDevice) {
+    const installation = new Parse.Installation();
+    installation.set(cypressDevice);
+    return Promise.resolve(installation)
+  }
   const promise: Promise<Parse.Installation> = new Promise((resolve, reject) => {
     PushNotifications.addListener('registration', (token: Token) => {
       generateInstallation({"deviceToken": token.value})

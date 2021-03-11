@@ -1,25 +1,20 @@
 <template>
-    <template v-if="isSharedInbox">
-        <div slot="start" class="avatar-wrap">
-            <div v-if="showTeam">
-                <avatar :profile="team" :name="teamName"/>
-            </div>
-            <avatar v-else :profile="convo.participants[0]" />
+    <div slot="start" class="avatar-wrap">
+        <div v-if="showTeam">
+            <avatar :profile="team" :name="teamName"/>
         </div>
-        <ion-label>
-            <h2 v-if="showTeam">
-                {{convo.team.name}}
-            </h2>
-            <h2 v-else>
-                {{convo.participants[0].name}}
-            </h2>
-            <p v-if="!brief">{{msgPreview}}</p>
-        </ion-label>
-        <div v-if="!brief" class="ion-text-right" slot="end">
-            <ion-note color="medium">{{when}}</ion-note><br/>
-            <ion-badge color="danger">3</ion-badge>
-        </div>
-    </template>
+        <avatar v-else :profile="convo.participants[0]" />
+    </div>
+    <ion-label>
+        <h2>
+            {{convoName}}
+        </h2>
+        <p v-if="!brief">{{msgPreview}}</p>
+    </ion-label>
+    <div v-if="false && !brief" class="ion-text-right" slot="end">
+        <ion-note color="medium">{{when}}</ion-note><br/>
+        <ion-badge color="danger">3</ion-badge>
+    </div>
 </template>
 <script lang="ts">
 import {
@@ -32,6 +27,13 @@ import { since } from "../utils/time";
 import { defineComponent } from 'vue';
 import { useStore } from '../stores/';
 import Avatar from "./avatar.vue";
+
+const TEAM_CONVO_NAMES: Record<string, string> = {
+    'leaders': 'Leaders',
+    'publishers': 'Publishers',
+    'mods': 'Moderators',
+    'agents': 'Agents',
+};
 
 export default defineComponent({
   name: 'conversation-entry',
@@ -46,8 +48,9 @@ export default defineComponent({
     Avatar,
     IonLabel, IonNote, IonBadge,
   },
-  setup() {
+  setup(props: any) {
     const store = useStore();
+    console.log(props.convo);
     return {
       isMe: (id: string) => store.getters["auth/myId"] == id,
         store
@@ -61,11 +64,21 @@ export default defineComponent({
         }
         return since(msg.createdAt)
     },
+    convoName(): string {
+        if (this.isTeamChat) {
+            return `${this.convo.team.name} ${TEAM_CONVO_NAMES[this.convo.among]}`
+        } else if (this.isSharedInbox) {
+            return this.convo.participants[0].name
+        } else {
+            return this.team.name
+        }
+    },
     teamName(): string { return this.convo.team.name },
     isSharedInbox(): boolean { return this.convo.type == "sharedInbox" },
+    isTeamChat(): boolean { return this.convo.type == "team" },
     team(): any { return this.convo.team },
     showTeam(): boolean {
-        return this.isMe(this.convo.participants[0].objectId)
+        return !(this.isSharedInbox && this.isMe(this.convo.participants[0].objectId))
     },
     msgPreview(): string {
         const msg = this.convo.latestMessage;
