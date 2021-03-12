@@ -1,8 +1,6 @@
 import { Parse, Verb } from "../config/Consts";
 import { Activity } from "../db/models";
 import { Model } from "@/utils/model";
-import StateCore from "markdown-it/lib/rules_core/state_core";
-import { State } from "ionicons/dist/types/stencil-public-runtime";
 
 const ITEMS_PER_PAGE = 25;
 
@@ -22,7 +20,8 @@ export const Feed = {
   state: () => ({
     loading: true,
     latestPosts: [],
-    currentPosition: 0,
+    currentPos: 0,
+    total: 0,
   }),
   getters: {
     latestPosts(state: FeedT, getters: any, rootState: any, rootGetters: any): Model[] {
@@ -41,6 +40,9 @@ export const Feed = {
       state.total = total;
       state.currentPos += feed.length;
       state.latestPosts = state.latestPosts.concat(feed);
+    },
+    setQuery(state: FeedT, query: any) {
+      state.query = query
     },
     addItem(state: FeedT, item: string) {
       state.latestPosts.unshift(item);
@@ -62,7 +64,7 @@ export const Feed = {
         return
       }
       context.commit("setLoading", true);
-      const query = (new Parse.Query(Activity) as any).fromJSON(context.state.query);
+      const query = Parse.Query.fromJSON(Activity, context.state.query);
       query.skip(context.state.currentPos);
       query.limit(ITEMS_PER_PAGE);
       const feed = await query.find();
@@ -70,9 +72,9 @@ export const Feed = {
       context.commit("setLoading", false);
     },
     async addItems(context: any, result: any) {
-      const {results, total} = result;
+      const {results, count} = result;
       await context.dispatch("addItems", {keys: MODEL_KEYS, items: results}, { root: true });
-      await context.commit("addToFeed", {feed: results.map((a: Parse.Object) => a.id), total});
+      await context.commit("addToFeed", {feed: results.map((a: Parse.Object) => a.id), total: count});
     },
     async refresh(context: any) {
       context.commit("setLoading", true);
