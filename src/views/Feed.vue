@@ -1,6 +1,6 @@
 <template>
   <ion-page>
-    <ion-content>
+    <ion-content data-cy="activity-feed">
       <div class="wrap">
         <ion-card v-if="canPost">
           <ion-card-content>
@@ -13,13 +13,24 @@
           <activity v-for="activity in latestPosts" :activity="activity" :key="activity.objectId" />
         </transition-group>
       </div>
+      <ion-infinite-scroll
+        @ionInfinite="loadMore($event)"
+        threshold="5%"
+      >
+        <ion-infinite-scroll-content
+          loading-spinner="crescent"
+          loading-text="Loading more data...">
+        </ion-infinite-scroll-content>
+      </ion-infinite-scroll>
     </ion-content>
   </ion-page>
 </template>
 
 <script lang="ts">
 import {
-  IonPage, IonContent, IonSpinner, IonCard, IonCardContent
+  IonPage, IonContent, IonSpinner, IonCard, IonCardContent,
+  IonInfiniteScroll,
+  IonInfiniteScrollContent,
 } from '@ionic/vue';
 import { chatbubbles, heartOutline, addOutline, mailOutline, caretForwardOutline } from 'ionicons/icons';
 import { defineComponent, computed } from 'vue';
@@ -36,13 +47,21 @@ export default defineComponent({
       canPostInTeams: computed(() => store.getters["auth/postableTeams"]),
       canPost: computed(() => store.getters["auth/postableTeams"].length > 0),
       loading: computed(() => store.state.feed.loading),
+      canLoadMore: computed(() => store.getters["feed/canLoadMore"]),
       latestPosts: computed(() => store.getters["feed/latestPosts"]),
+      loadMore: (ev: CustomEvent) => {
+        console.log("we should load more", ev);
+        store.dispatch("feed/loadMore").then(() => {(ev.target as any).complete()})
+      },
       chatbubbles, like: heartOutline, mail: mailOutline, plus: addOutline,
-      teamSplitter: caretForwardOutline,
+      teamSplitter: caretForwardOutline, store
     }
+  },
+  methods:{
   },
   components: {
     IonContent, IonPage, IonSpinner, IonCard, IonCardContent,
+    IonInfiniteScroll, IonInfiniteScrollContent,
     NewPost, Activity
   }
 });

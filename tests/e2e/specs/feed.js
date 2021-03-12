@@ -15,4 +15,27 @@ describe('Visiting the public feed', () => {
 
     })
   })
+  it.skip('Can endless scroll', () => {
+    // FIXME scrolling doesn't work.
+    const testStr = "Willkommen euch allen!";
+    cy.visit('/feed')
+
+    // there is an element with the default sentence
+    cy.get('[data-cy-type=activity]')
+      .should('have.length.of.at.most', 25);
+    // scrolling to the bottom
+    cy.get('[data-cy-type=activity]').last().scrollIntoView({ensureScrollable: false});
+
+    // and we have more elements loaded!
+    cy.get('[data-cy-type=activity]')
+      .should('have.length.of.at.least', 50);
+
+    // scrolling to the bottom
+    cy.get('[data-cy-type=activity]').last().scrollIntoView({ensureScrollable: false});
+
+    // and we have more elements loaded!
+    cy.get('[data-cy-type=activity]')
+      .should('have.length.of.at.least', 75);
+
+  })
 })
