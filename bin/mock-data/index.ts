@@ -1,5 +1,7 @@
 // Mock Images are copyright by BBC World Wide.
 
+import { User } from "parse";
+
 const Parse = require('parse/node');
 const fs = require('fs');
 
@@ -179,3 +181,15 @@ export const Posts = [
         ]
     }
 ]
+
+const randomUser = () => Users[Math.floor(Math.random() * Users.length)].username;
+
+for (var i = 0; i < 100; i++) {
+    Posts.push({
+        team: i % 5 ? "team-earth" : "doctor-who",
+        verb: i % 7 ? "announce" :  "post",
+        author: i % 7 ? 'river' : randomUser(),
+        text: "This is post number " + i,
+        visibility: "public",
+    })
+}

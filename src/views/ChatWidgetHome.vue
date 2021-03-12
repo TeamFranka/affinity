@@ -75,7 +75,7 @@ export default defineComponent({
   methods: {
     anonymousLogin() {
       this.loading = true;
-      Parse.AnonymousUtils.logIn({}).then((data: any) => {
+      (Parse as any).AnonymousUtils.logIn({}).then((data: any) => {
         console.log("updated user", data);
         this.$emit("user-updated", data);
         this.loading = false
