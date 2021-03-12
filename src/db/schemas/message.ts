@@ -28,7 +28,9 @@ export const Message = {
         find: {
             '*': true
         },
-        count: {},
+        count: {
+            requiresAuthentication: true
+        },
         get: {
             '*': true
         },
