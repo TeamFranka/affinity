@@ -1,5 +1,11 @@
 <template>
-  <ion-button @click="toggleOpen(!showPopover,$event)" :disabled="disabled" fill="clear" :color="color">
+  <ion-button
+      :data-cy="dataCy"
+      @click="toggleOpen(!showPopover,$event)"
+      :disabled="disabled"
+      fill="clear"
+      :color="color"
+  >
     <slot name="label">
       <ion-label v-if="label" color="dark" style="padding-right: 0.5em">{{label}}</ion-label>
     </slot>
@@ -29,6 +35,7 @@ export default defineComponent({
     popoverTitle: String,
     title: String,
     label: String,
+    dataCy: String,
     items: {
       type: Array,
       required: true,
@@ -39,7 +46,7 @@ export default defineComponent({
     },
     disabled: Boolean,
   },
-  setup() {
+  setup(props) {
     const showPopover = ref(false);
     const event = ref();
     const toggleOpen = (state, evt) => {

@@ -44,8 +44,8 @@ export default defineComponent({
   setup() {
     const store = useStore();
     return {
-      canPostInTeams: computed(() => store.getters["auth/postableTeams"]),
-      canPost: computed(() => store.getters["auth/postableTeams"].length > 0),
+      canPostInTeams: computed(() => store.getters["auth/postableTeamIds"].map((id: string)=> store.getters.objectsMap[id])),
+      canPost: computed(() => store.getters["auth/postableTeamIds"].length > 0),
       loading: computed(() => store.state.feed.loading),
       canLoadMore: computed(() => store.getters["feed/canLoadMore"]),
       latestPosts: computed(() => store.getters["feed/latestPosts"]),

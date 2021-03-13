@@ -9,7 +9,11 @@
             :startText="text"
             @change="updateText"
           ></rich-editor>
-          <p @click="showOptions = true" v-if="!showOptions">{{visibility}} <span v-if="showTypeSelector">{{selectedType}}</span> <span v-if="showTeamSelector">to <avatar size="1.5em" :profile="selectedTeam" withName /></span><ion-button size="small" fill="clear"><ion-icon :icon="editIcon"/></ion-button></p>
+          <p
+            @click="showOptions = true"
+            v-if="!showOptions"
+            data-cy-role="editSettings"
+          >{{visibility}} <span v-if="showTypeSelector">{{selectedType}}</span> <span v-if="showTeamSelector">to <avatar size="1.5em" :profile="selectedTeam" withName /></span><ion-button size="small" fill="clear"><ion-icon :icon="editIcon"/></ion-button></p>
         </ion-col>
         <ion-col size-md="1" class="ion-hide-sm-down">
           <ion-button  data-cy="submitPost" type="submit" data-cy-role="submit" fill="outline" v-bind:disabled="!canSubmit" shape="round" size="small">
@@ -24,6 +28,7 @@
               popoverTitle="Team"
               @select="selectTeam($event)"
               :items="teams"
+              data-cy="selectTeam"
           >
             <template #current>
               <avatar :profile="selectedTeam" size="2em" withName />
@@ -254,7 +259,7 @@ import {
   checkmarkOutline,
 } from 'ionicons/icons';
 import { defineComponent, computed } from 'vue';
-import Selector from "./selector.vue";
+import Selector from "@/components/generic/selector.vue";
 import Avatar from "./avatar.vue";
 import EditPoll from "./edit-poll.vue";
 import Poll from "./poll.vue";
@@ -278,6 +283,12 @@ VISIBILITY_ICONS[Visibility.Leaders] = rocketOutline;
 export default defineComponent({
   name: 'DraftPost',
   emits: ["submitted"],
+  props: {
+    teams: {
+      type: Array,
+      required: true,
+    },
+  },
   data() {
     return {
       showOptions: false,
@@ -288,7 +299,6 @@ export default defineComponent({
     return {
       store, VERB_ICONS, VISIBILITY_ICONS,
       // generic
-      teams: computed(() => store.getters["auth/postableTeams"]),
       text: computed(() => store.state.draft.text),
       selectedType: computed(() => store.getters["draft/selectedType"]),
       richActions: computed(() => store.getters["draft/selectedType"] == 'announce' ? AllActions : DefaultActions ),
@@ -301,7 +311,6 @@ export default defineComponent({
       selectedTeam: computed(() => store.getters["draft/selectedTeam"]),
       selectedTeamId: computed(() => store.getters["draft/selectedTeamId"]),
       showTypeSelector: computed(() => store.getters["draft/showTypeSelector"]),
-      showTeamSelector: computed(() => store.getters["auth/postableTeams"].length > 1),
 
       // permissions
       selectableTypes: computed(() => store.getters["draft/selectableTypes"]),
@@ -332,6 +341,11 @@ export default defineComponent({
       imageIcon, sendIcon, eyeOutline, editIcon, listIcon, leftIcon, rightIcon,
       selectedIcon: checkmarkOutline, closeIcon, deleteIcon, linkIcon, documentIcon
     }
+  },
+  computed: {
+    showTeamSelector(): boolean {
+      return this.teams.length > 1
+    },
   },
   components: {
     IonTextarea, IonChip, IonIcon, IonLabel, IonButton, IonInput, IonImg, IonItem,
