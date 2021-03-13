@@ -10,7 +10,12 @@
         <ion-spinner v-if="loading" name="dots"></ion-spinner>
 
         <transition-group name="list">
-          <activity v-for="activity in latestPosts" :activity="activity" :key="activity.objectId" />
+          <activity
+            v-for="activity in latestPosts"
+            :showTeam="showTeams"
+            :activity="activity"
+            :key="activity.objectId"
+          />
         </transition-group>
       </div>
       <ion-infinite-scroll
@@ -49,6 +54,7 @@ export default defineComponent({
       loading: computed(() => store.state.feed.loading),
       canLoadMore: computed(() => store.getters["feed/canLoadMore"]),
       latestPosts: computed(() => store.getters["feed/latestPosts"]),
+      showTeams: computed(() => store.getters["auth/myTeams"].length > 1),
       loadMore: (ev: CustomEvent) => {
         console.log("we should load more", ev);
         store.dispatch("feed/loadMore").then(() => {(ev.target as any).complete()})
