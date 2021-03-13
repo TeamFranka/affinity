@@ -37,7 +37,7 @@ describe('Posting to the feed as regular User', () => {
       .and('contain',"https://twitter.com/bbcdoctorwho")
   })
 
-  it.only('Posts a Link via button', () => {
+  it('Posts a Link via button', () => {
     const link = "https://medium.com/slack-developer-blog/everything-you-ever-wanted-to-know-about-unfurling-but-were-afraid-to-ask-or-how-to-make-your-e64b4bb9254";
     cy.visit('/feed');
     cy.get('[data-cy=newPost] [data-cy=addLink]').click();
