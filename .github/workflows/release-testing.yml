@@ -168,6 +168,7 @@ jobs:
           certificate-password: ${{ secrets.CREDENTIALS_PASSWORD }}
           team-id: ${{ secrets.TEAM_ID }}
           workspace-path: ios/App/App.xcworkspace # optional
+          export-metod: ad-hoc
           output-path: 'ios-app.ipa'
       - name: Archive iOS App
         uses: actions/upload-artifact@v2
