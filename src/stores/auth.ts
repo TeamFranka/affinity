@@ -52,7 +52,7 @@ export const AuthState = {
     },
     teamPermissions: (state: AuthStateT) => state.teamPermissions,
     hasManyTeams: (state: AuthStateT) => state.teams.length > 1,
-    postableTeams: (state: AuthStateT) =>  state.teams?.filter(t => t && state.teamPermissions[t].canPost) || [],
+    postableTeamIds: (state: AuthStateT) =>  state.teams?.filter(t => t && state.teamPermissions[t].canPost) || [],
     adminOfTeams: (state: AuthStateT) =>  state.teams?.filter(t => t && state.teamPermissions[t].isAdmin) || [],
 
     // Devices // Installations
