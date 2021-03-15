@@ -1,18 +1,185 @@
-name: Deploying
+name: E2E Test and deploy
 on:
-  workflow_run:
-    workflows: ["E2E Test"]
-    branches: [main]
-    types:
-      - completed
+  push:
+    branches: [ main ]
+
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
+  tests:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Setup docker-compose stack
+        run: 'npm run ci:run-parse'
+      - name: Cache node modules
+        uses: actions/cache@v2
+        env:
+          cache-name: cache-node-modules
+        with:
+          # npm cache files are stored in `~/.npm` on Linux/macOS
+          path: './node_modules'
+          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-build-${{ env.cache-name }}-
+            ${{ runner.os }}-build-
+            ${{ runner.os }}-
+      - name: Install ionic
+        run: npm install @ionic/cli
+      - name: Install dependencies
+        run: npm install
+      # Runs
+      - name: Check docker
+        run: docker ps -a && docker-compose logs --tail 10
+      - name: Set up DB
+        run: 'npm run ci:setup-db'
+      - name: Running e2e with cypress
+        uses: cypress-io/github-action@v2
+        with:
+          ## FIXME: run this against the locally deployed version?
+          start: npm run serve
+          # quote the url to be safe against YML parsing surprises
+          wait-on: 'http://localhost:8080'
+
+  release-build:
+    runs-on: ubuntu-latest
+    environment: b4a_deploy
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Cache node modules
+        uses: actions/cache@v2
+        env:
+          cache-name: cache-node-modules
+        with:
+          path: './node_modules'
+          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-build-${{ env.cache-name }}-
+            ${{ runner.os }}-build-
+            ${{ runner.os }}-
+      - name: Install ionic
+        run: npm install @ionic/cli
+      - name: Install dependencies
+        run: npm install
+      - name: Build locally
+        run: |
+          npm run build -- --prod
+
+        env:
+          VUE_APP_DEFAULT_TEAM: ${{ secrets.VUE_APP_DEFAULT_TEAM}}
+          VUE_APP_PARSE_APP_ID: ${{ secrets.VUE_APP_PARSE_APP_ID}}
+          VUE_APP_PARSE_JS_KEY: ${{ secrets.VUE_APP_PARSE_JS_KEY}}
+          VUE_APP_PARSE_URL: ${{ secrets.VUE_APP_PARSE_URL}}
+          VUE_APP_PARSE_LIVE_URL: ${{ secrets.VUE_APP_PARSE_LIVE_URL }}
+      - name: Archive /dist
+        uses: actions/upload-artifact@v2
+        with:
+          name: dist-production
+          path: |
+            dist
+
+  android-app:
+    runs-on: ubuntu-latest
+    needs: release-build
+    environment: android_app
+    steps:
+      - uses: actions/checkout@v2
+      - name: Download /dist
+        uses: actions/download-artifact@v2
+        with:
+          name: dist-production
+          path: dist
+      - name: Cache node modules
+        uses: actions/cache@v2
+        env:
+          cache-name: cache-node-modules
+        with:
+          path: './node_modules'
+          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-build-${{ env.cache-name }}-
+            ${{ runner.os }}-build-
+            ${{ runner.os }}-
+      - name: Install capacitor
+        run: npm install capacitor
+      - name: Sync assets
+        run: npx cap sync android
+      - name: Build Android App
+        uses: sparkfabrik/android-build-action@v1.0.0
+        with:
+          project-path: android
+          output-path: android-app.apk
+      - uses: r0adkll/sign-android-release@v1
+        name: Sign app APK
+        # ID used to access action output
+        id: sign_app
+        with:
+          releaseDirectory: ./
+          signingKeyBase64: ${{ secrets.ANDROID_KEYSTORE }}
+          alias: ${{ secrets.ANDROID_KEY_ALIAS }}
+          keyStorePassword: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          keyPassword: ${{ secrets.ANDROID_KEY_PASSWORD }}
+      - name: Archive Android App
+        uses: actions/upload-artifact@v2
+        with:
+          name: android-app
+          path: ${{steps.sign_app.outputs.signedReleaseFile}}
+
+  ios-app:
+    environment: ios_app
+    runs-on: macos-latest
+    needs: release-build
+    steps:
+      - uses: actions/checkout@v2
+      - name: Download /dist
+        uses: actions/download-artifact@v2
+        with:
+          name: dist-production
+          path: dist
+      - name: Cache node modules
+        uses: actions/cache@v2
+        env:
+          cache-name: cache-node-modules
+        with:
+          path: './node_modules'
+          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-build-${{ env.cache-name }}-
+            ${{ runner.os }}-build-
+            ${{ runner.os }}-
+      - name: Install capacitor
+        run: npm install capacitor
+      - name: Sync assets
+        run: npx cap sync ios
+      - name: Build iOS App
+        uses: yukiarrr/ios-build-action@v1.3.2
+        continue-on-error: false
+        with:
+          project-path: ios/App/App.xcodeproj
+          p12-base64: ${{ secrets.P12_BASE64 }}
+          mobileprovision-base64: ${{ secrets.MOBILEPROVISION_BASE64 }}
+          code-signing-identity: ${{ secrets.CODE_SIGNING_IDENTITY }}
+          certificate-password: ${{ secrets.CREDENTIALS_PASSWORD }}
+          team-id: ${{ secrets.TEAM_ID }}
+          workspace-path: ios/App/App.xcworkspace # optional
+          export-method: ad-hoc
+          output-path: 'ios-app.ipa'
+      - name: Archive iOS App
+        uses: actions/upload-artifact@v2
+        with:
+          name: ios-app
+          path: |
+            ios-app.ipa
+
   deploy-parse:
     environment: b4a_deploy
     runs-on: ubuntu-latest
+    needs: [ tests, release-build, android-app, ios-app ]
+    if: github.event_name == 'push' # only if this was a push on 'main'
     steps:
       - uses: actions/checkout@v2
       - name: Install Back4Appp
@@ -62,25 +229,10 @@ jobs:
           cd backend
           b4a deploy affinity
 
-  deploy-docker-image:
-    environment: docker_deploy
-    runs-on: ubuntu-latest
-
-    steps:
-      - uses: actions/checkout@v2
-      - name: Setup docker-compose stack
-        run: 'npm run ci:run-parse'
-      - name: Login to DockerHub
-        uses: docker/login-action@v1
-        with:
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
-      - name: "Deploying latest dev image"
-        run: docker-compose push parse
-
   deploy-code-push-android:
     environment: appcenter_deploy
     runs-on: ubuntu-latest
+    needs: [ deploy-parse ]
     steps:
       - name: Download /dist
         uses: actions/download-artifact@v2
@@ -97,6 +249,7 @@ jobs:
   deploy-code-push-ios:
     environment: appcenter_deploy
     runs-on: ubuntu-latest
+    needs: [ deploy-parse ]
     steps:
       - name: Download /dist
         uses: actions/download-artifact@v2
@@ -113,6 +266,7 @@ jobs:
   deploy-ios-beta:
     environment: appcenter_deploy
     runs-on: ubuntu-latest
+    needs: [ deploy-parse, ios-app ]
     steps:
       - name: Download signed iOS App
         uses: actions/download-artifact@v2
@@ -131,6 +285,7 @@ jobs:
   deploy-android-beta:
     environment: appcenter_deploy
     runs-on: ubuntu-latest
+    needs: [ deploy-parse, android-app ]
     steps:
       - name: Download signed Android App
         uses: actions/download-artifact@v2
@@ -149,6 +304,7 @@ jobs:
   deploy-ios:
     environment: ios_deploy
     runs-on: macos-latest
+    needs: [ ios-app, deploy-parse ]
     if: false == true #  disabled until we've got it working.
     steps:
       - name: Download signed iOS App
