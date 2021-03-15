@@ -85,9 +85,8 @@ export const Feed = {
         .containedIn("verb", [Verb.Post, Verb.Announce])
         .include(MODEL_KEYS)
         .limit(ITEMS_PER_PAGE)
-        .descending("createdAt");
-      // FIXME workaround until merged https://github.com/DefinitelyTyped/DefinitelyTyped/pull/51711
-      (query as any).withCount(true);
+        .descending("createdAt")
+        .withCount(true);
       context.commit("setQuery", query.toJSON())
       const feed = await query.find();
       await context.dispatch("addItems", feed);
