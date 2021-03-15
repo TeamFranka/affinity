@@ -4,6 +4,8 @@ import { Model, toModel } from '@/utils/model';
 import { initInstallation } from '@/utils/setup';
 import { getCypressEntry } from "@/utils/env";
 import { watch } from 'vue';
+import { deviceLocale } from "@/utils/setup";
+import i18n from "@/i18n";
 
 export interface AuthStateT {
   wantsToLogin: boolean;
@@ -19,16 +21,32 @@ function currentUser(): Model | null {
   return u ? toModel(u): null;
 }
 
+function setLocale(lang: string) {
+  (i18n as any).global.locale = lang;
+}
+
 export const AuthState = {
   namespaced: true,
-  state: () => ({
-    wantsToLogin: false,
-    user: currentUser(),
-    teams: [],
-    installations: [],
-    currentInstallationId: null,
-    teamPermissions: {},
-  }),
+  state: () => {
+
+    const user = currentUser();
+    if (user) {
+      setLocale(user.lang)
+    } else {
+      deviceLocale().then((l: string) => {
+        setLocale(l);
+      });
+    }
+
+    return {
+      wantsToLogin: false,
+      user,
+      teams: [],
+      installations: [],
+      currentInstallationId: null,
+      teamPermissions: {},
+    }
+  },
   getters: {
     isLoggedIn: (state: AuthStateT) => !!state.user,
     myId: (state: AuthStateT) => state.user?.objectId,
@@ -64,6 +82,9 @@ export const AuthState = {
   mutations: {
     setUser(state: AuthStateT, newUser: Model|null) {
       state.user = newUser
+      if (newUser) {
+        setLocale(newUser.lang);
+      }
     },
     setInstallations(state: AuthStateT, installations: Model[]) {
       state.installations = installations
