@@ -26,7 +26,7 @@ import { ANDROID_INSTALL_URL, IOS_INSTALL_URL } from '@/config/Consts';
 import FooterMenu from '@/components/footer-menu.vue';
 import LoginModal from '@/components/login-modal.vue';
 import HeaderBar from '@/components/header-bar.vue';
-import { isMobileInstallation, setupNotificationActions } from '@/utils/setup';
+import { isMobileInstallation, setupNotificationActions, deviceLocale } from '@/utils/setup';
 import { ActionPerformed, PushNotificationSchema } from '@capacitor/push-notifications';
 
 import { useStore } from '../stores/';
@@ -34,7 +34,7 @@ import { useStore } from '../stores/';
 import { codePush } from 'capacitor-codepush';
 import { App, AppState } from '@capacitor/app';
 
-if (isPlatform('mobile') && !isPlatform('mobileweb')) {
+if (isMobileInstallation()) {
   App.addListener('appStateChange', (state: AppState) => {
     // state.isActive contains the active state
     if (state.isActive) {
