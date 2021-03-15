@@ -1,0 +1,164 @@
+name: Deploying
+on:
+  workflow_run:
+    workflows: ["Run Tests"]
+    branches: [main]
+    types:
+      - completed
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  deploy-parse:
+    environment: b4a_deploy
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Install Back4Appp
+        run: |
+          curl https://raw.githubusercontent.com/back4app/parse-cli/back4app/installer.sh | sudo /bin/bash
+          alias b4a=/usr/local/bin/b4a
+      - name: Configure Back4App
+        run: echo ${{ secrets.B4A_ACCOUNT_KEY}} | b4a configure accountkey
+      - name: Cache node modules
+        uses: actions/cache@v2
+        env:
+          cache-name: cache-node-modules
+        with:
+          path: './node_modules'
+          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-build-${{ env.cache-name }}-
+            ${{ runner.os }}-build-
+            ${{ runner.os }}-
+      - name: Install capacitor
+        run: npm install
+      - name: Download /dist
+        uses: actions/download-artifact@v2
+        with:
+          name: dist-production
+          path: dist
+      - name: Download signed Android App
+        uses: actions/download-artifact@v2
+        with:
+          name: android-app
+      - name: Copy App to asset
+        run: |
+          mkdir -p dist/assets/apps
+          mv *.apk dist/assets/apps
+      - name: Deploy db
+        run: |
+          npm run deploy:db
+        env:
+          VUE_APP_DEFAULT_TEAM: ${{ secrets.VUE_APP_DEFAULT_TEAM}}
+          VUE_APP_PARSE_APP_ID: ${{ secrets.VUE_APP_PARSE_APP_ID}}
+          VUE_APP_PARSE_JS_KEY: ${{ secrets.VUE_APP_PARSE_JS_KEY}}
+          VUE_APP_PARSE_MASTER_KEY: ${{ secrets.VUE_APP_PARSE_MASTER_KEY}}
+          VUE_APP_PARSE_URL: ${{ secrets.VUE_APP_PARSE_URL}}
+          VUE_APP_PARSE_LIVE_URL: ${{ secrets.VUE_APP_PARSE_LIVE_URL }}
+      - name: Deploy Cloud Code & Apps
+        run: |
+          cd backend
+          b4a deploy affinity
+
+  deploy-docker-image:
+    environment: docker_deploy
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Setup docker-compose stack
+        run: 'npm run ci:run-parse'
+      - name: Login to DockerHub
+        uses: docker/login-action@v1
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+      - name: "Deploying latest dev image"
+        run: docker-compose push parse
+
+  deploy-code-push-android:
+    environment: appcenter_deploy
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download /dist
+        uses: actions/download-artifact@v2
+        with:
+          name: dist-production
+          path: dist
+      - name: Codepush Android
+        uses: NishanthShankar/codepush-action@master
+        with:
+          args: release -m -a TeamFranka/Affinity-Live -d Production -c dist -t 1.0.0
+        env:
+          APPCENTER_ACCESS_TOKEN: ${{ secrets.APPCENTER_ACCESS_TOKEN }}
+
+  deploy-code-push-ios:
+    environment: appcenter_deploy
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download /dist
+        uses: actions/download-artifact@v2
+        with:
+          name: dist-production
+          path: dist
+      - name: Codepush iOS
+        uses: NishanthShankar/codepush-action@master
+        with:
+          args: release -m -a TeamFranka/Affinity-Live-iOS -d Production -c dist  -t 1.0.0
+        env:
+          APPCENTER_ACCESS_TOKEN: ${{secrets.APPCENTER_ACCESS_TOKEN}}
+
+  deploy-ios-beta:
+    environment: appcenter_deploy
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download signed iOS App
+        uses: actions/download-artifact@v2
+        with:
+          name: ios-app
+      - name: upload artefact to App Center
+        uses: wzieba/AppCenter-Github-Action@v1
+        with:
+          appName: TeamFranka/Affinity-Live-iOS
+          token: ${{secrets.APPCENTER_ACCESS_TOKEN}}
+          group: "Public Beta"
+          file: ios-app.ipa
+          notifyTesters: false
+          debug: false
+
+  deploy-android-beta:
+    environment: appcenter_deploy
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download signed Android App
+        uses: actions/download-artifact@v2
+        with:
+          name: android-app
+      - name: upload artefact to App Center
+        uses: wzieba/AppCenter-Github-Action@v1
+        with:
+          appName: TeamFranka/Affinity-Live
+          token: ${{secrets.APPCENTER_ACCESS_TOKEN}}
+          group: "Public Beta"
+          file: android-app-signed.apk
+          notifyTesters: false
+          debug: false
+
+  deploy-ios:
+    environment: ios_deploy
+    runs-on: macos-latest
+    if: false == true #  disabled until we've got it working.
+    steps:
+      - name: Download signed iOS App
+        uses: actions/download-artifact@v2
+        with:
+          name: ios-app
+      - name: 'Upload app to TestFlight'
+        uses: apple-actions/upload-testflight-build@v1
+        with:
+          app-path: ios-app.ipa
+          issuer-id: ${{ secrets.APPSTORE_ISSUER_ID }}
+          api-key-id: ${{ secrets.APPSTORE_API_KEY_ID }}
+          api-private-key: ${{ secrets.APPSTORE_API_PRIVATE_KEY }}
