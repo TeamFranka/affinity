@@ -16,7 +16,7 @@
     "deploy:db": "node -r dotenv/config bin/update-db.js dotenv_config_path=.env.production.local",
     "deploy:web": "ionic build --engine browser && cd backend/cloud && npm install && cd ../ && b4a deploy",
     "dev:android": "ionic capacitor run android -l --external",
-    "dev:build-parse": "docker-compose build parse --no-cache",
+    "dev:build-parse": "docker-compose build --no-cache parse",
     "dev:ios": "ionic capacitor run ios -l --external",
     "dev:db": "node -r dotenv/config bin/update-db.js dotenv_config_path=.env.development",
     "dev:db:add-faqs": "node -r dotenv/config bin/mock-data.js dotenv_config_path=.env.development with-faq",
