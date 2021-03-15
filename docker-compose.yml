@@ -6,6 +6,7 @@ services:
 
   parse:
     build: ./backend/
+    image: "lightyear/affinity-backend:latest"
     command: "--appId APPLICATION_ID --masterKey MASTER_KEY --databaseURI mongodb://mongo/dev --cloud /parse-server/cloud/main.js /parse-server/custom-config.json"
     volumes:
       - ./backend/cloud:/parse-server/cloud

@@ -1,4 +1,4 @@
-FROM parseplatform/parse-server:4.4.0 as release
+FROM parseplatform/parse-server:4.4.0
 
 USER root
 
