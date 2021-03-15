@@ -1,7 +1,7 @@
 name: Deploying
 on:
   workflow_run:
-    workflows: ["Run Tests"]
+    workflows: ["E2E Test"]
     branches: [main]
     types:
       - completed
