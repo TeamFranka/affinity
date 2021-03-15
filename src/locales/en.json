@@ -1,3 +1,5 @@
 {
-  "message": "hello i18n !!"
+  "auth.toast.welcome_back": "Welcome back, {name} 👋!",
+  "install.toast.header": "Check out the new beta mobile app!",
+  "install.toast.more": "more",
 }

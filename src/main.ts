@@ -26,7 +26,7 @@ import '@ionic/vue/css/display.css';
 /* Theme variables */
 import './theme/variables.css';
 
-import i18n from './i18n'
+import i18n from '@/utils/i18n'
 
 const app = createApp(App)
   .use(i18n)
