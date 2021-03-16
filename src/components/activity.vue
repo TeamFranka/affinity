@@ -141,7 +141,7 @@ export default defineComponent({
       return this.text.trim().length == 0 && this.objects.length == 1 && this.objects[0].className == 'Link'
     },
     objectsClass(): string {
-      return this.text != '' ? 'ion-padding' : 'no-padding';
+      return this.text != '' ? 'ion-padding' : 'ion-padding-start ion-padding-end';
     },
     link(): string {
       return '/a/' + this.activity.objectId
@@ -222,9 +222,6 @@ export default defineComponent({
 ion-card-header {
   display: flex;
   align-items: center;
-}
-.no-padding{
-  padding: 0px 13px;
 }
 .avatar-wrap-sml{
   width: 2.3em;
