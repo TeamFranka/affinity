@@ -5,6 +5,7 @@ import { initInstallation } from '@/utils/setup';
 import { getCypressEntry } from "@/utils/env";
 import { watch } from 'vue';
 import { deviceLocale } from "@/utils/setup";
+import { dayjs } from "@/config/Consts";
 import i18n from "@/utils/i18n";
 
 export interface AuthStateT {
@@ -23,6 +24,7 @@ function currentUser(): Model | null {
 
 function setLocale(lang: string) {
   (i18n as any).global.locale = lang;
+  dayjs.locale(lang);
 }
 
 export const AuthState = {
