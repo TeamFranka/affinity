@@ -1,5 +1,6 @@
 {
+  "activity.shared": "hat {since} geteilt",
   "auth.toast.welcome_back": "Willkommen zurück, {name} 👋!",
   "install.toast.header": "Es gibt jetzt auch eine Mobile-App in beta!",
-  "install.toast.more": "Mehr",
+  "install.toast.more": "Mehr"
 }

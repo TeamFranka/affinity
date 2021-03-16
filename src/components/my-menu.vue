@@ -1,16 +1,16 @@
 <template>
 <ion-list>
     <ion-item lines="full" button @click="select({ name: 'Me' })">
-        <ion-label>My Profile</ion-label>
+        <ion-label>{{ $t('menu.my.MyProfile') }}</ion-label>
     </ion-item>
     <!-- <ion-item button @click="select({name: 'MySettings'})">
         <ion-label>Einstellungen</ion-label>
     </ion-item> -->
     <ion-item button @click="select({name: 'SettingsNotifications'})">
-        <ion-label><ion-icon :icon="notificationIcon"/> Push Einstellungen</ion-label>
+        <ion-label><ion-icon :icon="notificationIcon"/> {{ $t('menu.settings.push') }}</ion-label>
     </ion-item>
     <ion-item dataCyRole="logout" button @click="logout">
-        <ion-label><ion-icon :icon="logOutIcon"/> Logout</ion-label>
+        <ion-label><ion-icon :icon="logOutIcon"/> {{ $t('menu.logout') }}</ion-label>
     </ion-item>
 </ion-list>
 </template>

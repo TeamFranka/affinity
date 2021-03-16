@@ -28,13 +28,6 @@ import { defineComponent } from 'vue';
 import { useStore } from '../stores/';
 import Avatar from "./avatar.vue";
 
-const TEAM_CONVO_NAMES: Record<string, string> = {
-    'leaders': 'Leaders',
-    'publishers': 'Publishers',
-    'mods': 'Moderators',
-    'agents': 'Agents',
-};
-
 export default defineComponent({
   name: 'conversation-entry',
   props: {
@@ -66,7 +59,7 @@ export default defineComponent({
     },
     convoName(): string {
         if (this.isTeamChat) {
-            return `${this.convo.team.name} ${TEAM_CONVO_NAMES[this.convo.among]}`
+            return this.$t(`conversation.title.${this.convo.among}`, {teamName: this.convo.team.name});
         } else if (this.isSharedInbox) {
             return this.convo.participants[0].name
         } else {

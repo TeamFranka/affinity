@@ -16,16 +16,16 @@
             <notification-dot color="danger" slot="end" />
           </router-link>
           <div data-cy="userMenu" :data-cy-usernam="user.username" @click="openUserPopover" style="position: relative">
-            <avatar  size="45px" :profile="user" />
+            <avatar size="45px" :profile="user" />
           </div>
         </template>
 
         <template v-else>
           <router-link v-if="hasPush" style="position: relative" :to="{name: 'SettingsNotifications'}">
-            <ion-icon :icon="notificationIcon" /> Push Einstellungen
+            <ion-icon :icon="notificationIcon" /> {{$t('menu.settings.push')}}
           </router-link>
           <ion-button data-cy-role="loginModal" fill="clear" @click="openLoginModal">
-            <ion-icon :icon="logInIcon"/> Einloggen
+            <ion-icon :icon="logInIcon"/> {{$t('menu.auth.login')}}
           </ion-button>
         </template>
       </div>

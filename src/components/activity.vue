@@ -20,9 +20,11 @@
     <div v-if="!showAuthor" class="ion-padding-end">
       <router-link :to="teamLink">{{teamName}}</router-link>
     </div>
-    <router-link data-cy="activityLink" :to="link">
-      <ion-note color="medium">shared {{since}} </ion-note>
-    </router-link>
+    <i18n-t keypath="activity.shared" tag="ion-note" color="medium">
+      <template v-slot:since>
+        <router-link data-cy="activityLink" :to="link">{{since}}</router-link>
+      </template>
+    </i18n-t>
   </ion-card-header>
   <!-- REGULAR FULL VIEW -->
   <ion-card-header v-else>

@@ -131,7 +131,7 @@ export default defineComponent({
       const buttons: any[] = [];
 
       if (isPlatform('android')) {
-        const text = this.$t  ("install.toast.action");
+        const text = this.$t("install.toast.action");
         buttons.push({
             side: 'end',
             // icon: 'android',
