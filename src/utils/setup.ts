@@ -1,5 +1,4 @@
 import Parse from 'parse';
-import { isPlatform } from '@ionic/vue';
 import { PushNotifications, Token } from '@capacitor/push-notifications';
 import { Device } from '@capacitor/device';
 import { App as AppInfo } from '@capacitor/app';

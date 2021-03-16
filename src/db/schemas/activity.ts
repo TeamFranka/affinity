@@ -39,7 +39,9 @@ export const Activity = {
         find: {
             '*': true
         },
-        count: {},
+        count: {
+            '*': true
+        },
         get: {
             '*': true
         },

@@ -9,20 +9,25 @@
         v-else
         :to="teamLink"
       >
-          <avatar :profile="team" :name="teamName" v-if="!showAuthor"/>
+        <avatar :profile="team" :name="teamName" />
       </router-link>
     </div>
     <div class="ion-padding-start">
       <div v-if="showAuthor">
-        {{authorName}}<span v-if="showTeam"><ion-icon :icon="teamSplitterIcon" /> <router-link :to="teamLink">{{teamName}}</router-link
-        ></span>
+        <span v-if="showTeam">
+          <router-link :to="teamLink">
+            <avatar size="1.25em" :profile="team" :name="teamName" withName />
+          </router-link>
+          <ion-icon :icon="teamSplitterIcon" />
+        </span>
+        {{authorName}}
       </div>
-      <div v-if="!showAuthor">
+      <div v-else>
         <router-link :to="teamLink">{{teamName}}</router-link>
       </div>
       <router-link data-cy="activityLink" :to="link">
-          <ion-note color="medium">{{since}}</ion-note>
-        </router-link>
+        <ion-note color="medium">{{since}}</ion-note>
+      </router-link>
     </div>
   </ion-card-header>
   
@@ -85,6 +90,7 @@ import {
   IonCard, IonImg, IonCardHeader, IonIcon, IonNote, IonThumbnail,
 } from '@ionic/vue';
 import {
+  chevronForwardOutline as teamSplitterIcon,
   chatbubblesOutline, addOutline, arrowRedoOutline, heartOutline,
   linkOutline as linkIcon,
   documentOutline as documentIcon,
@@ -122,7 +128,7 @@ export default defineComponent({
       objs: computed(() => store.getters.objectsMap),
       store,
       commentsIcon: chatbubblesOutline,
-      teamSplitterIcon: arrowRedoOutline,
+      teamSplitterIcon,
       shareIcon: arrowRedoOutline,
       plusIcon: addOutline,
       likeIcon: heartOutline,
