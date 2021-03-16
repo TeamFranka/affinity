@@ -16,7 +16,7 @@
     </ion-card>
   </template>
   <template v-else-if="is('Picture')">
-    <ion-img :src="imageUrl" />
+    <ion-img class="item-img" :src="imageUrl" />
   </template>
   <div v-if="!is('Post')" class="text">
     <render-md v-if="text" :source="text" />
@@ -259,5 +259,11 @@ export default defineComponent({
 }
 .interaction > span ion-label {
   font-size: 0.5em
+}
+.item-img{
+    display: block;
+    height: 100%;
+    width: 100%;
+    object-fit: cover;
 }
 </style>
