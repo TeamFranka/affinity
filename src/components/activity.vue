@@ -55,8 +55,8 @@
       </router-link>
     </div>
   </ion-card-header>
-  <div>
-    <div v-if="text" class="ion-padding" data-cy-role="content">
+  <div data-cy-role="content">
+    <div v-if="text" class="ion-padding">
       <render-md :source="text" />
     </div>
     <div v-for="obj in objects" :key="obj.objectId" :class="objectsClass">
