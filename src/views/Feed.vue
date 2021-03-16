@@ -1,12 +1,11 @@
 <template>
   <ion-page>
+    <ion-button class="edit-button" v-if="canPost" @click="createPost(canPostInTeams)" shape="round" size="small">
+       <ion-icon size="small" :icon="editIcon"/>
+    </ion-button>
+    
     <ion-content data-cy="activity-feed">
       <div class="wrap">
-        <ion-card v-if="canPost">
-          <ion-card-content>
-            <new-post :teams="canPostInTeams" />
-          </ion-card-content>
-        </ion-card>
         <ion-spinner v-if="loading" name="dots"></ion-spinner>
 
         <transition-group name="list">
@@ -33,11 +32,12 @@
 
 <script lang="ts">
 import {
-  IonPage, IonContent, IonSpinner, IonCard, IonCardContent,
+  IonPage, IonContent, IonSpinner,
   IonInfiniteScroll,
   IonInfiniteScrollContent,
+  modalController
 } from '@ionic/vue';
-import { chatbubbles, heartOutline, addOutline, mailOutline, caretForwardOutline } from 'ionicons/icons';
+import { chatbubbles, heartOutline, addOutline, mailOutline, caretForwardOutline,createOutline as editIcon } from 'ionicons/icons';
 import { defineComponent, computed } from 'vue';
 import { useStore } from '../stores/';
 import Activity from "../components/activity.vue";
@@ -46,6 +46,25 @@ import NewPost from "../components/new-post.vue";
 
 export default defineComponent({
   name: 'Feed',
+   methods:{
+  async createPost (canPostInTeams) {
+      const popover = await modalController
+        .create({
+          component: NewPost,
+           cssClass:'modalCss',
+           componentProps: {
+           teams:canPostInTeams
+          },
+        });
+      popover.present();
+      const result = await popover.onDidDismiss();
+      if (result.data) {
+        console.log("result",result);
+      }
+    },
+  },
+
+
   setup() {
     const store = useStore();
     return {
@@ -60,15 +79,14 @@ export default defineComponent({
         store.dispatch("feed/loadMore").then(() => {(ev.target as any).complete()})
       },
       chatbubbles, like: heartOutline, mail: mailOutline, plus: addOutline,
-      teamSplitter: caretForwardOutline, store
+      teamSplitter: caretForwardOutline, store,editIcon
     }
   },
-  methods:{
-  },
+
   components: {
-    IonContent, IonPage, IonSpinner, IonCard, IonCardContent,
+    IonContent, IonPage, IonSpinner,
     IonInfiniteScroll, IonInfiniteScrollContent,
-    NewPost, Activity
+     Activity
   }
 });
 </script>
@@ -89,4 +107,14 @@ ion-card-header ion-avatar {
 ion-card-header ion-label {
   padding-left: 1em;
 }
+.edit-button{
+    height: 50px;
+    position: relative;
+    z-index: 1;
+    top: 90%;
+    left: 80%;
+    border-radius: 50%;
+    width: 50px;
+}
+
 </style>
