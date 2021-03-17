@@ -6,7 +6,7 @@ The affinity progressive communities network app is a social network for progres
 
 You will need a [NodeJS](https://nodejs.org/en/download/) and `npm` installation. If you want to contribute you'll also need [git](https://ionicframework.com/docs/intro/environment#git) for a github setup.
 
-To run the database / application server you'll need docker & [docker-compose](https://docs.docker.com/compose/install/). On windows, docker-compose is included in the regular [Docker Desktop installation](https://docs.docker.com/docker-for-windows/install/).
+To run the database / application server you'll need docker & [docker-compose](https://docs.docker.com/compose/install/). For Windows and MacOS, docker-compose is included in the regular [Docker Desktop installation](https://docs.docker.com/docker-for-windows/install/).
 
 ## Setup
 
