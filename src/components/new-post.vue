@@ -13,7 +13,7 @@
             @click="showOptions = true"
             v-if="!showOptions"
             data-cy-role="editSettings"
-          >{{visibility}} <span v-if="showTypeSelector">{{selectedType}}</span> <span v-if="showTeamSelector">to <avatar size="1.5em" :profile="selectedTeam" withName /></span><ion-button size="small" fill="clear"><ion-icon :icon="editIcon"/></ion-button></p>
+          >{{ $t(`newPost.visibilities.${visibility}`) }} <span v-if="showTypeSelector">{{selectedType}}</span> <span v-if="showTeamSelector">to <avatar size="1.5em" :profile="selectedTeam" withName /></span><ion-button size="small" fill="clear"><ion-icon :icon="editIcon"/></ion-button></p>
         </ion-col>
         <ion-col size-md="1" class="ion-hide-sm-down">
           <ion-button  data-cy="submitPost" type="submit" data-cy-role="submit" fill="outline" v-bind:disabled="!canSubmit" shape="round" size="small">

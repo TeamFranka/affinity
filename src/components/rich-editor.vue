@@ -51,65 +51,65 @@ const defaultActions: Record<string, any> = {
     action: () => exec('bold')
   },
   italic: {
-    icon: $t('richEditor.action.italicIcon'),
+    icon: $t('richEditor.actions.italicIcon'),
     title: $t('richEditor.actions.italic'),
     stateKey: 'italic',
     action: () => exec('italic')
   },
   underline: {
-    icon: $t('richEditor.action.underlinIcon'),
-    title: $t('richEditor.actions.underlin'),
+    icon: $t('richEditor.actions.underlineIcon'),
+    title: $t('richEditor.actions.underline'),
     stateKey: 'underline',
     action: () => exec('underline')
   },
   strikethrough: {
-    icon: $t('richEditor.action.strikethroughIcon'),
+    icon: $t('richEditor.actions.strikethroughIcon'),
     title: $t('richEditor.actions.strikethrough'),
     stateKey: 'strikeThrough',
     action: () => exec('strikeThrough')
   },
   heading1: {
-    icon: $t('richEditor.action.h1Icon'),
+    icon: $t('richEditor.actions.h1Icon'),
     title: $t('richEditor.actions.h1'),
     action: () => exec(formatBlock, '<h1>')
   },
   heading2: {
-    icon: $t('richEditor.action.h2Icon'),
+    icon: $t('richEditor.actions.h2Icon'),
     title: $t('richEditor.actions.h2'),
     action: () => exec(formatBlock, '<h2>')
   },
   heading3: {
-    icon: $t('richEditor.action.h3Icon'),
+    icon: $t('richEditor.actions.h3Icon'),
     title: $t('richEditor.actions.h3'),
     action: () => exec(formatBlock, '<h3>')
   },
   paragraph: {
-    icon: $t('richEditor.action.paragraphIcon'),
+    icon: $t('richEditor.actions.paragraphIcon'),
     title: $t('richEditor.actions.paragraph'),
     action: () => exec(formatBlock, '<p>')
   },
   quote: {
-    icon: $t('richEditor.action.quoteIcon'),
+    icon: $t('richEditor.actions.quoteIcon'),
     title: $t('richEditor.actions.quote'),
     action: () => exec(formatBlock, '<blockquote>')
   },
   olist: {
-    icon: $t('richEditor.action.orderedListIcon'),
+    icon: $t('richEditor.actions.orderedListIcon'),
     title: $t('richEditor.actions.orderedList'),
     action: () => exec('insertOrderedList')
   },
   ulist: {
-    icon: $t('richEditor.action.unorderedListIcon'),
+    icon: $t('richEditor.actions.unorderedListIcon'),
     title: $t('richEditor.actions.unorderedList'),
     action: () => exec('insertUnorderedList')
   },
   code: {
-    icon: $t('richEditor.action.codeIcon'),
+    icon: $t('richEditor.actions.codeIcon'),
     title: $t('richEditor.actions.code'),
     action: () => exec(formatBlock, '<pre>')
   },
   line: {
-    icon: $t('richEditor.action.hrIcon'),
+    icon: $t('richEditor.actions.hrIcon'),
     title: $t('richEditor.actions.hr'),
     action: () => exec('insertHorizontalRule')
   }
