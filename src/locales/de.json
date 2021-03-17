@@ -12,7 +12,7 @@
   "appPage.button.iOS": "iPhone/iPad Version",
   "appPage.explainer": "Um diese zu installieren einfach den passenden QR-Code mit deinem Smartphone scannen, oder auf dem Smartphone den passenden Button klicken, und auf der folgenden Seite dann auf \"download\". Wenn die App herunter geladen wurde, diese ganz normal öffnen – euer Smartphone wird euch zwar warnen, dass diese Datei nicht bekannt sei, sollte aber nach eurem Einverständnis die Installation fortsetzten.",
   "appPage.intro": "Nun endlich gibt es die TeamFranka Community auch als App für das Smartphone, bisher aber noch in einer nicht über die App-Stores verfügbaren Beta-Version.",
-  "appPage.support": "Bei Fragen oder Probleme, gerne über {{link}} den Kontakt aufnehmen!.",
+  "appPage.support": "Bei Fragen oder Probleme, gerne über {link} den Kontakt aufnehmen!.",
   "appPage.title.forAndroid": "Für Android:",
   "appPage.title.foriOS": "Für's iPhone/iPad:",
   "appPage.title":"Jetzt auf dem Smartphone installieren!",
@@ -87,6 +87,8 @@
   "menu.my.MyProfile" : "Mein Profil",
   "menu.myTeams": "Meine Teams",
   "menu.news": "News",
+  "menu.settings": "Einstellungen",
+  "menu.settings.general": "Allgemeines",
   "menu.settings.push": "Push Einstellungen",
   "newPost.actions.add.document" : "Dokument",
   "newPost.actions.add.image" : "Bild",
@@ -164,12 +166,12 @@
   "richEditor.actions.unorderedList" : "Liste",
   "richEditor.actions.unorderedListIcon" : "&#8226",
   "richtEditor.defaults.placeholder" : "Text...",
+  "setting.general.language": "Sprache",
   "setting.push.activities" : "Alle Aktivitäten",
   "setting.push.news" : "Team Neuigkeiten",
   "setting.push.notifications" : "Benachrichtigungen",
   "setting.push.posts" : "reguläre Posts",
   "settings.push.thisDevice": "Dieses Gerät ({name})",
   "settings.title": "Einstellung",
-
   "":""
 }

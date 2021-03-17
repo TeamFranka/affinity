@@ -23,7 +23,7 @@ function currentUser(): Model | null {
 }
 
 function setLocale(lang: string) {
-  (i18n as any).global.locale = lang;
+  i18n.global.locale.value = lang;
   dayjs.locale(lang);
 }
 
@@ -177,6 +177,11 @@ export const AuthState = {
     async setAvatar(context: any, f: Parse.File) {
       await f.save();
       const user = context.state.user.prepareSave({"avatar": f}).toParse();
+      await user.save();
+      context.commit("setUser", toModel(user));
+    },
+    async setLang(context: any, lang: string){
+      const user = context.state.user.prepareSave({lang}).toParse();
       await user.save();
       context.commit("setUser", toModel(user));
     },

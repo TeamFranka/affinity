@@ -1,16 +1,13 @@
 <template>
 <ion-list>
-    <ion-item lines="full" button @click="select({ name: 'Me' })">
-        <ion-label>{{ $t('menu.my.MyProfile') }}</ion-label>
+    <ion-item button @click="select({ name: 'Me' })">
+        <ion-label><ion-icon :icon="profileIcon"/> {{ $t('menu.my.MyProfile') }}</ion-label>
     </ion-item>
-    <!-- <ion-item button @click="select({name: 'MySettings'})">
-        <ion-label>Einstellungen</ion-label>
-    </ion-item> -->
-    <ion-item button @click="select({name: 'SettingsNotifications'})">
-        <ion-label><ion-icon :icon="notificationIcon"/> {{ $t('menu.settings.push') }}</ion-label>
+    <ion-item button @click="select({name: 'Settings'})">
+        <ion-label><ion-icon :icon="settingsIcon"/> {{ $t('menu.settings') }}</ion-label>
     </ion-item>
-    <ion-item dataCyRole="logout" button @click="logout">
-        <ion-label><ion-icon :icon="logOutIcon"/> {{ $t('menu.logout') }}</ion-label>
+    <ion-item dataCyRole="logout" button @click="logout" lines="none">
+        <ion-label color="danger"><ion-icon :icon="logOutIcon"/> {{ $t('menu.logout') }}</ion-label>
     </ion-item>
 </ion-list>
 </template>
@@ -20,8 +17,10 @@ import {
     popoverController,
 } from "@ionic/vue";
 import {
+  buildOutline as settingsIcon,
   notificationsOutline as notificationIcon,
-  logOutOutline as logOutIcon
+  logOutOutline as logOutIcon,
+  personCircleOutline as profileIcon,
 } from 'ionicons/icons';
 import { useStore } from '../stores/';
 import { defineComponent, computed } from 'vue';
@@ -39,7 +38,7 @@ export default defineComponent({
             store.dispatch("auth/logout");
             popoverController.dismiss();
         },
-        logOutIcon, notificationIcon
+        logOutIcon, notificationIcon, profileIcon, settingsIcon,
     }
   },
   methods: {
