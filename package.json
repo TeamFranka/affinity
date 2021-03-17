@@ -26,7 +26,7 @@
     "dev:ios": "ionic capacitor run ios -l --external",
     "dev:restart-parse": "npm run dev:build-parse && docker-compose stop parse && docker-compose up -d && docker-compose logs -f --tail 10 parse",
     "dev:run-parse": "docker-compose up -d && docker-compose logs -f --tail 30 parse",
-    "i18n:report": "vue-cli-service i18n:report --src \"./src/**/*.?(js|vue)\" --locales \"./src/locales/**/*.json\""
+    "i18n:report": "vue-cli-service i18n:report --src \"./src/**/*.?(js|vue)\" --locales \"./src/locales/**/*.json\" --output locales-report.json"
   },
   "dependencies": {
     "@capacitor/android": "^3.0.0-rc.0",
