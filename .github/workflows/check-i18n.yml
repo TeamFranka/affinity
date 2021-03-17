@@ -1,4 +1,4 @@
-name: E2E Test
+name: Check i18n
 on:
   pull_request:
     branches: [ main ]
