@@ -76,7 +76,7 @@ export const AuthState = {
     adminOfTeams: (state: AuthStateT) =>  state.teams?.filter(t => t && state.teamPermissions[t].isAdmin) || [],
 
     // Devices // Installations
-
+    hasPush: (state: AuthStateT) => state.installations.length > 0,
     currentInstallation: (state: AuthStateT) => state.installations.find((x) => x.installationId === state.currentInstallationId),
     otherInstallations: (state: AuthStateT) => state.installations.filter((x) => x.installationId !== state.currentInstallationId),
 
@@ -121,14 +121,12 @@ export const AuthState = {
           const params: any = i.toJSON();
           params.defaultTeamId = context.rootGetters["defaultTeamId"];
           Parse.Cloud.run("claimInstallation", params)
-          .then((i: Array<Parse.Installation>) => {
-            context.commit("setInstallations", i.map(toModel))
-          });
+            .then((i: Array<Parse.Installation>) => {
+              context.commit("setInstallations", i.map(toModel))
+            });
         });
       } else if (context.state.user) {
-        (new Parse.Query(Parse.Installation))
-          .equalTo('user', context.state.user.toPointer())
-          .findAll()
+        Parse.Cloud.run("getInstallations", {})
           .then((i: Array<Parse.Installation>) => {
             context.commit("setInstallations", i.map(toModel))
           });
