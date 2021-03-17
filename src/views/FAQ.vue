@@ -13,10 +13,10 @@
         <p>
           <img style="width:45vw" src="../statics/undraw_under_construction.svg"/>
         </p>
-        <ion-note>Under construction</ion-note>
+        <ion-note>{{ $t('generic.underConstruction') }}</ion-note>
       </div>
       <div v-if="canCreate" class="ion-text-end">
-        <ion-button @click="intendToCreate">hinzufügen</ion-button>
+        <ion-button @click="intendToCreate">{{ $t('generic.actions.add') }}</ion-button>
       </div>
       <template v-if="!loading && entries.length">
         <faq-entry
@@ -29,7 +29,7 @@
           <render-md admin :source="e.text" />
           <interaction-bar :object="e" link="">
             <template v-slot:extraButtons>
-              <ion-button @click="intendToEdit(e)" fill="clear">Editieren</ion-button>
+              <ion-button @click="intendToEdit(e)" fill="clear">{{ $t('generic.actions.edit') }}</ion-button>
             </template>
           </interaction-bar>
         </faq-entry>
@@ -38,9 +38,9 @@
           <p>
             <img style="width:45vw" src="../statics/undraw_No_data.svg"/>
         </p>
-        <ion-note>Nichts gefunden...</ion-note>
+        <ion-note>{{ $t('generic.state.empty') }}</ion-note>
         <p v-if="false">
-          <ion-button @click="intendToAskQuestion" fill="outline">Frage stellen</ion-button>
+          <ion-button @click="intendToAskQuestion" fill="outline">{{ $t('faq.actions.ask') }}</ion-button>
         </p>
       </div>
     </ion-content>

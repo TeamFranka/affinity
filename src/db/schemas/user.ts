@@ -8,6 +8,7 @@ export const User = {
         CommonFields,
         {
             email: { type: 'String' },
+            lang: { type: 'String' },
             authData: { type: 'Object' },
             password: { type: 'String' },
             username: {

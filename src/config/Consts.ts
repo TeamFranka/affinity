@@ -2,9 +2,13 @@
 import Parse from 'parse';
 import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
+import LocalizedFormat from 'dayjs/plugin/localizedFormat';
+import localeData from 'dayjs/plugin/localeData';
 import * as Models from "../db/models";
 
+dayjs.extend(LocalizedFormat)
 dayjs.extend(relativeTime);
+dayjs.extend(localeData);
 
 Parse.initialize(
     process.env.VUE_APP_PARSE_APP_ID || "",

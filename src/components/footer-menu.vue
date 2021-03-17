@@ -52,12 +52,12 @@
       <ion-row v-if="isLoggedIn" >
         <ion-col size="6">
           <ion-button fill="outline" shape="round" expand="block" size="default" color="primary">
-            <ion-icon size="large" :icon="postIcon" /> New Post
+            <ion-icon size="large" :icon="postIcon" /> {{$t('footer.extra.post')}}
           </ion-button>
         </ion-col>
         <ion-col size="6">
           <ion-button fill="outline" shape="round" expand="block" size="default" color="secondary">
-            <ion-icon :icon="newChatIcon" /> New Chat
+            <ion-icon :icon="newChatIcon" /> {{$t('footer.extra.chat')}}
           </ion-button>
         </ion-col>
       </ion-row>

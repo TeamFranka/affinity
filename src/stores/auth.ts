@@ -4,6 +4,9 @@ import { Model, toModel } from '@/utils/model';
 import { initInstallation } from '@/utils/setup';
 import { getCypressEntry } from "@/utils/env";
 import { watch } from 'vue';
+import { deviceLocale } from "@/utils/setup";
+import { dayjs } from "@/config/Consts";
+import i18n from "@/utils/i18n";
 
 export interface AuthStateT {
   wantsToLogin: boolean;
@@ -19,16 +22,33 @@ function currentUser(): Model | null {
   return u ? toModel(u): null;
 }
 
+function setLocale(lang: string) {
+  i18n.global.locale.value = lang;
+  dayjs.locale(lang);
+}
+
 export const AuthState = {
   namespaced: true,
-  state: () => ({
-    wantsToLogin: false,
-    user: currentUser(),
-    teams: [],
-    installations: [],
-    currentInstallationId: null,
-    teamPermissions: {},
-  }),
+  state: () => {
+
+    const user = currentUser();
+    if (user) {
+      setLocale(user.lang)
+    } else {
+      deviceLocale().then((l: string) => {
+        setLocale(l);
+      });
+    }
+
+    return {
+      wantsToLogin: false,
+      user,
+      teams: [],
+      installations: [],
+      currentInstallationId: null,
+      teamPermissions: {},
+    }
+  },
   getters: {
     isLoggedIn: (state: AuthStateT) => !!state.user,
     myId: (state: AuthStateT) => state.user?.objectId,
@@ -56,7 +76,7 @@ export const AuthState = {
     adminOfTeams: (state: AuthStateT) =>  state.teams?.filter(t => t && state.teamPermissions[t].isAdmin) || [],
 
     // Devices // Installations
-
+    hasPush: (state: AuthStateT) => state.installations.length > 0,
     currentInstallation: (state: AuthStateT) => state.installations.find((x) => x.installationId === state.currentInstallationId),
     otherInstallations: (state: AuthStateT) => state.installations.filter((x) => x.installationId !== state.currentInstallationId),
 
@@ -64,6 +84,9 @@ export const AuthState = {
   mutations: {
     setUser(state: AuthStateT, newUser: Model|null) {
       state.user = newUser
+      if (newUser) {
+        setLocale(newUser.lang);
+      }
     },
     setInstallations(state: AuthStateT, installations: Model[]) {
       state.installations = installations
@@ -98,14 +121,12 @@ export const AuthState = {
           const params: any = i.toJSON();
           params.defaultTeamId = context.rootGetters["defaultTeamId"];
           Parse.Cloud.run("claimInstallation", params)
-          .then((i: Array<Parse.Installation>) => {
-            context.commit("setInstallations", i.map(toModel))
-          });
+            .then((i: Array<Parse.Installation>) => {
+              context.commit("setInstallations", i.map(toModel))
+            });
         });
       } else if (context.state.user) {
-        (new Parse.Query(Parse.Installation))
-          .equalTo('user', context.state.user.toPointer())
-          .findAll()
+        Parse.Cloud.run("getInstallations", {})
           .then((i: Array<Parse.Installation>) => {
             context.commit("setInstallations", i.map(toModel))
           });
@@ -156,6 +177,11 @@ export const AuthState = {
     async setAvatar(context: any, f: Parse.File) {
       await f.save();
       const user = context.state.user.prepareSave({"avatar": f}).toParse();
+      await user.save();
+      context.commit("setUser", toModel(user));
+    },
+    async setLang(context: any, lang: string){
+      const user = context.state.user.prepareSave({lang}).toParse();
       await user.save();
       context.commit("setUser", toModel(user));
     },

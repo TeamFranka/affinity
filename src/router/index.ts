@@ -14,6 +14,8 @@ import TeamOutlet from '../views/Team/Outlet.vue';
 import ViewActivity from '../views/ViewActivity.vue';
 import ViewUser from '../views/ViewUser.vue';
 import ViewConversation from '../views/ViewConversation.vue';
+import Settings from '../views/settings/Center.vue';
+import SettingsGeneral from '../views/settings/General.vue';
 import SettingsNotifications from '../views/settings/Notifications.vue';
 import { store } from '../stores/';
 
@@ -102,6 +104,16 @@ const routes: Array<RouteRecordRaw> = [
         path: '/settings/notifications',
         name: 'SettingsNotifications',
         component: SettingsNotifications
+      },
+      {
+        path: '/settings/general',
+        name: 'SettingsGeneral',
+        component: SettingsGeneral
+      },
+      {
+        path: '/settings/',
+        name: 'Settings',
+        component: Settings
       },
       {
         path: '/',

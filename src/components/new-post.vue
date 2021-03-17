@@ -13,7 +13,7 @@
             @click="showOptions = true"
             v-if="!showOptions"
             data-cy-role="editSettings"
-          >{{visibility}} <span v-if="showTypeSelector">{{selectedType}}</span> <span v-if="showTeamSelector">to <avatar size="1.5em" :profile="selectedTeam" withName /></span><ion-button size="small" fill="clear"><ion-icon :icon="editIcon"/></ion-button></p>
+          >{{ $t(`newPost.visibilities.${visibility}`) }} <span v-if="showTypeSelector">{{selectedType}}</span> <span v-if="showTeamSelector">to <avatar size="1.5em" :profile="selectedTeam" withName /></span><ion-button size="small" fill="clear"><ion-icon :icon="editIcon"/></ion-button></p>
         </ion-col>
         <ion-col size-md="1" class="ion-hide-sm-down">
           <ion-button  data-cy="submitPost" type="submit" data-cy-role="submit" fill="outline" v-bind:disabled="!canSubmit" shape="round" size="small">
@@ -77,12 +77,12 @@
           >
             <template #label>
                 <ion-icon :icon="eyeOutline" />
-                <ion-label>Sichtbar: </ion-label>
+                <ion-label>{{$t('newPost.label.visibility')}}: </ion-label>
             </template>
             <template #current>
               <ion-label>
                 <ion-icon :icon="VISIBILITY_ICONS[visibility]"></ion-icon>
-                {{visibility}}
+                {{ $t(`newPost.visibilities.${visibility}`) }}
               </ion-label>
             </template>
             <template #item="sProps">
@@ -125,7 +125,8 @@
             <div v-if="o.className == 'Picture'" data-cy-obj="picture">
               <!-- FIXME: this renders incorrectly while saving... -->
               <ion-img v-if="o.img" :src="o.img.dataUrl" />
-              <ion-input placeholder="description"
+              <ion-input
+                :placeholder="$t('newPost.placeholder.description')"
                 @ion-change="updateObject({index, data: {description: $event.target.value}})"
                 :value="o.description"
               />
@@ -160,14 +161,14 @@
                 <ion-textarea
                   @ion-change="updateObject({index, data: {previewText: $event.target.value}})"
                   :value="o.previewText"
-                  placeholder="information about this link to preview"
+                  :placeholder="$t('newPost.placeholder.previewText')"
                 />
                 <ion-button
                   v-if="canCreateDocument"
                   @click="convertLinkToDocument(index)"
                   size="small"
                   fill="clear"
-                >zu Dokument umwandeln</ion-button>
+                >{{ $t('newPost.actions.convertToDoc') }}</ion-button>
               </div>
             </div>
             <div v-else-if="o.className == 'Document'" data-cy-obj="document">
@@ -189,7 +190,7 @@
                 <ion-textarea
                   @ion-change="updateObject({index, data: {description: $event.target.value}})"
                   :value="o.description"
-                  placeholder="description text..."
+                  :placeholder="$t('newPost.placeholder.description')"
                 />
               </div>
             </div>
@@ -209,19 +210,19 @@
             />
           <ion-chip v-if="canCreatePicture" @click="addPicture()" color="secondary" outline>
             <ion-icon :icon="imageIcon" color="secondary"></ion-icon>
-            <ion-label>Image</ion-label>
+            <ion-label>{{ $t('newPost.actions.add.image') }}</ion-label>
           </ion-chip>
           <ion-chip v-if="canCreatePoll" data-cy="addPoll" @click="addPoll()" color="secondary" outline>
             <ion-icon :icon="listIcon" color="secondary"></ion-icon>
-            <ion-label>Umfrage </ion-label>
+            <ion-label>{{ $t('newPost.actions.add.poll') }} </ion-label>
           </ion-chip>
           <ion-chip v-if="canCreateLink" data-cy="addLink" @click="addLink('addLink')" color="secondary" outline>
             <ion-icon :icon="linkIcon" color="secondary"></ion-icon>
-            <ion-label>Link</ion-label>
+            <ion-label>{{ $t('newPost.actions.add.link') }}</ion-label>
           </ion-chip>
           <ion-chip v-if="canCreateDocument" @click="addDocument()" color="secondary" outline>
             <ion-icon :icon="documentIcon" color="secondary"></ion-icon>
-            <ion-label>Dokument</ion-label>
+            <ion-label>{{ $t('newPost.actions.add.document') }}</ion-label>
           </ion-chip>
         </ion-col>
         <ion-col size-xs="2" class="ion-hide-md-up">
@@ -404,8 +405,8 @@ export default defineComponent({
 
       const alert = await alertController
         .create({
-          header: 'Link anhängen',
-          message: 'Welchen Link möchtest Du anhängen?',
+          header: this.$t('newPost.addLink.header'),
+          message: this.$t('newPost.addLink.message'),
           inputs: [
             {
               name: "link",
@@ -415,12 +416,12 @@ export default defineComponent({
           ],
           buttons: [
             {
-              text: 'Abbrechen',
+              text: this.$t('newPost.addLink.buttons.cancel'),
               role: 'cancel',
               cssClass: 'secondary',
             },
             {
-              text: 'Anhängen',
+              text: this.$t('newPost.addLink.buttons.add'),
               handler: async (data) => {
                 const { link } = data;
                 this.store.dispatch(`draft/${target}`, link);
@@ -437,7 +438,7 @@ export default defineComponent({
           component: EditPoll,
           componentProps: {
             poll: poll,
-            saveLabel: "Speichern",
+            saveLabel: this.$t('generic.buttons.save'),
           },
         })
       await modal.present();
