@@ -5,7 +5,7 @@
         <p>
           <img style="width:45vw" src="../statics/undraw_authentication.svg"/>
         </p>
-        <ion-note>You need to login to access this</ion-note>
+        <ion-note>{{ $t('login.loginRequired') }}</ion-note>
       </div>
     </ion-content>
   </ion-page>

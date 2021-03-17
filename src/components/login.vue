@@ -105,7 +105,7 @@
           color="medium"
           class="ion-hide-sm-down"
         >
-          {{$t('auth.button.resetPasswort')}}
+          {{$t('auth.button.resetPassword')}}
         </ion-button>
         <ion-button
           data-cy-role="loginSubmit"

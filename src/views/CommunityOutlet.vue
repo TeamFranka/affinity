@@ -7,14 +7,14 @@
           <ion-content>
             <ion-list lines="none">
               <ion-item-group>
-                <ion-item><router-link :to="{name: 'News'}"><ion-icon :icon="homeIcon" /> News</router-link></ion-item>
-                <ion-item><router-link :to="{name: 'FAQ'}"><ion-icon :icon="faqIcon" /> Info</router-link></ion-item>
-                <ion-item><router-link :to="{name: 'Feed'}"><ion-icon :icon="feedIcon" /> Feed</router-link></ion-item>
-                <ion-item v-if="false"><router-link :to="{name: 'News'}"><ion-icon :icon="activitiesIcon" /> Activities</router-link></ion-item>
+                <ion-item><router-link :to="{name: 'News'}"><ion-icon :icon="homeIcon" /> {{ $t('menu.news') }}</router-link></ion-item>
+                <ion-item><router-link :to="{name: 'FAQ'}"><ion-icon :icon="faqIcon" /> {{ $t('menu.info') }}</router-link></ion-item>
+                <ion-item><router-link :to="{name: 'Feed'}"><ion-icon :icon="feedIcon" /> {{ $t('menu.feed') }}</router-link></ion-item>
+                <ion-item v-if="false"><router-link :to="{name: 'News'}"><ion-icon :icon="activitiesIcon" /> {{ $t('menu.activities') }}</router-link></ion-item>
               </ion-item-group>
               <ion-item-group v-if="showTeamSubmenu">
                 <ion-item-divider>
-                  <ion-label>Meine Teams</ion-label>
+                  <ion-label>{{ $t('menu.myTeams') }}</ion-label>
                 </ion-item-divider>
                 <ion-item v-for="t in teams" :key="t.objectId">
                   <router-link :to="{name: 'ViewTeam', params:{teamSlug:t.slug}}">
