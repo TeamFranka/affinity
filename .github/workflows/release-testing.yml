@@ -43,3 +43,13 @@ jobs:
           start: npm run serve
           # quote the url to be safe against YML parsing surprises
           wait-on: 'http://localhost:8080'
+      - uses: actions/upload-artifact@v2
+        if: failure()
+        with:
+          name: 'Test Error Screenshots'
+          path: test/e2e/screenshots
+      - uses: actions/upload-artifact@v2
+        if: failure()
+        with:
+          name: 'Test Error Recordings'
+          path: test/e2/videos
