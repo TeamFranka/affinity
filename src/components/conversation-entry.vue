@@ -5,7 +5,7 @@
         </div>
         <avatar v-else :profile="convo.participants[0]" />
     </div>
-    <ion-label>
+    <ion-label :data-cy="convoKey">
         <h2>
             {{convoName}}
         </h2>
@@ -56,6 +56,15 @@ export default defineComponent({
             return ""
         }
         return since(msg.createdAt)
+    },
+    convoKey(): string {
+        if (this.isTeamChat) {
+            return `teamchat-${this.convo.team.slug}-${this.convo.among}`
+        } else if (this.isSharedInbox) {
+            return `sharedinbox-${this.convo.team.slug}-${this.convo.participants[0].username}`
+        } else {
+            return this.team.name
+        }
     },
     convoName(): string {
         if (this.isTeamChat) {
