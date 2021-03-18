@@ -9,7 +9,7 @@
     >
       <ion-label>{{r.key}} {{r.count}}</ion-label>
     </ion-chip>
-    <ion-button @click="selectEmoji" v-if="canReact" fill="clear" color="medium">
+    <ion-button @click="selectEmoji" v-if="canReact" fill="clear" color="medium" class="plusButton">
       <ion-icon :icon="plusIcon" size="small"/>
     </ion-button>
 </template>
@@ -102,5 +102,22 @@ export default defineComponent({
 })
 </script>
 <style scoped>
-
+.plusButton{
+  -webkit-font-smoothing: antialiased;
+  margin: 4px;
+  padding: 7px 1px;
+  display: inline-flex;
+  position: relative;
+  align-items: center;
+  height: 32px;
+  background: var(--background);
+  color: var(--color);
+  font-family: var(--ion-font-family, inherit);
+  font-size: 14px;
+  line-height: 1;
+  cursor: pointer;
+  overflow: hidden;
+  vertical-align: middle;
+  border: 1px solid #c1c1c1;
+}
 </style>
