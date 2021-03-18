@@ -224,6 +224,7 @@ jobs:
           VUE_APP_PARSE_MASTER_KEY: ${{ secrets.VUE_APP_PARSE_MASTER_KEY}}
           VUE_APP_PARSE_URL: ${{ secrets.VUE_APP_PARSE_URL}}
           VUE_APP_PARSE_LIVE_URL: ${{ secrets.VUE_APP_PARSE_LIVE_URL }}
+          VUE_APP_I18N_LOCALE: de
       - name: Deploy Cloud Code & Apps
         run: |
           cd backend

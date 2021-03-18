@@ -17,7 +17,6 @@ describe('Visiting the public feed', () => {
   })
   it.skip('Can endless scroll', () => {
     // FIXME scrolling doesn't work.
-    const testStr = "Willkommen euch allen!";
     cy.visit('/feed')
 
     // there is an element with the default sentence

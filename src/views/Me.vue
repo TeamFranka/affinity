@@ -10,7 +10,7 @@
           </ion-button>
         </div>
         <div data-cy="my-teams">
-          <h2>You are a member of</h2>
+          <h2>{{ $t("me.membership.title") }}</h2>
           <router-link
               v-for="t in myTeams"
               :key="t.id"

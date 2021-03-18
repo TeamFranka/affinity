@@ -23,6 +23,7 @@ tests/e2e/videos
 *.log
 log.txt
 npm-debug.log*
+locales-report.json
 
 /android/.idea
 /.idea

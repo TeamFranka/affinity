@@ -46,7 +46,7 @@ export default defineComponent({
     },
     disabled: Boolean,
   },
-  setup(props) {
+  setup() {
     const showPopover = ref(false);
     const event = ref();
     const toggleOpen = (state, evt) => {

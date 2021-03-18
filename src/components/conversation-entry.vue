@@ -5,7 +5,7 @@
         </div>
         <avatar v-else :profile="convo.participants[0]" />
     </div>
-    <ion-label>
+    <ion-label :data-cy="convoKey">
         <h2>
             {{convoName}}
         </h2>
@@ -27,13 +27,6 @@ import { since } from "../utils/time";
 import { defineComponent } from 'vue';
 import { useStore } from '../stores/';
 import Avatar from "./avatar.vue";
-
-const TEAM_CONVO_NAMES: Record<string, string> = {
-    'leaders': 'Leaders',
-    'publishers': 'Publishers',
-    'mods': 'Moderators',
-    'agents': 'Agents',
-};
 
 export default defineComponent({
   name: 'conversation-entry',
@@ -64,9 +57,18 @@ export default defineComponent({
         }
         return since(msg.createdAt)
     },
+    convoKey(): string {
+        if (this.isTeamChat) {
+            return `teamchat-${this.convo.team.slug}-${this.convo.among}`
+        } else if (this.isSharedInbox) {
+            return `sharedinbox-${this.convo.team.slug}-${this.convo.participants[0].username}`
+        } else {
+            return this.team.name
+        }
+    },
     convoName(): string {
         if (this.isTeamChat) {
-            return `${this.convo.team.name} ${TEAM_CONVO_NAMES[this.convo.among]}`
+            return this.$t(`conversation.title.${this.convo.among}`, {teamName: this.convo.team.name});
         } else if (this.isSharedInbox) {
             return this.convo.participants[0].name
         } else {

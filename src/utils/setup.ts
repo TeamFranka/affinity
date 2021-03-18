@@ -1,22 +1,26 @@
 import Parse from 'parse';
 import { PushNotifications, Token } from '@capacitor/push-notifications';
 import { Device } from '@capacitor/device';
+import { Capacitor } from '@capacitor/core';
 import { App as AppInfo } from '@capacitor/app';
 import { popCypressEntry, getCypressEntry } from "@/utils/env";
 
 export function isMobileInstallation() {
   if (getCypressEntry('isMobile')) { return true }
-  // isPlatform("mobile") should do, but it doesn't detect installations correctly
-  // so we do the lucky guess, that when 'hosted' locally, we are _inside_ the app.
-  // however, this also falls true for the development environment _shrugs_
-  return document.location.hostname === "localhost"
+  return Capacitor.isNativePlatform()
+}
+
+export async function deviceLocale(): Promise<string> {
+  return Device.getLanguageCode().then((x)=> x.value)
 }
 
 export async function generateInstallation(opts: any): Promise<Parse.Installation> {
+  const localeIdentifier = await deviceLocale();
   const deviceInfo = await Device.getInfo();
   const appInfo = await AppInfo.getInfo();
   const install = new Parse.Installation();
   install.set({
+    localeIdentifier,
     "deviceName": deviceInfo.name,
     "deviceModel": deviceInfo.model,
     "appIdentifier": appInfo.id,
@@ -35,8 +39,8 @@ export async function generateInstallation(opts: any): Promise<Parse.Installatio
 export function setupNotificationActions(
   onNotification: any, onNotificationAction: any
 ) {
-  if (!isMobileInstallation()) {
-    console.log("Not a mobile device with push notification support");
+  if (!Capacitor.isPluginAvailable("PushNotifications")) {
+    console.log("No push notification support");
     return;
   }
   if (onNotification) {

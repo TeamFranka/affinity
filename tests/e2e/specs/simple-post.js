@@ -45,7 +45,7 @@ describe('Posting to the feed as regular User', () => {
     cy.get('ion-alert').within(() => {
         cy.wait(500)
         cy.get('input[type=url]').type(link);
-        cy.get('button').contains('Anhängen').click();
+        cy.get('button').last().click();
     });
 
     cy.get('[data-cy=newPost]').scrollIntoView().within(() => {

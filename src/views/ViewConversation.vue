@@ -23,7 +23,7 @@
     </ion-content>
     <ion-footer>
         <inline-text
-          placeholder="Nachricht schreiben"
+          :placeholder="$t('conversation.placeholder.writeMessage')"
           :value="currentMessage"
           :canSubmit="currentMessage.length > 0"
           @changed="currentMessage = $event"

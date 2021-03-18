@@ -1,7 +1,7 @@
 <template>
   <ion-page>
     <ion-content>
-        <h2><ion-icon :icon="notificationIcon" /> Einstellungen</h2>
+        <h2><ion-icon :icon="notificationIcon" /> {{ $t('settings.title') }}</h2>
         <push-notification-setting
           :title="currentDeviceTitle"
           :channels="currentDevice.channels"
@@ -27,13 +27,6 @@ import { defineComponent, computed } from 'vue';
 import { useStore } from '@/stores/';
 import PushNotificationSetting from '@/components/settings/push-notification.vue';
 
-const TEAM_FIELDS = [
-  {key: 'news', title: 'Team Neuigkeiten'},
-  {key: 'notifications', title: 'Pings an mich'},
-  {key: 'posts', title: 'Community Beiträge'},
-  {key: 'activities', title: 'Community Aktivitäten'},
-]
-
 export default defineComponent({
   name: 'NotificationSettings',
   setup() {
@@ -46,14 +39,13 @@ export default defineComponent({
         store.dispatch("auth/updateInstallation", installation.prepareSave({channels}).toParse());
       },
       teams: computed(() => store.getters["auth/teamPointers"].map((x: any) => store.getters['objectsMap'][x.objectId])),
-      fields: TEAM_FIELDS,
       notificationIcon, logoWhatsapp, uploadIcon: cloudUploadOutline
     }
   },
   computed: {
     currentDeviceTitle(): string {
       if (!this.currentDevice) return "";
-      return  `Dieses Gerät (${this.currentDevice.deviceName || this.currentDevice.deviceModel})`
+      return  this.$t("settings.push.thisDevice", {name: this.currentDevice.deviceName || this.currentDevice.deviceModel});
     }
   },
   components: {

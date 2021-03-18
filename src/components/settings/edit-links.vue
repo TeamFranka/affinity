@@ -2,7 +2,7 @@
   <ion-header>
     <ion-toolbar>
       <ion-title>
-        Links ändern
+        {{ $t("admin.editLinks.title") }}
       </ion-title>
       <ion-button
         color="dark"
@@ -46,7 +46,7 @@
       <ion-item>
         <ion-button @click="addOption" fill="outline">
           <ion-icon :icon="addIcon" />
-          weitere hinzufügen
+          {{ $t("admin.editLinks.button.add") }}
         </ion-button>
       </ion-item>
     </ion-list>
@@ -55,7 +55,7 @@
     <ion-toolbar>
       <ion-button fill="outline" :disabled='!canSubmit' @click="saveAndClose" slot="end">
         <ion-icon :icon="saveIcon" />
-        <ion-label> {{saveLabel || "Speichern"}}</ion-label>
+        <ion-label> {{ saveLabel || $t("admin.editLinks.button.save") }}</ion-label>
       </ion-button>
     </ion-toolbar>
   </ion-footer>
@@ -63,7 +63,7 @@
 <script lang="ts">
 import {
   IonContent, IonHeader, IonToolbar, IonInput, IonIcon, IonButton, modalController,
-  IonFooter, IonLabel, IonToggle, IonItem, IonList, IonTitle, popoverController
+  IonFooter, IonLabel, IonItem, IonList, IonTitle, popoverController
 } from '@ionic/vue';
 import {
   closeOutline as closeIcon,
@@ -85,7 +85,6 @@ export default defineComponent({
   props: {
     saveLabel: {
       type: String,
-      default: "Speichern"
     },
     platforms: {
       type: Array,
