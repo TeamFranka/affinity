@@ -30,11 +30,12 @@ import { isMobileInstallation, setupNotificationActions } from '@/utils/setup';
 import { ActionPerformed, PushNotificationSchema } from '@capacitor/push-notifications';
 
 import { useStore } from '../stores/';
+import i18n from "@/utils/i18n";
 
 import { codePush } from 'capacitor-codepush';
 import { App, AppState } from '@capacitor/app';
 
-if (isPlatform('mobile') && !isPlatform('mobileweb')) {
+if (isMobileInstallation()) {
   App.addListener('appStateChange', (state: AppState) => {
     // state.isActive contains the active state
     if (state.isActive) {
@@ -83,7 +84,7 @@ export default defineComponent({
       if (newVal && newVal != oldVal) {
         const toast = await toastController
           .create({
-            message: `Willkommen zurück, ${newVal.username} 👋!`,
+            message: i18n.global.t("auth.toast.welcome_back", {name: newVal.name || newVal.username}),
             color: "success",
             duration: 3000
           })
@@ -91,9 +92,10 @@ export default defineComponent({
 
       } else if (!newVal) {
         location.reload();
+        const message =  i18n.global.t("auth.toast.logged_out");
         const toast = await toastController
           .create({
-            message: `Erfolgreich ausgeloggt`,
+            message,
             duration: 2000
           })
         return toast.present();
@@ -129,20 +131,22 @@ export default defineComponent({
       const buttons: any[] = [];
 
       if (isPlatform('android')) {
+        const text = this.$t("install.toast.action");
         buttons.push({
             side: 'end',
             // icon: 'android',
-            text: 'Installieren',
+            text,
             handler: () => {
               window.open(ANDROID_INSTALL_URL)
             }
           }
         )
       } else if (isPlatform('ios')) {
+        const text = this.$t("install.toast.action");
         buttons.push({
             side: 'end',
             // icon: 'apple',
-            text: 'Installieren',
+            text,
             handler: () => {
               window.open(IOS_INSTALL_URL)
             }
@@ -151,9 +155,10 @@ export default defineComponent({
       }
 
       if (buttons.length == 0) {
+        const text = this.$t("install.toast.more");
         buttons.push({
           side: 'end',
-          text: 'Mehr erfahren',
+          text,
           handler: () => {
             this.$router.push({name: "App"})
           }
@@ -166,10 +171,10 @@ export default defineComponent({
         text: 'x',
       });
 
-
+      const message =  this.$t("install.toast.header");
       const toast = await toastController
         .create({
-          header: "Jetzt die mobile App Beta ausprobieren!",
+          message,
           position: 'top',
           duration: 0,
           buttons: buttons as any[],

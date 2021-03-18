@@ -6,7 +6,7 @@
             </ion-button>
             <ion-searchbar
                 show-cancel-button="focus"
-                placeholder="Emoji durchsuchen"
+                :placeholder="$t('emoji.search.placeholder')"
                 inputmode="search"
                 enterkeyhint="search"
                 :value="searchValue"
