@@ -5,10 +5,10 @@
         <ion-list-header>
           <ion-segment @ion-change="selectedSegment = $event.target.value" :value="selectedSegment">
               <ion-segment-button value="convos">
-                <ion-label>Conversations</ion-label>
+                <ion-label>{{ $t('inbox.tabs.conversation') }}</ion-label>
               </ion-segment-button>
                 <ion-segment-button value="notifications">
-                <ion-label>Notifications</ion-label>
+                <ion-label>{{ $t('inbox.tabs.notifications') }}</ion-label>
               </ion-segment-button>
           </ion-segment>
         </ion-list-header>
@@ -20,7 +20,7 @@
             <p>
               <img style="width:45vw" src="../statics/undraw_empty.svg"/>
             </p>
-            <ion-note>No Messages</ion-note>
+            <ion-note>{{ $t('inbox.state.noConversation') }}</ion-note>
           </div>
           <ion-item
             button
@@ -40,7 +40,7 @@
             <p>
               <img style="width:45vw" src="../statics/undraw_empty.svg"/>
             </p>
-            <ion-note>No Notifications</ion-note>
+            <ion-note>{{ $t('inbox.state.noNotifications') }}</ion-note>
           </div>
           <ion-item
             button
@@ -50,22 +50,37 @@
             lines="none"
             >
             <avatar size="2em" with-name :profile="n.by" />
-            <div v-if="n.verb == 'react'"
+            <i18n-t
+              v-if="n.verb == 'react'"
+              keypath="inbox.notifications.reacted"
+              tag="div"
               class="ion-padding-start"
             >
-              reacted with {{(n.specifics||{})["reaction"]}}
-              on <object-link mine :object="n.objects[0]" />
-            </div>
-            <div v-else-if="n.verb == 'like'"
+              <template slot:reaction>{{(n.specifics||{})["reaction"]}}</template>
+              <template slot:objectLink>
+                <object-link mine :object="n.objects[0]" />
+              </template>
+            </i18n-t>
+            <i18n-t
+              tag="div"
+              keypath="inbox.notifications.liked"
+              v-else-if="n.verb == 'like'"
               class="ion-padding-start"
             >
-              ❤️ <object-link mine :object="n.objects[0]" />
-            </div>
-            <div v-else-if="n.verb == 'comment'"
+              <template slot:objectLink>
+                <object-link mine :object="n.objects[0]" />
+              </template>
+            </i18n-t>
+            <i18n-t
+              tag="div"
+              keypath="inbox.notifications.commented"
+              v-else-if="n.verb == 'comment'"
               class="ion-padding-start"
             >
-              kommentierte <object-link mine :object="n.objects[0]" />
-            </div>
+              <template slot:objectLink>
+                <object-link mine :object="n.objects[0]" />
+              </template>
+            </i18n-t>
             <div v-else>
               {{n}}
             </div>

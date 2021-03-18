@@ -1,4 +1,4 @@
-name: E2E Test
+name: Check i18n
 on:
   pull_request:
     branches: [ main ]
@@ -32,24 +32,12 @@ jobs:
       - name: Install dependencies
         run: npm install
       # Runs
-      - name: Check docker
-        run: docker ps -a && docker-compose logs --tail 10
-      - name: Set up DB
-        run: 'npm run ci:setup-db'
-      - name: Running e2e with cypress
-        uses: cypress-io/github-action@v2
-        with:
-          ## FIXME: run this against the locally deployed version?
-          start: npm run serve
-          # quote the url to be safe against YML parsing surprises
-          wait-on: 'http://localhost:8080'
-      - uses: actions/upload-artifact@v2
-        if: failure()
-        with:
-          name: 'Test Error Screenshots'
-          path: test/e2e/screenshots
-      - uses: actions/upload-artifact@v2
-        if: failure()
-        with:
-          name: 'Test Error Recordings'
-          path: test/e2/videos
+      - name: i18n report
+        run: npm run i18n:report
+      - name: Check for missing translations for en and de
+        run: |
+          all=`jq --compact-output '.missingKeys [] .language as $lang | .missingKeys [] .path as $path | {lang: $lang, path: $path}'  < locales-report.json`
+          en=`echo $all | grep -v '${' | grep  "lang":"en" | wc -l`
+          de=`echo $all | grep -v '${' | grep  "lang":"de" | wc -l`
+          if [ $en -ne 0 ]; then echo "Missing en translations"; exit 1; fi
+          if [ $de -ne 0 ]; then echo "Missing de translations"; exit 1; fi

@@ -1,7 +1,7 @@
 <template>
   <ion-header>
     <ion-toolbar>
-      <ion-title>Unterteam erstellen</ion-title>
+      <ion-title>{{ $t("admin.createSubteam.title") }}</ion-title>
       <ion-button
         color="dark"
         fill="clear"
@@ -14,7 +14,7 @@
   </ion-header>
   <ion-content>
     <ion-item>
-      <ion-label position="stacked">Name</ion-label>
+      <ion-label position="stacked">{{ $t("admin.createSubteam.label.name") }}</ion-label>
       <ion-input
         data-cy-role="name"
         :value="name"
@@ -23,7 +23,7 @@
       />
     </ion-item>
     <ion-item>
-      <ion-label position="stacked">Slug</ion-label>
+      <ion-label position="stacked">{{ $t("admin.createSubteam.label.slug") }}</ion-label>
       <ion-input
         data-cy-role="slug"
         required
@@ -31,7 +31,7 @@
         @ion-change="setSlug($event.target.value)"
       />
     </ion-item>
-      <ion-label>Details</ion-label>
+      <ion-label>{{ $t("admin.createSubteam.label.details") }}</ion-label>
       <rich-editor
         :isAdminMd="true"
         :enabledActions="AllActions"
@@ -43,7 +43,7 @@
     <ion-toolbar>
       <ion-button data-cy-role="submit" fill="outline" @click="saveAndClose" slot="end">
         <ion-icon :icon="saveIcon" />
-        <ion-label>Erstelllen</ion-label>
+        <ion-label>{{ $t("admin.createSubteam.button.create") }}</ion-label>
       </ion-button>
     </ion-toolbar>
   </ion-footer>

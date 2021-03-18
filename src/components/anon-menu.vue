@@ -1,10 +1,10 @@
 <template>
 <ion-list data-cy="anon-menu">
     <ion-item dataCyRole="login" button @click="login">
-        <ion-label><ion-icon :icon="logInIcon"/> Anmelden</ion-label>
+        <ion-label><ion-icon :icon="logInIcon"/> {{ $t('menu.auth.login') }}</ion-label>
     </ion-item>
     <ion-item button data-cy="push-settings-link" @click="select({name: 'SettingsNotifications'})">
-        <ion-label><ion-icon :icon="notificationIcon"/> Push-Einstellungen</ion-label>
+        <ion-label><ion-icon :icon="notificationIcon"/> {{ $t('menu.settings.push') }}</ion-label>
     </ion-item>
 </ion-list>
 </template>

@@ -16,15 +16,15 @@
       </ion-item-divider>
       <ion-item
         v-for="entry in fields"
-        :key="entry.key"
-        :data-cy-channel="entry.key"
+        :key="entry"
+        :data-cy-channel="entry"
       >
         <ion-toggle
           slot="start"
-          @ion-change="entryToggle($event.detail.checked, t, entry.key)"
-          :checked="checked[`${t.objectId}:${entry.key}`]"
+          @ion-change="entryToggle($event.detail.checked, t, entry)"
+          :checked="checked[`${t.objectId}:${entry}`]"
         />
-        <ion-label>{{entry.title}}</ion-label>
+        <ion-label>{{$t(`setting.push.${entry}`)}}</ion-label>
       </ion-item>
     </ion-item-group>
   </ion-list>
@@ -42,10 +42,10 @@ import { useStore } from '@/stores/';
 import { defineComponent, computed } from 'vue';
 
 const TEAM_FIELDS = [
-  {key: 'news', title: 'Team Neuigkeiten'},
-  {key: 'notifications', title: 'Pings an mich'},
-  {key: 'posts', title: 'Community Beiträge'},
-  {key: 'activities', title: 'Community Aktivitäten'},
+  'news',
+  'notifications',
+  'posts',
+  'activities',
 ]
 
 export default defineComponent({

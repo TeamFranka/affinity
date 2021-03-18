@@ -5,7 +5,7 @@
         :value="title"
         name="title"
         @ion-change="title = $event.target.value"
-        placeholder="Umfragen-Titel"
+        :placeholder="$t('poll.title')"
       />
       <ion-button
         color="dark"
@@ -24,7 +24,7 @@
           <rich-editor
             :startText="text"
             @change="(v) => text = v"
-            placeholder="Give further context"
+            :placeholder="$t('poll.context.placeholder')"
           />
         </ion-col>
       </ion-row>
@@ -32,7 +32,7 @@
         <ion-col>
           <ion-list>
             <ion-list-header>
-              Optionen
+              {{ $t('poll.options.title') }}
             </ion-list-header>
             <ion-item v-for="(e, index) in options" :key="e">
               <ion-icon slot="start" :icon="listIcon" />
@@ -42,13 +42,13 @@
                   :name="`opt-${index}-title`"
                   required
                   @ion-change="e.title = $event.target.value"
-                  placeholder="Optionstitel"
+                  :placeholder="$t('poll.options.title.placeholder')"
                 />
                 <ion-input
                   :value="e.text"
                   :name="`opt-${index}-desc`"
                   @ion-change="e.text = $event.target.value"
-                  placeholder="optionale Beschreibung"
+                  :placeholder="$t('poll.options.desc.placeholder')"
                 />
               </div>
               <ion-button
@@ -64,7 +64,7 @@
             <ion-item>
               <ion-button @click="addOption" data-cy="addOption" fill="outline">
                 <ion-icon :icon="addIcon" />
-                weitere hinzufügen
+                {{ $t('poll.button.addOption') }}
               </ion-button>
             </ion-item>
           </ion-list>
@@ -72,7 +72,7 @@
       </ion-row>
       <ion-row>
         <ion-col size-sm="12">
-          Einstellungen:
+          {{ $t('poll.settings.title') }}
         </ion-col>
         <ion-col size-sm="12">
           <ion-item>
@@ -80,7 +80,7 @@
               :checked="isMultiselect"
               @ion-change="isMultiselect = !isMultiselect"
             />
-            <ion-label>Mehrfach-Antwort erlauben</ion-label>
+            <ion-label>{{ $t('poll.settings.label.multiselect') }}</ion-label>
           </ion-item>
         </ion-col>
         <ion-col size-sm="12">
@@ -89,7 +89,7 @@
               :checked="isAnonymous"
               @ion-change="isAnonymous = !isAnonymous"
             />
-            <ion-label>Anonyme Abstimmung</ion-label>
+            <ion-label>{{ $t('poll.settings.label.anon') }}</ion-label>
           </ion-item>
         </ion-col>
         <ion-col size-sm="12">
@@ -99,7 +99,7 @@
               :checked="allowChange"
               @ion-change="allowChange = !allowChange"
             />
-            <ion-label>Antwort kann geändert werden</ion-label>
+            <ion-label>{{ $t('poll.settings.label.allowChange') }}</ion-label>
           </ion-item>
         </ion-col>
         <ion-col size-sm="12">
@@ -108,7 +108,7 @@
               :checked="showResults"
               @ion-change="showResults = !showResults"
             />
-            <ion-label>Zwischenergebnis anzeigen</ion-label>
+            <ion-label>{{ $t('poll.settings.label.showResults') }}</ion-label>
           </ion-item>
         </ion-col>
         <ion-col size-sm="12">
@@ -118,15 +118,15 @@
               :checked="showsResultsWithoutVote"
               @ion-change="showsResultsWithoutVote = !showsResultsWithoutVote"
             />
-            <ion-label>ZW-Ergenbisanzeigen ohne Abstimmmung  </ion-label>
+            <ion-label>{{ $t('poll.settings.label.showsResultsWithoutVote') }}</ion-label>
           </ion-item>
         </ion-col>
         <ion-col size-sm="12" style="display: flex">
           <ion-item class="ion-padding-start">
-            <ion-label>schließt automatisch...</ion-label>
+            <ion-label>{{ $t('poll.settings.label.closeAutomatically') }}</ion-label>
             <ion-datetime
               display-format="D MMM YYYY H:mm"
-              placeholder="(opt) Schließt..."
+              :placeholder="$t('poll.settings.placeholder.closeAutomatically')"
               :min="(new Date()).toISOString()"
               :value="closesAt"
               @ion-change="closesAt = $event.target.value"
@@ -155,7 +155,7 @@
         slot="end"
       >
         <ion-icon :icon="saveIcon" />
-        <ion-label> {{saveLabel || "Save"}}</ion-label>
+        <ion-label> {{saveLabel || $t('poll.button')}}</ion-label>
       </ion-button>
     </ion-toolbar>
   </ion-footer>
