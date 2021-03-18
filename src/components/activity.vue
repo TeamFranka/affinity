@@ -65,7 +65,7 @@
       <div v-if="obj.className == 'Poll'" data-cy-obj="poll">
         <poll :poll="obj" />
       </div>
-      <div v-else-if="obj.className == 'Picture'" data-cy-obj="picture">
+      <div v-else-if="obj.className == 'Picture'" data-cy-obj="picture" class="picture">
         <ion-img :src="obj.file.url" />
       </div>
       <div v-else-if="obj.className == 'Link'" data-cy-obj="link" class="link-preview" >
@@ -233,5 +233,18 @@ ion-card-header {
 }
 .link-preview {
   display: flex;
+}
+@media only screen and (min-width: 800px) {
+  .picture {
+    height: 600px;
+    width: 100%;
+  }
+
+  .picture ion-img {
+    width: auto;
+    height: 100%;
+  }
+
+
 }
 </style>

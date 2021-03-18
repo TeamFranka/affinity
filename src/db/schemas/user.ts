@@ -18,6 +18,7 @@ export const User = {
             name: { type: 'String' },
             avatar: { type: 'File' },
             settings: { type: 'Object' },
+            emailVerified: { type: 'Boolean' },
         }),
 	indexes: {
         username_1: {
