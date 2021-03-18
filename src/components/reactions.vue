@@ -118,6 +118,10 @@ export default defineComponent({
   cursor: pointer;
   overflow: hidden;
   vertical-align: middle;
+}
+
+.plusButton:hover, .plusButton:focus {
   border: 1px solid #c1c1c1;
 }
+
 </style>
