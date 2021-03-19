@@ -81,6 +81,7 @@ export default defineComponent({
     if (store.state.auth.wantsToLogin) { updateLoginModal(true, false) }
 
     watch(() => store.state.auth.user, async (newVal, oldVal) => {
+      alert(JSON.stringify(newVal));
       if (newVal && newVal != oldVal) {
         const toast = await toastController
           .create({
