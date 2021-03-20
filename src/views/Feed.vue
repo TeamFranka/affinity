@@ -1,5 +1,11 @@
 <template>
   <ion-page>
+     <ion-fab vertical="bottom" horizontal="end" slot="fixed">
+     <ion-fab-button  color="primary" v-if="canPost" @click="createPost(canPostInTeams)">
+        <ion-icon size="small" :icon="editIcon"/>
+     </ion-fab-button>
+    </ion-fab>
+
     <ion-content data-cy="activity-feed">
       <div class="wrap">
         <ion-card v-if="canPost">
@@ -36,8 +42,9 @@ import {
   IonPage, IonContent, IonSpinner, IonCard, IonCardContent,
   IonInfiniteScroll,
   IonInfiniteScrollContent,
+  modalController
 } from '@ionic/vue';
-import { chatbubbles, heartOutline, addOutline, mailOutline, caretForwardOutline } from 'ionicons/icons';
+import { chatbubbles, heartOutline, addOutline, mailOutline, caretForwardOutline,createOutline as editIcon } from 'ionicons/icons';
 import { defineComponent, computed } from 'vue';
 import { useStore } from '../stores/';
 import Activity from "../components/activity.vue";
@@ -60,11 +67,28 @@ export default defineComponent({
         store.dispatch("feed/loadMore").then(() => {(ev.target as any).complete()})
       },
       chatbubbles, like: heartOutline, mail: mailOutline, plus: addOutline,
-      teamSplitter: caretForwardOutline, store
+      teamSplitter: caretForwardOutline, store,editIcon
     }
   },
   methods:{
+    async createPost (canPostInTeams: any) {
+      const popover = await modalController
+        .create({
+          component: NewPost,
+           cssClass:'modalCss',
+           componentProps: {
+           teams:canPostInTeams,
+           isPopup:true
+          },
+        });
+      popover.present();
+      const result = await popover.onDidDismiss();
+      if (result.data) {
+        console.log("result",result);
+      }
+    },
   },
+
   components: {
     IonContent, IonPage, IonSpinner, IonCard, IonCardContent,
     IonInfiniteScroll, IonInfiniteScrollContent,

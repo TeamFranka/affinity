@@ -1,21 +1,38 @@
 <template>
   <form @submit="submit" >
+    <ion-header v-if="isPopup">
+   <ion-toolbar>
+    <ion-buttons slot="start" class="back-button">
+        <ion-back-button @click="closeModal"/>
+      </ion-buttons>
+      <ion-title>
+       Create a Post
+      </ion-title>
+      <ion-button slot="end" type="submit" data-cy="submitPost" data-cy-role="submit" fill="outline" v-bind:disabled="!canSubmit"
+       shape="round" size="small">
+        <ion-icon :icon="sendIcon"></ion-icon>
+      </ion-button> 
+    </ion-toolbar>
+  </ion-header>
+
     <ion-grid class="new-post" data-cy="newPost">
       <ion-row>
-        <ion-col size-md="11" size-xs="10">
+         <ion-col size-md="11" size-xs="10" :class="!isPopup ? '' : 'wrapper-container'"> 
+          <div :class="!isPopup ? '' :'container'">
           <rich-editor
             ref="editor"
             :enabledActions="richActions"
             :startText="text"
             @change="updateText"
           ></rich-editor>
+          </div>
           <p
             @click="showOptions = true"
             v-if="!showOptions"
             data-cy-role="editSettings"
           >{{ $t(`newPost.visibilities.${visibility}`) }} <span v-if="showTypeSelector">{{selectedType}}</span> <span v-if="showTeamSelector">to <avatar size="1.5em" :profile="selectedTeam" withName /></span><ion-button size="small" fill="clear"><ion-icon :icon="editIcon"/></ion-button></p>
         </ion-col>
-        <ion-col size-md="1" class="ion-hide-sm-down">
+        <ion-col size-md="1" class="ion-hide-sm-down" v-if="!isPopup">
           <ion-button  data-cy="submitPost" type="submit" data-cy-role="submit" fill="outline" v-bind:disabled="!canSubmit" shape="round" size="small">
             <ion-icon :icon="sendIcon"></ion-icon>
           </ion-button>
@@ -225,7 +242,7 @@
             <ion-label>{{ $t('newPost.actions.add.document') }}</ion-label>
           </ion-chip>
         </ion-col>
-        <ion-col size-xs="2" class="ion-hide-md-up">
+        <ion-col size-xs="2" class="ion-hide-md-up"  v-if="!isPopup">
           <ion-button type="submit" data-cy="submitPost" data-cy-role="submit" fill="outline" v-bind:disabled="!canSubmit" shape="round" size="small">
             <ion-icon :icon="sendIcon"></ion-icon>
           </ion-button>
@@ -289,6 +306,10 @@ export default defineComponent({
       type: Array,
       required: true,
     },
+     isPopup:{
+      type:Boolean,
+      required:true
+    }
   },
   data() {
     return {
@@ -447,6 +468,9 @@ export default defineComponent({
         this.store.commit("draft/updatePoll", {index, data: res.data});
       }
     },
+     closeModal() {
+        modalController.dismiss();
+    },
   }
 });
 </script>
@@ -454,5 +478,17 @@ export default defineComponent({
 .new-post {
   max-width: 1080px;
   margin: 0 auto;
+}
+.container{
+  border:1px solid grey;
+  height:300px;
+}
+.wrapper-container{
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column-reverse;
+}
+ion-back-button{
+  display: block;
 }
 </style>
