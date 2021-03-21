@@ -218,9 +218,9 @@ ion-app {
 .menu > * {
   margin-right: 0.3em;
 }
-.wrap {
+/*.wrap {
   max-width: 860px;
-}
+}*/
 ion-content {
   display: flex;
   align-items: center;
