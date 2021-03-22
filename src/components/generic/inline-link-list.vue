@@ -79,7 +79,6 @@ ul li {
 }
 ul li a {
   color: var(--menu-color);
-  margin-left: 0.5em;
   text-transform: uppercase;
   text-decoration: none;
 }

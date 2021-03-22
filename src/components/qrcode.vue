@@ -14,6 +14,12 @@ export default defineComponent({
     },
     logo: {
       type: String
+    },
+    height: {
+      type: Number
+    },
+    width: {
+      type: Number
     }
   },
   mounted() {
@@ -21,6 +27,8 @@ export default defineComponent({
       text: this.text,
       logo: this.logo,
       tooltip: true,
+      height: this.height,
+      width: this.width,
     };
 
     // Create new QRCode Object

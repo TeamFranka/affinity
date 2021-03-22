@@ -2,49 +2,147 @@
   <ion-page>
     <ion-content>
       <div class="wrap">
-        <ion-spinner v-if="loading"/>
+        <div class="centralizeTotal" v-if="loading">
+          <ion-spinner />
+        </div>
         <template v-else>
           <div class="header" :style="teamStyle">
-            <div class="profile-img ion-padding">
-              <avatar size="10rem" :profile="team" />
+            <div class="profile-img">
+              <avatar size="7rem" :profile="team" />
               <ion-chip v-if="canEdit" @click="selectNewAvatar()">
                 <ion-icon :icon="uploadIcon"></ion-icon>
               </ion-chip>
             </div>
-            <div class="ion-padding">
-              <h1 data-cy="title">
-                {{team.name}}
-                <ion-button data-cy-role="editModal" v-if="canEdit" color="light" @click="intendEditTitle" fill="clear">
-                  <ion-icon size="small" :icon="editIcon" />
-                </ion-button>
-              </h1>
-              <inline-link-list :items="socialLinks" showIcon>
+
+            <h1 data-cy="title">
+              {{ team.name }}
+              <ion-icon
+                size="small"
+                :icon="editIcon"
+                data-cy-role="editModal"
+                v-if="canEdit"
+                color="light"
+                @click="intendEditTitle"
+              />
+            </h1>
+
+            <inline-link-list :items="socialLinks" showIcon>
+              <div v-if="canEdit">
+                <ion-icon
+                  size="small"
+                  :icon="editIcon"
+                  @click="intendEditSocialLink"
+                  color="light"
+                />
+              </div>
+            </inline-link-list>
+
+            <div data-cy="description">
+              <render-md adminMd :source="info" />
+              <ion-button
+                data-cy-role="editModal"
+                v-if="canEdit"
+                color="light"
+                @click="intendEditInfo"
+                size="small"
+                fill="clear"
+              >
+                Edit Text
+              </ion-button>
+            </div>
+            <div class="extra-actions" v-if="canEdit">
+              <ion-chip
+                title="remove background"
+                v-if="team.background"
+                @click="removeBackground"
+                outline
+              >
+                <ion-icon :icon="imageIcon" />
+                <ion-icon :icon="trashIcon" />
+              </ion-chip>
+              <ion-chip
+                v-else
+                @click="selectBackground"
+                title="upload background"
+              >
+                <ion-icon :icon="imageIcon" />
+                <ion-icon :icon="uploadIcon" />
+              </ion-chip>
+              <inline-link-list showTitle :items="footerLinks">
                 <li v-if="canEdit">
-                  <ion-button @click="intendEditSocialLink" color="light" size="small" fill="clear">
+                  <ion-button
+                    @click="intendEditFooterLinks"
+                    size="small"
+                    fill="clear"
+                  >
                     <ion-icon size="small" :icon="editIcon" />
                   </ion-button>
                 </li>
               </inline-link-list>
-              <div data-cy="description">
-                <render-md  adminMd :source="info" />
-                <ion-button data-cy-role="editModal" v-if="canEdit" color="light" @click="intendEditInfo" size="small" fill="clear">
-                  Edit Text
-                </ion-button>
-              </div>
             </div>
-            <div class="extra-actions" v-if="canEdit">
-              <ion-chip title="remove background" v-if="team.background" @click="removeBackground">
-                <ion-icon :icon="imageIcon" />
-                <ion-icon  :icon="trashIcon" />
-              </ion-chip>
-              <ion-chip v-else @click="selectBackground" title="upload background">
-                <ion-icon :icon="imageIcon" />
-                <ion-icon :icon="uploadIcon" />
-              </ion-chip>
+          </div>
+
+          <ion-toolbar>
+            <!-- Scrollable Segment -->
+            <ion-segment
+              scrollable
+              value="about"
+              @ionChange="segmentChanged($event)"
+            >
+              <ion-segment-button value="qrcode">
+                <ion-icon :icon="qrCodeIcon" />
+              </ion-segment-button>
+              <ion-segment-button value="about">
+                <ion-label>About</ion-label>
+              </ion-segment-button>
+              <ion-segment-button value="news">
+                <ion-label>News</ion-label>
+              </ion-segment-button>
+              <ion-segment-button value="feed">
+                <ion-label>Feed</ion-label>
+              </ion-segment-button>
+            </ion-segment>
+          </ion-toolbar>
+
+          <div style="display: block; overflow-y: auto; height: 67vh">
+            <!-- Div About -->
+            <div v-if="state == 'about'">
+              <h2 data-cy="title" class="subTitle">
+                {{ team.name }}
+              </h2>
+              <p>{{ team.info }}</p>
+              <h2>Subteams</h2>
+              <ul v-if="subteams" class="subteams" data-cy="subteams">
+                <li v-for="t in subteams" :key="t.id">
+                  <router-link
+                    :to="{ name: 'ViewTeam', params: { teamSlug: t.slug } }"
+                  >
+                    <ion-chip
+                      outline >
+                      <avatar :profile="t" size="1.5em" />
+                      <div style="margin: 5px">{{ t.name }}</div>
+                    </ion-chip>
+                  </router-link>
+                </li>
+
+                <li>
+                  <ion-chip outline>
+                    <ion-button
+                      data-cy="addSubTeamModal"
+                      v-if="canEdit"
+                      @click="intendToCreateSubTeam"
+                      size="small"
+                      fill="clear"
+                    >
+                      <ion-icon size="small" :icon="addIcon" />
+                    </ion-button>
+                  </ion-chip>
+                </li>
+              </ul>
               <ion-button
                 data-cy-role="edit"
                 data-cy-edit-target="styles"
-                color="light"
+                color="primary"
                 @click="intendEditStyles"
                 size="small"
                 fill="clear"
@@ -52,47 +150,34 @@
                 Edit Custom Styles
               </ion-button>
             </div>
-          </div>
-          <ion-toolbar>
-            <ion-button size="small" @click="showQr = !showQr" fill="clear">
-              <ion-icon size="small" :icon="qrCodeIcon" />
-            </ion-button>
-            <div slot="end">
-              <inline-link-list showTitle :items="footerLinks">
-                <li v-if="canEdit">
-                  <ion-button @click="intendEditFooterLinks" size="small" fill="clear">
-                    <ion-icon size="small" :icon="editIcon" />
-                  </ion-button>
-                </li>
-              </inline-link-list>
+
+            <!-- Div QRcode -->
+            <div v-if="state == 'qrcode'">
+              <qrcode
+                :text="fullLink"
+                :logo="logo"
+                :height="256"
+                :width="256"
+              />
+              <div v-for="l in socialLinks" :key="l.target">
+                <qrcode
+                  :text="l.target"
+                  :logo="getSocialIcon(l.platform)"
+                  class="socialLinks"
+                  :height="247 / socialLinks.length"
+                  :width="247 / socialLinks.length"
+                />
+              </div>
             </div>
-          </ion-toolbar>
-          <div v-if="showQr">
-            <ul class="social-icons">
-              <li>
-                <qrcode :text="fullLink" :logo="logo" />
-              </li>
-              <li v-for="l in socialLinks" :key="l.target">
-                <qrcode :text="l.target" :logo="getSocialIcon(l.platform)" />
-              </li>
-            </ul>
-          </div>
-          <div>
-            <ul v-if="subteams" class="subteams" data-cy="subteams">
-              <li v-for="t in subteams" :key="t.id">
-                <router-link :to="{name: 'ViewTeam', params: {teamSlug: t.slug}}">
-                  <avatar withName :profile="t" size="2em"/>
-                </router-link>
-              </li>
-              <li>
-                <ion-button data-cy="addSubTeamModal"  v-if="canEdit" @click="intendToCreateSubTeam" size="small" fill="clear">
-                  <ion-icon size="small" :icon="addIcon" />
-                </ion-button>
-              </li>
-            </ul>
-          </div>
-          <div>
-            <activity v-for="activity in feed" :activity="activity" :key="activity.objectId" />
+
+            <!-- Div Feed -->
+            <div v-if="state == 'feed'">
+              <activity
+                v-for="activity in feed"
+                :activity="activity"
+                :key="activity.objectId"
+              />
+            </div>
           </div>
         </template>
       </div>
@@ -101,103 +186,141 @@
 </template>
 
 <script lang="ts">
-import RenderMd from '@/components/render-md.vue';
-import Avatar from '@/components/avatar.vue';
-import { DefaultIcon, Icons } from '@/components/generic/inline-link-list.vue';
-import InlineLinkList from '@/components/generic/inline-link-list.vue';
-import EditLinks from '@/components/settings/edit-links.vue';
-import CreateSubTeam from '@/components/settings/create-subteam.vue';
-import GenericEditorModal from '@/components/settings/generic-editor-modal.vue';
-import Activity from '@/components/activity.vue';
-import Qrcode from '@/components/qrcode.vue';
+// import RenderMd from "@/components/render-md.vue";
+import Avatar from "@/components/avatar.vue";
+import { DefaultIcon, Icons } from "@/components/generic/inline-link-list.vue";
+import InlineLinkList from "@/components/generic/inline-link-list.vue";
+import EditLinks from "@/components/settings/edit-links.vue";
+import CreateSubTeam from "@/components/settings/create-subteam.vue";
+import GenericEditorModal from "@/components/settings/generic-editor-modal.vue";
+import Activity from "@/components/activity.vue";
+import Qrcode from "@/components/qrcode.vue";
 import {
-  IonContent, IonPage,  IonIcon, IonChip, IonSpinner, IonButton, IonToolbar,
-  modalController, alertController,
-} from '@ionic/vue';
+  IonContent,
+  IonPage,
+  IonIcon,
+  IonChip,
+  IonSpinner,
+  IonButton,
+  IonToolbar,
+  modalController,
+  alertController,
+  IonSegmentButton,
+  IonSegment,
+  IonLabel,
+} from "@ionic/vue";
+
 import {
-  chatbubbles, logoWhatsapp, cloudUploadOutline,
+  chatbubbles,
+  logoWhatsapp,
+  cloudUploadOutline,
   trashOutline as trashIcon,
   imageOutline as imageIcon,
   qrCodeOutline as qrCodeIcon,
   createOutline as editIcon,
   addCircleOutline as addIcon,
-} from 'ionicons/icons';
-import { defineComponent } from 'vue';
-import { useStore } from '@/stores/';
-import Parse from 'parse';
-import { takePicture, Photo } from '@/utils/camera';
-import { Model } from '@/utils/model';
-import { absoluteUrl } from '@/utils/url';
+} from "ionicons/icons";
+import { defineComponent } from "vue";
+import { useStore } from "@/stores/";
+import Parse from "parse";
+import { takePicture, Photo } from "@/utils/camera";
+import { Model } from "@/utils/model";
+import { absoluteUrl } from "@/utils/url";
 
 const DEFAULT_STYLES = {
-  "background": "transparent",
-  "backgroundImage": "linear-gradient(to right, var(--ion-color-secondary) 0%, var(--ion-color-primary) 100%)"
-}
+  background: "transparent",
+  backgroundImage:
+    "linear-gradient(to right, var(--ion-color-secondary) 0%, var(--ion-color-primary) 100%)",
+};
 
 export default defineComponent({
-  name: 'Team',
-  data(){
+  name: "Team",
+  data() {
     return {
-      showQr: false,
       loading: true,
-    }
+      state: "about",
+      subteam: ''
+    };
   },
   setup() {
     const store = useStore();
-
     return {
       store,
-      chatbubbles, logoWhatsapp, uploadIcon: cloudUploadOutline,
-      editIcon, qrCodeIcon, imageIcon, trashIcon, addIcon,
-    }
+      chatbubbles,
+      logoWhatsapp,
+      uploadIcon: cloudUploadOutline,
+      editIcon,
+      qrCodeIcon,
+      imageIcon,
+      trashIcon,
+      addIcon,
+    };
   },
   watch: {
     // call again the method if the route changes
-    '$route': 'fetchData'
+    $route: "fetchData",
   },
   computed: {
     team(): Model {
       const slug: any = this.$route.params.teamSlug;
-      return this.store.getters.objectsMap[this.store.getters.teamsBySlug[slug]]
+      console.log("Slug abaixo");
+      console.log(this.store.getters.objectsMap[
+        this.store.getters.teamsBySlug[slug]
+      ]);
+      return this.store.getters.objectsMap[
+        this.store.getters.teamsBySlug[slug]
+      ];
     },
     feed(): Model[] {
       if (!this.team) {
-        return []
+        return [];
       }
       const teamId = this.team.objectId;
-      return this.store.state.teams.news[teamId]
-        .map((id: string) => this.store.getters["objectsMap"][id])
+      return this.store.state.teams.news[teamId].map(
+        (id: string) => this.store.getters["objectsMap"][id]
+      );
     },
     subteams(): Model[] {
       if (!this.team) {
-        return []
+        return [];
       }
       const teamId = this.team.objectId;
-      return (this.store.state.teams.subteams[teamId] || [])
-        .map((id: string) => this.store.getters["objectsMap"][id])
+      return (this.store.state.teams.subteams[teamId] || []).map(
+        (id: string) => this.store.getters["objectsMap"][id]
+      );
     },
     info(): string {
-      return this.team.info || ""
+      return this.team.info || "";
     },
     socialLinks(): any[] {
-      return this.team.socialLinks || []
+      return this.team.socialLinks || [];
     },
     footerLinks(): any[] {
-      return this.team.footerLinks || []
+      return this.team.footerLinks || [];
+    },
+    subOf(): any {
+      console.log(this.team.subOf);
+        return this.team.subOf.name || "";
+    },
+    teamhahay(): any {
+      console.log('haylou');
+      return ('olamundo');
     },
     permissions(): any {
-      return this.store.getters["auth/teamPermissions"][this.team.objectId] || {};
+      return (
+        this.store.getters["auth/teamPermissions"][this.team.objectId] || {}
+      );
     },
     canEdit(): boolean {
-      return this.permissions.isAdmin
+      return this.permissions.isAdmin;
     },
     logo(): string | null {
-      return (this.team && this.team.avatar) ? this.team.avatar.url : null
+      return this.team && this.team.avatar ? this.team.avatar.url : null;
     },
     teamStyle(): any {
       const customStyles = this.team.customStyles;
       const extraStyles: any = {};
-      const backgroundImage =  this.team.background;
+      const backgroundImage = this.team.background;
       if (backgroundImage) {
         extraStyles.backgroundImage = `url(${backgroundImage.url})`;
         extraStyles.backgroundSize = "cover";
@@ -205,131 +328,150 @@ export default defineComponent({
       return [DEFAULT_STYLES, customStyles, extraStyles];
     },
     fullLink(): string {
-      return absoluteUrl(this.$router, {name: "ViewTeam", params: {teamSlug: this.team.slug}});
-    }
+      return absoluteUrl(this.$router, {
+        name: "ViewTeam",
+        params: { teamSlug: this.team.slug },
+      });
+    },
   },
   methods: {
+    segmentChanged(ev: CustomEvent) {
+      console.log("Segment changed", ev);
+      this.state = ev.detail.value;
+    },
     fetchData() {
-      this.loading = true
+      this.loading = true;
+      this.state = "about";
+      this.subteam = '';
       const slug: any = this.$route.params.teamSlug;
       let promise;
       if (this.store.getters.teamsBySlug[slug]) {
-          promise = Promise.resolve()
+        promise = Promise.resolve();
+        console.log(this.team.subOf);
+        if (this.team.subOf) {
+            // this.team.name = this.team.subOf.name;
+            // this.subteam = this.team.name;
+        }
+        console.log(this.team);
       } else {
         promise = this.store.dispatch("teams/fetch", slug);
       }
 
-      promise.then(() => {
-        const teamPointer = this.store.getters.objectsMap[this.store.getters.teamsBySlug[slug]].toPointer();
-        return Promise.all([
-          this.store.dispatch("teams/fetchNews", teamPointer),
-          this.store.dispatch("teams/fetchSubteams", teamPointer)
-        ]);
-      }).then(() => {
+      promise
+        .then(() => {
+          const teamPointer = this.store.getters.objectsMap[
+            this.store.getters.teamsBySlug[slug]
+          ].toPointer();
+          return Promise.all([
+            this.store.dispatch("teams/fetchNews", teamPointer),
+            this.store.dispatch("teams/fetchSubteams", teamPointer),
+          ]);
+        })
+        .then(() => {
           this.loading = false;
-      });
+        });
     },
     getSocialIcon(l: string): any {
-      return (Icons[l] || {icon: DefaultIcon}).icon;
+      return (Icons[l] || { icon: DefaultIcon }).icon;
     },
     async intendToCreateSubTeam() {
-      const modal = await modalController
-        .create({
-          component: CreateSubTeam,
-        })
+      const modal = await modalController.create({
+        component: CreateSubTeam,
+      });
       await modal.present();
       const res = await modal.onDidDismiss();
       if (res.data) {
         const data = res.data;
-        data.subOf  = this.team.toPointer();
+        data.subOf = this.team.toPointer();
         const subteam = await this.store.dispatch("teams/createSubteam", data);
-        this.$router.push({"name": "ViewTeam", params: {"teamSlug": subteam.slug}});
+        this.$router.push({
+          name: "ViewTeam",
+          params: { teamSlug: subteam.slug },
+        });
       }
     },
     async intendEditTitle() {
-      const modal = await modalController
-        .create({
-          component: GenericEditorModal,
-          componentProps: {
-            value: this.team.name || '',
-            type: "text",
-            title: "Team Name",
-            saveLabel: "Speichern",
-          },
-        })
+      const modal = await modalController.create({
+        component: GenericEditorModal,
+        componentProps: {
+          value: this.team.name || "",
+          type: "text",
+          title: "Team Name",
+          saveLabel: "Speichern",
+        },
+      });
       await modal.present();
       const res = await modal.onDidDismiss();
       if (res.data) {
-        await this.setSetting({"name": res.data.value});
+        await this.setSetting({ name: res.data.value });
       }
     },
     async intendEditInfo() {
-      const modal = await modalController
-        .create({
-          component: GenericEditorModal,
-          componentProps: {
-            value: this.team.info || '',
-            type: "richtext",
-            isAdminMd: true,
-            title: "Team Info",
-            saveLabel: "Speichern",
-          },
-        })
+      const modal = await modalController.create({
+        component: GenericEditorModal,
+        componentProps: {
+          value: this.team.info || "",
+          type: "richtext",
+          isAdminMd: true,
+          title: "Team Info",
+          saveLabel: "Speichern",
+        },
+      });
       await modal.present();
       const res = await modal.onDidDismiss();
       if (res.data) {
-        await this.setSetting({"info": res.data.value})
+        await this.setSetting({ info: res.data.value });
       }
     },
     async intendEditStyles() {
-      const modal = await modalController
-        .create({
-          component: GenericEditorModal,
-          componentProps: {
-            value: this.team.customStyles,
-            type: "textarea",
-            help: "Hier kannst du die globalen css-Style-Variablen des Theme überschreiben. Siehe dazu [den Ionic Theming Guide](https://ionicframework.com/docs/theming/css-variables) und den [praktischen Color Generator](https://ionicframework.com/docs/theming/color-generator)",
-            title: "Eigene Styles",
-            saveLabel: "Speichern",
-          },
-        })
+      const modal = await modalController.create({
+        component: GenericEditorModal,
+        componentProps: {
+          value: this.team.customStyles,
+          type: "textarea",
+          help:
+            "Hier kannst du die globalen css-Style-Variablen des Theme überschreiben. Siehe dazu [den Ionic Theming Guide](https://ionicframework.com/docs/theming/css-variables) und den [praktischen Color Generator](https://ionicframework.com/docs/theming/color-generator)",
+          title: "Eigene Styles",
+          saveLabel: "Speichern",
+        },
+      });
       await modal.present();
       const res = await modal.onDidDismiss();
       if (res.data) {
-        await this.setSetting({"customStyles": res.data.value})
+        await this.setSetting({ customStyles: res.data.value });
       }
     },
     async intendEditFooterLinks() {
-      const modal = await modalController
-        .create({
-          component: EditLinks,
-          componentProps: {
-            items: Array.from(this.footerLinks),
-            withIcons: false,
-            saveLabel: "Speichern",
-          },
-        })
+      const modal = await modalController.create({
+        component: EditLinks,
+        componentProps: {
+          items: Array.from(this.footerLinks),
+          withIcons: false,
+          saveLabel: "Speichern",
+        },
+      });
       await modal.present();
       const res = await modal.onDidDismiss();
       if (res.data) {
-        await this.setSetting({"footerLinks": res.data.items})
+        await this.setSetting({ footerLinks: res.data.items });
       }
     },
     async intendEditSocialLink() {
-      const modal = await modalController
-        .create({
-          component: EditLinks,
-          componentProps: {
-            items: Array.from(this.socialLinks),
-            withIcons: true,
-            platforms: Object.keys(Icons).map((x) => Object.assign({}, {key: x}, Icons[x])),
-            saveLabel: "Speichern",
-          },
-        })
+      const modal = await modalController.create({
+        component: EditLinks,
+        componentProps: {
+          items: Array.from(this.socialLinks),
+          withIcons: true,
+          platforms: Object.keys(Icons).map((x) =>
+            Object.assign({}, { key: x }, Icons[x])
+          ),
+          saveLabel: "Speichern",
+        },
+      });
       await modal.present();
       const res = await modal.onDidDismiss();
       if (res.data) {
-        await this.setSetting({"socialLinks": res.data.items})
+        await this.setSetting({ socialLinks: res.data.items });
       }
     },
     async setSetting(params: any) {
@@ -338,48 +480,67 @@ export default defineComponent({
     },
     selectNewAvatar() {
       takePicture().then(async (img: Photo) => {
-        const file = new Parse.File(this.team.slug +"_avatar", {uri: img.dataUrl}, "image/" + img.format);
+        const file = new Parse.File(
+          this.team.slug + "_avatar",
+          { uri: img.dataUrl },
+          "image/" + img.format
+        );
         await file.save();
-        await this.setSetting({avatar: file});
+        await this.setSetting({ avatar: file });
       });
     },
     async removeBackground() {
-      const alert = await alertController
-        .create({
-          header: 'Hintergrund löschen?',
-          message: 'Soll der Hintergrund wirklich gelöscht werden?',
-          buttons: [
-            {
-              text: 'Abbruch',
-              role: 'cancel',
-              cssClass: 'secondary',
+      const alert = await alertController.create({
+        header: "Hintergrund löschen?",
+        message: "Soll der Hintergrund wirklich gelöscht werden?",
+        buttons: [
+          {
+            text: "Abbruch",
+            role: "cancel",
+            cssClass: "secondary",
+          },
+          {
+            text: "Ja, löschen",
+            handler: () => {
+              this.setSetting({ background: null });
             },
-            {
-              text: 'Ja, löschen',
-              handler: () => {
-                this.setSetting({background: null})
-              },
-            },
-          ],
-        });
+          },
+        ],
+      });
       return alert.present();
     },
     selectBackground() {
       takePicture().then(async (img: Photo) => {
-        const file = new Parse.File(this.team.slug + "_background", {uri: img.dataUrl}, "image/" + img.format);
+        const file = new Parse.File(
+          this.team.slug + "_background",
+          { uri: img.dataUrl },
+          "image/" + img.format
+        );
         await file.save();
-        await this.setSetting({background: file});
+        await this.setSetting({ background: file });
       });
-    }
+    },
   },
-  mounted(){
+  mounted() {
     this.fetchData();
   },
   components: {
-    Avatar, Qrcode, RenderMd, InlineLinkList, Activity,
-    IonPage, IonContent, IonIcon, IonChip, IonSpinner,
-    IonButton, IonToolbar,
-  }
+    Avatar,
+    Qrcode,
+    // RenderMd,
+    InlineLinkList,
+    Activity,
+    IonPage,
+    IonContent,
+    IonIcon,
+    IonChip,
+    IonSpinner,
+    IonButton,
+    IonToolbar,
+    IonSegment,
+    IonSegmentButton,
+    IonLabel,
+  },
 });
 </script>
 <style scoped>
@@ -394,14 +555,33 @@ ion-toolbar {
   border-bottom: 1px dotted;
   border-top: 1px dotted;
 }
+h1 {
+  font-size: 13px;
+  text-transform: uppercase;
+  margin-left: -5%;
+  margin-top: -5%;
+}
+h2 {
+  margin: 5%;
+  font-size: 18px;
+  font-weight: 400;
+}
+p {
+  font-size: 14px;
+  margin: 5%;
+}
+h2.subTitle {
+  text-transform: uppercase;
+}
 .profile-img {
   position: relative;
+  padding: 3% 5%;
 }
 .profile-img ion-chip {
   position: absolute;
   bottom: 0;
-  left: 50%;
-  transform: translateX(-50%);
+  left: 35%;
+  transform: translateX(-35%);
 }
 .extra-actions {
   position: absolute;
@@ -422,7 +602,7 @@ ion-toolbar {
   color: var(--ion-color-primary);
 }
 ion-chip ion-icon {
-  margin: 0
+  margin: 0;
 }
 .subteams {
   display: flex;
@@ -441,5 +621,28 @@ ion-chip ion-icon {
 }
 .subteams a > *:not(:first-child) {
   padding-left: 0.2rem;
+}
+a {
+  text-decoration: none;
+}
+li {
+  padding: 0% !important;
+}
+.socialLinks {
+  float: left;
+  text-align: center;
+  margin: 1.5%;
+}
+.centralizeTotal {
+  margin: 0;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  margin-right: -50%;
+  transform: translate(-50%, -50%);
+}
+.break {
+  flex-basis: 100%;
+  height: 0;
 }
 </style>
