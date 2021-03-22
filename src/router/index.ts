@@ -17,6 +17,7 @@ import ViewConversation from '../views/ViewConversation.vue';
 import Settings from '../views/settings/Center.vue';
 import SettingsGeneral from '../views/settings/General.vue';
 import SettingsNotifications from '../views/settings/Notifications.vue';
+import Gallery from '../views/Gallery.vue';
 import { store } from '../stores/';
 
 const ensureLoggedIn = (to: any, from: any, next: any) => {
@@ -99,6 +100,11 @@ const routes: Array<RouteRecordRaw> = [
         path: 'feed',
         name: 'Feed',
         component: Feed
+      },
+      {
+        path: 'gallery',
+        name: 'Gallery',
+        component: Gallery
       },
       {
         path: '/settings/notifications',

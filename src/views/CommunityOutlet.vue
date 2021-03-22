@@ -11,6 +11,7 @@
                 <ion-item><router-link :to="{name: 'FAQ'}"><ion-icon :icon="faqIcon" /> {{ $t('menu.info') }}</router-link></ion-item>
                 <ion-item><router-link :to="{name: 'Feed'}"><ion-icon :icon="feedIcon" /> {{ $t('menu.feed') }}</router-link></ion-item>
                 <ion-item v-if="false"><router-link :to="{name: 'News'}"><ion-icon :icon="activitiesIcon" /> {{ $t('menu.activities') }}</router-link></ion-item>
+                 <ion-item><router-link :to="{name: 'Gallery'}"><ion-icon :icon="galleryIcon" /> {{ $t('menu.picture') }}</router-link></ion-item>
               </ion-item-group>
               <ion-item-group v-if="showTeamSubmenu">
                 <ion-item-divider>
@@ -50,7 +51,8 @@ import {
   settingsOutline as settingsIcon,
   addCircleOutline, chatbubbleEllipsesOutline,
   fileTrayFullOutline, personCircleOutline,
-  compassOutline as faqIcon, walletOutline
+  compassOutline as faqIcon, walletOutline,
+  imageOutline as galleryIcon
 } from 'ionicons/icons';
 import { useStore } from '../stores/';
 import { defineComponent, computed } from 'vue';
@@ -79,7 +81,7 @@ export default defineComponent({
       postIcon: addCircleOutline,
       chatIcon: fileTrayFullOutline,
       newChatIcon: chatbubbleEllipsesOutline,
-      meIcon: personCircleOutline,
+      meIcon: personCircleOutline,galleryIcon
     }
   },
   computed: {
