@@ -1,5 +1,5 @@
 <template>
-    <div ref="qrcode"></div>
+    <div ref="qrcode" class="qrDiv"></div>
 </template>
 <script>
 import { defineComponent } from 'vue';
@@ -36,3 +36,11 @@ export default defineComponent({
   },
 });
 </script>
+
+<style scoped>
+.qrDiv {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+</style>
