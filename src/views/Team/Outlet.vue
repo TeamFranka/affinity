@@ -86,7 +86,7 @@
                 <ion-icon :icon="qrCodeIcon" />
               </ion-segment-button>
               <ion-segment-button value="about">
-                <ion-label>About</ion-label>
+                <ion-label>{{ $('team.tabs.about') }}</ion-label>
               </ion-segment-button>
               <ion-segment-button value="news">
                 <ion-label>News</ion-label>
