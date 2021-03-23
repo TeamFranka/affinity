@@ -18,12 +18,14 @@ export const Users = [
         username: "clara",
         password: "clara",
         name: "Clara Oswald",
+        emailVerified: true,
         avatar: makeFile('clara.png')
     },
     {
         username: "river",
         password: "river",
         name: "River Song",
+        emailVerified: true,
         avatar: makeFile('river.png')
     },
     {
@@ -42,12 +44,14 @@ export const Users = [
         username: "yaz",
         password: "yaz",
         name: "Yaz",
+        emailVerified: true,
         avatar: makeFile('yaz.png')
     },
     {
         username: "graham",
         password: "graham",
         name: "Graham",
+        emailVerified: true,
         avatar: makeFile('graham.png')
     }
 ]
