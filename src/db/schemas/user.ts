@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/camelcase */
 // Follow the JSON structure from REST API https://docs.parseplatform.org/rest/guide/#schema
 import { CommonFields } from './common';
 

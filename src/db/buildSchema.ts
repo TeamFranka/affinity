@@ -39,12 +39,15 @@ export const buildSchemas = async (localSchemas: any[]) => {
 			if (process.env.NODE_ENV === 'production') process.exit(1)
 		}, 20000)
 		const allCloudSchema = (await Parse.Schema.all()).filter(
+			// eslint-disable-next-line @typescript-eslint/no-use-before-define
 			(s: any) => !lib.isDefaultSchema(s.className),
 		)
 		clearTimeout(timeout)
 		// Hack to force session schema to be created
+		// eslint-disable-next-line @typescript-eslint/no-use-before-define
 		await lib.createDeleteSession()
 		await Promise.all(
+			// eslint-disable-next-line @typescript-eslint/no-use-before-define
 			localSchemas.map(async (localSchema) => lib.saveOrUpdate(allCloudSchema, localSchema)),
 		)
 	} catch (e) {
@@ -84,7 +87,7 @@ export const lib = {
 			)
 		}
 
-		// @ts-ignore
+		// eslint-disable-next-line @typescript-eslint/no-unused-vars
 		newLocalSchema.setCLP(localSchema.classLevelPermissions)
 		return newLocalSchema.save()
 	},
@@ -119,7 +122,7 @@ export const lib = {
 						newLocalSchema.deleteField(fieldName)
 						console.info(localSchema.className, "changeds in", fieldName, "deleting");
 						await newLocalSchema.update()
-						// @ts-ignore
+						// eslint-disable-next-line @typescript-eslint/no-unused-vars
 						const { type, ...others } = localField
 						lib.handleFields(newLocalSchema, fieldName, type, others)
 					}
@@ -158,7 +161,7 @@ export const lib = {
 				}
 			}
 		})
-		// @ts-ignore
+		// eslint-disable-next-line @typescript-eslint/no-unused-vars
 		console.info(localSchema.className, "setting class level permissions");
 		newLocalSchema.setCLP(localSchema.classLevelPermissions)
 		await newLocalSchema.update()
@@ -188,6 +191,7 @@ export const lib = {
 
 	fixCloudIndexes: (cloudSchemaIndexes: any) => {
 		if (!cloudSchemaIndexes) return {}
+		// eslint-disable-next-line @typescript-eslint/no-unused-vars
 		const { _id_, ...others } = cloudSchemaIndexes
 
 		return {
@@ -236,10 +240,10 @@ export const lib = {
 			newLocalSchema.addRelation(fieldName, others.targetClass)
 		} else if (type === 'Pointer') {
 			const { targetClass, ...others2 } = others
-			// @ts-ignore
+			// eslint-disable-next-line @typescript-eslint/no-unused-vars
 			newLocalSchema.addPointer(fieldName, targetClass, others2)
 		} else {
-			// @ts-ignore
+			// eslint-disable-next-line @typescript-eslint/no-unused-vars
 			newLocalSchema.addField(fieldName, type, others)
 		}
 	},
