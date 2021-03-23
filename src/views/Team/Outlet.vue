@@ -42,7 +42,7 @@
 
               <div class="extra-actions" v-if="canEdit">
                 <ion-chip
-                  title="remove background"
+                  :title="$t('team.edit.actions.remove_background')"
                   v-if="team.background"
                   @click="removeBackground"
                   outline
