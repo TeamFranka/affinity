@@ -1,28 +1,14 @@
 <template>
-<div class="slidebox shown" :style="extraStyle" @dblclick="like" ref="slideBox">
+ <div class="slidebox shown" :style="extraStyle" @dblclick="like" ref="slideBox">
   <span class="like-icon" ref="liker">
     <ion-icon :icon="likeIcon"  />
   </span>
 
-  <!-- <template v-if="is('Poll')">
-    <ion-card>
-      <poll :poll="obj" />
-    </ion-card>
-  </template> -->
-  <!-- <template v-else-if="is('Post')">
-    <ion-card class="post-text ion-padding">
-      <render-md :source="text" />
-      <p><reactions :item="interactivityObject" /></p>
-    </ion-card>
-  </template> -->
-  <template v-if="is('Picture')">
+  <!-- <template v-if="is('Picture')"> -->
     <ion-img class="item-img" :src="imageUrl" />
-  </template>
-  <!-- <div v-if="!is('Post')" class="text">
-    <render-md v-if="text" :source="text" />
-    <p><reactions :item="interactivityObject" /></p>
-  </div> -->
-  <div class="menu">
+  <!-- </template> -->
+  
+   <div class="menu">
     <router-link :to="teamLink">
       <avatar size="4em" :profile="team" :name="teamName" />
     </router-link>
@@ -48,24 +34,22 @@
           :counter="interactivityObject.likesCount || 0"
       />
     </div>
-  </div>
-</div>
+  </div> 
+</div> 
+ 
 </template>
 
 <script lang="ts">
-import { IonLabel, IonIcon, IonImg, IonCard } from '@ionic/vue';
+import { IonLabel, IonIcon, IonImg } from '@ionic/vue';
 import { createAnimation } from '@ionic/core';
 import { chatbubblesOutline as commentsIcon, heart as likeIcon } from 'ionicons/icons';
 import Avatar from './avatar.vue';
-import Poll from './poll.vue';
 import ShareButton from "./share-button.vue";
 import LikeButton from "./like-button.vue";
 import { since } from '../utils/time';
 import Parse from "parse";
 import { defineComponent, computed } from 'vue';
 import { useStore } from '../stores/';
-import RenderMd from './render-md.vue';
-import Reactions from './reactions.vue';
 import { Model } from '@/utils/model';
 
 export default defineComponent({
@@ -81,12 +65,15 @@ export default defineComponent({
     }
   },
   components: {
-    IonLabel, IonIcon, IonImg,
+    IonLabel, IonIcon,
+    IonImg,
     Avatar, ShareButton, LikeButton, 
   },
-  setup(props: { itemId:  string }) {
+  setup(props: { itemId: string }) {
     const store = useStore();
+  
     return {
+      
       item: computed(() => store.getters.objectsMap[props.itemId]),
       objs: computed(() => store.getters.objectsMap),
       store, commentsIcon, likeIcon
@@ -138,22 +125,18 @@ export default defineComponent({
         return this.item.objects.find((x: Model) => x.className == "Picture");
     },
     imageUrl(): string | null {
-        return this.image?.file?.url
+        return this.image?.file.url
     },
     extraStyle(): object {
-      const style = (this.item.extra || {})['style'] || {
+      // const style = (this.item.extra || {})['style'] || {
+      //   'background': "var(--ion-color-tertiary )"
+      // };
+      const style =  {
         'background': "var(--ion-color-tertiary )"
       };
       const localStyle = {
         'z-index': this.zIndex,
       };
-      if (this.is('Poll') || this.is('Post')) {
-        return Object.assign({}, style, localStyle, {
-          display: 'flex',
-          justifyContent: 'space-around',
-          alignItems: 'center'
-        });
-      }
       return Object.assign({}, style, localStyle);
     }
   },

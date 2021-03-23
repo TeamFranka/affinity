@@ -19,8 +19,8 @@
           <ion-label>All</ion-label>
         </ion-segment-button>
 
-        <ion-list v-for="(item, index) in newTeamArray" v-bind:index="item.priority" :key="index" :value="item.name">
-        <ion-segment-button v-if="item.toggle">
+        <ion-list v-for="(item, index) in newTeamArray" v-bind:index="item.priority" :key="index">
+        <ion-segment-button v-if="item.toggle" :value="item.name">
           <div class="segment-block">
           <ion-avatar v-if="item.isIcon && item.icon!==''" size="1.5rem" slot="start">
                 <img v-bind:src="item.icon" />
@@ -29,6 +29,7 @@
           </div>
         </ion-segment-button>
         </ion-list>
+
         <ion-segment-button value="setting">
           <ion-icon :icon="settingIcon"></ion-icon>
         </ion-segment-button>
@@ -46,6 +47,7 @@ import { useStore } from '../stores/';
 
 export default defineComponent({
   name: 'TeamFilterHeader',
+  emits: ['team-selected'],
   data(){
     const newTeamArray: string[] = [];
     const latestPosts: any[] =[];
@@ -69,6 +71,7 @@ export default defineComponent({
   methods:{ 
  
     getSettings(){
+    
       const teamPriority: any =  this.store.state.auth.user;
       this.newTeamArray = [];
       if(teamPriority.settings!==undefined && teamPriority.settings!==null){
@@ -78,7 +81,7 @@ export default defineComponent({
         }
       }
     },
-    async teamSelected(event: any){     
+    async teamSelected(event: any){    
         const val = event.target.value;
         if(val == "setting"){
            const modal = await modalController
@@ -95,17 +98,18 @@ export default defineComponent({
             }
           }
         else{
-          if(val=="all"){
-            this.latestPosts = this.store.getters["feed/latestPosts"];
-            return  this.latestPosts
-          }
-          else{
-            const newPostArray: any[] = [];
+          // if(val=="all"){
+          //   this.latestPosts = this.store.getters["feed/latestPosts"];
+          //   return  this.latestPosts
+          // }
+          // else{
+          //   const newPostArray: any[] = [];
           
-            // this.allPosts.map((data: any)=>{if(data.team.name === val){newPostArray.push(data)}})   
-            // this.latestPosts = newPostArray     
-            // return  this.latestPosts; 
-          }         
+          //   // this.allPosts.map((data: any)=>{if(data.team.name === val){newPostArray.push(data)}})   
+          //   // this.latestPosts = newPostArray     
+          //   // return  this.latestPosts; 
+          // }       
+          this.$emit('team-selected', val)
         }
       }
   },

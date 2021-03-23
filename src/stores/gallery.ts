@@ -82,7 +82,6 @@ export const Gallery = {
       const teams = context.rootGetters["auth/teamPointers"];
       const query = (new Parse.Query(Picture))
         .containedIn("team", teams)
-        .containedIn("verb", [Verb.Post, Verb.Announce])
         .include(MODEL_KEYS)
         .limit(ITEMS_PER_PAGE)
         .descending("createdAt")

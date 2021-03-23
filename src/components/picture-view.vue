@@ -11,36 +11,25 @@
         </ion-toolbar>
     </ion-header>
      
-      <div class="flip-in" ref="box">
-          <div  v-for="(item,index) in imgDetails" :key="index">
-                <div class="slidebox shown" :key="index" :style="extraStyle" @dblclick="like" ref="slideBox">
-                <ion-img :src="item.file?.url"/>
-                </div>
-          </div>
-          <!-- <picture-view-modal
-          v-for="(id, index) in imgDetails"
+      <div class="flip-in" ref="box" v-if="imgDetails">
+          <picture-view-modal 
+          v-for="(item, index) in imgDetails"
           :z-index="index"
-          :key="id"
-        /> -->
+          :itemId="item"
+          :key="item"
+        />
       </div>
     </ion-content>
     
 </template>
 
 <script lang="ts">
-import { IonLabel, IonIcon, IonImg, IonCard,modalController } from '@ionic/vue';
-import { createAnimation } from '@ionic/core';
-import { chatbubblesOutline as commentsIcon, heart as likeIcon, closeOutline as closeIcon } from 'ionicons/icons';
-import Avatar from './avatar.vue';
-import Poll from './poll.vue';
-import ShareButton from "./share-button.vue";
-import LikeButton from "./like-button.vue";
-import { since } from '../utils/time';
-import Parse from "parse";
-import { defineComponent, computed } from 'vue';
+import { modalController } from '@ionic/vue';
+import { closeOutline as closeIcon } from 'ionicons/icons';
+import { defineComponent } from 'vue';
 import { createGesture } from "@ionic/core";
 import { useStore } from 'vuex';
-// import PictureViewModal from '../components/picture-view-modal.vue';
+import PictureViewModal from '../components/picture-view-modal.vue';
 
 export default defineComponent({
   name: 'PictureView',
@@ -55,38 +44,19 @@ export default defineComponent({
     }
   },
   components: {
-    // PictureViewModal
+    PictureViewModal
   },
-  data() {
-       console.log("img details------------",this.imgDetails)
-       return{
-           
-       }
-  },
-
+  
   setup() {
     const store = useStore();
     return {
       closeModal() {
         modalController.dismiss()
       },
-      likeIcon,closeIcon
+      closeIcon, store
     }
   },
-  computed:{
-       extraStyle(): object {
-      // const style = (this.imgDetails.extra || {})['style'] || {
-      //   'background': "var(--ion-color-tertiary )"
-      // };
-      const style = {
-        'background': "var(--ion-color-tertiary )"
-      };
-      const localStyle = {
-        'z-index': this.zIndex,
-      };
-      return Object.assign({}, style, localStyle);
-    }
-  },
+  
     mounted() {
     if (this.imgDetails.length === 0) {
       // this.refresh();

@@ -179,6 +179,16 @@ export const Posts = [
         objects: [
             {cls: "Picture", file: makeFile('yaz-huge.jpg')}
         ]
+    },
+    {
+        team: "team-earth",
+        verb: "announce",
+        author: 'clara',
+        text: "Ein freundliches Hallo zu Doctor huge!!!",
+        visibility: "public",
+        objects: [
+            {cls: "Picture", file: makeFile('doctor-huge.jpg')}
+        ]
     }
 ]
 

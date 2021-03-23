@@ -1,19 +1,19 @@
 <template>
   <ion-page>
-    <team-filter-header/>
+    <team-filter-header  @team-selected="searchValue = $event"/>
     <ion-searchbar
         show-cancel-button="focus"
         :placeholder="$t('search')"
         inputmode="search"
         enterkeyhint="search"
         :value="searchValue"
-        :v-model="searchValue"
+        @ion-change="searchValue = $event.target.value"
     />
     <ion-content scroll-x="false" scroll-y="false">
       <ion-spinner v-if="loading" />
         <ion-grid>
             <ion-row>
-                <ion-col size="3" v-for="(item, index) in filterPicture" :key="index"> 
+                <ion-col size="4" v-for="(item, index) in filterPicture" :key="index"> 
                     <img :src="item.file?.url" @click="viewPicture(item,index)"/> 
                 </ion-col>
             </ion-row>
@@ -26,11 +26,8 @@
 
 <script lang="ts">
 import {
-  IonContent, IonPage,modalController
+  IonContent, IonPage,modalController,IonSearchbar
 } from '@ionic/vue';
-import {
-  chatbubbles, heartOutline, mailOutline, addOutline, caretForwardOutline, search
-} from 'ionicons/icons';
 import { defineComponent, computed } from 'vue';
 import { useStore } from '../stores/';
 import PictureView from '../components/picture-view.vue';
@@ -45,79 +42,85 @@ export default defineComponent({
       return{
           searchValue:'',
           selectedTeam:0,
-          pictureArray
+          pictureArray,
+          teamValue:''
       }
   },
    setup() {
     const store = useStore();
     const pictureArr: any[]=[];
-    const elem = store.getters["news/latest"];
+    // const elem = store.getters["news/latest"];
     return {
       store,
       pictureArr,
-      elem
+      elem: computed(() => store.getters["news/latest"])
     }
   },
-
-  //  computed: {
-  //     newPictureList() {
-        // console.log("list is=============",this.searchValue,this.searchValue.length)
-        // if(this.selectedTeam == 0){
-        //     return this.pictureList
-        // }
-        // else{
-        //     return this.pictureList.filter((data: any)=>data.team == this.selectedTeam)
-        // }
-        //  if (this.searchValue.length) {
-        //     const v = this.searchValue;
-        //     const foundIcons = [];
-        //     this.pictureList.forEach((g) => {
-        //         if(g.name.match(v)){
-        //             foundIcons.push(g)
-        //         }            
-        //     })
-        //     return foundIcons
-        // }
-        // return this.pictureList
-      // }
-      
-  // },
   computed:{
       filterPicture(){     
-      const pictureList: any[] =[];
-      this.elem.find((x: any)=>{
-         const item = this.store.getters.objectsMap[x];
-         item.objects.find((x: Model) =>{ if(x.className == "Picture"){pictureList.push(item.objects)}});
+        const pictureList: any[] =[];
+        this.elem.find((x: any)=>{
+        const item = this.store.getters.objectsMap[x];
+         item.objects.find((x: Model) =>{ if(x.className == "Picture"){
+           pictureList.push(item.objects[0])
+          }});
          });
-         console.log("pictureArray==",pictureList)
-      return pictureList;
+      
+        if (this.searchValue.length!==0 && this.searchValue!=='all') {
+            const v = this.searchValue;
+            const foundIcons: any[] = [];
+            pictureList.forEach((g: any) => {
+                if(g.team.name.toLowerCase().indexOf(v.toLowerCase()) > -1){
+                  foundIcons.push(g)
+                }           
+            })
+            return foundIcons
+        }
+        else{
+            return pictureList;
+        }
     },
   },
+
+  created(){
+    this.filterGallery()
+  },
   methods:{
-  
+   filterGallery(){
+      //  const pictureList: any[] =[];
+      this.elem.find((x: any)=>{
+         const item = this.store.getters.objectsMap[x];
+         item.objects.find((x: Model) =>{ if(x.className == "Picture"){
+           this.pictureArray.push(item.objects[0])
+          }});
+         });
+   },
     async viewPicture (item: any,selectedImg: any) {
+      const pictureList: any[] =[];
+      this.elem.find((n: any)=>{
+         const item = this.store.getters.objectsMap[n];
+         item.objects.find((x: Model) =>{ if(x.className == "Picture"){pictureList.push(n)}});
+      });
+      
       const popover = await modalController
         .create({
           component: PictureView,
            cssClass:'modalCss',
            componentProps: {
-            imgDetails : item,
+            imgDetails : pictureList,
             zIndex:selectedImg
           },
         });
       popover.present();
       const result = await popover.onDidDismiss();
-      if (result.data) {
-        console.log("result",result);
+      if(result){
+        console.log("result--",result)
       }
     },
   },
 
   components: {
-    IonContent, IonPage,TeamFilterHeader
-    // PictureViewModal
-    // IonToggle, IonSpinner, IonCard, IonCardContent,
-    // NewPost, Activity
+    IonContent, IonPage,TeamFilterHeader,IonSearchbar
   },
 });
 </script>
@@ -128,7 +131,7 @@ export default defineComponent({
   overflow: hidden;
 }
 img{
-  width: 50px;
-  height: 50px;
+  width: 100px;
+  height: 100px;
 }
 </style>
