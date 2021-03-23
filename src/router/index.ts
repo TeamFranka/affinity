@@ -117,7 +117,12 @@ const routes: Array<RouteRecordRaw> = [
       },
       {
         path: '/',
-        redirect: isPlatform('desktop') ? "/feed" : "/news"
+        redirect: () => {
+          if (store.getters["auth/isLoggedIn"]) {
+            return "/feed"
+          }
+          return isPlatform('desktop') ? "/feed" : "/news"
+        }
       },
     ]
   }
@@ -133,7 +138,7 @@ router.beforeEach((_to, _from, next) => {
   next()
 })
 
-router.afterEach((to, from) => {
+router.afterEach(() => {
   store.dispatch("routingEnd");
 })
 
