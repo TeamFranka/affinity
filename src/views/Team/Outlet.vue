@@ -306,7 +306,6 @@ export default defineComponent({
       return this.team.footerLinks || [];
     },
     subOf(): any {
-      console.log(this.team.subOf);
       return this.team.subOf.name || "";
     },
     teamhahay(): any {
