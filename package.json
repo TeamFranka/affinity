@@ -12,6 +12,7 @@
     "build:widget": "vue-cli-service build --target wc --inline-vue --name affinity-chat ./src/components/config/Widget.vue",
     "ci:run-parse": "npm run dev:build-parse && docker-compose up -d && docker-compose logs --tail 30",
     "ci:setup-db": "npm run dev:db && npm run dev:db:mock-data && cp .env.development.local.template .env.development.local",
+    "ci:lint": "vue-cli-service lint --no-fix",
     "deploy:b4a": "npm run deploy:web && npm run deploy:db",
     "deploy:db": "node -r dotenv/config bin/update-db.js dotenv_config_path=.env.production.local",
     "deploy:web": "ionic build --engine browser && cd backend/cloud && npm install && cd ../ && b4a deploy",
