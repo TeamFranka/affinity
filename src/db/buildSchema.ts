@@ -244,7 +244,7 @@ export const lib = {
 			newLocalSchema.addPointer(fieldName, targetClass, others2)
 		} else {
 			// eslint-disable-next-line @typescript-eslint/no-unused-vars
-			newLocalSchema.addField(fieldName, type, others)
+			newLocalSchema.addField(fieldName, type as any, others)
 		}
 	},
 }
