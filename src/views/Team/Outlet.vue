@@ -270,10 +270,6 @@ export default defineComponent({
   computed: {
     team(): Model {
       const slug: any = this.$route.params.teamSlug;
-      console.log("Slug abaixo");
-      console.log(
-        this.store.getters.objectsMap[this.store.getters.teamsBySlug[slug]]
-      );
       return this.store.getters.objectsMap[
         this.store.getters.teamsBySlug[slug]
       ];
