@@ -47,9 +47,9 @@ jobs:
         if: failure()
         with:
           name: 'Test Error Screenshots'
-          path: test/e2e/screenshots
+          path: tests/e2e/screenshots
       - uses: actions/upload-artifact@v2
         if: failure()
         with:
           name: 'Test Error Recordings'
-          path: test/e2/videos
+          path: tests/e2/videos

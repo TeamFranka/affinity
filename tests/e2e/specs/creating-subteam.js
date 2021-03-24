@@ -34,7 +34,7 @@ describe('Create a new sub team as an admin', () => {
 
     // Team Leaders conversation should exist
     cy.visit(`/inbox`);
-    cy.get("ion-item").contains(`${testStr} Leaders`);
+    cy.get(`ion-item [data-cy=teamchat-${subTeamSlug}-leaders`);
   })
 
 })

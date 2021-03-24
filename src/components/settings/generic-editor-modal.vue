@@ -1,7 +1,7 @@
 <template>
   <ion-header>
     <ion-toolbar>
-      <ion-title>{{title}}</ion-title>
+      <ion-title>{{title || $t("editor.defaults.title")}}</ion-title>
       <ion-button
         color="dark"
         fill="clear"
@@ -38,7 +38,7 @@
         data-cy-role="edit"
         :type="type"
         :value="currentValue"
-        :placeholder="placeholder"
+        :placeholder="placeholder || $t('editor.defaults.placeholder')"
         @ion-change="currentValue = $event.target.value"
       />
     </ion-item>
@@ -47,7 +47,7 @@
     <ion-toolbar>
       <ion-button data-cy-role="submit" fill="outline" @click="saveAndClose" slot="end">
         <ion-icon :icon="saveIcon" />
-        <ion-label> {{saveLabel || "Speichern"}}</ion-label>
+        <ion-label> {{saveLabel || $t("editor.default.button")}}</ion-label>
       </ion-button>
     </ion-toolbar>
   </ion-footer>
@@ -78,7 +78,6 @@ export default defineComponent({
   props: {
     title: {
       type: String,
-      default: "Ändern"
     },
     label: {
       type: String,
@@ -95,7 +94,6 @@ export default defineComponent({
     },
     placeholder: {
       type: String,
-      default: "please enter"
     },
     value: {
       type: String,

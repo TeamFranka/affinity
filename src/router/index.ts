@@ -14,6 +14,8 @@ import TeamOutlet from '../views/Team/Outlet.vue';
 import ViewActivity from '../views/ViewActivity.vue';
 import ViewUser from '../views/ViewUser.vue';
 import ViewConversation from '../views/ViewConversation.vue';
+import Settings from '../views/settings/Center.vue';
+import SettingsGeneral from '../views/settings/General.vue';
 import SettingsNotifications from '../views/settings/Notifications.vue';
 import { store } from '../stores/';
 
@@ -104,8 +106,23 @@ const routes: Array<RouteRecordRaw> = [
         component: SettingsNotifications
       },
       {
+        path: '/settings/general',
+        name: 'SettingsGeneral',
+        component: SettingsGeneral
+      },
+      {
+        path: '/settings/',
+        name: 'Settings',
+        component: Settings
+      },
+      {
         path: '/',
-        redirect: isPlatform('desktop') ? "/feed" : "/news"
+        redirect: () => {
+          if (store.getters["auth/isLoggedIn"]) {
+            return "/feed"
+          }
+          return isPlatform('desktop') ? "/feed" : "/news"
+        }
       },
     ]
   }
@@ -121,7 +138,7 @@ router.beforeEach((_to, _from, next) => {
   next()
 })
 
-router.afterEach((to, from) => {
+router.afterEach(() => {
   store.dispatch("routingEnd");
 })
 

@@ -20,9 +20,11 @@
     <div v-if="!showAuthor" class="ion-padding-end">
       <router-link :to="teamLink">{{teamName}}</router-link>
     </div>
-    <router-link data-cy="activityLink" :to="link">
-      <ion-note color="medium">shared {{since}} </ion-note>
-    </router-link>
+    <i18n-t keypath="activity.shared" tag="ion-note" color="medium">
+      <template v-slot:since>
+        <router-link data-cy="activityLink" :to="link">{{since}}</router-link>
+      </template>
+    </i18n-t>
   </ion-card-header>
   <!-- REGULAR FULL VIEW -->
   <ion-card-header v-else>
@@ -63,7 +65,7 @@
       <div v-if="obj.className == 'Poll'" data-cy-obj="poll">
         <poll :poll="obj" />
       </div>
-      <div v-else-if="obj.className == 'Picture'" data-cy-obj="picture">
+      <div v-else-if="obj.className == 'Picture'" data-cy-obj="picture" class="picture">
         <ion-img :src="obj.file.url" />
       </div>
       <div v-else-if="obj.className == 'Link'" data-cy-obj="link" class="link-preview" >
@@ -231,5 +233,18 @@ ion-card-header {
 }
 .link-preview {
   display: flex;
+}
+@media only screen and (min-width: 800px) {
+  .picture {
+    height: 600px;
+    width: 100%;
+  }
+
+  .picture ion-img {
+    width: auto;
+    height: 100%;
+  }
+
+
 }
 </style>
