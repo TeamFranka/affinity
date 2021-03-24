@@ -127,8 +127,7 @@
                     :to="{ name: 'ViewTeam', params: { teamSlug: t.slug } }"
                   >
                     <ion-chip outline>
-                      <avatar :profile="t" size="1.5em" />
-                      <div style="margin: 5px">{{ t.name }}</div>
+                      <avatar :profile="t" size="1.5em" with-name />
                     </ion-chip>
                   </router-link>
                 </li>
