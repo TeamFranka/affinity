@@ -6,7 +6,7 @@
               <ion-icon :icon="closeIcon" />
             </ion-button>
             
-            <ion-title>Edit Team Filter</ion-title>
+            <ion-title>{{ $t('teamFilter.title')}}</ion-title>
             <ion-buttons slot="end" class="ion-padding" @click="saveAndClose">
               <ion-text color="primary">Save</ion-text>
             </ion-buttons>
@@ -41,19 +41,6 @@
             
         </ion-item>
 
-   
-          <!-- <ion-item v-for="(item,index) in teamDetails" :key="index">
-              <ion-toggle slot="start"  @ionChange="toggleHandler($event)"
-            :value="item.name" color="primary" :checked="item.checked"></ion-toggle>
-
-              <ion-avatar v-if="item.avatar.url!==''" size="1.5rem">
-                <img v-bind:src="item.avatar.url" />
-            </ion-avatar>
-           
-            <ion-label class="ion-margin-start">{{item.name}}</ion-label>
-            <ion-reorder></ion-reorder>
-        </ion-item> -->
-
       </ion-reorder-group>
 </ion-content>
 </ion-page>
@@ -62,7 +49,10 @@
 
 <script lang="ts">
 import {
- IonLabel, IonItem, IonToggle,modalController
+ IonLabel, IonItem, IonToggle,modalController,
+ IonHeader,IonIcon,IonAvatar,IonText,IonPage,
+ IonButton,IonButtons,IonTitle,IonToolbar,
+ IonContent,IonReorderGroup,IonReorder
 } from '@ionic/vue';
 import {
    closeOutline as closeIcon,
@@ -70,7 +60,6 @@ import {
 import { defineComponent } from 'vue';
 import { useStore } from '../stores/';
 import { ItemReorderEventDetail } from '@ionic/core';
-
 export default defineComponent({
   name: 'EditTeamFilter',
   props: {
@@ -168,10 +157,7 @@ export default defineComponent({
           this.initalTeam[ev.detail.to].priority = ev.detail.from+1;
        
       },
-      // changePriority(){
-      //    this.store.dispatch('auth/setSetting', { 'feedTabs': this.initalTeam});
-      //    this.getSettings();
-      // },
+   
       saveAndClose() {
         let res: any= []
  
@@ -188,9 +174,10 @@ export default defineComponent({
         modalController.dismiss(res);
     },
   },
-
   components: {
-    IonLabel, IonItem, IonToggle
+    IonLabel, IonItem, IonToggle,IonHeader,IonIcon,IonAvatar,
+    IonButton,IonButtons,IonTitle,IonToolbar,
+    IonContent,IonReorderGroup,IonReorder,IonText,IonPage
   }
 });
 </script>
