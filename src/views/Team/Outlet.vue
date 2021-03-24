@@ -117,7 +117,7 @@
                     Edit Text
                   </ion-button>
                 </p>
-                <render-md adminMd :source="info" />
+                <render-md adminMd :source="team.info" />
               </div>
 
               <h2>Subteams</h2>
