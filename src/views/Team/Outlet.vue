@@ -24,6 +24,9 @@
                     <ion-icon size="small" :icon="editIcon" />
                   </ion-button>
                 </li>
+                <li v-else v-for="l in socialLinks" :key="l.target">
+                  {{l}}
+                </li>
               </inline-link-list>
               <div data-cy="description">
                 <render-md  adminMd :source="info" />
@@ -57,6 +60,15 @@
             <ion-button size="small" @click="showQr = !showQr" fill="clear">
               <ion-icon size="small" :icon="qrCodeIcon" />
             </ion-button>
+
+             <ion-button size="small" @click="showQr = !showQr" fill="clear">
+              <ion-icon size="small" :icon="qrCodeIcon" />
+            </ion-button>
+
+             <ion-button size="small" @click="showQr = !showQr" fill="clear">
+              <ion-icon size="small" :icon="qrCodeIcon" />
+            </ion-button>
+            
             <div slot="end">
               <inline-link-list showTitle :items="footerLinks">
                 <li v-if="canEdit">
