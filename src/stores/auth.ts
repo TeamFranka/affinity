@@ -22,7 +22,9 @@ function currentUser(): Model | null {
   return u ? toModel(u): null;
 }
 
-function setLocale(lang: string) {
+function setLocale(locale: string) {
+  if (!locale) return
+  const lang = locale.split("-", 1)[0];
   i18n.global.locale.value = lang;
   dayjs.locale(lang);
 }
@@ -32,7 +34,7 @@ export const AuthState = {
   state: () => {
 
     const user = currentUser();
-    if (user) {
+    if (user && user.lang) {
       setLocale(user.lang)
     } else {
       deviceLocale().then((l: string) => {
@@ -84,7 +86,7 @@ export const AuthState = {
   mutations: {
     setUser(state: AuthStateT, newUser: Model|null) {
       state.user = newUser
-      if (newUser) {
+      if (newUser && newUser.lang) {
         setLocale(newUser.lang);
       }
     },
