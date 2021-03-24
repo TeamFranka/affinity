@@ -172,5 +172,16 @@
   "setting.push.posts" : "all posts",
   "settings.push.thisDevice": "This device ({name})",
   "settings.title": "Settings",
+  "team.modal.editTitle.title": "Team Name",
+  "team.modal.button.save": "Save",
+  "team.modal.editInfo.title": "Team Info",
+  "team.modal.editCustomStyles.title": "Custom styles",
+  "team.modal.editCustomStyles.help": "Here you can override the global css style variables of the theme. See [the Ionic Theming Guide](https://ionicframework.com/docs/theming/css-variables) and the [handy Color Generator](https://ionicframework.com/docs/theming/color-generator).",
+  "team.header.uploadButton": "upload background",
+  "team.tabs.about": "About",
+  "team.tabs.news": "News",
+  "team.tabs.feed": "Feed",
+  "team.description.edit": "Edit Text",
+  "team.subteams.title": "Subteams",
   "":""
 }

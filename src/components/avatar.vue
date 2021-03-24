@@ -9,7 +9,7 @@
       </svg>
     </span>
   </span>
-  <span v-if="withName">{{shownName}}</span>
+  <span v-if="withName" class="spanWithName">{{shownName}}</span>
 </template>
 
 
@@ -103,5 +103,8 @@ ion-avatar {
   border: 2px solid #aaa;
   width: 100%;
   height: 100%;
+}
+.spanWithName{
+  margin-left: 5px;
 }
 </style>

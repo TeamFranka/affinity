@@ -14,21 +14,13 @@ export default defineComponent({
     },
     logo: {
       type: String
-    },
-    height: {
-      type: Number
-    },
-    width: {
-      type: Number
     }
   },
   mounted() {
     const options = {
       text: this.text,
       logo: this.logo,
-      tooltip: true,
-      height: this.height,
-      width: this.width,
+      tooltip: true
     };
 
     // Create new QRCode Object

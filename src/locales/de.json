@@ -173,5 +173,18 @@
   "setting.push.posts" : "reguläre Posts",
   "settings.push.thisDevice": "Dieses Gerät ({name})",
   "settings.title": "Einstellung",
+
+  "team.modal.editTitle.title": "",
+  "team.modal.editInfo.title": "",
+  "team.header.uploadButton": "",
+  "team.tabs.about": "",
+  "team.tabs.news": "",
+  "team.tabs.feed": "",
+  "team.description.edit": "",
+  "team.subteams.title": "",
+  "team.modal.editCustomStyles.title": "Eigene Styles",
+  "team.modal.button.save": "Speichern",
+  "team.modal.editCustomStyles.help": "Hier kannst du die globalen css-Style-Variablen des Theme überschreiben. Siehe dazu [den Ionic Theming Guide](https://ionicframework.com/docs/theming/css-variables) und den [praktischen Color Generator](https://ionicframework.com/docs/theming/color-generator)",
   "":""
+
 }

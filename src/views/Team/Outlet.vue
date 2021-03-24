@@ -54,7 +54,6 @@
                 <ion-chip
                   v-else
                   @click="selectBackground"
-                  title="upload background"
                 >
                   <ion-icon :icon="imageIcon" />
                   <ion-icon :icon="uploadIcon" />
@@ -75,7 +74,7 @@
           </div>
 
           <ion-toolbar>
-            <!-- Scrollable Segment -->
+
             <ion-segment
               scrollable
               value="about"
@@ -86,26 +85,25 @@
                 <ion-icon :icon="qrCodeIcon" />
               </ion-segment-button>
               <ion-segment-button value="about">
-                <ion-label>{{ $('team.tabs.about') }}</ion-label>
+                <ion-label>{{ $t("team.tabs.about") }}</ion-label>
               </ion-segment-button>
               <ion-segment-button value="news">
-                <ion-label>News</ion-label>
+                <ion-label>{{ $t("team.tabs.news") }}</ion-label>
               </ion-segment-button>
               <ion-segment-button value="feed">
-                <ion-label>Feed</ion-label>
+                <ion-label>{{ $t("team.tabs.feed") }}</ion-label>
               </ion-segment-button>
             </ion-segment>
           </ion-toolbar>
 
-          <div style="display: block; overflow-y: auto; height: 60vh">
+          <div class="body ion-padding">
             <!-- Div About -->
             <div v-if="state == 'about'">
               <div data-cy="description">
                 <h2 data-cy="title" class="subTitle">
                   {{ team.name }}
                 </h2>
-                <p>
-                  {{ team.info }}
+                  <render-md adminMd :source="team.info" />
                   <ion-button
                     data-cy-role="editModal"
                     v-if="canEdit"
@@ -114,20 +112,18 @@
                     size="small"
                     fill="clear"
                   >
-                    Edit Text
+                    {{ $t("team.description.edit") }}
                   </ion-button>
-                </p>
-                <render-md adminMd :source="team.info" />
               </div>
 
-              <h2>Subteams</h2>
+              <h2>{{ $t("team.subteams.title") }}</h2>
               <ul v-if="subteams" class="subteams" data-cy="subteams">
                 <li v-for="t in subteams" :key="t.id">
                   <router-link
                     :to="{ name: 'ViewTeam', params: { teamSlug: t.slug } }"
                   >
                     <ion-chip outline>
-                      <avatar :profile="t" size="1.5em" with-name />
+                      <avatar withName :profile="t" size="1.5em" />
                     </ion-chip>
                   </router-link>
                 </li>
@@ -170,8 +166,6 @@
                   :text="l.target"
                   :logo="getSocialIcon(l.platform)"
                   class="socialLinks"
-                  :height="240 / socialLinks.length"
-                  :width="240 / socialLinks.length"
                 />
               </div>
             </div>
@@ -192,7 +186,7 @@
 </template>
 
 <script lang="ts">
-// import RenderMd from "@/components/render-md.vue";
+import RenderMd from "@/components/render-md.vue";
 import Avatar from "@/components/avatar.vue";
 import { DefaultIcon, Icons } from "@/components/generic/inline-link-list.vue";
 import InlineLinkList from "@/components/generic/inline-link-list.vue";
@@ -214,6 +208,7 @@ import {
   IonSegmentButton,
   IonSegment,
   IonLabel,
+  IonCol
 } from "@ionic/vue";
 
 import {
@@ -245,7 +240,6 @@ export default defineComponent({
     return {
       loading: true,
       state: "about",
-      subteam: "",
     };
   },
   setup() {
@@ -303,10 +297,6 @@ export default defineComponent({
     subOf(): any {
       return this.team.subOf.name || "";
     },
-    teamhahay(): any {
-      console.log("haylou");
-      return "olamundo";
-    },
     permissions(): any {
       return (
         this.store.getters["auth/teamPermissions"][this.team.objectId] || {}
@@ -337,23 +327,15 @@ export default defineComponent({
   },
   methods: {
     segmentChanged(ev: CustomEvent) {
-      console.log("Segment changed", ev);
       this.state = ev.detail.value;
     },
     fetchData() {
       this.loading = true;
       this.state = "about";
-      this.subteam = "";
       const slug: any = this.$route.params.teamSlug;
       let promise;
       if (this.store.getters.teamsBySlug[slug]) {
         promise = Promise.resolve();
-        console.log(this.team.subOf);
-        if (this.team.subOf) {
-          // this.team.name = this.team.subOf.name;
-          // this.subteam = this.team.name;
-        }
-        console.log(this.team);
       } else {
         promise = this.store.dispatch("teams/fetch", slug);
       }
@@ -397,8 +379,8 @@ export default defineComponent({
         componentProps: {
           value: this.team.name || "",
           type: "text",
-          title: "Team Name",
-          saveLabel: "Speichern",
+          title: this.$t("team.modal.editTitle.title"),
+          saveLabel: this.$t("team.modal.button.save"),
         },
       });
       await modal.present();
@@ -414,8 +396,8 @@ export default defineComponent({
           value: this.team.info || "",
           type: "richtext",
           isAdminMd: true,
-          title: "Team Info",
-          saveLabel: "Speichern",
+          title: this.$t("team.modal.editInfo.title"),
+          saveLabel: this.$t("team.modal.button.save"),
         },
       });
       await modal.present();
@@ -431,9 +413,9 @@ export default defineComponent({
           value: this.team.customStyles,
           type: "textarea",
           help:
-            "Hier kannst du die globalen css-Style-Variablen des Theme überschreiben. Siehe dazu [den Ionic Theming Guide](https://ionicframework.com/docs/theming/css-variables) und den [praktischen Color Generator](https://ionicframework.com/docs/theming/color-generator)",
-          title: "Eigene Styles",
-          saveLabel: "Speichern",
+            this.$t("team.modal.editCustomStyles.help"),
+          title: this.$t("team.modal.editCustomStyles.title"),
+          saveLabel: this.$t("team.modal.button.save"),
         },
       });
       await modal.present();
@@ -448,7 +430,7 @@ export default defineComponent({
         componentProps: {
           items: Array.from(this.footerLinks),
           withIcons: false,
-          saveLabel: "Speichern",
+          saveLabel: this.$t("team.modal.button.save"),
         },
       });
       await modal.present();
@@ -466,7 +448,7 @@ export default defineComponent({
           platforms: Object.keys(Icons).map((x) =>
             Object.assign({}, { key: x }, Icons[x])
           ),
-          saveLabel: "Speichern",
+          saveLabel: this.$t("team.modal.button.save"),
         },
       });
       await modal.present();
@@ -528,7 +510,7 @@ export default defineComponent({
   components: {
     Avatar,
     Qrcode,
-    // RenderMd,
+    RenderMd,
     InlineLinkList,
     Activity,
     IonPage,
@@ -541,6 +523,7 @@ export default defineComponent({
     IonSegment,
     IonSegmentButton,
     IonLabel,
+    IonCol
   },
 });
 </script>
@@ -556,6 +539,11 @@ ion-toolbar {
   border-bottom: 1px dotted;
   border-top: 1px dotted;
 }
+.body {
+  display: block;
+  overflow-y: auto;
+  height: 60vh;
+}
 h1 {
   font-size: 13px;
   text-transform: uppercase;
@@ -563,7 +551,6 @@ h1 {
   margin-top: -5%;
 }
 h2 {
-  margin: 5% 5%;
   font-size: 18px;
   font-weight: 400;
 }
@@ -606,6 +593,9 @@ h2.subTitle {
 }
 ion-chip ion-icon {
   margin: 0;
+}
+ion-icon {
+  cursor: pointer;
 }
 .subteams {
   display: flex;
