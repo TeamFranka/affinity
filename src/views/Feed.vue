@@ -18,13 +18,11 @@
           />
         </transition-group>
       </div>
-      <ion-infinite-scroll
-        @ionInfinite="loadMore($event)"
-        threshold="5%"
-      >
+      <ion-infinite-scroll @ionInfinite="loadMore($event)" threshold="5%">
         <ion-infinite-scroll-content
           loading-spinner="crescent"
-          :loading-text="$t('generic.state.loadingMore')">
+          :loading-text="$t('generic.state.loadingMore')"
+        >
         </ion-infinite-scroll-content>
       </ion-infinite-scroll>
     </ion-content>
@@ -33,23 +31,36 @@
 
 <script lang="ts">
 import {
-  IonPage, IonContent, IonSpinner, IonCard, IonCardContent,
+  IonPage,
+  IonContent,
+  IonSpinner,
+  IonCard,
+  IonCardContent,
   IonInfiniteScroll,
   IonInfiniteScrollContent,
-} from '@ionic/vue';
-import { chatbubbles, heartOutline, addOutline, mailOutline, caretForwardOutline } from 'ionicons/icons';
-import { defineComponent, computed } from 'vue';
-import { useStore } from '../stores/';
+} from "@ionic/vue";
+import {
+  chatbubbles,
+  heartOutline,
+  addOutline,
+  mailOutline,
+  caretForwardOutline,
+} from "ionicons/icons";
+import { defineComponent, computed } from "vue";
+import { useStore } from "../stores/";
 import Activity from "../components/activity.vue";
 import NewPost from "../components/new-post.vue";
 
-
 export default defineComponent({
-  name: 'Feed',
+  name: "Feed",
   setup() {
     const store = useStore();
     return {
-      canPostInTeams: computed(() => store.getters["auth/postableTeamIds"].map((id: string)=> store.getters.objectsMap[id])),
+      canPostInTeams: computed(() =>
+        store.getters["auth/postableTeamIds"].map(
+          (id: string) => store.getters.objectsMap[id]
+        )
+      ),
       canPost: computed(() => store.getters["auth/postableTeamIds"].length > 0),
       loading: computed(() => store.state.feed.loading),
       canLoadMore: computed(() => store.getters["feed/canLoadMore"]),
@@ -57,19 +68,30 @@ export default defineComponent({
       showTeams: computed(() => store.getters["auth/myTeams"].length > 1),
       loadMore: (ev: CustomEvent) => {
         console.log("we should load more", ev);
-        store.dispatch("feed/loadMore").then(() => {(ev.target as any).complete()})
+        store.dispatch("feed/loadMore").then(() => {
+          (ev.target as any).complete();
+        });
       },
-      chatbubbles, like: heartOutline, mail: mailOutline, plus: addOutline,
-      teamSplitter: caretForwardOutline, store
-    }
+      chatbubbles,
+      like: heartOutline,
+      mail: mailOutline,
+      plus: addOutline,
+      teamSplitter: caretForwardOutline,
+      store,
+    };
   },
-  methods:{
-  },
+  methods: {},
   components: {
-    IonContent, IonPage, IonSpinner, IonCard, IonCardContent,
-    IonInfiniteScroll, IonInfiniteScrollContent,
-    NewPost, Activity
-  }
+    IonContent,
+    IonPage,
+    IonSpinner,
+    IonCard,
+    IonCardContent,
+    IonInfiniteScroll,
+    IonInfiniteScrollContent,
+    NewPost,
+    Activity,
+  },
 });
 </script>
 

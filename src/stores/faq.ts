@@ -14,10 +14,10 @@ export const Faq = {
   }),
   getters: {
     loading(state: FaqT): boolean {
-      return state.loading
+      return state.loading;
     },
     entries(state: FaqT): Array<string> {
-      return state.entries
+      return state.entries;
     },
   },
   mutations: {
@@ -32,14 +32,16 @@ export const Faq = {
     async refresh(context: any) {
       context.commit("setLoading", true);
       const teams = context.rootGetters["auth/teamPointers"];
-      const entries = await (new Parse.Query(FaqEntry))
+      const entries = await new Parse.Query(FaqEntry)
         .containedIn("team", teams)
         .descending("createdAt")
         .find();
 
-      await context.dispatch("addItems",
-          { items: entries }, { root: true });
-      context.commit("setFaq", entries.map((a) => a.id))
+      await context.dispatch("addItems", { items: entries }, { root: true });
+      context.commit(
+        "setFaq",
+        entries.map((a) => a.id)
+      );
       context.commit("setLoading", false);
     },
   },
