@@ -1,39 +1,38 @@
 <template>
-    <ion-button
-      fill="clear"
-      v-for="i in icons"
-      :key="i.key"
-      :color="selected == i.key ? 'primary' : 'medium'"
-      :title="i.title"
-      @click="select(i)"
-    >
-        <ion-icon :icon="i.icon"/>
-    </ion-button>
+  <ion-button
+    fill="clear"
+    v-for="i in icons"
+    :key="i.key"
+    :color="selected == i.key ? 'primary' : 'medium'"
+    :title="i.title"
+    @click="select(i)"
+  >
+    <ion-icon :icon="i.icon" />
+  </ion-button>
 </template>
 <script lang="ts">
-import {
-    IonIcon, IonButton, popoverController,
-} from '@ionic/vue';
-import { defineComponent } from 'vue';
+import { IonIcon, IonButton, popoverController } from "@ionic/vue";
+import { defineComponent } from "vue";
 
 export default defineComponent({
-  name: 'IconSelector',
+  name: "IconSelector",
   components: {
-    IonIcon, IonButton
+    IonIcon,
+    IonButton,
   },
   props: {
     icons: {
       type: Array,
-      default: () => ([]),
+      default: () => [],
     },
     selected: {
       type: String,
-    }
+    },
   },
-  methods:{
+  methods: {
     select(entry: any) {
-      popoverController.dismiss(entry)
-    }
-  }
+      popoverController.dismiss(entry);
+    },
+  },
 });
 </script>

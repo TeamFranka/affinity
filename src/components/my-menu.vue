@@ -1,15 +1,22 @@
 <template>
-<ion-list>
+  <ion-list>
     <ion-item button @click="select({ name: 'Me' })">
-        <ion-label><ion-icon :icon="profileIcon"/> {{ $t('menu.my.MyProfile') }}</ion-label>
+      <ion-label
+        ><ion-icon :icon="profileIcon" />
+        {{ $t("menu.my.MyProfile") }}</ion-label
+      >
     </ion-item>
-    <ion-item button @click="select({name: 'Settings'})">
-        <ion-label><ion-icon :icon="settingsIcon"/> {{ $t('menu.settings') }}</ion-label>
+    <ion-item button @click="select({ name: 'Settings' })">
+      <ion-label
+        ><ion-icon :icon="settingsIcon" /> {{ $t("menu.settings") }}</ion-label
+      >
     </ion-item>
     <ion-item dataCyRole="logout" button @click="logout" lines="none">
-        <ion-label color="danger"><ion-icon :icon="logOutIcon"/> {{ $t('menu.logout') }}</ion-label>
+      <ion-label color="danger"
+        ><ion-icon :icon="logOutIcon" /> {{ $t("menu.logout") }}</ion-label
+      >
     </ion-item>
-</ion-list>
+  </ion-list>
 </template>
 <script type="ts">
 import {

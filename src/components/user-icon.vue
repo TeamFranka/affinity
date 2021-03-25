@@ -1,9 +1,9 @@
 <template>
   <ion-fab vertical="top" horizontal="end" slot="fixed">
-    <ion-fab-button  color="light">
-        <ion-avatar>
-            <img v-bind:src="user.avatar" />
-        </ion-avatar>
+    <ion-fab-button color="light">
+      <ion-avatar>
+        <img v-bind:src="user.avatar" />
+      </ion-avatar>
     </ion-fab-button>
     <ion-fab-list>
       <ion-fab-button color="success">
@@ -19,23 +19,27 @@
   </ion-fab>
 </template>
 
-
 <script lang="ts">
 import {
-  IonAvatar, IonFab, IonFabButton, IonFabList, IonIcon,
-} from '@ionic/vue';
-import { logIn, logOut } from 'ionicons/icons';
-import { defineComponent } from 'vue';
+  IonAvatar,
+  IonFab,
+  IonFabButton,
+  IonFabList,
+  IonIcon,
+} from "@ionic/vue";
+import { logIn, logOut } from "ionicons/icons";
+import { defineComponent } from "vue";
 
 export default defineComponent({
-  name: 'UserIcon',
+  name: "UserIcon",
   props: {
-      user: Object
-    },
+    user: Object,
+  },
   setup() {
     return {
-      logOut, logIn
-    }
+      logOut,
+      logIn,
+    };
   },
   components: {
     IonAvatar,
@@ -43,6 +47,6 @@ export default defineComponent({
     IonFabButton,
     IonFabList,
     IonIcon,
-  }
+  },
 });
 </script>

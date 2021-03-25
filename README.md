@@ -82,6 +82,20 @@ We use `cypress` (can be found in `tests/e2e/specs`) for end-2-end-integration t
 
 You need to have the backend (docker) and frontend runnig and served at `localhost:8080` for that to work. It relies heavily for the mock-data in the assertions, so if it fails that might not be a bug but different state you currently have locally. To reset the database (CAREFUL THIS PERMANANTLY DELETES YOUR CURRENT DATA!) you can run `npm run dev:db:reset`. Be sure to restart any dev-serve `npm run serve` after, because the default Team ID will have changed.
 
+### Other checks: i18n and code formatting
+
+[![code style: prettier](https://img.shields.io/badge/code_style-prettier-ff69b4.svg?style=flat-square)](https://github.com/prettier/prettier) [![Code Style check](https://github.com/TeamFranka/affinity/actions/workflows/check-style.yml/badge.svg)](https://github.com/TeamFranka/affinity/actions/workflows/check-style.yml) [![i18n check EN & DE](https://github.com/TeamFranka/affinity/actions/workflows/check-i18n.yml/badge.svg)](https://github.com/TeamFranka/affinity/actions/workflows/check-i18n.yml)
+
+Aside from the test suite and CLA we have two other checks enforcing quality: i18n and code style.
+
+#### Code style with prettier
+
+We are styling our code in [prettier](https://prettier.io/) formatting, using eslint and the plugins to enforce it. If you are using VS Code, there's some handy [prettier](https://marketplace.visualstudio.com/items?itemName=esbenp.prettier-vscode) and [eslint](https://marketplace.visualstudio.com/items?itemName=dbaeumer.vscode-eslint) extensions.
+#### Localisation (de/en)
+
+All static visible strings (including `title` and `alt` tags) must be localisable. The project has support for [i18n via vue-18n-next](https://vue-i18n-next.intlify.dev/guide/advanced/component.html#slots-syntax-usage) and the CI check enforces that localised strings are present for `de` and `en`.
+
+
 ### Contributing
 
 See [the Contributions Guide](./.github/CONTRIBUTING.md). Tl;dr:
