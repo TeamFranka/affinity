@@ -1,4 +1,4 @@
-import { Parse, Verb } from "../config/Consts";
+import { Parse } from "../config/Consts";
 import { Picture } from "../db/models";
 import { Model } from "@/utils/model";
 

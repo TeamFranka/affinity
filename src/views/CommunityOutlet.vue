@@ -33,7 +33,7 @@
               <ion-item>
                 <router-link :to="{name: 'Gallery'}">
                   <ion-icon :icon="galleryIcon" /> {{ $t('menu.picture') }}</router-link
-                 ></ion-item   
+                 ></ion-item
               >
             </ion-item-group>
             <ion-item-group v-if="showTeamSubmenu">
@@ -97,7 +97,7 @@ import {
   addCircleOutline,
   chatbubbleEllipsesOutline,
   fileTrayFullOutline,
-  imageOutline as galleryIcon
+  imageOutline as galleryIcon,
   personCircleOutline,
   compassOutline as faqIcon,
   walletOutline,
