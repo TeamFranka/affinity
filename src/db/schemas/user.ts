@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/camelcase */
 // Follow the JSON structure from REST API https://docs.parseplatform.org/rest/guide/#schema
 import { CommonFields } from './common';
 
@@ -8,6 +9,8 @@ export const User = {
         CommonFields,
         {
             email: { type: 'String' },
+            emailVerified: {type: 'Boolean'},
+            lang: { type: 'String' },
             authData: { type: 'Object' },
             password: { type: 'String' },
             username: {

@@ -30,11 +30,13 @@ import { isMobileInstallation, setupNotificationActions } from '@/utils/setup';
 import { ActionPerformed, PushNotificationSchema } from '@capacitor/push-notifications';
 
 import { useStore } from '../stores/';
+import { olderThanDays } from '@/utils/time';
+import i18n from "@/utils/i18n";
 
 import { codePush } from 'capacitor-codepush';
 import { App, AppState } from '@capacitor/app';
 
-if (isPlatform('mobile') && !isPlatform('mobileweb')) {
+if (isMobileInstallation()) {
   App.addListener('appStateChange', (state: AppState) => {
     // state.isActive contains the active state
     if (state.isActive) {
@@ -81,19 +83,40 @@ export default defineComponent({
 
     watch(() => store.state.auth.user, async (newVal, oldVal) => {
       if (newVal && newVal != oldVal) {
-        const toast = await toastController
-          .create({
-            message: `Willkommen zurück, ${newVal.username} 👋!`,
-            color: "success",
-            duration: 3000
-          })
-        return toast.present();
+        if (!newVal.emailVerified) {
+          const inDanger = olderThanDays(newVal.createdAt, 5)
+          const toast = await toastController
+            .create({
+              message: i18n.global.t(
+                inDanger ? "auth.toast.email_unverified_urgent" : "auth.toast.email_unverified",
+                {name: newVal.name || newVal.username}
+              ),
+              color: inDanger ? "danger" : "warning",
+              position: "top",
+              buttons: [{
+                side: "end",
+                text: i18n.global.t("auth.toast.email_unverified_dismiss"),
+                role: 'cancel'
+              }]
+            })
+          return toast.present();
+
+        } else {
+          const toast = await toastController
+            .create({
+              message: i18n.global.t("auth.toast.welcome_back", {name: newVal.name || newVal.username}),
+              color: "success",
+              duration: 1500
+            })
+          return toast.present();
+        }
 
       } else if (!newVal) {
         location.reload();
+        const message =  i18n.global.t("auth.toast.logged_out");
         const toast = await toastController
           .create({
-            message: `Erfolgreich ausgeloggt`,
+            message,
             duration: 2000
           })
         return toast.present();
@@ -129,20 +152,22 @@ export default defineComponent({
       const buttons: any[] = [];
 
       if (isPlatform('android')) {
+        const text = this.$t("install.toast.action");
         buttons.push({
             side: 'end',
             // icon: 'android',
-            text: 'Installieren',
+            text,
             handler: () => {
               window.open(ANDROID_INSTALL_URL)
             }
           }
         )
       } else if (isPlatform('ios')) {
+        const text = this.$t("install.toast.action");
         buttons.push({
             side: 'end',
             // icon: 'apple',
-            text: 'Installieren',
+            text,
             handler: () => {
               window.open(IOS_INSTALL_URL)
             }
@@ -151,9 +176,10 @@ export default defineComponent({
       }
 
       if (buttons.length == 0) {
+        const text = this.$t("install.toast.more");
         buttons.push({
           side: 'end',
-          text: 'Mehr erfahren',
+          text,
           handler: () => {
             this.$router.push({name: "App"})
           }
@@ -166,10 +192,10 @@ export default defineComponent({
         text: 'x',
       });
 
-
+      const message =  this.$t("install.toast.header");
       const toast = await toastController
         .create({
-          header: "Jetzt die mobile App Beta ausprobieren!",
+          message,
           position: 'top',
           duration: 0,
           buttons: buttons as any[],
@@ -213,9 +239,9 @@ ion-app {
 .menu > * {
   margin-right: 0.3em;
 }
-.wrap {
+/*.wrap {
   max-width: 860px;
-}
+}*/
 ion-content {
   display: flex;
   align-items: center;

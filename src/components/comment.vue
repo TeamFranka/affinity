@@ -33,7 +33,7 @@
         v-if="showInput"
         :value="draft"
         :canSubmit="!!(draft && draft.length >= 3)"
-        placeholder="comment here"
+        :placeholder="$t('comment.placeholder')"
         @submit="submitComment()"
         @changed="setDraft($event)"
       />
@@ -146,7 +146,6 @@ export default defineComponent({
   },
   methods: {
     setDraft(text: string) {
-      console.log("setting draft", text);
       this.store.commit("comments/setDraft", {
         objectId: this.object.objectId,
         replyTo: this.commentId,

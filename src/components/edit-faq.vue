@@ -4,7 +4,7 @@
       <ion-input
         :value="title"
         @ion-change="title = $event.target.value"
-        placeholder="Fragen-Titel"
+        :placeholder="$t('faq.title.placeholder')"
       />
       <ion-button
         color="dark"
@@ -25,7 +25,7 @@
     <ion-chip v-for="(t, index) in tags" :key="t" @click="removeTag(index)">
         {{t}} <ion-icon :icon="removeIcon"></ion-icon>
     </ion-chip>
-    <ion-input v-model="newTag" @keyup.enter="addTag" placeholder="add tags"/>
+    <ion-input v-model="newTag" @keyup.enter="addTag" :placeholder="$t('faq.addTag.placeholder')"/>
     <ion-button @click="addTag" fill="clear" size="small">
         <ion-icon :icon="addIcon"></ion-icon>
     </ion-button>
@@ -34,7 +34,7 @@
     <ion-toolbar>
       <ion-button fill="outline" :disabled='!canSubmit' @click="saveAndClose" slot="end">
         <ion-icon :icon="saveIcon" />
-        <ion-label> {{saveLabel || "Save"}}</ion-label>
+        <ion-label> {{saveLabel || $t('faq.button.save') }}</ion-label>
       </ion-button>
     </ion-toolbar>
   </ion-footer>
@@ -113,12 +113,6 @@ export default defineComponent({
       });
       modalController.dismiss(data);
     },
-    addOption() {
-      this.options.push({title: `Option ${this.options.length + 1}`});
-    },
-    removeOption(idx: number) {
-      this.options.splice(idx, 1);
-    }
   }
 });
 </script>

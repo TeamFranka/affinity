@@ -52,6 +52,21 @@ export const Users = [
     }
 ]
 
+export const UserOverrides = {
+    'clara': {
+        'emailVerified': true,
+    },
+    'graham': {
+        'emailVerified': true,
+    },
+    'river':  {
+        'emailVerified': true,
+    },
+    'yaz':  {
+        'emailVerified': true,
+    },
+}
+
 
 export const Devices = [
     { // Clara's Android

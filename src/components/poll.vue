@@ -5,8 +5,21 @@
       <ion-title data-cy-role="title">{{title}}</ion-title>
     </ion-col>
     <ion-col class="ion-text-end">
-      <ion-button data-cy="editPoll" fill="clear" @click="editPoll" size="small" v-if="canEdit" title="Editieren"><ion-icon :icon="editIcon"/></ion-button>
-      <ion-button @click="intendToClose" fill="clear" size="small" v-if="canClose" title="Schließen"><ion-icon :icon="closeIcon"/></ion-button>
+      <ion-button
+        data-cy="editPoll"
+        fill="clear"
+        @click="editPoll"
+        size="small"
+        v-if="canEdit"
+        :title="$t('poll.title.editAction')"
+      ><ion-icon :icon="editIcon"/></ion-button>
+      <ion-button
+        @click="intendToClose"
+        fill="clear"
+        size="small"
+        v-if="canClose"
+        :title="$t('poll.title.closeAction')"
+      ><ion-icon :icon="closeIcon"/></ion-button>
       <slot name="extraButtons"></slot>
     </ion-col>
   </ion-row>
@@ -15,7 +28,7 @@
       <render-md :source="text" />
     </ion-col>
     <ion-col size="12" class="ion-padding-start" v-if="outcome">
-      <h3>Ergebnis:</h3>
+      <h3>{{$t('poll.title.result')}}</h3>
       <p>{{outcome}}</p>
     </ion-col>
     <ion-col size="12">
@@ -36,12 +49,17 @@
   <ion-row>
     <ion-col>
       <ion-note>
-        <span v-if="votedCount">{{votedCount}} haben abgestimmt.</span>
-        Jede:r kann {{canMultiselect ? 'eine Option' : 'mehrere Optionen' }} auswählen.
-        <span v-if="isAnonymous">Stimmen werden anonym gespeichert.</span>
-        <span v-if="canReset">Die Stimme kann geändert werden.</span>
-        <span v-if="willClose">Schließt <span style="text-decoration: underline">{{closesAt}}</span>.</span>
-        <span v-if="isClosed">Geschlossen {{closesAt}}.</span>
+        <span v-if="votedCount">{{ $t('poll.notes.votedCount', {count: votedCount}) }}</span>
+        <span v-if="canMultiselect">{{ $t('poll.notes.canMultiSelect') }}</span>
+        <span v-else>{{ $t('poll.notes.canNotMultiSelect') }}</span>
+        <span v-if="isAnonymous">{{ $t('poll.notes.isAnon') }}</span>
+        <span v-if="canReset">{{ $t('poll.notes.canReset') }}</span>
+        <i18n-t tag="span" v-if="willClose" keypath="poll.notes.closes">
+          <template v-slot:closesAt>
+            <span style="text-decoration: underline">{{closesAt}}</span>
+          </template>
+        </i18n-t>
+        <span v-if="isClosed">{{ $t('poll.notes.close', {closed: closesAt} )}}</span>
       </ion-note>
     </ion-col>
     <ion-col class="ion-text-end">
@@ -54,13 +72,13 @@
           @click="submit"
           size="small"
           fill="outline"
-        >Abstimmen</ion-button>
+        >{{ $t('poll.actions.vote') }}</ion-button>
         <ion-button
           v-if="canShowResults"
           @click="wantsToShowResult = true"
           fill="clear"
           size="small"
-        >Zwischenergebnis zeigen</ion-button>
+        >{{ $t('poll.actions.showResults') }}</ion-button>
       </div>
       <div class="ion-text-end" v-if="!loading && showingResults">
         <ion-button
@@ -68,14 +86,14 @@
           @click="wantsToShowResult = false"
           fill="clear"
           size="small"
-        >ausblenden</ion-button>
+        >{{ $t('poll.actions.hideResults') }}</ion-button>
         <ion-button
           v-if="hasVoted && canReset"
           data-cy-role="reset"
           @click="resetVote"
           fill="outline"
           size="small"
-        >Stimme zurücknehmen</ion-button>
+        >{{ $t('poll.actions.resetVote') }}</ion-button>
       </div>
     </ion-col>
   </ion-row>
@@ -163,22 +181,22 @@ export default defineComponent({
     async intendToClose() {
       const alert = await alertController
         .create({
-          header: 'Umfrage abschließen!',
-          message: 'Willst Du die Umfrage wirklich abschließen?',
+          header: this.$t("poll.close.header"),
+          message: this.$t("poll.close.message"),
           inputs: [
             {
               name: "outcome",
-              placeholder: 'optional das Ergebnis festhalten...',
+              placeholder: this.$t("poll.close.outcomePlaceholder"),
             },
           ],
           buttons: [
             {
-              text: 'Nope',
+              text: this.$t("generic.cancel"),
               role: 'cancel',
               cssClass: 'secondary',
             },
             {
-              text: 'Jup',
+              text: this.$t("poll.close.agree"),
               handler: async (data) => {
                 const { outcome } = data;
                 this.loading = true;

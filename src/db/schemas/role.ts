@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/camelcase */
 export const Role = {
     className: "_Role",
     fields: {

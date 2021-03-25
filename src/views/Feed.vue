@@ -26,7 +26,7 @@
       >
         <ion-infinite-scroll-content
           loading-spinner="crescent"
-          loading-text="Loading more data...">
+          :loading-text="$t('generic.state.loadingMore')">
         </ion-infinite-scroll-content>
       </ion-infinite-scroll>
     </ion-content>

@@ -56,13 +56,13 @@ function remap(d) {
     return d
 }
 
-var args = process.argv.slice(2);
+const args = process.argv.slice(2);
 console.log('myArgs: ', args);
 
 (async () => {
     console.info("Creating Users")
 
-    await Promise.all(mocks.Users.map(async (e, index) => {
+    await Promise.all(mocks.Users.map(async (e) => {
         let u = await (new Parse.Query(Parse.User))
             .equalTo("username", e.username)
             .first({ useMasterKey: true });
@@ -74,7 +74,8 @@ console.log('myArgs: ', args);
             const f = await e.avatar.save();
             e.avatar = f;
         }
-        await u.save(e, { useMasterKey: true });
+        const userData = Object.assign({}, e, mocks.UserOverrides[e.username]);
+        await u.save(userData, { useMasterKey: true });
         console.info(` - ${e.username} with password ${e.password}`);
         users[e.username] = u
     }));

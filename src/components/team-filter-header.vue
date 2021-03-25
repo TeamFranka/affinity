@@ -3,7 +3,7 @@
     <ion-toolbar>
       <ion-segment scrollable @click="teamSelected($event)"  v-if ="newTeamArray.length==0">
          <ion-segment-button value="all">
-          <ion-label>All</ion-label>
+          <ion-label>{{ $t('teamFilter.all')}}</ion-label>
         </ion-segment-button>
         <ion-segment-button  v-for="item in teamName" :key="item.objectId" :value="item.name">
           <ion-label>{{item.name}}</ion-label>
@@ -16,7 +16,7 @@
       <!-- When setting data set -->
       <ion-segment scrollable @click="teamSelected($event)"  v-if ="newTeamArray.length!=0">
           <ion-segment-button value="all">
-          <ion-label>All</ion-label>
+          <ion-label>{{ $t('teamFilter.all')}}</ion-label>
         </ion-segment-button>
 
         <ion-list v-for="(item, index) in newTeamArray" v-bind:index="item.priority" :key="index">

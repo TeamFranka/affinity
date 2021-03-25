@@ -3,6 +3,13 @@
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const { fetchMyTeams } = require("./utils.js");
 
+Parse.Cloud.define("getInstallations", async (request) => {
+  return (new Parse.Query(Parse.Installation))
+    .equalTo('user', request.user)
+    .find({useMasterKey: true})
+},{
+  requireUser: true,
+});
 
 Parse.Cloud.define("claimInstallation", async (request) => {
   const params = Object.assign({}, request.params);

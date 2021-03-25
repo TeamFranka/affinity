@@ -8,7 +8,7 @@
             
             <ion-title>{{ $t('teamFilter.title')}}</ion-title>
             <ion-buttons slot="end" class="ion-padding" @click="saveAndClose">
-              <ion-text color="primary">Save</ion-text>
+              <ion-text color="primary">{{ $t('teamFilter.button.save')}}</ion-text>
             </ion-buttons>
           </ion-toolbar>
       </ion-header>
@@ -18,13 +18,13 @@
         <ion-item lines="none">
             <ion-toggle  @ionChange="showTeamName($event)"
             value="displayName" color="primary"></ion-toggle>
-            <ion-label>Show Team Names</ion-label>
+            <ion-label>{{$t('teamFilter.showTeamName')}}</ion-label>
         </ion-item> 
         
         <ion-item>
             <ion-toggle  @ionChange="allCheck($event)" v-model="isAllSelected"
               value="all" color="primary"></ion-toggle>
-            <ion-label>All</ion-label>
+            <ion-label>{{ $t('teamFilter.all')}}</ion-label>
         </ion-item>
       <ion-reorder-group reorder="true" @ionItemReorder="doReorder($event)" disabled="false" v-if="initalTeam.length!==0">
 

@@ -31,6 +31,7 @@ import {
 // import {
 // } from 'ionicons/icons';
 import { adminMd, userMd, td } from '../utils/md';
+import i18n from "@/utils/i18n";
 
 import { defineComponent } from 'vue';
 
@@ -40,74 +41,76 @@ const queryCommandValue = (command: string) => document.queryCommandValue(comman
 
 export const exec = (command: string, value: any = null) => document.execCommand(command, false, value)
 
+const $t = (x: string) => i18n.global.t(x);
+
 const defaultActions: Record<string, any> = {
   bold: {
-    icon: '<b>B</b>',
-    title: 'Bold',
+    icon: $t('richEditor.actions.boldIcon'),
+    title: $t('richEditor.actions.bold'),
     stateKey: 'bold',
     action: () => exec('bold')
   },
   italic: {
-    icon: '<i>I</i>',
-    title: 'Italic',
+    icon: $t('richEditor.actions.italicIcon'),
+    title: $t('richEditor.actions.italic'),
     stateKey: 'italic',
     action: () => exec('italic')
   },
   underline: {
-    icon: '<u>U</u>',
-    title: 'Underline',
+    icon: $t('richEditor.actions.underlineIcon'),
+    title: $t('richEditor.actions.underline'),
     stateKey: 'underline',
     action: () => exec('underline')
   },
   strikethrough: {
-    icon: '<strike>S</strike>',
-    title: 'Strike-through',
+    icon: $t('richEditor.actions.strikethroughIcon'),
+    title: $t('richEditor.actions.strikethrough'),
     stateKey: 'strikeThrough',
     action: () => exec('strikeThrough')
   },
   heading1: {
-    icon: '<b>H<sub>1</sub></b>',
-    title: 'Heading 1',
+    icon: $t('richEditor.actions.h1Icon'),
+    title: $t('richEditor.actions.h1'),
     action: () => exec(formatBlock, '<h1>')
   },
   heading2: {
-    icon: '<b>H<sub>2</sub></b>',
-    title: 'Heading 2',
+    icon: $t('richEditor.actions.h2Icon'),
+    title: $t('richEditor.actions.h2'),
     action: () => exec(formatBlock, '<h2>')
   },
   heading3: {
-    icon: '<b>H<sub>3</sub></b>',
-    title: 'Heading 3',
+    icon: $t('richEditor.actions.h3Icon'),
+    title: $t('richEditor.actions.h3'),
     action: () => exec(formatBlock, '<h3>')
   },
   paragraph: {
-    icon: '&#182;',
-    title: 'Paragraph',
+    icon: $t('richEditor.actions.paragraphIcon'),
+    title: $t('richEditor.actions.paragraph'),
     action: () => exec(formatBlock, '<p>')
   },
   quote: {
-    icon: '&#8220; &#8221;',
-    title: 'Quote',
+    icon: $t('richEditor.actions.quoteIcon'),
+    title: $t('richEditor.actions.quote'),
     action: () => exec(formatBlock, '<blockquote>')
   },
   olist: {
-    icon: '&#35;',
-    title: 'Ordered List',
+    icon: $t('richEditor.actions.orderedListIcon'),
+    title: $t('richEditor.actions.orderedList'),
     action: () => exec('insertOrderedList')
   },
   ulist: {
-    icon: '&#8226;',
-    title: 'Unordered List',
+    icon: $t('richEditor.actions.unorderedListIcon'),
+    title: $t('richEditor.actions.unorderedList'),
     action: () => exec('insertUnorderedList')
   },
   code: {
-    icon: '&lt;/&gt;',
-    title: 'Code',
+    icon: $t('richEditor.actions.codeIcon'),
+    title: $t('richEditor.actions.code'),
     action: () => exec(formatBlock, '<pre>')
   },
   line: {
-    icon: '&#8213;',
-    title: 'Horizontal Line',
+    icon: $t('richEditor.actions.hrIcon'),
+    title: $t('richEditor.actions.hr'),
     action: () => exec('insertHorizontalRule')
   }
 };
@@ -154,7 +157,7 @@ export default defineComponent({
     },
     placeholder: {
       type: String,
-      default: "Type your text here"
+      default: $t('richtEditor.defaults.placeholder')
     },
     debounce: {
       type: Number,
