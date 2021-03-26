@@ -15,7 +15,7 @@ describe("Posting to the feed as regular User", () => {
       cy.get("[data-cy-role=submit]").first().click();
     });
 
-    cy.get("[data-cy-type=activity] [data-cy-role=content] p").should(
+    cy.get("[data-cy-type=activity]:first [data-cy-role=content] p").should(
       "contain",
       testStr
     );
@@ -33,7 +33,7 @@ describe("Posting to the feed as regular User", () => {
     });
     cy.get("ion-modal [data-cy-role=submit]").first().click();
 
-    cy.get("[data-cy-type=activity] [data-cy-role=content] p").should(
+    cy.get("[data-cy-type=activity]:first [data-cy-role=content] p").should(
       "contain",
       testStr
     );
@@ -55,7 +55,7 @@ describe("Posting to the feed as regular User", () => {
       cy.get("[data-cy-role=submit]").first().click();
     });
 
-    cy.get("[data-cy-type=activity] [data-cy-obj=link] a")
+    cy.get("[data-cy-type=activity]:first [data-cy-obj=link] a")
       .should("have.attr", "href")
       .and("contain", "https://twitter.com/bbcdoctorwho");
   });
@@ -80,7 +80,7 @@ describe("Posting to the feed as regular User", () => {
     });
     cy.get("ion-modal [data-cy-role=submit]").first().click();
 
-    cy.get("[data-cy-type=activity] [data-cy-obj=link] a")
+    cy.get("[data-cy-type=activity]:first [data-cy-obj=link] a")
       .should("have.attr", "href")
       .and("contain", "https://twitter.com/bbcdoctorwho");
   });
@@ -116,7 +116,7 @@ describe("Posting to the feed as regular User", () => {
         cy.get("[data-cy-role=submit]").first().click();
       });
 
-    cy.get("[data-cy-type=activity] [data-cy-obj=link] a")
+    cy.get("[data-cy-type=activity]:first [data-cy-obj=link] a")
       .should("have.attr", "href", link)
       .then(($a) => {
         cy.get($a).contains(
@@ -165,7 +165,7 @@ describe("Posting to the feed as regular User", () => {
 
     cy.get("ion-modal [data-cy-role=submit]").first().click();
 
-    cy.get("[data-cy-type=activity] [data-cy-obj=link] a")
+    cy.get("[data-cy-type=activity]:first [data-cy-obj=link] a")
       .should("have.attr", "href", link)
       .then(($a) => {
         cy.get($a).contains(
