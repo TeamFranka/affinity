@@ -8,7 +8,7 @@ export interface TeamsT {
   subteams: Record<string, Array<string>>;
 }
 
-const MODEL_KEYS = ['objects'];
+const MODEL_KEYS = ["objects"];
 
 export const Teams = {
   namespaced: true,
@@ -17,33 +17,33 @@ export const Teams = {
     news: {},
     subteams: {},
   }),
-  getters: {
-  },
+  getters: {},
   mutations: {
-    setNews(state: TeamsT, res: any){
+    setNews(state: TeamsT, res: any) {
       const { teamId, news } = res;
       state.news[teamId] = news;
     },
-    setSubteams(state: TeamsT, res: any){
+    setSubteams(state: TeamsT, res: any) {
       const { teamId, teams } = res;
       state.subteams[teamId] = teams;
-    }
+    },
   },
   actions: {
     async fetch(context: any, slug: string) {
       const resp = await Parse.Cloud.run("getTeam", { slug });
-      await context.commit("setItems", resp.teams, {root: true});
-      await context.commit("auth/addPermissions", resp.permissions, { root: true });
+      await context.commit("setItems", resp.teams, { root: true });
+      await context.commit("auth/addPermissions", resp.permissions, {
+        root: true,
+      });
     },
     async fetchSubteams(context: any, parentTeam: Parse.Pointer) {
-      const query = (new Parse.Query(Team))
-        .equalTo("subOf", parentTeam);
+      const query = new Parse.Query(Team).equalTo("subOf", parentTeam);
       const teams = await query.find();
 
-      await context.commit("setItems", teams.map(toModel), {root: true});
+      await context.commit("setItems", teams.map(toModel), { root: true });
       await context.commit("setSubteams", {
         teamId: parentTeam.objectId,
-        teams: teams.map((x: any) => x.id)
+        teams: teams.map((x: any) => x.id),
       });
     },
     async createSubteam(context: any, data: any): Promise<Model> {
@@ -51,24 +51,25 @@ export const Teams = {
       await team.save();
       const converted = toModel(team);
       await context.commit("setItems", [converted], { root: true });
-      return converted
+      return converted;
     },
     async fetchNews(context: any, team: Parse.Pointer) {
-      const query = (new Parse.Query(Activity))
+      const query = new Parse.Query(Activity)
         .equalTo("verb", Verb.Announce)
         .equalTo("team", team)
         .include(MODEL_KEYS)
         .descending("createdAt");
       const news = await query.find();
 
-      await context.dispatch("addItems",
+      await context.dispatch(
+        "addItems",
         { items: news, keys: MODEL_KEYS },
         { root: true }
       );
       context.commit("setNews", {
         teamId: team.objectId,
-        news: news.map((a) => a.id)
+        news: news.map((a) => a.id),
       });
-    }
+    },
   },
 };

@@ -7,25 +7,25 @@
   />
 </template>
 <script lang="ts">
-import {
-  modalController,
-} from "@ionic/vue";
+import { modalController } from "@ionic/vue";
 import Login from "./login.vue";
-import { useStore } from '../stores/';
-import { defineComponent, computed } from 'vue';
+import { useStore } from "../stores/";
+import { defineComponent, computed } from "vue";
 
 export default defineComponent({
-  name: 'LoginModal',
+  name: "LoginModal",
   components: {
     Login,
   },
-  setup(){
+  setup() {
     const store = useStore();
     return {
-      signUpExtra: computed(()=> ( { signUpForTeams: [store.getters.defaultTeamId] } )),
+      signUpExtra: computed(() => ({
+        signUpForTeams: [store.getters.defaultTeamId],
+      })),
       closeModal: () => modalController.dismiss(),
-      userUpdated: (newUser: any) => store.dispatch("auth/loggedIn", newUser)
-    }
-  }
+      userUpdated: (newUser: any) => store.dispatch("auth/loggedIn", newUser),
+    };
+  },
 });
 </script>

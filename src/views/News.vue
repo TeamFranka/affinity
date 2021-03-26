@@ -15,43 +15,50 @@
 </template>
 
 <script lang="ts">
+import { IonContent, IonPage, IonSpinner } from "@ionic/vue";
 import {
-  IonContent, IonPage, IonSpinner
-} from '@ionic/vue';
-import {
-  chatbubbles, heartOutline, mailOutline, addOutline, caretForwardOutline
-} from 'ionicons/icons';
-import { defineComponent, computed } from 'vue';
-import NewsItem from '../components/news-item.vue';
-import { useStore } from '../stores/';
+  chatbubbles,
+  heartOutline,
+  mailOutline,
+  addOutline,
+  caretForwardOutline,
+} from "ionicons/icons";
+import { defineComponent, computed } from "vue";
+import NewsItem from "../components/news-item.vue";
+import { useStore } from "../stores/";
 import { createGesture } from "@ionic/core";
 
 function reversed<T>(input: Array<T>): Array<T> {
-    const ret = [];
-    for(let i = input.length - 1; i >= 0; i--) {
-        ret.push(input[i]);
-    }
-    return ret;
+  const ret = [];
+  for (let i = input.length - 1; i >= 0; i--) {
+    ret.push(input[i]);
+  }
+  return ret;
 }
 
 export default defineComponent({
-  name: 'NewsFeed',
+  name: "NewsFeed",
   setup() {
     const store = useStore();
     return {
       loading: computed(() => store.getters["news/loading"]),
-      refresh(){ store.dispatch("news/refresh"); },
+      refresh() {
+        store.dispatch("news/refresh");
+      },
       feed: computed(() => reversed(store.getters["news/latest"])),
-      chatbubbles, like: heartOutline, mail: mailOutline, plus: addOutline,
+      chatbubbles,
+      like: heartOutline,
+      mail: mailOutline,
+      plus: addOutline,
       teamSplitter: caretForwardOutline,
-    }
+    };
   },
   mounted() {
     if (!this.loading && this.feed.length === 0) {
       this.refresh();
     }
 
-    const c: any  = this.$refs.box;
+    const c: any = this.$refs.box;
     let prev: any, next: any;
 
     console.log(c);
@@ -71,13 +78,13 @@ export default defineComponent({
         }
 
         if (shown.length > 1) {
-          next = shown[shown.length -1];
+          next = shown[shown.length - 1];
         } else {
           next = null;
         }
         console.log("starting", prev, next);
       },
-      onMove: ev => {
+      onMove: (ev) => {
         console.log(prev);
         if (prev && ev.deltaY > 0) {
           prev.style.transform = `translateY(${ev.deltaY}px)`;
@@ -86,9 +93,9 @@ export default defineComponent({
           next.style.transform = `translateY(${ev.deltaY}px)`;
         }
       },
-      onEnd: ev => {
+      onEnd: (ev) => {
         if (prev) {
-          prev.style.transform = '';
+          prev.style.transform = "";
           if (ev.deltaY > 150) {
             prev.classList.remove("hidden");
             prev.classList.add("shown");
@@ -98,7 +105,7 @@ export default defineComponent({
           }
         }
         if (next) {
-          next.style.transform = '';
+          next.style.transform = "";
           if (ev.deltaY < -150) {
             next.classList.add("hidden");
             next.classList.remove("shown");
@@ -113,7 +120,10 @@ export default defineComponent({
     gesture.enable();
   },
   components: {
-    IonContent, IonPage, IonSpinner, NewsItem,
+    IonContent,
+    IonPage,
+    IonSpinner,
+    NewsItem,
     // IonToggle, IonSpinner, IonCard, IonCardContent,
     // NewPost, Activity
   },
