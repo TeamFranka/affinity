@@ -176,5 +176,10 @@
   "setting.push.posts" : "reguläre Posts",
   "settings.push.thisDevice": "Dieses Gerät ({name})",
   "settings.title": "Einstellung",
-  "":""
+  "":"",
+  "teamFilter.title":"Teamfilter bearbeiten",
+  "teamFilter.button.save":"Speichern",
+  "teamFilter.showTeamName":"Teamnamen anzeigen",
+  "teamFilter.all":"Alle",
+  "newPost.createPost":"Erstellen Sie einen Beitrag"
 }

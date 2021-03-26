@@ -1,8 +1,8 @@
 <template>
-  <form @submit="submit">
+  <form @submit="submit" >
     <ion-grid class="new-post" data-cy="newPost">
       <ion-row>
-        <ion-col size-md="11" size-xs="10">
+         <ion-col>
           <rich-editor
             ref="editor"
             :enabledActions="richActions"
@@ -23,7 +23,7 @@
             /></ion-button>
           </p>
         </ion-col>
-        <ion-col size-md="1" class="ion-hide-sm-down">
+        <ion-col size-xs="2" size-md="1" v-if="!hideSend">
           <ion-button
             data-cy="submitPost"
             type="submit"
@@ -31,8 +31,8 @@
             fill="outline"
             v-bind:disabled="!canSubmit"
             shape="round"
-            size="small"
-          >
+            size="small">
+
             <ion-icon :icon="sendIcon"></ion-icon>
           </ion-button>
         </ion-col>
@@ -137,7 +137,8 @@
       </ion-row>
       <ion-row>
         <ion-col
-          size-md="6"
+          size-xs="6"
+          size-lg="4"
           v-for="(o, index) in objects"
           v-bind:key="o._localId"
         >
@@ -289,7 +290,7 @@
         </ion-col>
       </ion-row>
       <ion-row>
-        <ion-col size-sm="12" size-xs="10">
+        <ion-col>
           <input
             type="file"
             ref="fileSelector"
@@ -336,19 +337,6 @@
             <ion-icon :icon="documentIcon" color="secondary"></ion-icon>
             <ion-label>{{ $t("newPost.actions.add.document") }}</ion-label>
           </ion-chip>
-        </ion-col>
-        <ion-col size-xs="2" class="ion-hide-md-up">
-          <ion-button
-            type="submit"
-            data-cy="submitPost"
-            data-cy-role="submit"
-            fill="outline"
-            v-bind:disabled="!canSubmit"
-            shape="round"
-            size="small"
-          >
-            <ion-icon :icon="sendIcon"></ion-icon>
-          </ion-button>
         </ion-col>
       </ion-row>
     </ion-grid>
@@ -425,6 +413,10 @@ export default defineComponent({
       type: Array,
       required: true,
     },
+     hideSend:{
+      type:Boolean,
+      required:true
+    }
   },
   data() {
     return {
@@ -628,12 +620,27 @@ export default defineComponent({
         this.store.commit("draft/updatePoll", { index, data: res.data });
       }
     },
-  },
+     closeModal() {
+        modalController.dismiss();
+    },
+  }
 });
 </script>
 <style scoped>
 .new-post {
   max-width: 1080px;
   margin: 0 auto;
+}
+.container{
+  border:1px solid grey;
+  height:300px;
+}
+.wrapper-container{
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column-reverse;
+}
+ion-back-button{
+  display: block;
 }
 </style>

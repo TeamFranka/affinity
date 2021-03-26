@@ -1,8 +1,15 @@
 <template>
   <ion-page>
+
+    <ion-fab class="ion-hide-sm-up" vertical="bottom" horizontal="end" slot="fixed"  v-if="canPost">
+      <ion-fab-button data-cy="openNewPostModal" color="primary" v-if="canPost" @click="openNewPostModal()">
+        <ion-icon size="small" :icon="editIcon"/>
+      </ion-fab-button>
+    </ion-fab>
+
     <ion-content data-cy="activity-feed">
       <div class="wrap">
-        <ion-card v-if="canPost">
+        <ion-card class="ion-hide-sm-down" v-if="canPost">
           <ion-card-content>
             <new-post :teams="canPostInTeams" />
           </ion-card-content>
@@ -38,21 +45,33 @@ import {
   IonCardContent,
   IonInfiniteScroll,
   IonInfiniteScrollContent,
-} from "@ionic/vue";
+  IonFab,
+  IonFabButton,
+  IonIcon,
+  modalController
+} from '@ionic/vue';
 import {
   chatbubbles,
   heartOutline,
   addOutline,
   mailOutline,
-  caretForwardOutline,
-} from "ionicons/icons";
-import { defineComponent, computed } from "vue";
-import { useStore } from "../stores/";
+  caretForwardOutline ,
+  createOutline as editIcon
+  } from 'ionicons/icons';
+import { defineComponent, computed } from 'vue';
+import { useStore } from '../stores/';
 import Activity from "../components/activity.vue";
 import NewPost from "../components/new-post.vue";
+import NewPostModal from "../components/new-post-modal.vue";
 
 export default defineComponent({
-  name: "Feed",
+  name: 'Feed',
+  data(){
+    return{
+      searchValue:''
+    }
+  },
+
   setup() {
     const store = useStore();
     return {
@@ -62,6 +81,7 @@ export default defineComponent({
         )
       ),
       canPost: computed(() => store.getters["auth/postableTeamIds"].length > 0),
+      teamName: computed(() => store.getters["auth/myTeams"]),
       loading: computed(() => store.state.feed.loading),
       canLoadMore: computed(() => store.getters["feed/canLoadMore"]),
       latestPosts: computed(() => store.getters["feed/latestPosts"]),
@@ -72,15 +92,27 @@ export default defineComponent({
           (ev.target as any).complete();
         });
       },
-      chatbubbles,
-      like: heartOutline,
-      mail: mailOutline,
-      plus: addOutline,
-      teamSplitter: caretForwardOutline,
-      store,
-    };
+      chatbubbles, like: heartOutline, mail: mailOutline, plus: addOutline,
+      teamSplitter: caretForwardOutline, store,editIcon
+    }
   },
-  methods: {},
+  methods:{
+    async openNewPostModal () {
+      const popover = await modalController
+        .create({
+          component: NewPostModal,
+           cssClass:'modalCss',
+           componentProps: {
+            teams: this.canPostInTeams,
+          },
+        });
+      popover.present();
+      const result = await popover.onDidDismiss();
+      if (result.data) {
+        console.log("result",result);
+      }
+    },
+  },
   components: {
     IonContent,
     IonPage,
@@ -89,9 +121,12 @@ export default defineComponent({
     IonCardContent,
     IonInfiniteScroll,
     IonInfiniteScrollContent,
+    IonFab,
+    IonFabButton,
+    IonIcon,
     NewPost,
     Activity,
-  },
+  }
 });
 </script>
 
