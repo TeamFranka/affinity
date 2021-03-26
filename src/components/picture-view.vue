@@ -4,19 +4,19 @@
     <ion-content scroll-x="false" scroll-y="false">
          <ion-header>
         <ion-toolbar>
-            <ion-button class="closeIcon" color="dark" fill="clear" @click="closeModal" slot="start">
-              <ion-back-button/>
-              <ion-label>back</ion-label>
+            <ion-button class="closeIcon" color="dark" fill="clear" slot="start">
+              <ion-back-button @click="closeModal"/>
+              <ion-label>{{$t('pictureView.back')}}</ion-label>
             </ion-button>
         </ion-toolbar>
     </ion-header>
      
       <div class="flip-in" ref="box" v-if="imgDetails">
           <picture-view-modal 
-          v-for="(item, index) in imgDetails"
-          :z-index="index"
-          :itemId="item"
-          :key="item"
+            v-for="(item,index) in imgDetails"        
+            :itemId="item"
+            :key="item"
+            :z-index="index"
         />
       </div>
     </ion-content>
@@ -24,7 +24,13 @@
 </template>
 
 <script lang="ts">
-import { modalController } from '@ionic/vue';
+import { modalController,
+IonBackButton,
+IonLabel,
+IonToolbar,
+IonHeader,
+IonButton,
+IonContent } from '@ionic/vue';
 import { closeOutline as closeIcon } from 'ionicons/icons';
 import { defineComponent } from 'vue';
 import { createGesture } from "@ionic/core";
@@ -44,24 +50,32 @@ export default defineComponent({
     }
   },
   components: {
-    PictureViewModal
+    PictureViewModal,
+    IonBackButton,
+    IonLabel,
+    IonToolbar,
+    IonHeader,
+    IonButton,
+    IonContent
   },
   
   setup() {
     const store = useStore();
     return {
-      closeModal() {
-        modalController.dismiss()
-      },
       closeIcon, store
     }
   },
   
-    mounted() {
-    if (this.imgDetails.length === 0) {
-      // this.refresh();
-    }
+  methods:{
+      closeModal() {
+        modalController.dismiss()
+      },
+  },
 
+  mounted() {
+    if (this.imgDetails.length !== 0) {
+    
+ 
     const c: any  = this.$refs.box;
     let prev: any, next: any;
 
@@ -122,6 +136,7 @@ export default defineComponent({
     });
 
     gesture.enable();
+    }
   },
 
 });

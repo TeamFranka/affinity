@@ -4,9 +4,7 @@
     <ion-icon :icon="likeIcon"  />
   </span>
 
-  <!-- <template v-if="is('Picture')"> -->
     <ion-img class="item-img" :src="imageUrl" />
-  <!-- </template> -->
   
    <div class="menu">
     <router-link :to="teamLink">
@@ -60,7 +58,7 @@ export default defineComponent({
       type: String,
       required: true
     },
-    zIndex:{
+    indexValue:{
       type: Number,
     }
   },
@@ -72,14 +70,14 @@ export default defineComponent({
   setup(props: { itemId: string }) {
     const store = useStore();
   
-    return {
-      
+    return {    
       item: computed(() => store.getters.objectsMap[props.itemId]),
       objs: computed(() => store.getters.objectsMap),
       store, commentsIcon, likeIcon
     }
   },
   computed: {
+  
     link(): string {
       return '/a/' + this.item.objectId
     },
@@ -128,25 +126,18 @@ export default defineComponent({
         return this.image?.file.url
     },
     extraStyle(): object {
-      // const style = (this.item.extra || {})['style'] || {
-      //   'background': "var(--ion-color-tertiary )"
-      // };
       const style =  {
         'background': "var(--ion-color-tertiary )"
       };
       const localStyle = {
-        'z-index': this.zIndex,
+        'z-index': this.indexValue,
       };
       return Object.assign({}, style, localStyle);
+    
     }
   },
   methods: {
-    is(type: string): boolean {
-      if (!this.obj) {
-        return type == "Post"
-      }
-      return this.obj.className == type;
-    },
+   
     async like(ev: MouseEvent) {
       if (!this.hasLiked) {
         this.store.dispatch("auth/like", Object.assign({}, this.interactivityObject.toPointer()));

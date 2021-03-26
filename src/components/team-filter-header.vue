@@ -2,35 +2,39 @@
 <ion-header>
     <ion-toolbar>
       <ion-segment scrollable @click="teamSelected($event)"  v-if ="newTeamArray.length==0">
-         <ion-segment-button value="all">
-          <ion-label>All</ion-label>
+         <ion-segment-button value="All">
+          <ion-label>{{ $t('teamFilter.all')}}</ion-label>
         </ion-segment-button>
         <ion-segment-button  v-for="item in teamName" :key="item.objectId" :value="item.name">
           <ion-label>{{item.name}}</ion-label>
         </ion-segment-button>
-        <ion-segment-button value="setting">
+        <ion-segment-button v-if="teamName.length!==0" value="setting">
           <ion-icon :icon="settingIcon"></ion-icon>
         </ion-segment-button>
       </ion-segment>
 
       <!-- When setting data set -->
       <ion-segment scrollable @click="teamSelected($event)"  v-if ="newTeamArray.length!=0">
-          <ion-segment-button value="all">
-          <ion-label>All</ion-label>
-        </ion-segment-button>
+          <!-- <ion-segment-button value="all">
+          <ion-label>{{ $t('teamFilter.all')}}</ion-label>
+        </ion-segment-button> -->
 
-        <ion-list v-for="(item, index) in newTeamArray" v-bind:index="item.priority" :key="index">
+        <ion-list v-for="(item,index) in newTeamArray" v-bind:index="item.priority" :key="index">
         <ion-segment-button v-if="item.toggle" :value="item.name">
           <div class="segment-block">
-          <ion-avatar v-if="item.isIcon && item.icon!==''" size="1.5rem" slot="start">
+
+            <ion-avatar v-if="item.icon!==''" size="1.5rem" slot="start">
                 <img v-bind:src="item.icon" />
             </ion-avatar>
-            <ion-label class="ion-margin-start">{{item.name}}</ion-label>
+
+            <ion-icon class="globe-icon" v-if="item.name=='All'" :icon="globeIcon" color="primary"></ion-icon>
+
+            <ion-label class="ion-margin-start" v-if="item.isIcon">{{item.name}}</ion-label>
           </div>
         </ion-segment-button>
         </ion-list>
 
-        <ion-segment-button value="setting">
+        <ion-segment-button v-if="newTeamArray.length!==0" value="setting">
           <ion-icon :icon="settingIcon"></ion-icon>
         </ion-segment-button>
       </ion-segment>
@@ -39,12 +43,12 @@
 </template>
 
 <script lang="ts">
-import { modalController } from '@ionic/vue';
-import { cogOutline as settingIcon } from 'ionicons/icons';
+import { modalController,IonHeader,IonToolbar
+,IonSegment,IonLabel,IonIcon,IonList,IonSegmentButton,IonAvatar } from '@ionic/vue';
+import { cogOutline as settingIcon,globeOutline as globeIcon } from 'ionicons/icons';
 import { defineComponent, computed } from 'vue';
 import EditTeamFilter from "../components/edit-team-filter.vue";
 import { useStore } from '../stores/';
-
 export default defineComponent({
   name: 'TeamFilterHeader',
   emits: ['team-selected'],
@@ -61,7 +65,7 @@ export default defineComponent({
     const store = useStore();
     return {
       teamName: computed(() => store.getters["auth/myTeams"]),    
-      settingIcon,store
+      settingIcon,store,globeIcon
     }
   },
    created: function(){
@@ -70,14 +74,19 @@ export default defineComponent({
  
   methods:{ 
  
-    getSettings(){
+    async getSettings(){
     
-      const teamPriority: any =  this.store.state.auth.user;
+      const teamPriority: any =  await this.store.state.auth.user;
       this.newTeamArray = [];
+
+     
       if(teamPriority.settings!==undefined && teamPriority.settings!==null){
+       
         if(teamPriority.settings.feedTabs!==undefined && teamPriority.settings.feedTabs!==null){
-          teamPriority.settings.feedTabs.map((data: any)=>this.newTeamArray.push(data))
-          this.newTeamArray.sort((a: any,b: any) => a.priority-b.priority);
+          
+          teamPriority.settings.feedTabs[0].teams.map((data: any)=>this.newTeamArray.push(data))
+         
+          // this.newTeamArray.sort((a: any,b: any) => a.priority-b.priority);
         }
       }
     },
@@ -94,27 +103,18 @@ export default defineComponent({
             await modal.present();
             const res = await modal.onDidDismiss();
             if (res.data) {
-              this.getSettings();
+                this.getSettings();
+                this.$emit('team-selected', val)
             }
           }
         else{
-          // if(val=="all"){
-          //   this.latestPosts = this.store.getters["feed/latestPosts"];
-          //   return  this.latestPosts
-          // }
-          // else{
-          //   const newPostArray: any[] = [];
-          
-          //   // this.allPosts.map((data: any)=>{if(data.team.name === val){newPostArray.push(data)}})   
-          //   // this.latestPosts = newPostArray     
-          //   // return  this.latestPosts; 
-          // }       
           this.$emit('team-selected', val)
         }
       }
   },
   components: {
-   
+   IonHeader,IonToolbar,IonSegment,IonLabel,
+   IonIcon,IonList,IonSegmentButton,IonAvatar
   }
 });
 </script>
@@ -127,5 +127,8 @@ export default defineComponent({
 .segment-block ion-avatar {
   width: 1.5rem;
   height: 1.5rem;
+}
+.globe-icon{
+  font-size: 1.5rem;
 }
 </style>

@@ -3,18 +3,20 @@
     <team-filter-header  @team-selected="searchValue = $event"/>
     <ion-searchbar
         show-cancel-button="focus"
-        :placeholder="$t('search')"
+        :placeholder="$t('gallery.search')"
         inputmode="search"
         enterkeyhint="search"
         :value="searchValue"
         @ion-change="searchValue = $event.target.value"
     />
     <ion-content scroll-x="false" scroll-y="false">
-      <ion-spinner v-if="loading" />
+     
         <ion-grid>
             <ion-row>
-                <ion-col size="4" v-for="(item, index) in filterPicture" :key="index"> 
-                    <img :src="item.file?.url" @click="viewPicture(item,index)"/> 
+                <ion-col size="3" v-for="(item, index) in filterPicture" :key="index"> 
+                  <ion-thumbnail :key="index">
+                    <img :src="item.file?.url" @click="viewPicture(item,index)"/>
+                  </ion-thumbnail> 
                 </ion-col>
             </ion-row>
         </ion-grid>
@@ -26,7 +28,8 @@
 
 <script lang="ts">
 import {
-  IonContent, IonPage,modalController,IonSearchbar
+  IonContent, IonPage,modalController,IonSearchbar,
+  IonCol,IonRow,IonGrid,IonThumbnail
 } from '@ionic/vue';
 import { defineComponent, computed } from 'vue';
 import { useStore } from '../stores/';
@@ -51,9 +54,9 @@ export default defineComponent({
     const pictureArr: any[]=[];
     // const elem = store.getters["news/latest"];
     return {
+      elem: computed(() => store.getters["news/latest"]),
       store,
-      pictureArr,
-      elem: computed(() => store.getters["news/latest"])
+      pictureArr
     }
   },
   computed:{
@@ -66,9 +69,10 @@ export default defineComponent({
           }});
          });
       
-        if (this.searchValue.length!==0 && this.searchValue!=='all') {
+        if (this.searchValue.length!==0 && this.searchValue!=='All' && this.searchValue!=='setting') {
             const v = this.searchValue;
             const foundIcons: any[] = [];
+            
             pictureList.forEach((g: any) => {
                 if(g.team.name.toLowerCase().indexOf(v.toLowerCase()) > -1){
                   foundIcons.push(g)
@@ -108,19 +112,20 @@ export default defineComponent({
            cssClass:'modalCss',
            componentProps: {
             imgDetails : pictureList,
-            zIndex:selectedImg
+            zIndex: selectedImg
           },
         });
-      popover.present();
-      const result = await popover.onDidDismiss();
-      if(result){
-        console.log("result--",result)
-      }
+      await popover.present();
+      const res = await popover.onDidDismiss();
+            if (res) {
+               console.log("",res)
+            }
     },
   },
 
   components: {
-    IonContent, IonPage,TeamFilterHeader,IonSearchbar
+    IonContent, IonPage,TeamFilterHeader,IonSearchbar,
+    IonCol,IonRow,IonGrid,IonThumbnail
   },
 });
 </script>
@@ -130,8 +135,5 @@ export default defineComponent({
   height: 100%;
   overflow: hidden;
 }
-img{
-  width: 100px;
-  height: 100px;
-}
+
 </style>

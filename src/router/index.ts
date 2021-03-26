@@ -22,84 +22,82 @@ import { store } from '../stores/';
 
 const ensureLoggedIn = (to: any, from: any, next: any) => {
   if (store.getters["auth/isLoggedIn"]) {
-    next()
+    next();
   } else {
-    next({ name: 'Login' , params: {next: to.fullPath}});
+    next({ name: "Login", params: { next: to.fullPath } });
   }
 };
 
 const routes: Array<RouteRecordRaw> = [
   {
-    path: '/login',
-    name: 'Login',
+    path: "/login",
+    name: "Login",
     component: Login,
   },
   {
-    path: '/inbox/:conversationId',
-    name: 'Conversation',
+    path: "/inbox/:conversationId",
+    name: "Conversation",
     component: ViewConversation,
     beforeEnter: ensureLoggedIn,
   },
   {
-    path: '/inbox',
-    name: 'Inbox',
+    path: "/inbox",
+    name: "Inbox",
     component: Inbox,
     beforeEnter: ensureLoggedIn,
   },
   {
-    path: '/me',
-    name: 'Me',
+    path: "/me",
+    name: "Me",
     component: Me,
-    beforeEnter: ensureLoggedIn
+    beforeEnter: ensureLoggedIn,
   },
   {
-    path: '/donate',
-    name: 'Donations',
-    component: Donations
+    path: "/donate",
+    name: "Donations",
+    component: Donations,
   },
   {
-    path: '/',
+    path: "/",
     name: "CommunityOutlet",
     component: CommunityOutlet,
     children: [
       {
-        path: '/app',
-        name: 'App',
-        component: App
+        path: "/app",
+        name: "App",
+        component: App,
       },
       {
-        path: '/faq',
-        name: 'FAQ',
-        component: Faq
+        path: "/faq",
+        name: "FAQ",
+        component: Faq,
       },
       {
-        path: '/news',
-        name: 'News',
-        component: News
+        path: "/news",
+        name: "News",
+        component: News,
       },
       {
-        path: 't/:teamSlug',
-        name: 'ViewTeam',
+        path: "t/:teamSlug",
+        name: "ViewTeam",
         component: TeamOutlet,
-        children: [
-
-        ]
+        children: [],
       },
       {
-        path: 'a/:activityId',
-        name: 'ViewActivity',
-        component: ViewActivity
+        path: "a/:activityId",
+        name: "ViewActivity",
+        component: ViewActivity,
       },
       {
         // FIXME: support username-based URLs
-        path: 'u/:userId',
-        name: 'ViewUser',
-        component: ViewUser
+        path: "u/:userId",
+        name: "ViewUser",
+        component: ViewUser,
       },
       {
-        path: 'feed',
-        name: 'Feed',
-        component: Feed
+        path: "feed",
+        name: "Feed",
+        component: Feed,
       },
       {
         path: 'gallery',
@@ -107,41 +105,45 @@ const routes: Array<RouteRecordRaw> = [
         component: Gallery
       },
       {
-        path: '/settings/notifications',
-        name: 'SettingsNotifications',
-        component: SettingsNotifications
+        path: "/settings/notifications",
+        name: "SettingsNotifications",
+        component: SettingsNotifications,
       },
       {
-        path: '/settings/general',
-        name: 'SettingsGeneral',
-        component: SettingsGeneral
+        path: "/settings/general",
+        name: "SettingsGeneral",
+        component: SettingsGeneral,
       },
       {
-        path: '/settings/',
-        name: 'Settings',
-        component: Settings
+        path: "/settings/",
+        name: "Settings",
+        component: Settings,
       },
       {
-        path: '/',
-        redirect: isPlatform('desktop') ? "/feed" : "/news"
+        path: "/",
+        redirect: () => {
+          if (store.getters["auth/isLoggedIn"]) {
+            return "/feed";
+          }
+          return isPlatform("desktop") ? "/feed" : "/news";
+        },
       },
-    ]
-  }
-]
+    ],
+  },
+];
 
 const router = createRouter({
   history: createWebHistory(process.env.BASE_URL),
-  routes
-})
+  routes,
+});
 
 router.beforeEach((_to, _from, next) => {
   store.dispatch("routingStart");
-  next()
-})
+  next();
+});
 
-router.afterEach((to, from) => {
+router.afterEach(() => {
   store.dispatch("routingEnd");
-})
+});
 
-
-export default router
+export default router;

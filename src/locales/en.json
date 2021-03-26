@@ -47,6 +47,9 @@
   "auth.title.registry" : "Register",
   "auth.toast.logged_out": "Bye, see you soon!",
   "auth.toast.welcome_back": "Welcome back, {name} 👋!",
+  "auth.toast.email_unverified": "Heyah, {name} 👋. Please verify your E-Mail Address by clicking the link we've sent you!",
+  "auth.toast.email_unverified_urgent": "Heyah, {name} 👋. You need to verify your E-Mail Address by clicking the link we've sent you or your account will be deactivated!",
+  "auth.toast.email_unverified_dismiss": "dismiss",
   "comment.placeholder": "Comment here",
   "conversation.placeholder.writeMessage": "type message here",
   "conversation.title.agents" : "{teamName} Support-Agents",
@@ -173,5 +176,11 @@
   "setting.push.posts" : "all posts",
   "settings.push.thisDevice": "This device ({name})",
   "settings.title": "Settings",
-  "":""
+  "":"",
+  "teamFilter.title":"Edit Team Filter",
+  "teamFilter.button.save":"Save",
+  "teamFilter.showTeamName":"Show Team Names",
+  "teamFilter.all":"All",
+  "gallery.search":"Search",
+  "pictureView.back":"back"
 }

@@ -47,6 +47,9 @@
   "auth.title.registry" : "Registrieren",
   "auth.toast.logged_out": "Ciao, schön, dass du warst!",
   "auth.toast.welcome_back": "Willkommen zurück, {name} 👋!",
+  "auth.toast.email_unverified": "Hey, {name} 👋. Bitte bestätige Deine E-Mail-Adresse durch klicken des Links, den wir dir geschickt haben!",
+  "auth.toast.email_unverified_urgent": "Heyah, {name} 👋. Du solltest umgehend den Verifikations-Link in Deiner E-Mail klicken, da sonst Dein Account gesperrt wird!",
+  "auth.toast.email_unverified_dismiss": "Okay",
   "comment.placeholder": "Wie lautet Dein Kommentar?",
   "conversation.placeholder.writeMessage": "Nachricht schreiben",
   "conversation.title.agents" : "{teamName} Support-Agenten",
@@ -174,5 +177,11 @@
   "setting.push.posts" : "reguläre Posts",
   "settings.push.thisDevice": "Dieses Gerät ({name})",
   "settings.title": "Einstellung",
-  "":""
+  "":"",
+  "teamFilter.title":"Teamfilter bearbeiten",
+  "teamFilter.button.save":"Speichern",
+  "teamFilter.showTeamName":"Teamnamen anzeigen",
+  "teamFilter.all":"Alle",
+  "gallery.search":"Suche",
+  "pictureView.back":"zurück"
 }
