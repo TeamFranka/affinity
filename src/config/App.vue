@@ -82,6 +82,9 @@ export default defineComponent({
 
     watch(() => store.state.auth.user, async (newVal, oldVal) => {
       if (newVal && newVal != oldVal) {
+        if(newVal?.settings?.themes == 'dark'){
+           document.body.classList.add('dark')
+        }
         const toast = await toastController
           .create({
             message: i18n.global.t("auth.toast.welcome_back", {name: newVal.name || newVal.username}),

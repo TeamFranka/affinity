@@ -16,6 +16,19 @@
                 :key="opt[0]">{{opt[1]}}</ion-select-option>
             </ion-select>
           </ion-item>
+
+           <ion-item>
+            <ion-label>
+            {{ $t('setting.general.theme') }}
+            </ion-label>
+            <ion-select :value="themes" @ion-change="themeChange($event.target.value)" interface="popover">
+              <ion-select-option
+                v-for="opt in SUPPORTED_THEMES"
+                :value="opt[0]"
+                :key="opt[0]">{{opt[1]}}</ion-select-option>
+            </ion-select>
+          </ion-item>
+
         </ion-list>
     </ion-content>
   </ion-page>
@@ -32,10 +45,17 @@ import {
 import { defineComponent, computed } from 'vue';
 import { useStore } from '@/stores/';
 
+const SUPPORTED_THEMES = [
+  ["dark", "Dark Theme"],
+  ["light", "Light Theme"],
+];
+
 const SUPPORTED_LANGUAGES = [
   ["de", "Deutsch"],
   ["en", "English"],
 ];
+
+
 
 export default defineComponent({
   name: 'SettingsGeneral',
@@ -45,9 +65,11 @@ export default defineComponent({
     return {
       isLoggedIn: computed(() => store.getters["auth/isLoggedIn"]),
       lang: computed(() => store.state.auth.user?.lang),
+      themes: computed(() => store.state.auth.user?.settings?.themes),
       hasPush: computed(() => store.getters['auth/hasPush']),
       langChange:  (lang: string) => store.dispatch("auth/setLang", lang),
-      SUPPORTED_LANGUAGES, generalIcon, notificationIcon,
+      themeChange: (themes: string) => { store.dispatch("auth/setSetting", {themes}); if(themes == 'light') {document.body.classList.remove('dark'); } else { document.body.classList.add('dark') } } ,
+      SUPPORTED_LANGUAGES, SUPPORTED_THEMES, generalIcon, notificationIcon,
     }
   },
   components: {
