@@ -95,16 +95,18 @@ import {
   bonfireOutline as activitiesIcon,
   peopleCircleOutline as feedIcon,
   settingsOutline as settingsIcon,
-  addCircleOutline, chatbubbleEllipsesOutline,
-  fileTrayFullOutline, personCircleOutline,
-  compassOutline as faqIcon, walletOutline,
-  imageOutline as galleryIcon
-} from 'ionicons/icons';
-import { useStore } from '../stores/';
-import { defineComponent, computed } from 'vue';
-import InlineLinkList from '../components/generic/inline-link-list.vue';
-import Avatar from '../components/avatar.vue';
-
+  addCircleOutline,
+  chatbubbleEllipsesOutline,
+  fileTrayFullOutline,
+  imageOutline as galleryIcon,
+  personCircleOutline,
+  compassOutline as faqIcon,
+  walletOutline,
+} from "ionicons/icons";
+import { useStore } from "../stores/";
+import { defineComponent, computed } from "vue";
+import InlineLinkList from "../components/generic/inline-link-list.vue";
+import Avatar from "../components/avatar.vue";
 
 export default defineComponent({
   name: "CommunityOutlet",
@@ -130,8 +132,9 @@ export default defineComponent({
       postIcon: addCircleOutline,
       chatIcon: fileTrayFullOutline,
       newChatIcon: chatbubbleEllipsesOutline,
-      meIcon: personCircleOutline,galleryIcon
-    }
+      meIcon: personCircleOutline,
+      galleryIcon,
+    };
   },
   computed: {
     socialLinks(): any[] {

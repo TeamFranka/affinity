@@ -1,24 +1,24 @@
-import { createRouter, createWebHistory } from '@ionic/vue-router';
-import { RouteRecordRaw } from 'vue-router';
-import { isPlatform } from '@ionic/core';
-import News from '../views/News.vue';
-import App from '../views/App.vue';
-import Inbox from '../views/Inbox.vue';
-import CommunityOutlet from '../views/CommunityOutlet.vue';
-import Feed from '../views/Feed.vue';
-import Faq from '../views/FAQ.vue';
-import Me from '../views/Me.vue';
-import Login from '../views/Login.vue';
-import Donations from '../views/Donations.vue';
-import TeamOutlet from '../views/Team/Outlet.vue';
-import ViewActivity from '../views/ViewActivity.vue';
-import ViewUser from '../views/ViewUser.vue';
-import ViewConversation from '../views/ViewConversation.vue';
-import Settings from '../views/settings/Center.vue';
-import SettingsGeneral from '../views/settings/General.vue';
-import SettingsNotifications from '../views/settings/Notifications.vue';
+import { createRouter, createWebHistory } from "@ionic/vue-router";
+import { RouteRecordRaw } from "vue-router";
+import { isPlatform } from "@ionic/core";
+import News from "../views/News.vue";
+import App from "../views/App.vue";
+import Inbox from "../views/Inbox.vue";
+import CommunityOutlet from "../views/CommunityOutlet.vue";
+import Feed from "../views/Feed.vue";
+import Faq from "../views/FAQ.vue";
+import Me from "../views/Me.vue";
+import Login from "../views/Login.vue";
+import Donations from "../views/Donations.vue";
+import TeamOutlet from "../views/Team/Outlet.vue";
+import ViewActivity from "../views/ViewActivity.vue";
+import ViewUser from "../views/ViewUser.vue";
+import ViewConversation from "../views/ViewConversation.vue";
+import Settings from "../views/settings/Center.vue";
+import SettingsGeneral from "../views/settings/General.vue";
 import Gallery from '../views/Gallery.vue';
-import { store } from '../stores/';
+import SettingsNotifications from "../views/settings/Notifications.vue";
+import { store } from "../stores/";
 
 const ensureLoggedIn = (to: any, from: any, next: any) => {
   if (store.getters["auth/isLoggedIn"]) {
