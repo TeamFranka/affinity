@@ -1,15 +1,20 @@
-import { InjectionKey } from 'vue'
-import { createStore, Store, useStore as baseUseStore, createLogger } from 'vuex'
+import { InjectionKey } from "vue";
+import {
+  createStore,
+  Store,
+  useStore as baseUseStore,
+  createLogger,
+} from "vuex";
 
-import { GlobalStateT, GlobalState } from './globals';
-import { AuthStateT, AuthState } from './auth';
-import { FeedT, Feed } from './feed';
-import { NewsT, News } from './news';
-import { InboxT, Inbox } from './inbox';
-import { FaqT, Faq } from './faq';
-import { TeamsT, Teams } from './teams';
-import { CommentsT, Comments } from './comments';
-import { DraftT, Draft } from './draft';
+import { GlobalStateT, GlobalState } from "./globals";
+import { AuthStateT, AuthState } from "./auth";
+import { FeedT, Feed } from "./feed";
+import { NewsT, News } from "./news";
+import { InboxT, Inbox } from "./inbox";
+import { FaqT, Faq } from "./faq";
+import { TeamsT, Teams } from "./teams";
+import { CommentsT, Comments } from "./comments";
+import { DraftT, Draft } from "./draft";
 
 export interface State {
   global: GlobalStateT;
@@ -24,13 +29,13 @@ export interface State {
 }
 
 // define injection key
-export const key: InjectionKey<Store<State>> = Symbol()
+export const key: InjectionKey<Store<State>> = Symbol();
 
-const plugins = process.env.NODE_ENV === "development" ? [createLogger()] : []
+const plugins = process.env.NODE_ENV === "development" ? [createLogger()] : [];
 
 export const store = createStore<State>({
   plugins,
-  modules:{
+  modules: {
     global: GlobalState,
     comments: Comments,
     news: News,
@@ -40,9 +45,9 @@ export const store = createStore<State>({
     inbox: Inbox,
     draft: Draft,
     auth: AuthState,
-  }
-})
+  },
+});
 
-export function useStore () {
-  return baseUseStore(key)
+export function useStore() {
+  return baseUseStore(key);
 }

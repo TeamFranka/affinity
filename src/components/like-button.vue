@@ -1,21 +1,22 @@
 <template>
-    <span @click="toggleLike()" :disabled="disabled">
-      <ion-icon :icon="hasLiked  ? hasLikedIcon : likeIcon" :color="hasLiked ? 'danger' : '' " :size="iconSize" />
-      <ion-label>{{counter}}</ion-label>
-    </span>
+  <span @click="toggleLike()" :disabled="disabled">
+    <ion-icon
+      :icon="hasLiked ? hasLikedIcon : likeIcon"
+      :color="hasLiked ? 'danger' : ''"
+      :size="iconSize"
+    />
+    <ion-label>{{ counter }}</ion-label>
+  </span>
 </template>
 <script>
-import {
-  IonLabel, IonIcon,
-} from '@ionic/vue';
-import { heartOutline, heart } from 'ionicons/icons';
-import { defineComponent } from 'vue';
-import { Parse } from '../config/Consts';
-import { useStore } from '../stores/';
-
+import { IonLabel, IonIcon } from "@ionic/vue";
+import { heartOutline, heart } from "ionicons/icons";
+import { defineComponent } from "vue";
+import { Parse } from "../config/Consts";
+import { useStore } from "../stores/";
 
 export default defineComponent({
-  name: 'LikeButton',
+  name: "LikeButton",
   props: {
     iconSize: {
       type: String,
@@ -24,20 +25,20 @@ export default defineComponent({
     },
     counter: {
       type: Number,
-      required: true
+      required: true,
     },
     hasLiked: {
       type: Boolean,
     },
     pointer: {
       type: Parse.Pointer,
-      required: true
-    }
+      required: true,
+    },
   },
   data() {
     return {
       disabled: false,
-    }
+    };
   },
   setup() {
     const store = useStore();
@@ -45,11 +46,11 @@ export default defineComponent({
       store,
       likeIcon: heartOutline,
       hasLikedIcon: heart,
-    }
+    };
   },
   methods: {
     toggleLike() {
-      if (this.hasLiked){
+      if (this.hasLiked) {
         this.store.dispatch("auth/unlike", Object.assign({}, this.pointer));
       } else {
         this.store.dispatch("auth/like", Object.assign({}, this.pointer));
@@ -57,16 +58,16 @@ export default defineComponent({
     },
   },
   components: {
-    IonLabel, IonIcon,
+    IonLabel,
+    IonIcon,
   },
 });
 </script>
 
 <style scoped>
-
-ion-chip span{
-  margin-top:2px;
-  padding-right: 6px !important; 
+ion-chip span {
+  margin-top: 2px;
+  padding-right: 6px !important;
 }
 
 ion-label {
@@ -74,5 +75,4 @@ ion-label {
   top: 0;
   margin-top: 9px;
 }
-
 </style>
