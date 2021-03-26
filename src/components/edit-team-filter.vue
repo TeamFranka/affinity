@@ -34,7 +34,7 @@
             :value="item.name" color="primary" :checked="item.toggle" v-model="item.toggle"></ion-toggle>
             
             <ion-toggle v-if="item.name=='All'" slot="start"  @ionChange="allCheck($event)"
-            :value="item.name" color="primary" :checked="item.toggle" v-model="isAllSelected"></ion-toggle>
+            :value="item.name" color="primary" :checked="item.toggle" v-model="item.toggle"></ion-toggle>
 
             <ion-avatar v-if="item.icon!==''" size="1.5rem">
                 <img v-bind:src="item.icon" />

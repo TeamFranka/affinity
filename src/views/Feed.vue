@@ -92,20 +92,24 @@ export default defineComponent({
     }
   },
   computed:{
-    filterPost(){     
+   
+    filterPost(){  
+        
         const postList: any[]=[];
         this.latestPosts.map((x: any)=>postList.push(x))
-      
+       
         if (this.searchValue.length!==0 && this.searchValue!=='All' && this.searchValue!=='setting') {
             const v = this.searchValue;
             const foundPost: any[] = [];
             postList.forEach((g: any) => {
-                if(g.team.name.toLowerCase().indexOf(v.toLowerCase()) > -1){
+                // if(g.team.name.toLowerCase().indexOf(v.toLowerCase()) > -1){
+                if(g.team.name==v){
                   foundPost.push(g)
                 }           
             })
             return foundPost
         }
+         
         else{
             return postList;
         }

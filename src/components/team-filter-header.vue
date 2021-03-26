@@ -2,7 +2,7 @@
 <ion-header>
     <ion-toolbar>
       <ion-segment scrollable @click="teamSelected($event)"  v-if ="newTeamArray.length==0">
-         <ion-segment-button value="all">
+         <ion-segment-button value="All">
           <ion-label>{{ $t('teamFilter.all')}}</ion-label>
         </ion-segment-button>
         <ion-segment-button  v-for="item in teamName" :key="item.objectId" :value="item.name">
