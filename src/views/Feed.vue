@@ -1,15 +1,15 @@
 <template>
   <ion-page>
-     <ion-fab vertical="bottom" horizontal="end" slot="fixed">
-     <ion-fab-button  color="primary" v-if="canPost" @click="createPost(canPostInTeams)">
+
+    <ion-fab class="ion-hide-sm-up" vertical="bottom" horizontal="end" slot="fixed"  v-if="canPost">
+      <ion-fab-button data-cy="openNewPostModal" color="primary" v-if="canPost" @click="openNewPostModal()">
         <ion-icon size="small" :icon="editIcon"/>
-     </ion-fab-button>
+      </ion-fab-button>
     </ion-fab>
-   <team-filter-header  @team-selected="searchValue = $event"/>
 
     <ion-content data-cy="activity-feed">
       <div class="wrap">
-        <ion-card v-if="canPost">
+        <ion-card class="ion-hide-sm-down" v-if="canPost">
           <ion-card-content>
             <new-post :teams="canPostInTeams" />
           </ion-card-content>
@@ -18,7 +18,7 @@
 
         <transition-group name="list">
           <activity
-            v-for="activity in filterPost"
+            v-for="activity in latestPosts"
             :showTeam="showTeams"
             :activity="activity"
             :key="activity.objectId"
@@ -45,9 +45,12 @@ import {
   IonCardContent,
   IonInfiniteScroll,
   IonInfiniteScrollContent,
+  IonFab,
+  IonFabButton,
+  IonIcon,
   modalController
 } from '@ionic/vue';
-import { 
+import {
   chatbubbles,
   heartOutline,
   addOutline,
@@ -59,7 +62,7 @@ import { defineComponent, computed } from 'vue';
 import { useStore } from '../stores/';
 import Activity from "../components/activity.vue";
 import NewPost from "../components/new-post.vue";
-import TeamFilterHeader from '../components/team-filter-header.vue';
+import NewPostModal from "../components/new-post-modal.vue";
 
 export default defineComponent({
   name: 'Feed',
@@ -68,7 +71,7 @@ export default defineComponent({
       searchValue:''
     }
   },
-  
+
   setup() {
     const store = useStore();
     return {
@@ -94,14 +97,13 @@ export default defineComponent({
     }
   },
   methods:{
-    async createPost (canPostInTeams: any) {
+    async openNewPostModal () {
       const popover = await modalController
         .create({
-          component: NewPost,
+          component: NewPostModal,
            cssClass:'modalCss',
            componentProps: {
-           teams:canPostInTeams,
-           isPopup:true
+            teams: this.canPostInTeams,
           },
         });
       popover.present();
@@ -111,44 +113,19 @@ export default defineComponent({
       }
     },
   },
-
-  computed:{
-   
-    filterPost(){  
-        
-        const postList: any[]=[];
-        this.latestPosts.map((x: any)=>postList.push(x))
-       
-        if (this.searchValue.length!==0 && this.searchValue!=='All' && this.searchValue!=='setting') {
-            const v = this.searchValue;
-            const foundPost: any[] = [];
-            postList.forEach((g: any) => {
-                // if(g.team.name.toLowerCase().indexOf(v.toLowerCase()) > -1){
-                if(g.team.name==v){
-                  foundPost.push(g)
-                }           
-            })
-            return foundPost
-        }
-         
-        else{
-            return postList;
-        }
-    },
-  },
- 
-
   components: {
-    IonContent, 
-    IonPage, 
-    IonSpinner, 
-    IonCard, 
+    IonContent,
+    IonPage,
+    IonSpinner,
+    IonCard,
     IonCardContent,
-    IonInfiniteScroll, 
+    IonInfiniteScroll,
     IonInfiniteScrollContent,
-    NewPost, 
+    IonFab,
+    IonFabButton,
+    IonIcon,
+    NewPost,
     Activity,
-    TeamFilterHeader
   }
 });
 </script>
