@@ -1,40 +1,25 @@
 <template>
-<ion-header>
+  <ion-header v-if="showTabs">
     <ion-toolbar>
-      <ion-segment scrollable @click="teamSelected($event)"  v-if ="newTeamArray.length==0">
-         <ion-segment-button value="All">
-          <ion-label>{{ $t('teamFilter.all')}}</ion-label>
+      <ion-segment scrollable @click="teamSelected($event)">
+        <ion-segment-button
+          v-for="entry in visibleTabs"
+          :value="entry.value"
+          :key="entry.value"
+          >
+          <avatar
+            size="1.8rem"
+            v-if="entry.team"
+            :profile="entry.team"
+            :with-name="showName"
+          />
+          <template v-else>
+            <ion-icon :icon="entry.icon" />
+              <ion-label class="ion-margin-start" v-if="showName">{{entry.title}}</ion-label>
+          </template>
         </ion-segment-button>
-        <ion-segment-button  v-for="item in teamName" :key="item.objectId" :value="item.name">
-          <ion-label>{{item.name}}</ion-label>
-        </ion-segment-button>
-        <ion-segment-button v-if="teamName.length!==0" value="setting">
-          <ion-icon :icon="settingIcon"></ion-icon>
-        </ion-segment-button>
-      </ion-segment>
 
-      <!-- When setting data set -->
-      <ion-segment scrollable @click="teamSelected($event)"  v-if ="newTeamArray.length!=0">
-          <!-- <ion-segment-button value="all">
-          <ion-label>{{ $t('teamFilter.all')}}</ion-label>
-        </ion-segment-button> -->
-
-        <ion-list v-for="(item,index) in newTeamArray" v-bind:index="item.priority" :key="index">
-        <ion-segment-button v-if="item.toggle" :value="item.name">
-          <div class="segment-block">
-
-            <ion-avatar v-if="item.icon!==''" size="1.5rem" slot="start">
-                <img v-bind:src="item.icon" />
-            </ion-avatar>
-
-            <ion-icon class="globe-icon" v-if="item.name=='All'" :icon="globeIcon" color="primary"></ion-icon>
-
-            <ion-label class="ion-margin-start" v-if="item.isIcon">{{item.name}}</ion-label>
-          </div>
-        </ion-segment-button>
-        </ion-list>
-
-        <ion-segment-button v-if="newTeamArray.length!==0" value="setting">
+        <ion-segment-button value="__setting">
           <ion-icon :icon="settingIcon"></ion-icon>
         </ion-segment-button>
       </ion-segment>
@@ -43,68 +28,84 @@
 </template>
 
 <script lang="ts">
-import { modalController,IonHeader,IonToolbar
-,IonSegment,IonLabel,IonIcon,IonList,IonSegmentButton,IonAvatar } from '@ionic/vue';
+import {
+  modalController,
+  IonHeader,
+  IonToolbar,
+  IonSegment,
+  IonLabel,
+  IonIcon,
+  IonSegmentButton,
+} from '@ionic/vue';
 import { cogOutline as settingIcon,globeOutline as globeIcon } from 'ionicons/icons';
 import { defineComponent, computed } from 'vue';
 import EditTeamFilter from "../components/edit-team-filter.vue";
+import Avatar from "@/components/avatar.vue";
 import { useStore } from '../stores/';
+
+const DEFAULT_SETTINGS: any = {
+  showName: true,
+  tabs: []
+}
+
 export default defineComponent({
   name: 'TeamFilterHeader',
   emits: ['team-selected'],
-  data(){
-    const newTeamArray: string[] = [];
-    const latestPosts: any[] =[];
-    return{
-      newTeamArray,
-      latestPosts
-    }
-  },
-  
   setup() {
     const store = useStore();
     return {
-      teamName: computed(() => store.getters["auth/myTeams"]),    
-      settingIcon,store,globeIcon
+      myTeams: computed(() => store.getters["auth/myTeams"]),
+      settings: computed(() =>  (((store.state.auth.user || {}) as any).settings || {
+        teamTabs: DEFAULT_SETTINGS })
+      ),
+      settingIcon,
+      store,
+      globeIcon
     }
   },
-   created: function(){
-        this.getSettings();   
-    }, 
- 
-  methods:{ 
- 
-    async getSettings(){
-    
-      const teamPriority: any =  await this.store.state.auth.user;
-      this.newTeamArray = [];
-
-     
-      if(teamPriority.settings!==undefined && teamPriority.settings!==null){
-       
-        if(teamPriority.settings.feedTabs!==undefined && teamPriority.settings.feedTabs!==null){
-          
-          teamPriority.settings.feedTabs[0].teams.map((data: any)=>this.newTeamArray.push(data))
-         
-          // this.newTeamArray.sort((a: any,b: any) => a.priority-b.priority);
-        }
-      }
+  computed: {
+    showTabs(): boolean {
+      return (this.tabs || []).length > 0
     },
-    async teamSelected(event: any){    
+    showName(): boolean {
+      return this.settings.showName
+    },
+    tabs(): any[] {
+      let tabs = this.settings.tabs;
+      if (!tabs && this.myTeams.length > 1) {
+        // nothing configured but more than one team available, switching to default
+        tabs = [{
+          value: null, icon: globeIcon, title: this.$t("teamFilter.all"), show: true
+        }];
+        this.myTeams.forEach((team:any) => {
+          tabs.push({team, show: true, value: team.objectId})
+        });
+      }
+      return tabs;
+    },
+    visibleTabs(): any[] {
+      return this.tabs.filter((t:any) => t.show);
+    }
+  },
+  methods:{
+    async teamSelected(event: any) {
         const val = event.target.value;
-        if(val == "setting"){
+        if (val == "__setting") {
            const modal = await modalController
           .create({
             component: EditTeamFilter,
             componentProps: {
-              teamDetails : this.teamName
+              currentSettings: {
+                withName: this.settings.withName,
+                tabs: this.tabs,
+              },
+              allTeams: this.myTeams
             },
             })
             await modal.present();
             const res = await modal.onDidDismiss();
             if (res.data) {
-                this.getSettings();
-                this.$emit('team-selected', val)
+              await this.store.dispatch("auth/setSetting", {teamTabs: res.data})
             }
           }
         else{
@@ -113,22 +114,16 @@ export default defineComponent({
       }
   },
   components: {
-   IonHeader,IonToolbar,IonSegment,IonLabel,
-   IonIcon,IonList,IonSegmentButton,IonAvatar
+   IonHeader,
+   IonToolbar,
+   IonSegment,
+   IonLabel,
+   IonIcon,
+   IonSegmentButton,
+   Avatar,
   }
 });
 </script>
 
 <style scoped>
-.segment-block{
-  display: flex;
-  align-items: center;
-}
-.segment-block ion-avatar {
-  width: 1.5rem;
-  height: 1.5rem;
-}
-.globe-icon{
-  font-size: 1.5rem;
-}
 </style>
