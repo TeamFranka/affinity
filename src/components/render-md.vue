@@ -3,29 +3,31 @@
   <div v-else v-html="compiled"></div>
 </template>
 <script>
-import { adminMd, userMd } from '../utils/md';
-import { defineComponent } from 'vue';
+import { adminMd, userMd } from "../utils/md";
+import { defineComponent } from "vue";
 
 export default defineComponent({
-  name: 'RenderMd',
+  name: "RenderMd",
   props: {
     source: {
       type: String,
-      required: true
+      required: true,
     },
     admin: {
       type: Boolean,
     },
     inline: {
-        type: Boolean,
+      type: Boolean,
     },
   },
   computed: {
-    compiled(){
+    compiled() {
       const r = this.admin ? adminMd : userMd;
-      const content = this.inline ? r.renderInline(this.source): r.render(this.source);
+      const content = this.inline
+        ? r.renderInline(this.source)
+        : r.render(this.source);
       return content;
-    }
-  }
+    },
+  },
 });
 </script>

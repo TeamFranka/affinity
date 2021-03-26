@@ -1,1 +1,1 @@
-module.exports = require('../../backend/cloud/models/')
+module.exports = require("../../backend/cloud/models/");
