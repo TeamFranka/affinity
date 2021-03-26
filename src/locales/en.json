@@ -179,5 +179,6 @@
   "teamFilter.title":"Edit Team Filter",
   "teamFilter.button.save":"Save",
   "teamFilter.showTeamName":"Show Team Names",
-  "teamFilter.all":"All"
+  "teamFilter.all":"All",
+  "newPost.createPost":"Create a Post"
 }

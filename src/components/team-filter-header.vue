@@ -92,7 +92,7 @@ export default defineComponent({
     },
     async teamSelected(event: any){    
         const val = event.target.value;
-        console.log("team name======",this.teamName)
+      
         if(val == "setting"){
            const modal = await modalController
           .create({

@@ -180,5 +180,6 @@
   "teamFilter.title":"Teamfilter bearbeiten",
   "teamFilter.button.save":"Speichern",
   "teamFilter.showTeamName":"Teamnamen anzeigen",
-  "teamFilter.all":"Alle"
+  "teamFilter.all":"Alle",
+  "newPost.createPost":"Erstellen Sie einen Beitrag"
 }

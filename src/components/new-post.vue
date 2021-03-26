@@ -6,7 +6,7 @@
         <ion-back-button @click="closeModal"/>
       </ion-buttons>
       <ion-title>
-       Create a Post
+       {{$t("newPost.createPost")}}
       </ion-title>
       <ion-button slot="end" type="submit" data-cy="submitPost" data-cy-role="submit" fill="outline" v-bind:disabled="!canSubmit"
        shape="round" size="small">
