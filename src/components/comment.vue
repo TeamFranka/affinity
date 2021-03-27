@@ -79,7 +79,6 @@ import {
   arrowRedoOutline,
   arrowUndoOutline,
 } from "ionicons/icons";
-// import { createGesture } from "@ionic/core";
 
 import Avatar from "./avatar.vue";
 import { useStore } from "../stores/";
