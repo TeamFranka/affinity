@@ -50,6 +50,7 @@
     "get-urls": "git+https://github.com/gnunicorn/get-urls.git",
     "ionicons": "^5.5.0",
     "lodash": "^4.17.21",
+    "lodash.clonedeep": "^4.5.0",
     "markdown-it": "^12.0.4",
     "parse": "^3.1.0",
     "register-service-worker": "^1.7.1",

@@ -1,8 +1,9 @@
 <template>
   <ion-page>
+    <team-filter-header @team-selected="selectTeam($event)"/>
 
     <ion-fab class="ion-hide-sm-up" vertical="bottom" horizontal="end" slot="fixed"  v-if="canPost">
-      <ion-fab-button data-cy="openNewPostModal" color="primary" v-if="canPost" @click="openNewPostModal()">
+      <ion-fab-button data-cy="openNewPostModal" color="primary" @click="openNewPostModal()">
         <ion-icon size="small" :icon="editIcon"/>
       </ion-fab-button>
     </ion-fab>
@@ -55,23 +56,18 @@ import {
   heartOutline,
   addOutline,
   mailOutline,
-  caretForwardOutline ,
+  caretForwardOutline,
   createOutline as editIcon
   } from 'ionicons/icons';
 import { defineComponent, computed } from 'vue';
 import { useStore } from '../stores/';
 import Activity from "../components/activity.vue";
+import TeamFilterHeader from "../components/team-filter-header.vue";
 import NewPost from "../components/new-post.vue";
 import NewPostModal from "../components/new-post-modal.vue";
 
 export default defineComponent({
   name: 'Feed',
-  data(){
-    return{
-      searchValue:''
-    }
-  },
-
   setup() {
     const store = useStore();
     return {
@@ -85,15 +81,22 @@ export default defineComponent({
       loading: computed(() => store.state.feed.loading),
       canLoadMore: computed(() => store.getters["feed/canLoadMore"]),
       latestPosts: computed(() => store.getters["feed/latestPosts"]),
-      showTeams: computed(() => store.getters["auth/myTeams"].length > 1),
+      showTeams: computed(() => store.getters["auth/myTeams"].length > 1 && !store.state.feed.selectedTeam),
+      selectTeam: async (name: string) => {
+        await store.dispatch("feed/selectTeam", name === "ALL" ? null : name);
+      },
       loadMore: (ev: CustomEvent) => {
-        console.log("we should load more", ev);
         store.dispatch("feed/loadMore").then(() => {
           (ev.target as any).complete();
         });
       },
-      chatbubbles, like: heartOutline, mail: mailOutline, plus: addOutline,
-      teamSplitter: caretForwardOutline, store,editIcon
+      chatbubbles,
+      like: heartOutline,
+      mail: mailOutline,
+      plus: addOutline,
+      teamSplitter: caretForwardOutline,
+      store,
+      editIcon,
     }
   },
   methods:{
@@ -124,6 +127,7 @@ export default defineComponent({
     IonFab,
     IonFabButton,
     IonIcon,
+    TeamFilterHeader,
     NewPost,
     Activity,
   }
