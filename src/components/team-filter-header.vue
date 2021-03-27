@@ -1,7 +1,11 @@
 <template>
   <ion-header v-if="showTabs">
     <ion-toolbar>
-      <ion-segment data-cy="team-filter" scrollable @click="$emit('team-selected', $event.target.value)">
+      <ion-segment
+        data-cy="team-filter"
+        scrollable
+        :value="selection"
+        @ionChange="$emit('team-selected', $event.detail.value)">
         <ion-segment-button
           v-for="entry in visibleTabs"
           :value="entry.value"
@@ -59,6 +63,7 @@ export default defineComponent({
     const store = useStore();
     return {
       myTeams: computed(() => store.getters["auth/myTeams"]),
+      selection: computed(() => store.state.feed.selectedTeam || 'ALL'),
       settings: computed(() => (store.getters["auth/settings"].teamTabs || DEFAULT_SETTINGS)),
       teamsMap: computed(() => store.getters.objectsMap),
       settingIcon,
@@ -127,6 +132,8 @@ export default defineComponent({
       const res = await modal.onDidDismiss();
       if (res.data) {
         await this.store.dispatch("auth/setSetting", {teamTabs: res.data})
+        const first = this.visibleTabs[0]
+        await this.store.dispatch("feed/selectTeam", first.value == "ALL" ? null : first.value);
       }
     }
   },

@@ -1,6 +1,6 @@
 <template>
   <ion-page>
-   <team-filter-header  @team-selected="searchValue = $event"/>
+   <team-filter-header @team-selected="selectTeam($event)"/>
 
     <ion-content data-cy="activity-feed">
       <div class="wrap">
@@ -13,7 +13,7 @@
 
         <transition-group name="list">
           <activity
-            v-for="activity in filterPost"
+            v-for="activity in latestPosts"
             :showTeam="showTeams"
             :activity="activity"
             :key="activity.objectId"
@@ -41,12 +41,12 @@ import {
   IonInfiniteScroll,
   IonInfiniteScrollContent
 } from '@ionic/vue';
-import { 
+import {
   chatbubbles,
   heartOutline,
   addOutline,
   mailOutline,
-  caretForwardOutline 
+  caretForwardOutline
   } from 'ionicons/icons';
 import { defineComponent, computed } from 'vue';
 import { useStore } from '../stores/';
@@ -61,7 +61,7 @@ export default defineComponent({
       searchValue:''
     }
   },
-  
+
   setup() {
     const store = useStore();
     return {
@@ -75,7 +75,10 @@ export default defineComponent({
       loading: computed(() => store.state.feed.loading),
       canLoadMore: computed(() => store.getters["feed/canLoadMore"]),
       latestPosts: computed(() => store.getters["feed/latestPosts"]),
-      showTeams: computed(() => store.getters["auth/myTeams"].length > 1),
+      showTeams: computed(() => store.getters["auth/myTeams"].length > 1 && !store.state.feed.selectedTeam),
+      selectTeam: async (name: string) => {
+        await store.dispatch("feed/selectTeam", name === "ALL" ? null : name);
+      },
       loadMore: (ev: CustomEvent) => {
         console.log("we should load more", ev);
         store.dispatch("feed/loadMore").then(() => {
@@ -85,48 +88,27 @@ export default defineComponent({
 
       chatbubbles,
       like: heartOutline,
-      mail: mailOutline, 
+      mail: mailOutline,
       plus: addOutline,
       teamSplitter: caretForwardOutline,
       store
     }
   },
-  computed:{
-   
-    filterPost(){  
-        
-        const postList: any[]=[];
-        this.latestPosts.map((x: any)=>postList.push(x))
-       
-        if (this.searchValue.length!==0 && this.searchValue!=='All' && this.searchValue!=='setting') {
-            const v = this.searchValue;
-            const foundPost: any[] = [];
-            postList.forEach((g: any) => {
-                // if(g.team.name.toLowerCase().indexOf(v.toLowerCase()) > -1){
-                if(g.team.name==v){
-                  foundPost.push(g)
-                }           
-            })
-            return foundPost
-        }
-         
-        else{
-            return postList;
-        }
-    },
+  computed: {
   },
- 
-  methods:{},
+
+  methods: {
+  },
 
   components: {
-    IonContent, 
-    IonPage, 
-    IonSpinner, 
-    IonCard, 
+    IonContent,
+    IonPage,
+    IonSpinner,
+    IonCard,
     IonCardContent,
-    IonInfiniteScroll, 
+    IonInfiniteScroll,
     IonInfiniteScrollContent,
-    NewPost, 
+    NewPost,
     Activity,
     TeamFilterHeader
   }

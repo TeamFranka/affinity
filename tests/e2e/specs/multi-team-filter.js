@@ -13,6 +13,7 @@ describe("Filtering the feed by teams", () => {
     cy.get("ion-modal").within(() => {
       ['ALL', 'team-earth', 'doctor-who'].forEach((name) => {
         cy.get(`ion-toggle[data-cy-entry=${name}]`).then(($e) => {
+          console.log($e.attr('aria-checked'), $e);
           if ($e.attr('aria-checked') !== 'true') {
             cy.get(`ion-toggle[data-cy-entry=${name}]`).click();
           }
@@ -22,22 +23,28 @@ describe("Filtering the feed by teams", () => {
     })
 
 
-    cy.get("[data-cy=team-filter] [data-cy-entry=ALL]").click()
+    cy.get("[data-cy=team-filter] [data-cy-entry=ALL]").click();
     // all
     cy.get("[data-cy-type=activity][data-cy-team=team-earth]")
       .should("exist");
     cy.get("[data-cy-type=activity][data-cy-team=doctor-who]")
       .should("exist");
 
-    cy.get("[data-cy=team-filter] [data-cy-entry=team-earth]").click()
+    cy.get("[data-cy=team-filter] [data-cy-entry=team-earth]").click();
     cy.get("[data-cy-type=activity][data-cy-team=team-earth]")
       .should("exist", "");
     cy.get("[data-cy-type=activity][data-cy-team=doctor-who]")
       .should("not.exist");
 
-    cy.get("[data-cy=team-filter] [data-cy-entry=docter-who]").click()
+    cy.get("[data-cy=team-filter] [data-cy-entry=doctor-who]").click();
     cy.get("[data-cy-type=activity][data-cy-team=team-earth]")
       .should("not.exist", "");
+    cy.get("[data-cy-type=activity][data-cy-team=doctor-who]")
+      .should("exist");
+
+    cy.get("[data-cy=team-filter] [data-cy-entry=ALL]").click();
+    cy.get("[data-cy-type=activity][data-cy-team=team-earth]")
+      .should("exist");
     cy.get("[data-cy-type=activity][data-cy-team=doctor-who]")
       .should("exist");
   });
