@@ -53,6 +53,7 @@ export const AuthState = {
   getters: {
     isLoggedIn: (state: AuthStateT) => !!state.user,
     myId: (state: AuthStateT) => state.user?.objectId,
+    settings: (state: AuthStateT) => state.user?.settings || {},
     defaultTeam: (
       state: AuthStateT,
       getters: any,
