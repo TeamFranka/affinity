@@ -35,9 +35,6 @@
                     <ion-icon size="small" :icon="editIcon" />
                   </ion-button>
                 </li>
-                <li v-else v-for="l in socialLinks" :key="l.target">
-                  {{l}}
-                </li>
               </inline-link-list>
               <div data-cy="description">
                 <render-md adminMd :source="info" />
