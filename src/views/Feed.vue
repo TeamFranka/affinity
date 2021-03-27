@@ -1,10 +1,16 @@
 <template>
   <ion-page>
-   <team-filter-header  @team-selected="searchValue = $event"/>
+    <team-filter-header @team-selected="selectTeam($event)"/>
+
+    <ion-fab class="ion-hide-sm-up" vertical="bottom" horizontal="end" slot="fixed"  v-if="canPost">
+      <ion-fab-button data-cy="openNewPostModal" color="primary" @click="openNewPostModal()">
+        <ion-icon size="small" :icon="editIcon"/>
+      </ion-fab-button>
+    </ion-fab>
 
     <ion-content data-cy="activity-feed">
       <div class="wrap">
-        <ion-card v-if="canPost">
+        <ion-card class="ion-hide-sm-down" v-if="canPost">
           <ion-card-content>
             <new-post :teams="canPostInTeams" />
           </ion-card-content>
@@ -13,7 +19,7 @@
 
         <transition-group name="list">
           <activity
-            v-for="activity in filterPost"
+            v-for="activity in latestPosts"
             :showTeam="showTeams"
             :activity="activity"
             :key="activity.objectId"
@@ -39,29 +45,29 @@ import {
   IonCard,
   IonCardContent,
   IonInfiniteScroll,
-  IonInfiniteScrollContent
+  IonInfiniteScrollContent,
+  IonFab,
+  IonFabButton,
+  IonIcon,
+  modalController
 } from '@ionic/vue';
-import { 
+import {
   chatbubbles,
   heartOutline,
   addOutline,
   mailOutline,
-  caretForwardOutline 
+  caretForwardOutline,
+  createOutline as editIcon
   } from 'ionicons/icons';
 import { defineComponent, computed } from 'vue';
 import { useStore } from '../stores/';
 import Activity from "../components/activity.vue";
+import TeamFilterHeader from "../components/team-filter-header.vue";
 import NewPost from "../components/new-post.vue";
-import TeamFilterHeader from '../components/team-filter-header.vue';
+import NewPostModal from "../components/new-post-modal.vue";
 
 export default defineComponent({
   name: 'Feed',
-  data(){
-    return{
-      searchValue:''
-    }
-  },
-  
   setup() {
     const store = useStore();
     return {
@@ -75,60 +81,55 @@ export default defineComponent({
       loading: computed(() => store.state.feed.loading),
       canLoadMore: computed(() => store.getters["feed/canLoadMore"]),
       latestPosts: computed(() => store.getters["feed/latestPosts"]),
-      showTeams: computed(() => store.getters["auth/myTeams"].length > 1),
+      showTeams: computed(() => store.getters["auth/myTeams"].length > 1 && !store.state.feed.selectedTeam),
+      selectTeam: async (name: string) => {
+        await store.dispatch("feed/selectTeam", name === "ALL" ? null : name);
+      },
       loadMore: (ev: CustomEvent) => {
-        console.log("we should load more", ev);
         store.dispatch("feed/loadMore").then(() => {
           (ev.target as any).complete();
         });
       },
-
       chatbubbles,
       like: heartOutline,
-      mail: mailOutline, 
+      mail: mailOutline,
       plus: addOutline,
       teamSplitter: caretForwardOutline,
-      store
+      store,
+      editIcon,
     }
   },
-  computed:{
-   
-    filterPost(){  
-        
-        const postList: any[]=[];
-        this.latestPosts.map((x: any)=>postList.push(x))
-       
-        if (this.searchValue.length!==0 && this.searchValue!=='All' && this.searchValue!=='setting') {
-            const v = this.searchValue;
-            const foundPost: any[] = [];
-            postList.forEach((g: any) => {
-                // if(g.team.name.toLowerCase().indexOf(v.toLowerCase()) > -1){
-                if(g.team.name==v){
-                  foundPost.push(g)
-                }           
-            })
-            return foundPost
-        }
-         
-        else{
-            return postList;
-        }
+  methods:{
+    async openNewPostModal () {
+      const popover = await modalController
+        .create({
+          component: NewPostModal,
+           cssClass:'modalCss',
+           componentProps: {
+            teams: this.canPostInTeams,
+          },
+        });
+      popover.present();
+      const result = await popover.onDidDismiss();
+      if (result.data) {
+        console.log("result",result);
+      }
     },
   },
- 
-  methods:{},
-
   components: {
-    IonContent, 
-    IonPage, 
-    IonSpinner, 
-    IonCard, 
+    IonContent,
+    IonPage,
+    IonSpinner,
+    IonCard,
     IonCardContent,
-    IonInfiniteScroll, 
+    IonInfiniteScroll,
     IonInfiniteScrollContent,
-    NewPost, 
+    IonFab,
+    IonFabButton,
+    IonIcon,
+    TeamFilterHeader,
+    NewPost,
     Activity,
-    TeamFilterHeader
   }
 });
 </script>

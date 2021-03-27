@@ -183,5 +183,6 @@
   "teamFilter.showTeamName":"Teamnamen anzeigen",
   "teamFilter.all":"Alle",
   "gallery.search":"Suche",
-  "pictureView.back":"zurück"
+  "pictureView.back":"zurück",
+  "newPost.createPost":"Erstellen Sie einen Beitrag"
 }

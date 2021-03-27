@@ -182,5 +182,6 @@
   "teamFilter.showTeamName":"Show Team Names",
   "teamFilter.all":"All",
   "gallery.search":"Search",
-  "pictureView.back":"back"
+  "pictureView.back":"back",
+  "newPost.createPost":"Create a Post"
 }

@@ -1,40 +1,32 @@
 <template>
-<ion-header>
+  <ion-header v-if="showTabs">
     <ion-toolbar>
-      <ion-segment scrollable @click="teamSelected($event)"  v-if ="newTeamArray.length==0">
-         <ion-segment-button value="All">
-          <ion-label>{{ $t('teamFilter.all')}}</ion-label>
+      <ion-segment
+        data-cy="team-filter"
+        scrollable
+        :value="selection"
+        @ionChange="$emit('team-selected', $event.detail.value)">
+        <ion-segment-button
+          v-for="entry in visibleTabs"
+          :value="entry.value"
+          :key="entry.value"
+          :data-cy-entry="entry.team  ? entry.team.slug : entry.value"
+          >
+          <avatar
+            size="1.8rem"
+            v-if="entry.team"
+            :profile="entry.team"
+            :with-name="showName"
+          />
+          <template v-else>
+            <ion-icon :icon="entry.icon" />
+              <ion-label class="ion-margin-start" v-if="showName">{{entry.title}}</ion-label>
+          </template>
         </ion-segment-button>
-        <ion-segment-button  v-for="item in teamName" :key="item.objectId" :value="item.name">
-          <ion-label>{{item.name}}</ion-label>
-        </ion-segment-button>
-        <ion-segment-button v-if="teamName.length!==0" value="setting">
-          <ion-icon :icon="settingIcon"></ion-icon>
-        </ion-segment-button>
-      </ion-segment>
 
-      <!-- When setting data set -->
-      <ion-segment scrollable @click="teamSelected($event)"  v-if ="newTeamArray.length!=0">
-          <!-- <ion-segment-button value="all">
-          <ion-label>{{ $t('teamFilter.all')}}</ion-label>
-        </ion-segment-button> -->
-
-        <ion-list v-for="(item,index) in newTeamArray" v-bind:index="item.priority" :key="index">
-        <ion-segment-button v-if="item.toggle" :value="item.name">
-          <div class="segment-block">
-
-            <ion-avatar v-if="item.icon!==''" size="1.5rem" slot="start">
-                <img v-bind:src="item.icon" />
-            </ion-avatar>
-
-            <ion-icon class="globe-icon" v-if="item.name=='All'" :icon="globeIcon" color="primary"></ion-icon>
-
-            <ion-label class="ion-margin-start" v-if="item.isIcon">{{item.name}}</ion-label>
-          </div>
-        </ion-segment-button>
-        </ion-list>
-
-        <ion-segment-button v-if="newTeamArray.length!==0" value="setting">
+        <ion-segment-button
+          data-cy-entry="settings"
+          @click="openSettings($event)">
           <ion-icon :icon="settingIcon"></ion-icon>
         </ion-segment-button>
       </ion-segment>
@@ -43,92 +35,119 @@
 </template>
 
 <script lang="ts">
-import { modalController,IonHeader,IonToolbar
-,IonSegment,IonLabel,IonIcon,IonList,IonSegmentButton,IonAvatar } from '@ionic/vue';
+import {
+  modalController,
+  IonHeader,
+  IonToolbar,
+  IonSegment,
+  IonLabel,
+  IonIcon,
+  IonSegmentButton,
+} from '@ionic/vue';
 import { cogOutline as settingIcon,globeOutline as globeIcon } from 'ionicons/icons';
 import { defineComponent, computed } from 'vue';
 import EditTeamFilter from "../components/edit-team-filter.vue";
+import Avatar from "@/components/avatar.vue";
 import { useStore } from '../stores/';
+
+const DEFAULT_SETTINGS: any = {
+  showName: true,
+  tabs: []
+}
+
+
 export default defineComponent({
   name: 'TeamFilterHeader',
   emits: ['team-selected'],
-  data(){
-    const newTeamArray: string[] = [];
-    const latestPosts: any[] =[];
-    return{
-      newTeamArray,
-      latestPosts
-    }
-  },
-  
   setup() {
     const store = useStore();
     return {
-      teamName: computed(() => store.getters["auth/myTeams"]),    
-      settingIcon,store,globeIcon
+      myTeams: computed(() => store.getters["auth/myTeams"]),
+      selection: computed(() => store.state.feed.selectedTeam || 'ALL'),
+      settings: computed(() => (store.getters["auth/settings"].teamTabs || DEFAULT_SETTINGS)),
+      teamsMap: computed(() => store.getters.objectsMap),
+      settingIcon,
+      store,
+      globeIcon
     }
   },
-   created: function(){
-        this.getSettings();   
-    }, 
- 
-  methods:{ 
- 
-    async getSettings(){
-    
-      const teamPriority: any =  await this.store.state.auth.user;
-      this.newTeamArray = [];
-
-     
-      if(teamPriority.settings!==undefined && teamPriority.settings!==null){
-       
-        if(teamPriority.settings.feedTabs!==undefined && teamPriority.settings.feedTabs!==null){
-          
-          teamPriority.settings.feedTabs[0].teams.map((data: any)=>this.newTeamArray.push(data))
-         
-          // this.newTeamArray.sort((a: any,b: any) => a.priority-b.priority);
-        }
-      }
+  computed: {
+    showTabs(): boolean {
+      return (this.tabs || []).length > 0
     },
-    async teamSelected(event: any){    
-        const val = event.target.value;
-        if(val == "setting"){
-           const modal = await modalController
-          .create({
-            component: EditTeamFilter,
-            componentProps: {
-              teamDetails : this.teamName
-            },
-            })
-            await modal.present();
-            const res = await modal.onDidDismiss();
-            if (res.data) {
-                this.getSettings();
-                this.$emit('team-selected', val)
-            }
-          }
-        else{
-          this.$emit('team-selected', val)
+    showName(): boolean {
+      return this.settings.showName
+    },
+    tabs(): any[] {
+      let tabs = this.settings.tabs || [];
+      if (!tabs.length && this.myTeams.length > 1) {
+        // nothing configured but more than one team available, switching to default
+        tabs = [{default: 'all', show: true}];
+        this.myTeams.forEach((team:any) => {
+          tabs.push({show: true, value: team.objectId, team: team.objectId})
+        });
+      } else if (tabs.length > 0) {
+        const teamIds = tabs.map((e:any) => e.team);
+        this.myTeams.filter(
+          (team:any) => teamIds.indexOf(team.objectId) === -1
+        ).forEach((team:any) => {
+          // let's add all the other teams by default
+          tabs.push({show: true, value: team.objectId, team: team.objectId})
+        });
+      }
+      return tabs;
+    },
+    visibleTabs(): any[] {
+      const res = this.tabs
+        .filter((t:any) => t.show)
+        .map((e:any) => Object.assign({}, e, e.team ? {team: this.teamsMap[e.team]} : this.remap(e.default)));
+      return  res;
+    }
+  },
+  methods:{
+    remap(e: string): any {
+      const REMAP_DEFAULTS: Record<string, any> = {
+        'all': {
+          value: "ALL", icon: globeIcon, title: this.$t("teamFilter.all")
         }
       }
+      return REMAP_DEFAULTS[e]
+    },
+    async openSettings(e: Event) {
+      e.preventDefault();
+
+      const modal = await modalController
+        .create({
+          component: EditTeamFilter,
+          componentProps: {
+            remap: (x: string) => this.remap(x),
+            currentSettings: {
+              showName: this.showName,
+              tabs: this.tabs,
+            },
+            allTeams: this.myTeams
+          },
+      });
+      await modal.present();
+      const res = await modal.onDidDismiss();
+      if (res.data) {
+        await this.store.dispatch("auth/setSetting", {teamTabs: res.data})
+        const first = this.visibleTabs[0]
+        await this.store.dispatch("feed/selectTeam", first.value == "ALL" ? null : first.value);
+      }
+    }
   },
   components: {
-   IonHeader,IonToolbar,IonSegment,IonLabel,
-   IonIcon,IonList,IonSegmentButton,IonAvatar
+   IonHeader,
+   IonToolbar,
+   IonSegment,
+   IonLabel,
+   IonIcon,
+   IonSegmentButton,
+   Avatar,
   }
 });
 </script>
 
 <style scoped>
-.segment-block{
-  display: flex;
-  align-items: center;
-}
-.segment-block ion-avatar {
-  width: 1.5rem;
-  height: 1.5rem;
-}
-.globe-icon{
-  font-size: 1.5rem;
-}
 </style>
