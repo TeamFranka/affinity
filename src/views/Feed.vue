@@ -3,7 +3,7 @@
     <team-filter-header @team-selected="selectTeam($event)"/>
 
     <ion-fab class="ion-hide-sm-up" vertical="bottom" horizontal="end" slot="fixed"  v-if="canPost">
-      <ion-fab-button data-cy="openNewPostModal" color="primary" v-if="canPost" @click="openNewPostModal()">
+      <ion-fab-button data-cy="openNewPostModal" color="primary" @click="openNewPostModal()">
         <ion-icon size="small" :icon="editIcon"/>
       </ion-fab-button>
     </ion-fab>
@@ -86,7 +86,6 @@ export default defineComponent({
         await store.dispatch("feed/selectTeam", name === "ALL" ? null : name);
       },
       loadMore: (ev: CustomEvent) => {
-        console.log("we should load more", ev);
         store.dispatch("feed/loadMore").then(() => {
           (ev.target as any).complete();
         });
