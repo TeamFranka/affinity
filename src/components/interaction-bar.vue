@@ -185,3 +185,15 @@ export default defineComponent({
   z-index: 1;
 }
 </style>
+
+<style lang="css">
+  ion-chip span {
+    margin-top: 2px;
+    padding-right: 6px !important;
+  }
+  ion-chip ion-label {
+    position: absolute;
+    top: 0;
+    margin-top: 9px;
+  }
+</style>
