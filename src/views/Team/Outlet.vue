@@ -87,14 +87,6 @@
               <ion-icon size="small" :icon="qrCodeIcon" />
             </ion-button>
 
-            <ion-button size="small" @click="showQr = !showQr" fill="clear">
-              Posts
-            </ion-button>
-
-            <ion-button size="small" @click="showQr = !showQr" fill="clear">
-              Activities
-            </ion-button>
-
             <div slot="end">
               <inline-link-list showTitle :items="footerLinks">
                 <li v-if="canEdit">
