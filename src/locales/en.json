@@ -90,6 +90,7 @@
   "menu.my.MyProfile" : "My Profile",
   "menu.myTeams": "My Teams",
   "menu.news": "News",
+  "menu.picture": "Pictures",
   "menu.settings.general": "General",
   "menu.settings.push": "Push Settings",
   "newPost.actions.add.document" : "Document",
@@ -175,10 +176,12 @@
   "setting.push.posts" : "all posts",
   "settings.push.thisDevice": "This device ({name})",
   "settings.title": "Settings",
-  "":"",
-  "teamFilter.title":"Edit Team Filter",
-  "teamFilter.button.save":"Save",
-  "teamFilter.showTeamName":"Show Team Names",
-  "teamFilter.all":"All",
-  "newPost.createPost":"Create a Post"
+  "": "",
+  "teamFilter.title": "Edit Team Filter",
+  "teamFilter.button.save": "Save",
+  "teamFilter.showTeamName": "Show Team Names",
+  "teamFilter.all": "All",
+  "gallery.search": "Search",
+  "pictureView.back": "back",
+  "newPost.createPost": "Create a Post"
 }
