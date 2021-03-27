@@ -9,18 +9,18 @@ describe("Filtering the feed by teams", () => {
     // make sure the ones we care about are accessible;
 
     // this implicitly also checks that saving works!
-    cy.get("[data-cy=team-filter] [data-cy-entry='settings']").click()
-    cy.get("ion-modal").within(() => {
-      ['ALL', 'team-earth', 'doctor-who'].forEach((name) => {
-        cy.get(`ion-toggle[data-cy-entry=${name}]`).then(($e) => {
-          console.log($e.attr('aria-checked'), $e);
-          if ($e.attr('aria-checked') !== 'true') {
-            cy.get(`ion-toggle[data-cy-entry=${name}]`).click();
-          }
-        })
-      });
-      cy.get("[data-cy=save]").click();
-    })
+    // cy.get("[data-cy=team-filter] [data-cy-entry='settings']").click()
+    // cy.get("ion-modal").within(() => {
+    //   ['ALL', 'team-earth', 'doctor-who'].forEach((name) => {
+    //     cy.get(`ion-toggle[data-cy-entry=${name}]`).then(($e) => {
+    //       console.log($e.attr('aria-checked'), $e);
+    //       if ($e.attr('aria-checked') !== 'true') {
+    //         cy.get(`ion-toggle[data-cy-entry=${name}]`).click();
+    //       }
+    //     })
+    //   });
+    //   cy.get("[data-cy=save]").click();
+    // })
 
 
     cy.get("[data-cy=team-filter] [data-cy-entry=ALL]").click();

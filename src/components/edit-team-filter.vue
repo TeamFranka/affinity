@@ -36,13 +36,13 @@
               :checked="entry.show"
               @ionChange="tabs[idx].show = $event.detail.checked"
             />
-            <div v-if="entry.team">
+            <ion-label v-if="entry.team">
               <avatar
                 size="1.8rem"
                 :profile="entry.team"
                 with-name
               />
-            </div>
+            </ion-label>
             <template v-else>
               <ion-icon :icon="entry.icon" />
                 <ion-label class="ion-margin-start">{{entry.title}}</ion-label>
@@ -126,12 +126,7 @@ export default defineComponent({
     doReorder(ev: CustomEvent<ItemReorderEventDetail>) {
       console.log("reordering", ev);
     },
-    toggled(idx:number, ev: CustomEvent) {
-      this.tabs[idx].show = ev.detail.checked;
-      console.log(idx, ev, this.tabs);
-    },
     saveAndClose() {
-      console.log(this.tabs);
       modalController.dismiss({
         showName: this.showName ? true : false,
         tabs: this.tabs
