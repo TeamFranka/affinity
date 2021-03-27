@@ -1,10 +1,16 @@
 <template>
   <ion-page>
-   <team-filter-header @team-selected="selectTeam($event)"/>
+    <team-filter-header @team-selected="selectTeam($event)"/>
+
+    <ion-fab class="ion-hide-sm-up" vertical="bottom" horizontal="end" slot="fixed"  v-if="canPost">
+      <ion-fab-button data-cy="openNewPostModal" color="primary" v-if="canPost" @click="openNewPostModal()">
+        <ion-icon size="small" :icon="editIcon"/>
+      </ion-fab-button>
+    </ion-fab>
 
     <ion-content data-cy="activity-feed">
       <div class="wrap">
-        <ion-card v-if="canPost">
+        <ion-card class="ion-hide-sm-down" v-if="canPost">
           <ion-card-content>
             <new-post :teams="canPostInTeams" />
           </ion-card-content>
@@ -39,20 +45,25 @@ import {
   IonCard,
   IonCardContent,
   IonInfiniteScroll,
-  IonInfiniteScrollContent
+  IonInfiniteScrollContent,
+  IonFab,
+  IonFabButton,
+  IonIcon,
+  modalController
 } from '@ionic/vue';
 import {
   chatbubbles,
   heartOutline,
   addOutline,
   mailOutline,
-  caretForwardOutline
+  caretForwardOutline,
+  createOutline as editIcon
   } from 'ionicons/icons';
 import { defineComponent, computed } from 'vue';
 import { useStore } from '../stores/';
 import Activity from "../components/activity.vue";
 import NewPost from "../components/new-post.vue";
-import TeamFilterHeader from '../components/team-filter-header.vue';
+import NewPostModal from "../components/new-post-modal.vue";
 
 export default defineComponent({
   name: 'Feed',
@@ -85,21 +96,32 @@ export default defineComponent({
           (ev.target as any).complete();
         });
       },
-
       chatbubbles,
       like: heartOutline,
       mail: mailOutline,
       plus: addOutline,
       teamSplitter: caretForwardOutline,
-      store
+      store,
+      editIcon,
     }
   },
-  computed: {
+  methods:{
+    async openNewPostModal () {
+      const popover = await modalController
+        .create({
+          component: NewPostModal,
+           cssClass:'modalCss',
+           componentProps: {
+            teams: this.canPostInTeams,
+          },
+        });
+      popover.present();
+      const result = await popover.onDidDismiss();
+      if (result.data) {
+        console.log("result",result);
+      }
+    },
   },
-
-  methods: {
-  },
-
   components: {
     IonContent,
     IonPage,
@@ -108,9 +130,11 @@ export default defineComponent({
     IonCardContent,
     IonInfiniteScroll,
     IonInfiniteScrollContent,
+    IonFab,
+    IonFabButton,
+    IonIcon,
     NewPost,
     Activity,
-    TeamFilterHeader
   }
 });
 </script>
