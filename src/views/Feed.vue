@@ -62,17 +62,12 @@ import {
 import { defineComponent, computed } from 'vue';
 import { useStore } from '../stores/';
 import Activity from "../components/activity.vue";
+import TeamFilterHeader from "../components/team-filter-header.vue";
 import NewPost from "../components/new-post.vue";
 import NewPostModal from "../components/new-post-modal.vue";
 
 export default defineComponent({
   name: 'Feed',
-  data(){
-    return{
-      searchValue:''
-    }
-  },
-
   setup() {
     const store = useStore();
     return {
@@ -133,6 +128,7 @@ export default defineComponent({
     IonFab,
     IonFabButton,
     IonIcon,
+    TeamFilterHeader,
     NewPost,
     Activity,
   }
