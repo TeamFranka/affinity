@@ -1,11 +1,11 @@
 <template>
-  <span @click="toggleLike()" :disabled="disabled">
+  <span @click="toggleLike()" :disabled="disabled" styles="parent-style">
     <ion-icon
       :icon="hasLiked ? hasLikedIcon : likeIcon"
       :color="hasLiked ? 'danger' : ''"
       :size="iconSize"
     />
-    <ion-label>{{ counter }}</ion-label>
+    <ion-label >{{ counter }}</ion-label>
   </span>
 </template>
 <script>
@@ -64,15 +64,3 @@ export default defineComponent({
 });
 </script>
 
-<style scoped>
-ion-chip span {
-  margin-top: 2px;
-  padding-right: 6px !important;
-}
-
-ion-label {
-  position: absolute;
-  top: 0;
-  margin-top: 9px;
-}
-</style>
