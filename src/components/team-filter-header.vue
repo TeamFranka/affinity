@@ -1,7 +1,11 @@
 <template>
-  <ion-header v-if="showTabs">
+  <ion-header>
     <ion-toolbar>
+      <ion-buttons slot="start">
+        <ion-menu-button></ion-menu-button>
+      </ion-buttons>
       <ion-segment
+        v-if="showTabs"
         data-cy="team-filter"
         scrollable
         :value="selection"
