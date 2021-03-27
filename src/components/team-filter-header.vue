@@ -1,11 +1,12 @@
 <template>
   <ion-header v-if="showTabs">
     <ion-toolbar>
-      <ion-segment scrollable @click="teamSelected($event)">
+      <ion-segment data-cy="team-filter" scrollable @click="$emit('team-selected', $event.target.value)">
         <ion-segment-button
           v-for="entry in visibleTabs"
           :value="entry.value"
           :key="entry.value"
+          :data-cy-entry="entry.team  ? entry.team.slug : entry.value"
           >
           <avatar
             size="1.8rem"
@@ -19,7 +20,9 @@
           </template>
         </ion-segment-button>
 
-        <ion-segment-button value="__setting">
+        <ion-segment-button
+          data-cy-entry="settings"
+          @click="openSettings($event)">
           <ion-icon :icon="settingIcon"></ion-icon>
         </ion-segment-button>
       </ion-segment>
@@ -48,6 +51,7 @@ const DEFAULT_SETTINGS: any = {
   tabs: []
 }
 
+
 export default defineComponent({
   name: 'TeamFilterHeader',
   emits: ['team-selected'],
@@ -55,9 +59,8 @@ export default defineComponent({
     const store = useStore();
     return {
       myTeams: computed(() => store.getters["auth/myTeams"]),
-      settings: computed(() =>  (((store.state.auth.user || {}) as any).settings || {
-        teamTabs: DEFAULT_SETTINGS })
-      ),
+      settings: computed(() => (store.getters["auth/settings"].teamTabs || DEFAULT_SETTINGS)),
+      teamsMap: computed(() => store.getters.objectsMap),
       settingIcon,
       store,
       globeIcon
@@ -71,47 +74,61 @@ export default defineComponent({
       return this.settings.showName
     },
     tabs(): any[] {
-      let tabs = this.settings.tabs;
-      if (!tabs && this.myTeams.length > 1) {
+      let tabs = this.settings.tabs || [];
+      if (!tabs.length && this.myTeams.length > 1) {
         // nothing configured but more than one team available, switching to default
-        tabs = [{
-          value: null, icon: globeIcon, title: this.$t("teamFilter.all"), show: true
-        }];
+        tabs = [{default: 'all', show: true}];
         this.myTeams.forEach((team:any) => {
-          tabs.push({team, show: true, value: team.objectId})
+          tabs.push({show: true, value: team.objectId, team: team.objectId})
+        });
+      } else if (tabs.length > 0) {
+        const teamIds = tabs.map((e:any) => e.team);
+        this.myTeams.filter(
+          (team:any) => teamIds.indexOf(team.objectId) === -1
+        ).forEach((team:any) => {
+          // let's add all the other teams by default
+          tabs.push({show: true, value: team.objectId, team: team.objectId})
         });
       }
       return tabs;
     },
     visibleTabs(): any[] {
-      return this.tabs.filter((t:any) => t.show);
+      const res = this.tabs
+        .filter((t:any) => t.show)
+        .map((e:any) => Object.assign({}, e, e.team ? {team: this.teamsMap[e.team]} : this.remap(e.default)));
+      return  res;
     }
   },
   methods:{
-    async teamSelected(event: any) {
-        const val = event.target.value;
-        if (val == "__setting") {
-           const modal = await modalController
-          .create({
-            component: EditTeamFilter,
-            componentProps: {
-              currentSettings: {
-                withName: this.settings.withName,
-                tabs: this.tabs,
-              },
-              allTeams: this.myTeams
-            },
-            })
-            await modal.present();
-            const res = await modal.onDidDismiss();
-            if (res.data) {
-              await this.store.dispatch("auth/setSetting", {teamTabs: res.data})
-            }
-          }
-        else{
-          this.$emit('team-selected', val)
+    remap(e: string): any {
+      const REMAP_DEFAULTS: Record<string, any> = {
+        'all': {
+          value: "ALL", icon: globeIcon, title: this.$t("teamFilter.all")
         }
       }
+      return REMAP_DEFAULTS[e]
+    },
+    async openSettings(e: Event) {
+      e.preventDefault();
+
+      const modal = await modalController
+        .create({
+          component: EditTeamFilter,
+          componentProps: {
+            remap: (x: string) => this.remap(x),
+            currentSettings: {
+              showName: this.showName,
+              tabs: this.tabs,
+            },
+            allTeams: this.myTeams
+          },
+      });
+      await modal.present();
+      const res = await modal.onDidDismiss();
+      if (res.data) {
+        await this.store.dispatch("auth/setSetting", {teamTabs: res.data})
+      }
+    }
   },
   components: {
    IonHeader,
