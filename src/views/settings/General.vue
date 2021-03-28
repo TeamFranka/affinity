@@ -21,19 +21,9 @@
             <ion-label>
             {{ $t('setting.general.theme') }}
             </ion-label>
-            <ion-select :value="themes" @ion-change="themeChange($event.target.value)" interface="popover" v-if="lang == 'en'">
-              <ion-select-option
-                v-for="opt in SUPPORTED_THEMES"
-                :value="opt[0]"
-                :key="opt[0]">{{opt[1]}}</ion-select-option>
-            </ion-select>
-            
-             <ion-select :value="themes" @ion-change="themeChange($event.target.value)" interface="popover" v-else>
-              <ion-select-option
-                v-for="opt in SUPPORTED_THEMES_DEUTSCH"
-                :value="opt[0]"
-                :key="opt[0]">{{opt[1]}}</ion-select-option>
-            </ion-select>
+            <ion-toggle 
+            @ion-change="themeChange(themes = !themes)"
+            :checked="themes" slot="end"/>
             
           </ion-item>
 
@@ -52,6 +42,7 @@ import {
   IonLabel,
   IonSelect,
   IonSelectOption,
+  IonToggle
 } from "@ionic/vue";
 import {
   notificationsOutline as notificationIcon,
@@ -60,22 +51,10 @@ import {
 import { defineComponent, computed } from "vue";
 import { useStore } from "@/stores/";
 
-const SUPPORTED_THEMES = [
-  ["dark", "Dark Theme"],
-  ["light", "Light Theme"],
-];
-
-const SUPPORTED_THEMES_DEUTSCH = [
-  ["dark", "Donker thema"],
-  ["light", "Licht thema"],
-];
-
 const SUPPORTED_LANGUAGES = [
   ["de", "Deutsch"],
   ["en", "English"],
 ];
-
-
 
 export default defineComponent({
   name: "SettingsGeneral",
@@ -88,8 +67,8 @@ export default defineComponent({
       themes: computed(() => store.state.auth.user?.settings?.themes),
       hasPush: computed(() => store.getters['auth/hasPush']),
       langChange:  (lang: string) => store.dispatch("auth/setLang", lang),
-      themeChange: (themes: string) => { store.dispatch("auth/setSetting", {themes}); if(themes == 'light') {document.body.classList.remove('dark'); } else { document.body.classList.add('dark') } } ,
-      SUPPORTED_LANGUAGES, SUPPORTED_THEMES, SUPPORTED_THEMES_DEUTSCH, generalIcon, notificationIcon,
+      themeChange: (themes: boolean) => {store.dispatch("auth/setSetting", {themes}); document.body.classList.toggle('dark', themes);  },
+      SUPPORTED_LANGUAGES, generalIcon, notificationIcon,
     }
   },
   components: {
@@ -101,6 +80,7 @@ export default defineComponent({
     IonLabel,
     IonSelect,
     IonSelectOption,
+    IonToggle
   },
 });
 </script>
