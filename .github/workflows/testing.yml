@@ -52,4 +52,4 @@ jobs:
         if: failure()
         with:
           name: 'Test Error Recordings'
-          path: tests/e2/videos
+          path: tests/e2e/videos

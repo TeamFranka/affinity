@@ -1,7 +1,11 @@
 <template>
-  <ion-row ref="doubleTapRef">
-    <ion-col size="1">
-      <avatar :profile="author" />
+  <div v-if="brief" class="ion-padding-horizontal">
+    {{ text }}
+    – <avatar size="1.25rem" :profile="author" with-name />&nbsp;<ion-note color="medium">{{ since }}</ion-note>
+  </div>
+  <ion-row v-else>
+    <ion-col size="1" class="text-center">
+      <avatar size="2.5rem" :profile="author" />
     </ion-col>
     <ion-col size="10">
       <div>
@@ -11,6 +15,10 @@
         {{ text }}
       </div>
       <div>
+        <ion-chip @click="showInput = !showInput" outline :color="showInput? 'medium' : 'light'">
+          <ion-icon :icon="replyIcon" size="small" />
+        </ion-chip>
+
         <ion-chip @click="toggleLike" outline size="small" :color="likedColor">
           <ion-icon :icon="likeIcon" size="small" />
           <ion-label>{{ comment.likesCount }}</ion-label>
@@ -29,12 +37,20 @@
         </ion-chip>
       </div>
     </ion-col>
-    <ion-col size="1">
-      <ion-chip @click="showInput = !showInput" outline color="light">
-        <ion-icon :icon="replyIcon" size="small" />
-      </ion-chip>
-    </ion-col>
-    <ion-col offset="1" size="11">
+    <ion-col
+      offset="1"
+      size="11"
+      class="sub-comments-box"
+      v-if="showInput || children.length > 0"
+    >
+      <comment
+        v-for="c in children"
+        brief
+        :children="c.comments"
+        :key="c.objectId"
+        :commentId="c.objectId"
+        :object="object"
+      />
       <inline-text
         v-if="showInput"
         :value="draft"
@@ -42,13 +58,6 @@
         :placeholder="$t('comment.placeholder')"
         @submit="submitComment()"
         @changed="setDraft($event)"
-      />
-      <comment
-        v-for="c in children"
-        :children="c.comments"
-        :key="c.objectId"
-        :commentId="c.objectId"
-        :object="object"
       />
     </ion-col>
   </ion-row>
@@ -70,7 +79,6 @@ import {
   arrowRedoOutline,
   arrowUndoOutline,
 } from "ionicons/icons";
-// import { createGesture } from "@ionic/core";
 
 import Avatar from "./avatar.vue";
 import { useStore } from "../stores/";
@@ -90,7 +98,7 @@ export default defineComponent({
       type: String,
       required: true,
     },
-    inset: Boolean,
+    brief: Boolean,
     children: {
       type: Array,
     },
@@ -227,5 +235,8 @@ export default defineComponent({
 ion-card-header {
   display: flex;
   align-items: center;
+}
+.sub-comments-box {
+  border-left: 2px solid var(--ion-color-light);
 }
 </style>

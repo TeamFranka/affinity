@@ -1,5 +1,5 @@
 <template>
-  <ion-card data-cy-type="activity" :data-cy-verb="activity.verb">
+  <ion-card data-cy-type="activity" :data-cy-team="team.slug" :data-cy-verb="activity.verb">
     <!-- BIREF VIEW -->
     <ion-card-header v-if="briefView">
       <div class="avatar-wrap-sml">

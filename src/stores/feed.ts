@@ -9,6 +9,7 @@ export interface FeedT {
   subscription: any;
   latestPosts: Array<string>;
   query: any;
+  selectedTeam: string | null;
   currentPos: number;
   total: number;
 }
@@ -20,6 +21,7 @@ export const Feed = {
   state: () => ({
     loading: true,
     latestPosts: [],
+    seletedTeam: null,
     currentPos: 0,
     total: 0,
   }),
@@ -31,8 +33,11 @@ export const Feed = {
       rootGetters: any
     ): Model[] {
       const objs = rootGetters["objectsMap"];
-
-      return state.latestPosts.map((id) => objs[id]);
+      const posts = state.latestPosts.map((id) => objs[id]);
+      if (state.selectedTeam) {
+        return posts.filter((post: any) => post.team.objectId == state.selectedTeam)
+      }
+      return posts
     },
     canLoadMore(state: FeedT): boolean {
       if (state.loading) return false;
@@ -62,6 +67,9 @@ export const Feed = {
     setLoading(state: FeedT, value: boolean) {
       state.loading = value;
     },
+    setSelectedTeam(state: FeedT, name: string | null) {
+      state.selectedTeam = name;
+    },
   },
   actions: {
     async loadMore(context: any) {
@@ -87,6 +95,12 @@ export const Feed = {
         feed: results.map((a: Parse.Object) => a.id),
         total: count,
       });
+    },
+    async selectTeam(context: any, selection: string | null) {
+      await context.commit("setSelectedTeam", selection);
+      while(context.getters.latestPosts.length === 0 && context.getters.canLoadMore) {
+        await context.dispatch("loadMore");
+      }
     },
     async refresh(context: any) {
       context.commit("setLoading", true);
