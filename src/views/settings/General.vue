@@ -28,7 +28,7 @@
                 :key="opt[0]">{{opt[1]}}</ion-select-option>
             </ion-select>
             
-             <ion-select :value="themes" @ion-change="themeChange($event.target.value)" interface="popover" v-else="lang == 'de'">
+             <ion-select :value="themes" @ion-change="themeChange($event.target.value)" interface="popover" v-else>
               <ion-select-option
                 v-for="opt in SUPPORTED_THEMES_DEUTSCH"
                 :value="opt[0]"
