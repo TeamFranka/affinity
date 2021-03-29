@@ -19,11 +19,11 @@
 
            <ion-item>
             <ion-label>
-            {{ $t('setting.general.theme') }}
+            {{ $t('setting.general.force_darkmode') }}
             </ion-label>
             <ion-toggle 
-            @ion-change="themeChange(themes = !themes)"
-            :checked="themes" slot="end"/>
+            @ion-change="forceDark($event.detail.checked)"
+            :checked="force_darkmode" slot="end"/>
             
           </ion-item>
 
@@ -67,7 +67,7 @@ export default defineComponent({
       themes: computed(() => store.state.auth.user?.settings?.themes),
       hasPush: computed(() => store.getters['auth/hasPush']),
       langChange:  (lang: string) => store.dispatch("auth/setLang", lang),
-      themeChange: (themes: boolean) => {store.dispatch("auth/setSetting", {themes}); document.body.classList.toggle('dark', themes);  },
+      forceDark: (force_darkmode: boolean) => {store.dispatch("auth/setSetting", {force_darkmode}); document.body.classList.toggle('dark', force_darkmode);  },
       SUPPORTED_LANGUAGES, generalIcon, notificationIcon,
     }
   },
