@@ -1,0 +1,39 @@
+name: Check i18n
+on:
+  pull_request:
+    branches: [ main ]
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  tests:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Cache node modules
+        uses: actions/cache@v2
+        env:
+          cache-name: cache-node-modules
+        with:
+          # npm cache files are stored in `~/.npm` on Linux/macOS
+          path: './node_modules'
+          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-build-${{ env.cache-name }}-
+            ${{ runner.os }}-build-
+            ${{ runner.os }}-
+      - name: Install dependencies
+        run: npm install
+      # Runs
+      - name: i18n report
+        run: npm run i18n:report
+      - name: Check for missing translations for en and de
+        run: |
+          all=`jq --compact-output '.missingKeys [] .language as $lang | .missingKeys [] .path as $path | {lang: $lang, path: $path}'  < locales-report.json`
+          en=`echo $all | grep -v '${' | grep  "lang":"en" | wc -l`
+          de=`echo $all | grep -v '${' | grep  "lang":"de" | wc -l`
+          if [ $en -ne 0 ]; then echo "Missing en translations"; exit 1; fi
+          if [ $de -ne 0 ]; then echo "Missing de translations"; exit 1; fi

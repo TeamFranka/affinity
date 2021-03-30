@@ -9,6 +9,7 @@ export interface FeedT {
   subscription: any;
   latestPosts: Array<string>;
   query: any;
+  selectedTeam: string | null;
   currentPos: number;
   total: number;
 }
@@ -20,14 +21,23 @@ export const Feed = {
   state: () => ({
     loading: true,
     latestPosts: [],
+    seletedTeam: null,
     currentPos: 0,
     total: 0,
   }),
   getters: {
-    latestPosts(state: FeedT, getters: any, rootState: any, rootGetters: any): Model[] {
+    latestPosts(
+      state: FeedT,
+      getters: any,
+      rootState: any,
+      rootGetters: any
+    ): Model[] {
       const objs = rootGetters["objectsMap"];
-
-      return state.latestPosts.map((id) => objs[id])
+      const posts = state.latestPosts.map((id) => objs[id]);
+      if (state.selectedTeam) {
+        return posts.filter((post: any) => post.team.objectId == state.selectedTeam)
+      }
+      return posts
     },
     canLoadMore(state: FeedT): boolean {
       if (state.loading) return false;
@@ -42,7 +52,7 @@ export const Feed = {
       state.latestPosts = state.latestPosts.concat(feed);
     },
     setQuery(state: FeedT, query: any) {
-      state.query = query
+      state.query = query;
     },
     addItem(state: FeedT, item: string) {
       state.latestPosts.unshift(item);
@@ -57,11 +67,14 @@ export const Feed = {
     setLoading(state: FeedT, value: boolean) {
       state.loading = value;
     },
+    setSelectedTeam(state: FeedT, name: string | null) {
+      state.selectedTeam = name;
+    },
   },
   actions: {
     async loadMore(context: any) {
       if (!context.getters.canLoadMore) {
-        return
+        return;
       }
       context.commit("setLoading", true);
       const query = Parse.Query.fromJSON(Activity, context.state.query);
@@ -72,29 +85,49 @@ export const Feed = {
       context.commit("setLoading", false);
     },
     async addItems(context: any, result: any) {
-      const {results, count} = result;
-      await context.dispatch("addItems", {keys: MODEL_KEYS, items: results}, { root: true });
-      await context.commit("addToFeed", {feed: results.map((a: Parse.Object) => a.id), total: count});
+      const { results, count } = result;
+      await context.dispatch(
+        "addItems",
+        { keys: MODEL_KEYS, items: results },
+        { root: true }
+      );
+      await context.commit("addToFeed", {
+        feed: results.map((a: Parse.Object) => a.id),
+        total: count,
+      });
+    },
+    async selectTeam(context: any, selection: string | null) {
+      await context.commit("setSelectedTeam", selection);
+      while(context.getters.latestPosts.length === 0 && context.getters.canLoadMore) {
+        await context.dispatch("loadMore");
+      }
     },
     async refresh(context: any) {
       context.commit("setLoading", true);
-      context.dispatch("unsubscribe", 'feed', {root: true});
+      context.dispatch("unsubscribe", "feed", { root: true });
       const teams = context.rootGetters["auth/teamPointers"];
-      const query = (new Parse.Query(Activity))
+      const query = new Parse.Query(Activity)
         .containedIn("team", teams)
         .containedIn("verb", [Verb.Post, Verb.Announce])
         .include(MODEL_KEYS)
         .limit(ITEMS_PER_PAGE)
         .descending("createdAt")
         .withCount(true);
-      context.commit("setQuery", query.toJSON())
+      context.commit("setQuery", query.toJSON());
       const feed = await query.find();
       await context.dispatch("addItems", feed);
 
-
-      context.dispatch("subscribe", {
-        id: 'feed', keys: MODEL_KEYS, query, addCb: "feed/addItem", rmCb: "rmItem"
-      }, {root: true});
+      context.dispatch(
+        "subscribe",
+        {
+          id: "feed",
+          keys: MODEL_KEYS,
+          query,
+          addCb: "feed/addItem",
+          rmCb: "rmItem",
+        },
+        { root: true }
+      );
       context.commit("setLoading", false);
     },
   },

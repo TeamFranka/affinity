@@ -52,6 +52,21 @@ export const Users = [
     }
 ]
 
+export const UserOverrides = {
+    'clara': {
+        'emailVerified': true,
+    },
+    'graham': {
+        'emailVerified': true,
+    },
+    'river':  {
+        'emailVerified': true,
+    },
+    'yaz':  {
+        'emailVerified': true,
+    },
+}
+
 
 export const Devices = [
     { // Clara's Android
@@ -178,6 +193,16 @@ export const Posts = [
         visibility: "public",
         objects: [
             {cls: "Picture", file: makeFile('yaz-huge.jpg')}
+        ]
+    },
+    {
+        team: "team-earth",
+        verb: "announce",
+        author: 'clara',
+        text: "Ein freundliches Hallo zu Doctor huge!!!",
+        visibility: "public",
+        objects: [
+            {cls: "Picture", file: makeFile('doctor-huge.jpg')}
         ]
     }
 ]

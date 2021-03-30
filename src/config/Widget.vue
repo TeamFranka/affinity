@@ -3,30 +3,29 @@
 </template>
 
 <script lang="ts">
-
-import ChatWidget from '../components/chat-widget.vue';
-import { defineComponent } from 'vue';
+import ChatWidget from "../components/chat-widget.vue";
+import { defineComponent } from "vue";
 
 // import SideMenu from '../components/side-menu.vue';
 import { Parse, ChatWidgetSettings } from "./Consts";
 
 export default defineComponent({
-  name: 'x-affinity-chat-widget',
+  name: "x-affinity-chat-widget",
   data() {
     return {
       config: new ChatWidgetSettings(),
       loaded: false,
-    }
+    };
   },
-   components: {
+  components: {
     ChatWidget,
   },
   async created() {
-    const configuration = await (new Parse.Query(ChatWidgetSettings))
+    const configuration = await new Parse.Query(ChatWidgetSettings)
       .include("team")
       .get((window as any).AFFINITY_CHAT_WIDGET);
     this.config = configuration;
     this.loaded = true;
-  }
+  },
 });
 </script>

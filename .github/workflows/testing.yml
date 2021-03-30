@@ -1,0 +1,55 @@
+name: E2E Test
+on:
+  pull_request:
+    branches: [ main ]
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  tests:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Setup docker-compose stack
+        run: 'npm run ci:run-parse'
+      - name: Cache node modules
+        uses: actions/cache@v2
+        env:
+          cache-name: cache-node-modules
+        with:
+          # npm cache files are stored in `~/.npm` on Linux/macOS
+          path: './node_modules'
+          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-build-${{ env.cache-name }}-
+            ${{ runner.os }}-build-
+            ${{ runner.os }}-
+      - name: Install ionic
+        run: npm install @ionic/cli
+      - name: Install dependencies
+        run: npm install
+      # Runs
+      - name: Check docker
+        run: docker ps -a && docker-compose logs --tail 10
+      - name: Set up DB
+        run: 'npm run ci:setup-db'
+      - name: Running e2e with cypress
+        uses: cypress-io/github-action@v2
+        with:
+          ## FIXME: run this against the locally deployed version?
+          start: npm run serve
+          # quote the url to be safe against YML parsing surprises
+          wait-on: 'http://localhost:8080'
+      - uses: actions/upload-artifact@v2
+        if: failure()
+        with:
+          name: 'Test Error Screenshots'
+          path: tests/e2e/screenshots
+      - uses: actions/upload-artifact@v2
+        if: failure()
+        with:
+          name: 'Test Error Recordings'
+          path: tests/e2e/videos

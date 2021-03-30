@@ -1,8 +1,8 @@
 import { Parse, Verb, Visibility } from "../config/Consts";
 import { Activity } from "../db/models";
-import { takePicture, Photo } from '../utils/camera';
-import { CreateModel } from '@/utils/model';
-import getUrls from 'get-urls';
+import { takePicture, Photo } from "../utils/camera";
+import { CreateModel } from "@/utils/model";
+import getUrls from "get-urls";
 export interface DraftT {
   team: Parse.Object | null;
   text: string;
@@ -21,11 +21,16 @@ export const Draft = {
     objects: [],
   }),
   getters: {
-    selectedTeam(state: DraftT, getters: any, rootState: any, rootGetters: any) {
+    selectedTeam(
+      state: DraftT,
+      getters: any,
+      rootState: any,
+      rootGetters: any
+    ) {
       return state.team || rootGetters["defaultTeam"];
     },
     canSubmit(state: DraftT): boolean {
-      return state.text.length > 0 || state.objects.length > 0
+      return state.text.length > 0 || state.objects.length > 0;
     },
     selectedType(state: DraftT) {
       return state.verb;
@@ -34,21 +39,21 @@ export const Draft = {
       return state.objects;
     },
     selectedTeamId(state: DraftT, getters: any): string {
-      return getters.selectedTeam.objectId
+      return getters.selectedTeam.objectId;
     },
     selectedTeamPerms(state: DraftT, getters: any, rootState: any): any {
-      return rootState.auth.teamPermissions[getters.selectedTeamId]
+      return rootState.auth.teamPermissions[getters.selectedTeamId];
     },
     selectableTypes(state: DraftT, getters: any): Verb[] {
       const perms = getters.selectedTeamPerms;
       const types = [];
-      if (perms.canPost){
+      if (perms.canPost) {
         types.push(Verb.Post);
       }
-      if (perms.canPublish){
+      if (perms.canPublish) {
         types.push(Verb.Announce);
       }
-      return types
+      return types;
     },
     selectableVisibility(state: DraftT, getters: any): Visibility[] {
       const perms = getters.selectedTeamPerms;
@@ -59,10 +64,10 @@ export const Draft = {
       if (perms.isLeader) {
         types.push(Visibility.Leaders);
       }
-      return types
+      return types;
     },
-    showTypeSelector(state: DraftT, getters: any,): boolean {
-      return getters.selectableTypes.length > 1
+    showTypeSelector(state: DraftT, getters: any): boolean {
+      return getters.selectableTypes.length > 1;
     },
   },
   mutations: {
@@ -79,7 +84,7 @@ export const Draft = {
       state.objects.splice(index, 1);
       state.objects = Array.from(state.objects);
     },
-    refreshObjects(state: DraftT,) {
+    refreshObjects(state: DraftT) {
       state.objects = Array.from(state.objects);
     },
     setTeam(state: DraftT, team: Parse.Object) {
@@ -108,31 +113,31 @@ export const Draft = {
     },
     swapObjects(context: any, index: number) {
       const a = context.state.objects[index];
-      const b = context.state.objects[index+1];
+      const b = context.state.objects[index + 1];
       context.state.objects.splice(index, 2, b, a);
     },
     async addDocumentLink(context: any, url: string) {
-      const newDoc = new CreateModel("Document", {url, loading: true});
+      const newDoc = new CreateModel("Document", { url, loading: true });
       context.commit("addObject", newDoc);
       const res = await Parse.Cloud.run("fetchLinkMetadata", { url });
-      newDoc.title =  res.ogTitle || res.title;
-      newDoc.provider =  res.ogSiteName;
-      newDoc.description =  res.ogDescription;
-      newDoc.metadata =  res
-      newDoc.loading =  false;
+      newDoc.title = res.ogTitle || res.title;
+      newDoc.provider = res.ogSiteName;
+      newDoc.description = res.ogDescription;
+      newDoc.metadata = res;
+      newDoc.loading = false;
     },
     async addDocumentFile(context: any, input: File) {
       const upload = new Parse.File(input.name, input);
       upload.addMetadata("size", input.size);
       upload.addMetadata("type", input.type);
-      const newDoc = new CreateModel("Document", {title: input.name, upload});
+      const newDoc = new CreateModel("Document", { title: input.name, upload });
       context.commit("addObject", newDoc);
     },
     async addLink(context: any, url: string) {
-      const newLink = new CreateModel("Link", {url, loading: true});
+      const newLink = new CreateModel("Link", { url, loading: true });
       context.commit("addObject", newLink);
       Parse.Cloud.run("fetchLinkMetadata", { url })
-        .then( (res) => {
+        .then((res) => {
           newLink.url = res.url;
           newLink.title = res.title;
           newLink.siteName = res.publisher;
@@ -141,11 +146,12 @@ export const Draft = {
             newLink.previewImage = res.previewImage;
             delete res.previewImage;
           }
-          newLink.metadata =  res
-          newLink.loading =  false;
+          newLink.metadata = res;
+          newLink.loading = false;
           context.commit("refreshObjects");
-        }).catch((error) => {
-          newLink.metadata = {error}
+        })
+        .catch((error) => {
+          newLink.metadata = { error };
           newLink.loading = false;
           context.commit("refreshObjects");
         });
@@ -157,13 +163,13 @@ export const Draft = {
         title: link.title,
         description: link.previewText,
         metadata: link.metadata,
-        siteName: link.siteName
+        siteName: link.siteName,
       });
     },
     async updateText(context: any, text: string) {
       context.commit("setText", text);
       if (!context.getters.selectedTeamPerms.canCreateLink) {
-        return
+        return;
       }
       const matches = getUrls(text);
       console.log(matches);
@@ -177,29 +183,32 @@ export const Draft = {
             if (o.url == url) {
               console.log("found", url, o);
               found = true;
-              break
+              break;
             } else if (url.startsWith(o.url)) {
               console.log("removing", url, o);
               context.commit("removeObject", idx);
-              break
+              break;
             }
           }
         }
-        if (found) continue
+        if (found) continue;
         context.dispatch("addLink", url);
       }
     },
     async submit(context: any) {
-      const author = context.rootGetters['auth/userPtr'];
+      const author = context.rootGetters["auth/userPtr"];
       const state = context.state;
-      const team = (state.team || context.rootGetters["defaultTeam"]).toPointer();
+      const team = (
+        state.team || context.rootGetters["defaultTeam"]
+      ).toPointer();
       const objects: Parse.Object[] = state.objects.map((p: CreateModel) => {
         if (p.className == "Picture") {
           const img = p.img;
           const file = new Parse.File(
             `post_image.${img.format}`,
             { uri: img.dataUrl },
-            `image/${img.format}`);
+            `image/${img.format}`
+          );
           delete p.img;
           p.file = file;
         }
@@ -218,6 +227,6 @@ export const Draft = {
       await activity.save();
 
       context.commit("clear");
-    }
-  }
+    },
+  },
 };
