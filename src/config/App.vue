@@ -92,11 +92,12 @@ export default defineComponent({
     if (store.state.auth.wantsToLogin) {
       updateLoginModal(true, false);
     }
-
+        
     watch(
       () => store.state.auth.user,
       async (newVal, oldVal) => {
         if (newVal && newVal != oldVal) {
+          document.body.classList.toggle('dark', newVal?.settings?.forceDarkMode);
           if (!newVal.emailVerified) {
             const inDanger = olderThanDays(newVal.createdAt, 5);
             const toast = await toastController.create({

@@ -170,6 +170,7 @@
   "richEditor.actions.unorderedListIcon" : "&#8226",
   "richtEditor.defaults.placeholder" : "Text...",
   "setting.general.language": "Language",
+  "setting.general.forceDarkMode": "force Dark Mode",
   "setting.push.activities" : "all activities",
   "setting.push.news" : "Team News",
   "setting.push.notifications" : "Notifications",
