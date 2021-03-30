@@ -40,7 +40,7 @@
             </router-link>
           </ion-col>
           <ion-col>
-            <ion-button data-cy="anon-menu-trigger" v-if="hasPush" color="medium" fill="clear" @click="openMenuPopover" >
+            <ion-button data-cy="anon-menu-trigger" v-if="hasPush" color="medium" fill="clear" @click="openMenuPopover" class="footerIconAlign">
               <ion-icon size="large" :icon="settingsIcon" />
             </ion-button>
             <router-link v-else style="position: relative" to="/login">
@@ -212,5 +212,10 @@ hr {
   height: 60px;
   transition: 0.5s ease;
   --ionicon-stroke-width: 24px;
+}
+
+.footerIconAlign {
+  margin: 0;
+  height: auto;
 }
 </style>

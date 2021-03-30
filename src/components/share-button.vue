@@ -92,17 +92,3 @@ export default defineComponent({
   },
 });
 </script>
-<style scoped>
-
-ion-chip span{
-  margin-top:2px;
-  padding-right: 6px !important; 
-}
-
-ion-label {
-  position: absolute;
-  top: 0;
-  margin-top: 9px;
-}
-
-</style>
