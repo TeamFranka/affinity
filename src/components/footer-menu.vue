@@ -1,6 +1,6 @@
 <template>
   <div class="footer-box" scrollY="false" ref="drawerRef">
-    <hr @click="toggleDrawer" v-if="isLoggedIn" />
+    <hr @click="toggleDrawer" v-if="false" />
     <ion-grid>
       <ion-row class="ion-text-center" style="font-size: 1rem">
         <ion-col>
@@ -49,7 +49,7 @@
           </ion-col>
         </template>
       </ion-row>
-      <ion-row v-if="isLoggedIn">
+      <ion-row v-if="false">
         <ion-col size="6">
           <ion-button
             fill="outline"
