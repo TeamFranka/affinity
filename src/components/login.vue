@@ -1,12 +1,15 @@
 <template>
   <ion-header>
     <ion-toolbar>
-      <ion-segment :value="action" @ion-change="switchAction($event.target.value)">
+      <ion-segment
+        :value="action"
+        @ion-change="switchAction($event.target.value)"
+      >
         <ion-segment-button data-cy="loginTab" value="login">
-          <ion-label>{{$t('auth.tab.login')}}</ion-label>
+          <ion-label>{{ $t("auth.tab.login") }}</ion-label>
         </ion-segment-button>
         <ion-segment-button data-cy="registerTab" value="register">
-          <ion-label>{{$t('auth.tab.register')}}</ion-label>
+          <ion-label>{{ $t("auth.tab.register") }}</ion-label>
         </ion-segment-button>
       </ion-segment>
       <ion-button
@@ -21,48 +24,48 @@
     </ion-toolbar>
   </ion-header>
   <ion-content class="ion-padding">
-    <h4 v-if="action == 'login'">{{$t('auth.title.login')}}</h4>
-    <h4 v-else>{{$t('auth.title.registry')}}</h4>
+    <h4 v-if="action == 'login'">{{ $t("auth.title.login") }}</h4>
+    <h4 v-else>{{ $t("auth.title.registry") }}</h4>
 
-    <div
-      v-if="error.code"
-      class="warning ion-padding"
-    >
+    <div v-if="error.code" class="warning ion-padding">
       <template v-if="error.code == 101">
-        <strong>{{$t('auth.error.wrongPassword.title')}}</strong>
+        <strong>{{ $t("auth.error.wrongPassword.title") }}</strong>
         <i18n-t keypath="auth.error.wrongPassword" tag="span">
           <template v-slot:registerButton>
             <ion-button
-              fill="clear" type="a" @click="switchAction('register')"
-            >{{ $t('auth.error.wrongPassword.registerButton') }}</ion-button>
+              fill="clear"
+              type="a"
+              @click="switchAction('register')"
+              >{{ $t("auth.error.wrongPassword.registerButton") }}</ion-button
+            >
           </template>
           <template v-slot:resetButton>
-            <ion-button
-              fill="clear" type="a" @click="passwortReset"
-            >{{ $t('auth.error.wrongPassword.resetButton') }}</ion-button>
+            <ion-button fill="clear" type="a" @click="passwortReset">{{
+              $t("auth.error.wrongPassword.resetButton")
+            }}</ion-button>
           </template>
         </i18n-t>
       </template>
       <template v-else-if="error.code == 202">
         <i18n-t keypath="auth.error.userExists" tag="p">
           <template v-slot:resetLink>
-            <a href="/">{{ $t('auth.error.userExists.resetLink') }}</a>
+            <a href="/">{{ $t("auth.error.userExists.resetLink") }}</a>
           </template>
         </i18n-t>
       </template>
       <template v-else-if="error.code == 203">
         <i18n-t keypath="auth.error.emailExists" tag="p">
           <template v-slot:resetLink>
-            <a href="/">{{ $t('auth.error.emailExists.resetLink') }}</a>
+            <a href="/">{{ $t("auth.error.emailExists.resetLink") }}</a>
           </template>
         </i18n-t>
       </template>
       <template v-else>
-        {{error.message}} <i>Code: {{error.code}}</i>
+        {{ error.message }} <i>Code: {{ error.code }}</i>
       </template>
     </div>
 
-    <form @submit="login($event)" v-if="action =='login'" class="ion-padding">
+    <form @submit="login($event)" v-if="action == 'login'" class="ion-padding">
       <ion-item class="ion-hide-sm-down">
         <ion-input
           type="text"
@@ -87,7 +90,7 @@
           v-model="input.username"
           :placeholder="$t('auth.placeholder.usernameEmail')"
         />
-        </ion-item>
+      </ion-item>
       <ion-item class="ion-hide-sm-up">
         <ion-input
           type="password"
@@ -105,7 +108,7 @@
           color="medium"
           class="ion-hide-sm-down"
         >
-          {{$t('auth.button.resetPassword')}}
+          {{ $t("auth.button.resetPassword") }}
         </ion-button>
         <ion-button
           data-cy-role="loginSubmit"
@@ -115,23 +118,18 @@
           color="primary"
           type="submit"
         >
-          {{$t('auth.button.login')}}
+          {{ $t("auth.button.login") }}
         </ion-button>
       </ion-item>
       <ion-item class="ion-hide-sm-up" lines="none">
-        <ion-button
-          @click="passwortReset"
-          slot="end"
-          fill="none"
-          color="light"
-        >
-          {{$t('auth.button.resetPassword')}}
+        <ion-button @click="passwortReset" slot="end" fill="none" color="light">
+          {{ $t("auth.button.resetPassword") }}
         </ion-button>
       </ion-item>
     </form>
     <form @submit="signUp($event)" v-else class="ion-padding">
       <ion-item>
-        <ion-label position="stacked">{{$t('auth.label.email')}}</ion-label>
+        <ion-label position="stacked">{{ $t("auth.label.email") }}</ion-label>
         <ion-input
           type="email"
           required
@@ -141,7 +139,9 @@
         />
       </ion-item>
       <ion-item>
-        <ion-label position="stacked">{{$t('auth.label.username')}}</ion-label>
+        <ion-label position="stacked">{{
+          $t("auth.label.username")
+        }}</ion-label>
         <ion-input
           type="text"
           required
@@ -151,7 +151,9 @@
         />
       </ion-item>
       <ion-item>
-        <ion-label position="stacked">{{$t('auth.label.password')}}</ion-label>
+        <ion-label position="stacked">{{
+          $t("auth.label.password")
+        }}</ion-label>
         <ion-input
           type="password"
           required
@@ -161,7 +163,7 @@
         />
       </ion-item>
       <ion-item>
-        <ion-label position="stacked">{{$t('auth.label.name')}}</ion-label>
+        <ion-label position="stacked">{{ $t("auth.label.name") }}</ion-label>
         <ion-input
           type="text"
           name="name"
@@ -170,8 +172,13 @@
         />
       </ion-item>
       <div class="ion-text-end">
-        <ion-button fill="outline" color="primary" type="submit" data-cy-role="registerSubmit">
-          {{$t('auth.button.register')}}
+        <ion-button
+          fill="outline"
+          color="primary"
+          type="submit"
+          data-cy-role="registerSubmit"
+        >
+          {{ $t("auth.button.register") }}
         </ion-button>
       </div>
     </form>
@@ -180,23 +187,37 @@
 
 <script lang="ts">
 import {
-  IonHeader, IonToolbar, IonIcon, IonItem, IonContent, IonInput,
-  IonButton, IonLabel, IonSegment, IonSegmentButton,
-  alertController, toastController,
-} from '@ionic/vue';
-import {
-  closeOutline as closeIcon
-} from 'ionicons/icons';
-import { defineComponent } from 'vue';
+  IonHeader,
+  IonToolbar,
+  IonIcon,
+  IonItem,
+  IonContent,
+  IonInput,
+  IonButton,
+  IonLabel,
+  IonSegment,
+  IonSegmentButton,
+  alertController,
+  toastController,
+} from "@ionic/vue";
+import { closeOutline as closeIcon } from "ionicons/icons";
+import { defineComponent } from "vue";
 import { Parse } from "../config/Consts";
 
 export default defineComponent({
-  name: 'Login',
-  emits: ['route', 'user-updated', 'close'],
+  name: "Login",
+  emits: ["route", "user-updated", "close"],
   components: {
-    IonHeader, IonToolbar, IonIcon,
-    IonItem, IonContent, IonInput, IonButton, IonLabel,
-    IonSegment, IonSegmentButton,
+    IonHeader,
+    IonToolbar,
+    IonIcon,
+    IonItem,
+    IonContent,
+    IonInput,
+    IonButton,
+    IonLabel,
+    IonSegment,
+    IonSegmentButton,
   },
   props: {
     withCloser: Boolean,
@@ -209,106 +230,118 @@ export default defineComponent({
         username: "",
         email: "",
         name: "",
-        password: ""
+        password: "",
       },
       error: {
         code: 0,
-        message: ""
-      }
-    }
+        message: "",
+      },
+    };
   },
   setup() {
     return {
       closeIcon,
-    }
+    };
   },
   methods: {
-    resetError(){
+    resetError() {
       this.error.code = 0;
       this.error.message = "";
     },
-    switchAction(a: string){
+    switchAction(a: string) {
       this.resetError();
       this.action = a;
     },
     async passwortReset() {
-      const value = this.input.username.includes("@") ? this.input.username : this.input.email;
-      const alert = await alertController
-        .create({
-          header: this.$t('auth.reset.header'),
-          message: this.$t('auth.reset.message'),
-          inputs: [
-            {
-              name: "email",
-              type: "email",
-              label: this.$t('auth.reset.label.email'),
-              value
-            },
-          ],
-          buttons: [
-            {
-              text: this.$t('auth.reset.button.submitReset'),
-              handler: async (data) => {
-                const { email } = data;
+      const value = this.input.username.includes("@")
+        ? this.input.username
+        : this.input.email;
+      const alert = await alertController.create({
+        header: this.$t("auth.reset.header"),
+        message: this.$t("auth.reset.message"),
+        inputs: [
+          {
+            name: "email",
+            type: "email",
+            label: this.$t("auth.reset.label.email"),
+            value,
+          },
+        ],
+        buttons: [
+          {
+            text: this.$t("auth.reset.button.submitReset"),
+            handler: async (data) => {
+              const { email } = data;
 
-                await Parse.User.requestPasswordReset(email
-                ).then(async () => {
-                  const toast = await toastController
-                    .create({
-                      message: this.$t('auth.reset.success'),
-                      duration: 10000,
-                      color: "success",
-                    })
+              await Parse.User.requestPasswordReset(email).then(
+                async () => {
+                  const toast = await toastController.create({
+                    message: this.$t("auth.reset.success"),
+                    duration: 10000,
+                    color: "success",
+                  });
                   return toast.present();
-                }, err => {
+                },
+                (err) => {
                   this.error.code = err.code;
                   this.error.message = err.message;
-                });
-              },
+                }
+              );
             },
-            {
-              text: this.$t('auth.reset.button.cancel'),
-              role: 'cancel',
-              cssClass: 'medium',
-            },
-          ],
-        });
+          },
+          {
+            text: this.$t("auth.reset.button.cancel"),
+            role: "cancel",
+            cssClass: "medium",
+          },
+        ],
+      });
       return alert.present();
     },
     signUp(event: Event) {
       event.preventDefault();
       this.resetError();
       const attrs = Object.assign({}, this.signupExtra, {
-        name: this.input.name, email: this.input.email
+        name: this.input.name,
+        email: this.input.email,
       });
 
-      Parse.User.signUp(this.input.username, this.input.password, attrs, {})
-      .then(async (resp) => {
+      Parse.User.signUp(
+        this.input.username,
+        this.input.password,
+        attrs,
+        {}
+      ).then(
+        async (resp) => {
+          // Clears up the form
+          this.input.username = "";
+          this.input.password = "";
+          this.$emit("user-updated", resp);
 
-        // Clears up the form
-        this.input.username = '';
-        this.input.password = '';
-        this.$emit("user-updated", resp);
-
-        this.$emit("route", "Home");
-      }, err => {
-        this.error.code = err.code;
-        this.error.message = err.message;
-      });
+          this.$emit("route", "Home");
+        },
+        (err) => {
+          this.error.code = err.code;
+          this.error.message = err.message;
+        }
+      );
     },
     login(event: Event) {
       event.preventDefault();
       this.resetError();
-      Parse.User.logIn(this.input.username, this.input.password).then((resp) => {
-        this.$emit("user-updated", resp);
-        this.$emit("route", "Home");
-      }, err => {
-        this.error.code = err.code;
-        this.error.message = err.message;
-      });
-    }
-  }
-})
+      Parse.User.logIn(this.input.username, this.input.password).then(
+        (resp) => {
+          this.$emit("user-updated", resp);
+          this.$emit("route", "Home");
+        },
+        (err) => {
+          this.error.code = err.code;
+          this.error.message = err.message;
+        }
+      );
+    },
+  },
+});
 </script>
 <style scoped>
 .warning {

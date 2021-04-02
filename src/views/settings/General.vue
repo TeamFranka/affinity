@@ -16,6 +16,17 @@
                 :key="opt[0]">{{opt[1]}}</ion-select-option>
             </ion-select>
           </ion-item>
+
+           <ion-item>
+            <ion-label>
+            {{ $t('setting.general.forceDarkMode') }}
+            </ion-label>
+            <ion-toggle 
+            @ion-change="forceDark($event.detail.checked)"
+            :checked="forceDarkMode" slot="end"/>
+            
+          </ion-item>
+
         </ion-list>
     </ion-content>
   </ion-page>
@@ -23,14 +34,22 @@
 
 <script lang="ts">
 import {
-  IonContent, IonPage, IonList, IonListHeader, IonItem, IonLabel, IonSelect, IonSelectOption
-} from '@ionic/vue';
+  IonContent,
+  IonPage,
+  IonList,
+  IonListHeader,
+  IonItem,
+  IonLabel,
+  IonSelect,
+  IonSelectOption,
+  IonToggle
+} from "@ionic/vue";
 import {
   notificationsOutline as notificationIcon,
-  globeOutline as generalIcon
-} from 'ionicons/icons';
-import { defineComponent, computed } from 'vue';
-import { useStore } from '@/stores/';
+  globeOutline as generalIcon,
+} from "ionicons/icons";
+import { defineComponent, computed } from "vue";
+import { useStore } from "@/stores/";
 
 const SUPPORTED_LANGUAGES = [
   ["de", "Deutsch"],
@@ -38,20 +57,30 @@ const SUPPORTED_LANGUAGES = [
 ];
 
 export default defineComponent({
-  name: 'SettingsGeneral',
+  name: "SettingsGeneral",
   setup() {
     const store = useStore();
 
     return {
       isLoggedIn: computed(() => store.getters["auth/isLoggedIn"]),
       lang: computed(() => store.state.auth.user?.lang),
+      themes: computed(() => store.state.auth.user?.settings?.themes),
       hasPush: computed(() => store.getters['auth/hasPush']),
       langChange:  (lang: string) => store.dispatch("auth/setLang", lang),
+      forceDark: (forceDarkMode: boolean) => {store.dispatch("auth/setSetting", {forceDarkMode}); document.body.classList.toggle('dark', forceDarkMode);  },
       SUPPORTED_LANGUAGES, generalIcon, notificationIcon,
     }
   },
   components: {
-    IonPage, IonContent,  IonList, IonListHeader, IonItem, IonLabel, IonSelect, IonSelectOption
-  }
+    IonPage,
+    IonContent,
+    IonList,
+    IonListHeader,
+    IonItem,
+    IonLabel,
+    IonSelect,
+    IonSelectOption,
+    IonToggle
+  },
 });
 </script>

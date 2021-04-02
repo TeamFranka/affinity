@@ -1,5 +1,5 @@
 <template>
-<router-link :to="routeTo">{{text}}</router-link>
+  <router-link :to="routeTo">{{ text }}</router-link>
 </template>
 <script lang="ts">
 // import {
@@ -8,14 +8,14 @@
 // import { chatbubblesOutline, addOutline, arrowRedoOutline, heartOutline } from 'ionicons/icons';
 
 //  import { useStore } from '../stores/';
-import { defineComponent } from 'vue';
+import { defineComponent } from "vue";
 
 export default defineComponent({
-  name: 'ObjectLink',
+  name: "ObjectLink",
   props: {
     object: {
       type: Object,
-      required: true
+      required: true,
     },
     mine: Boolean,
   },
@@ -30,18 +30,17 @@ export default defineComponent({
         }
       }
 
-      return "was auch immer"
-
+      return "was auch immer";
     },
-    routeTo(): any{
+    routeTo(): any {
       if (this.type == "Activity") {
         return {
           name: "ViewActivity",
-          params: { activityId: this.object.objectId }
+          params: { activityId: this.object.objectId },
         };
       }
-      return {}
-    }
-  }
+      return {};
+    },
+  },
 });
 </script>

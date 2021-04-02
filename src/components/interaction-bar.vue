@@ -1,8 +1,12 @@
 <template>
   <div class="ion-padding-top ion-padding-start">
-    <ion-chip @click="toggleComments()" outline :color="showComments ? 'dark':'light'">
+    <ion-chip
+      @click="toggleComments()"
+      outline
+      :color="showComments ? 'dark' : 'light'"
+    >
       <ion-icon :icon="commentsIcon" size="small" />
-      <ion-label>{{object.commentsCount}}</ion-label>
+      <ion-label>{{ object.commentsCount }}</ion-label>
     </ion-chip>
     <ion-chip outline color="light">
       <share-button
@@ -43,39 +47,40 @@
 </template>
 
 <script lang="ts">
+import { IonLabel, IonSpinner, IonIcon, IonChip, IonGrid } from "@ionic/vue";
 import {
-  IonLabel, IonSpinner, IonIcon, IonChip, IonGrid,
-} from '@ionic/vue';
-import {
-  chatbubblesOutline, addOutline, arrowRedoOutline, heartOutline
-} from 'ionicons/icons';
+  chatbubblesOutline,
+  addOutline,
+  arrowRedoOutline,
+  heartOutline,
+} from "ionicons/icons";
 import InlineText from "./inline-text.vue";
 import ShareButton from "./share-button.vue";
 import LikeButton from "./like-button.vue";
 import Reactions from "./reactions.vue";
 import Comment from "./comment.vue";
-import { useStore } from '../stores/';
-import { defineComponent, computed } from 'vue';
+import { useStore } from "../stores/";
+import { defineComponent, computed } from "vue";
 import { Model } from "@/utils/model";
 
 export default defineComponent({
-  name: 'Activity',
+  name: "Activity",
   props: {
     object: {
       type: Model,
-      required: true
+      required: true,
     },
     link: {
       type: String,
-      required: true
+      required: true,
     },
     startCommentsOpen: Boolean,
   },
   data(props) {
     return {
       showComments: props.startCommentsOpen,
-      comment: ""
-    }
+      comment: "",
+    };
   },
   setup() {
     const store = useStore();
@@ -87,7 +92,7 @@ export default defineComponent({
       shareIcon: arrowRedoOutline,
       plusIcon: addOutline,
       likeIcon: heartOutline,
-    }
+    };
   },
   computed: {
     fullLink(): string {
@@ -95,63 +100,77 @@ export default defineComponent({
     },
     hasLiked(): boolean {
       if (!this.store.getters["auth/isLoggedIn"]) return false;
-      return (this.object.likedBy || []).indexOf(this.store.getters["auth/myId"]) !== -1;
+      return (
+        (this.object.likedBy || []).indexOf(this.store.getters["auth/myId"]) !==
+        -1
+      );
     },
     pointer(): Parse.Pointer {
-      return this.object.toPointer()
+      return this.object.toPointer();
     },
     draft(): string {
       const d = this.store.state.comments.drafts[this.object.objectId];
       if (d) {
-        return d[""]
+        return d[""];
       }
-      return ""
+      return "";
     },
     commentsLoading(): boolean {
       const s = this.store.state.comments.comments[this.object.objectId];
       if (s) {
-        return s.loading
+        return s.loading;
       }
-      return false
+      return false;
     },
     comments(): Array<any> {
       const s = this.store.state.comments.comments[this.object.objectId];
       if (s) {
-        return s.comments
+        return s.comments;
       }
-      return []
+      return [];
     },
     likedColor(): string {
-      return this.hasLiked ? "danger" : "light"
+      return this.hasLiked ? "danger" : "light";
     },
   },
   methods: {
     async toggleComments() {
       if (this.showComments) {
         this.showComments = false;
-        return
+        return;
       }
-      await this.store.dispatch("comments/loadComments", this.object.toPointer());
+      await this.store.dispatch(
+        "comments/loadComments",
+        this.object.toPointer()
+      );
       this.showComments = true;
     },
     setDraft(text: string) {
       this.store.commit("comments/setDraft", {
         objectId: this.object.objectId,
-        text
+        text,
       });
     },
-    submitComment(){
+    submitComment() {
       const text = this.comment;
       console.log("submitting", text);
       this.store.dispatch("comments/submitDraft", {
         ptr: this.object.toPointer(),
-        text
+        text,
       });
-    }
+    },
   },
   components: {
-    IonChip, IonLabel, IonSpinner, Comment,
-    IonIcon, IonGrid, InlineText, ShareButton, Reactions, LikeButton
+    IonChip,
+    IonLabel,
+    IonSpinner,
+    Comment,
+    IonIcon,
+    IonGrid,
+    InlineText,
+    ShareButton,
+    Reactions,
+    LikeButton,
   },
 });
 </script>
@@ -165,4 +184,15 @@ export default defineComponent({
   color: #900;
   z-index: 1;
 }
+</style>
+<style lang="css">
+  ion-chip span {
+    margin-top: 2px;
+    padding-right: 6px !important;
+  }
+  ion-chip ion-label {
+    position: absolute;
+    top: 0;
+    margin-top: 9px;
+  }
 </style>

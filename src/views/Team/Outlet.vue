@@ -412,8 +412,7 @@ export default defineComponent({
         componentProps: {
           value: this.team.customStyles,
           type: "textarea",
-          help:
-            this.$t("team.modal.editCustomStyles.help"),
+          help: this.$t("team.modal.editCustomStyles.help"),
           title: this.$t("team.modal.editCustomStyles.title"),
           saveLabel: this.$t("team.modal.button.save"),
         },

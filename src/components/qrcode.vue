@@ -2,8 +2,8 @@
     <div ref="qrcode" class="qrDiv"></div>
 </template>
 <script>
-import { defineComponent } from 'vue';
-import * as QRCode from 'easyqrcodejs'
+import { defineComponent } from "vue";
+import * as QRCode from "easyqrcodejs";
 
 export default defineComponent({
   name: "Qrcode",
@@ -13,8 +13,8 @@ export default defineComponent({
       required: true,
     },
     logo: {
-      type: String
-    }
+      type: String,
+    },
   },
   mounted() {
     const options = {
