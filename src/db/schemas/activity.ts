@@ -27,7 +27,7 @@ export const Activity = {
         required: false,
       },
       objects: {
-        // any Post, Picture,
+        // any Picture, Polls, etc
         type: "Array",
         required: true,
       },

@@ -18,6 +18,12 @@ export const Message = {
     },
     text: {
       type: "String",
+      required: false,
+    },
+    objects: {
+      // any Picture, Polls...
+      type: "Array",
+      required: true,
     },
   }),
   classLevelPermissions: {

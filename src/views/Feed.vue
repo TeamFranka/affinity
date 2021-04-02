@@ -107,12 +107,14 @@ export default defineComponent({
            cssClass:'modalCss',
            componentProps: {
             teams: this.canPostInTeams,
+            canChangeVisiblity: true,
+            title: this.$t("newPost.createPost"),
           },
         });
       popover.present();
       const result = await popover.onDidDismiss();
-      if (result.data) {
-        console.log("result",result);
+      if (result.data && result.data.action == "submit") {
+        await this.store.dispatch("draft/submit");
       }
     },
   },

@@ -17,44 +17,58 @@
       </main>
       <ion-spinner v-if="loading" />
     </ion-content>
-    <ion-footer>
-      <inline-text
-        :placeholder="$t('conversation.placeholder.writeMessage')"
-        :value="currentMessage"
-        :canSubmit="currentMessage.length > 0"
-        @changed="currentMessage = $event"
-        @submit="sendMessage"
-      />
+    <ion-footer class="ion-no-padding">
+      <ion-item class="ion-no-padding">
+        <ion-button fill="clear" slot="start" @click="openNewPostModal">
+          <ion-icon :icon="expandOutline"/>
+        </ion-button>
+        <ion-input
+          :placeholder="$t('conversation.placeholder.writeMessage')"
+          :value="currentMessage"
+          @ionChange="setMessage($event.detail.value)"
+        />
+        <ion-button
+          fill="clear"
+          slot="end"
+          :disabled="!canSubmit"
+          @click="sendMessage"
+        ><ion-icon :icon="paperPlaneOutline"/></ion-button>
+
+      </ion-item>
     </ion-footer>
   </ion-page>
 </template>
 
 <script lang="ts">
-import InlineText from "../components/inline-text.vue";
+//import InlineText from "../components/inline-text.vue";
 import {
   IonPage,
   IonContent,
   IonSpinner,
   IonFooter,
+  IonButton,
   IonButtons,
   IonBackButton,
   IonHeader,
   IonItem,
+  IonInput,
+  IonIcon,
+  modalController,
 } from "@ionic/vue";
+import {
+  paperPlaneOutline,
+  expandOutline
+  } from 'ionicons/icons';
 import { defineComponent, computed, ref } from "vue";
 import { Model } from "@/utils/model";
 import { useStore } from "../stores/";
 import { useRoute } from "vue-router";
 import { smartTimestamp } from "../utils/time";
-import ConversationEntry from "../components/conversation-entry.vue";
+import NewPostModal from "@/components/new-post-modal.vue";
+import ConversationEntry from "@/components/conversation-entry.vue";
 
 export default defineComponent({
   name: "ViewConversation",
-  data() {
-    return {
-      currentMessage: "",
-    };
-  },
   setup() {
     const store = useStore();
     const route = useRoute();
@@ -81,6 +95,10 @@ export default defineComponent({
       store,
       isMine,
       smartTimestamp,
+      objectsCount: computed(() => store.state.draft.objects.length),
+      currentMessage: computed(() => store.state.draft.text),
+      setMessage: (x: string) => store.dispatch("draft/updateText", x),
+      canSubmit: computed(() => store.getters["draft/canSubmit"]),
       conversation: computed(() => store.getters.objectsMap[objectId]),
       messages: computed(() =>
         (store.getters["inbox/messages"][objectId] || []).map(
@@ -90,19 +108,35 @@ export default defineComponent({
       clsForMsg(msg: Model) {
         return isMine(msg) ? "entry mine" : "entry";
       },
+      sendMessage: () => store.dispatch("draft/sendAsMessage", objectId),
       loading,
+      paperPlaneOutline,
+      expandOutline,
     };
   },
+  computed: {
+    team(): any {
+      const convo = this.conversation;
+      return this.store.getters.objectsMap[convo.team.objectId]
+    }
+  },
   methods: {
-    sendMessage() {
-      if (!this.currentMessage) {
-        return;
+    async openNewPostModal () {
+      const popover = await modalController
+        .create({
+          component: NewPostModal,
+           cssClass:'modalCss',
+           componentProps: {
+            teams: [this.team],
+            canChangeVisiblity: false,
+            title: this.$t("conversation.newMessage")
+          },
+        });
+      popover.present();
+      const result = await popover.onDidDismiss();
+      if (result.data && result.data.action == "submit") {
+        await this.sendMessage();
       }
-      this.store.dispatch("inbox/sendMessage", {
-        conversationId: this.conversation.objectId,
-        text: this.currentMessage,
-      });
-      this.currentMessage = "";
     },
   },
   components: {
@@ -110,11 +144,14 @@ export default defineComponent({
     IonPage,
     IonSpinner,
     IonFooter,
+    IonButton,
     IonButtons,
     IonBackButton,
     IonHeader,
     IonItem,
-    InlineText,
+    IonInput,
+    IonIcon,
+    // InlineText,
     ConversationEntry,
   },
 });

@@ -11,7 +11,7 @@
           ></rich-editor>
           <p
             @click="showOptions = true"
-            v-if="!showOptions"
+            v-if="canChangeVisiblity &&  !showOptions"
             data-cy-role="editSettings"
           >
             {{ $t(`newPost.visibilities.${visibility}`) }}
@@ -90,7 +90,7 @@
             </template>
           </selector>
         </ion-col>
-        <ion-col size-md="4" size-xs="12">
+        <ion-col size-md="4" size-xs="12" v-if="canChangeVisiblity">
           <selector
             @select="setVisibility($event)"
             popoverTitle="Visibility"
@@ -413,10 +413,14 @@ export default defineComponent({
       type: Array,
       required: true,
     },
-     hideSend:{
-      type:Boolean,
-      required:true
-    }
+     hideSend: {
+      type: Boolean,
+      required: true
+    },
+    canChangeVisiblity: {
+      type: Boolean,
+      required: true
+    },
   },
   data() {
     return {
