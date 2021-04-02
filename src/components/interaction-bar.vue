@@ -185,7 +185,7 @@ export default defineComponent({
   z-index: 1;
 }
 </style>
-<style lang="css">
+<style scoped lang="css">
   ion-chip span {
     margin-top: 2px;
     padding-right: 6px !important;
