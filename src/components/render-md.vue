@@ -11,7 +11,6 @@ export default defineComponent({
   props: {
     source: {
       type: String,
-      required: true,
     },
     admin: {
       type: Boolean,
@@ -22,6 +21,7 @@ export default defineComponent({
   },
   computed: {
     compiled() {
+      if (!this.source) return ''
       const r = this.admin ? adminMd : userMd;
       const content = this.inline
         ? r.renderInline(this.source)
