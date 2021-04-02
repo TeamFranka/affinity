@@ -1,5 +1,5 @@
 <template>
-  <ion-header>
+  <ion-header :class="!showTabs ? 'ion-hide-lg-up' : ''">
     <ion-toolbar>
       <ion-buttons slot="start">
         <ion-menu-button></ion-menu-button>
