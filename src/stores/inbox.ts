@@ -90,7 +90,7 @@ export const Inbox = {
   actions: {
     async loadMessages(context: any, conversationId: string) {
       context.commit("setLoading", true);
-      const keys = ["author"];
+      const keys = ["author", "objects"];
       const convo = new Conversation();
       convo.id = conversationId;
       const query = new Parse.Query(Message)

@@ -71,40 +71,7 @@
       <div v-if="text" class="ion-padding">
         <render-md :source="text" />
       </div>
-      <div v-for="obj in objects" :key="obj.objectId" :class="objectsClass">
-        <div v-if="obj.className == 'Poll'" data-cy-obj="poll">
-          <poll :poll="obj" />
-        </div>
-        <div
-          v-else-if="obj.className == 'Picture'"
-          data-cy-obj="picture"
-          class="picture"
-        >
-          <ion-img :src="obj.file.url" />
-        </div>
-        <div
-          v-else-if="obj.className == 'Link'"
-          data-cy-obj="link"
-          class="link-preview"
-        >
-          <ion-thumbnail v-if="obj.previewImage">
-            <ion-img :src="obj.previewImage.url" />
-          </ion-thumbnail>
-          <div class="ion-padding-start">
-            <ion-icon :icon="linkIcon" color="secondary"></ion-icon>
-            <span v-if="obj.siteName">{{ obj.siteName }}: </span>
-            <a :href="obj.url">{{ obj.title }}</a>
-            <p v-if="obj.previewText" class="ion-padding-start">
-              {{ obj.previewText }}
-            </p>
-          </div>
-        </div>
-        <div v-else-if="obj.className == 'Document'" data-cy-obj="document">
-          <ion-icon :icon="documentIcon" color="secondary"></ion-icon>
-          <a :href="obj.url">{{ obj.title }}</a>
-        </div>
-        <div v-else>{{ obj }}</div>
-      </div>
+      <render-objects :objects="objects"  :class="objectsClass" />
     </div>
     <interaction-bar :object="interactivityObject" :link="link" />
   </ion-card>
@@ -112,11 +79,9 @@
 <script lang="ts">
 import {
   IonCard,
-  IonImg,
   IonCardHeader,
   IonIcon,
   IonNote,
-  IonThumbnail,
 } from "@ionic/vue";
 import {
   chevronForwardOutline as teamSplitterIcon,
@@ -124,13 +89,11 @@ import {
   addOutline,
   arrowRedoOutline,
   heartOutline,
-  linkOutline as linkIcon,
-  documentOutline as documentIcon,
 } from "ionicons/icons";
 
 import Avatar from "./avatar.vue";
+import RenderObjects from "./render-objects.vue";
 import InteractionBar from "./interaction-bar.vue";
-import Poll from "./poll.vue";
 import RenderMd from "./render-md.vue";
 import { useStore } from "../stores/";
 import { defineComponent, computed } from "vue";
@@ -164,8 +127,6 @@ export default defineComponent({
       shareIcon: arrowRedoOutline,
       plusIcon: addOutline,
       likeIcon: heartOutline,
-      linkIcon,
-      documentIcon,
     };
   },
   computed: {
@@ -256,15 +217,13 @@ export default defineComponent({
   },
   components: {
     IonCard,
-    IonImg,
     InteractionBar,
     IonCardHeader,
-    Poll,
-    IonThumbnail,
     IonIcon,
     IonNote,
     Avatar,
     RenderMd,
+    RenderObjects,
   },
 });
 </script>

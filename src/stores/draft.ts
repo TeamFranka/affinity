@@ -1,5 +1,5 @@
 import { Parse, Verb, Visibility } from "@/config/Consts";
-import { Activity, Conversation, Message } from "@/db/models";
+import { Activity, Message } from "@/db/models";
 import { takePicture, Photo } from "@/utils/camera";
 import { CreateModel } from "@/utils/model";
 import getUrls from "get-urls";

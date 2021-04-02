@@ -10,10 +10,7 @@
     </ion-header>
     <ion-content>
       <main class="ion-padding">
-        <div :class="clsForMsg(m)" v-for="m in messages" :key="m.objectId">
-          <div class="message">{{ m.text }}</div>
-          <div class="meta">{{ smartTimestamp(m.createdAt) }}</div>
-        </div>
+        <message-entry :message="m" v-for="m in messages" :key="m.objectId" />
       </main>
       <ion-spinner v-if="loading" />
     </ion-content>
@@ -60,12 +57,11 @@ import {
   expandOutline
   } from 'ionicons/icons';
 import { defineComponent, computed, ref } from "vue";
-import { Model } from "@/utils/model";
 import { useStore } from "../stores/";
 import { useRoute } from "vue-router";
-import { smartTimestamp } from "../utils/time";
 import NewPostModal from "@/components/new-post-modal.vue";
 import ConversationEntry from "@/components/conversation-entry.vue";
+import MessageEntry from "@/components/message-entry.vue";
 
 export default defineComponent({
   name: "ViewConversation",
@@ -74,8 +70,6 @@ export default defineComponent({
     const route = useRoute();
     const objectId: any = route.params.conversationId;
     const loading = ref(true);
-    const isMine = (msg: Model) =>
-      msg.author.objectId == store.getters["auth/myId"];
     store.commit("startLoading");
     const loaders = [store.dispatch("inbox/loadMessages", objectId)];
     if (!store.getters.objectsMap[objectId]) {
@@ -93,8 +87,6 @@ export default defineComponent({
     });
     return {
       store,
-      isMine,
-      smartTimestamp,
       objectsCount: computed(() => store.state.draft.objects.length),
       currentMessage: computed(() => store.state.draft.text),
       setMessage: (x: string) => store.dispatch("draft/updateText", x),
@@ -105,9 +97,6 @@ export default defineComponent({
           (x: string) => store.getters.objectsMap[x]
         )
       ),
-      clsForMsg(msg: Model) {
-        return isMine(msg) ? "entry mine" : "entry";
-      },
       sendMessage: () => store.dispatch("draft/sendAsMessage", objectId),
       loading,
       paperPlaneOutline,
@@ -153,6 +142,7 @@ export default defineComponent({
     IonIcon,
     // InlineText,
     ConversationEntry,
+    MessageEntry,
   },
 });
 </script>
@@ -160,35 +150,5 @@ export default defineComponent({
 main {
   display: flex;
   flex-direction: column-reverse;
-}
-
-.entry {
-  display: flex;
-  flex-direction: column;
-  margin: 0.25em;
-  align-self: start;
-}
-
-.message {
-  padding: 0.5rem 1rem;
-  background: var(--ion-color-light);
-}
-
-.entry .message {
-  border-radius: 1rem 1rem 1rem 0;
-}
-
-.entry.mine {
-  text-align: right;
-  align-self: flex-end;
-}
-
-.entry.mine .message {
-  border-radius: 1rem 1rem 0 1rem;
-}
-
-.meta {
-  font-size: 0.75em;
-  color: var(--ion-color-medium);
 }
 </style>
