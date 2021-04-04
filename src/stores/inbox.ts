@@ -88,17 +88,9 @@ export const Inbox = {
     },
   },
   actions: {
-    async sendMessage(context: any, data: any) {
-      const { conversationId, text } = data;
-      const author = context.rootGetters["auth/user"];
-      const conversation = new Conversation();
-      conversation.id = conversationId;
-      const msg = new Message({ conversation, text, author });
-      await msg.save();
-    },
     async loadMessages(context: any, conversationId: string) {
       context.commit("setLoading", true);
-      const keys = ["author"];
+      const keys = ["author", "objects"];
       const convo = new Conversation();
       convo.id = conversationId;
       const query = new Parse.Query(Message)

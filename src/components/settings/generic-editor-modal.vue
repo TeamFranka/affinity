@@ -79,7 +79,7 @@ import {
   trashOutline as removeIcon,
 } from "ionicons/icons";
 import { defineComponent } from "vue";
-import { DefaultActions, AllActions } from "../rich-editor.vue";
+import { DefaultActions, AllActions } from "@/components/rich-editor.vue";
 import RichEditor from "../rich-editor.vue";
 import RenderMd from "../render-md.vue";
 

@@ -12,7 +12,7 @@
       <div class="wrap">
         <ion-card class="ion-hide-sm-down" v-if="canPost">
           <ion-card-content>
-            <new-post :teams="canPostInTeams" />
+            <new-post canChangeVisiblity="true" :teams="canPostInTeams" />
           </ion-card-content>
         </ion-card>
         <ion-spinner v-if="loading" name="dots"></ion-spinner>
@@ -107,12 +107,14 @@ export default defineComponent({
            cssClass:'modalCss',
            componentProps: {
             teams: this.canPostInTeams,
+            canChangeVisiblity: true,
+            title: this.$t("newPost.createPost"),
           },
         });
       popover.present();
       const result = await popover.onDidDismiss();
-      if (result.data) {
-        console.log("result",result);
+      if (result.data && result.data.action == "submit") {
+        await this.store.dispatch("draft/submit");
       }
     },
   },

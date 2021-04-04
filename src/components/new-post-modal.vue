@@ -5,7 +5,7 @@
         <ion-back-button @click="closeModal"/>
       </ion-buttons>
       <ion-title>
-      {{$t("newPost.createPost")}}
+      {{title}}
       </ion-title>
       <ion-button
         slot="end"
@@ -22,7 +22,7 @@
     </ion-toolbar>
   </ion-header>
   <ion-content>
-    <new-post ref="newPost" hide-send :teams="teams" />
+    <new-post ref="newPost" :can-change-visiblity="canChangeVisiblity" hide-send :teams="teams" />
   </ion-content>
 </template>
 <script lang="ts">
@@ -41,7 +41,6 @@ import {
   paperPlaneOutline as sendIcon
   } from 'ionicons/icons';
 import NewPost from "./new-post.vue";
-import { useStore } from "../stores/";
 import { defineComponent } from "vue";
 
 export default defineComponent({
@@ -51,6 +50,12 @@ export default defineComponent({
       type: Array,
       required: true,
     },
+    title: {
+      type: String,
+    },
+    canChangeVisiblity: {
+      type: Boolean,
+    }
   },
   components: {
     IonHeader,
@@ -64,12 +69,10 @@ export default defineComponent({
     NewPost,
   },
   setup() {
-    const store = useStore();
     return {
       async submitPost(e: Event) {
         e.preventDefault();
-        await store.dispatch("draft/submit");
-        modalController.dismiss();
+        modalController.dismiss({action: "submit"});
       },
       closeModal: () => modalController.dismiss(),
       sendIcon,

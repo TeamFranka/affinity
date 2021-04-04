@@ -1,6 +1,6 @@
-import { Parse, Verb, Visibility } from "../config/Consts";
-import { Activity } from "../db/models";
-import { takePicture, Photo } from "../utils/camera";
+import { Parse, Verb, Visibility } from "@/config/Consts";
+import { Activity, Message } from "@/db/models";
+import { takePicture, Photo } from "@/utils/camera";
 import { CreateModel } from "@/utils/model";
 import getUrls from "get-urls";
 export interface DraftT {
@@ -10,6 +10,25 @@ export interface DraftT {
   visibility: Visibility;
   objects: Array<CreateModel>;
 }
+
+const convertObjects = (
+    objects: Array<CreateModel>, attrs: any
+): Parse.Object[] =>
+  objects.map((p: CreateModel) => {
+    if (p.className == "Picture") {
+      const img = p.img;
+      const file = new Parse.File(
+        `post_image.${img.format}`,
+        { uri: img.dataUrl },
+        `image/${img.format}`
+      );
+      delete p.img;
+      p.file = file;
+    }
+    delete p.loading;
+    return p.toParse(attrs);
+  }
+);
 
 export const Draft = {
   namespaced: true,
@@ -172,20 +191,16 @@ export const Draft = {
         return;
       }
       const matches = getUrls(text);
-      console.log(matches);
       for (const l of matches) {
         let found = false;
         const url = l.toString().trim();
         for (let idx = 0; idx < context.state.objects.length; idx++) {
           const o = context.state.objects[idx];
-          console.log("checking", o);
           if (o.className == "Link" || o.className == "Document") {
             if (o.url == url) {
-              console.log("found", url, o);
               found = true;
               break;
             } else if (url.startsWith(o.url)) {
-              console.log("removing", url, o);
               context.commit("removeObject", idx);
               break;
             }
@@ -195,26 +210,32 @@ export const Draft = {
         context.dispatch("addLink", url);
       }
     },
+    async sendAsMessage(context: any, conversationId: string) {
+      const author = context.rootGetters["auth/userPtr"];
+      const conv = context.rootGetters.objectsMap[conversationId];
+      console.log(conv, conversationId);
+      const team = conv.team;
+      const ACL = conv.ACL;
+      const conversation = conv.toPointer();
+      const objects: Parse.Object[] = convertObjects(
+        context.state.objects, {
+          team, author, ACL
+        }
+      );
+      const msg = new Message({
+        conversation, text: context.state.text, author, objects
+      });
+      await msg.save();
+
+      context.commit("clear");
+    },
     async submit(context: any) {
       const author = context.rootGetters["auth/userPtr"];
       const state = context.state;
       const team = (
         state.team || context.rootGetters["defaultTeam"]
       ).toPointer();
-      const objects: Parse.Object[] = state.objects.map((p: CreateModel) => {
-        if (p.className == "Picture") {
-          const img = p.img;
-          const file = new Parse.File(
-            `post_image.${img.format}`,
-            { uri: img.dataUrl },
-            `image/${img.format}`
-          );
-          delete p.img;
-          p.file = file;
-        }
-        delete p.loading;
-        return p.toParse({ team, author });
-      });
+      const objects: Parse.Object[] = convertObjects(state.objects, {team, author});
 
       const activity = new Activity({
         visibility: state.visibility,
