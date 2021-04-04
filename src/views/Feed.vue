@@ -12,7 +12,7 @@
       <div class="wrap">
         <ion-card class="ion-hide-sm-down" v-if="canPost">
           <ion-card-content>
-            <new-post :teams="canPostInTeams" />
+            <new-post canChangeVisiblity="true" :teams="canPostInTeams" />
           </ion-card-content>
         </ion-card>
         <ion-spinner v-if="loading" name="dots"></ion-spinner>
