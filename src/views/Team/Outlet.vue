@@ -74,111 +74,29 @@
           </div>
 
           <ion-toolbar>
-
             <ion-segment
               scrollable
-              value="about"
-              mode="md"
+              :model="subRoute"
               @ionChange="segmentChanged($event)"
             >
-              <ion-segment-button value="qrcode">
+              <ion-segment-button value="ViewTeamQr">
                 <ion-icon :icon="qrCodeIcon" />
               </ion-segment-button>
-              <ion-segment-button value="about">
+              <ion-segment-button value="ViewTeamAbout">
                 <ion-label>{{ $t("team.tabs.about") }}</ion-label>
               </ion-segment-button>
-              <ion-segment-button value="news">
+              <ion-segment-button value="ViewTeamNews">
                 <ion-label>{{ $t("team.tabs.news") }}</ion-label>
               </ion-segment-button>
-              <ion-segment-button value="feed">
+              <ion-segment-button value="ViewTeamFeed">
                 <ion-label>{{ $t("team.tabs.feed") }}</ion-label>
               </ion-segment-button>
             </ion-segment>
           </ion-toolbar>
 
-          <div class="body ion-padding">
-            <!-- Div About -->
-            <div v-if="state == 'about'">
-              <div data-cy="description">
-                <h2 data-cy="title" class="subTitle">
-                  {{ team.name }}
-                </h2>
-                  <render-md adminMd :source="team.info" />
-                  <ion-button
-                    data-cy-role="editModal"
-                    v-if="canEdit"
-                    color="primary"
-                    @click="intendEditInfo"
-                    size="small"
-                    fill="clear"
-                  >
-                    {{ $t("team.description.edit") }}
-                  </ion-button>
-              </div>
-
-              <h2>{{ $t("team.subteams.title") }}</h2>
-              <ul v-if="subteams" class="subteams" data-cy="subteams">
-                <li v-for="t in subteams" :key="t.id">
-                  <router-link
-                    :to="{ name: 'ViewTeam', params: { teamSlug: t.slug } }"
-                  >
-                    <ion-chip outline>
-                      <avatar withName :profile="t" size="1.5em" />
-                    </ion-chip>
-                  </router-link>
-                </li>
-
-                <ion-chip outline>
-                  <ion-button
-                    data-cy="addSubTeamModal"
-                    v-if="canEdit"
-                    @click="intendToCreateSubTeam"
-                    size="small"
-                    fill="clear"
-                  >
-                    <ion-icon size="small" :icon="addIcon" />
-                  </ion-button>
-                </ion-chip>
-              </ul>
-              <ion-button
-                data-cy-role="edit"
-                data-cy-edit-target="styles"
-                color="primary"
-                @click="intendEditStyles"
-                size="small"
-                fill="clear"
-                style="margin-left: 5%"
-              >
-                Edit Custom Styles
-              </ion-button>
-            </div>
-
-            <!-- Div QRcode -->
-            <div v-if="state == 'qrcode'" class="ion-padding">
-              <qrcode
-                :text="fullLink"
-                :logo="logo"
-                :height="256"
-                :width="256"
-              />
-              <div v-for="l in socialLinks" :key="l.target">
-                <qrcode
-                  :text="l.target"
-                  :logo="getSocialIcon(l.platform)"
-                  class="socialLinks"
-                />
-              </div>
-            </div>
-
-            <!-- Div Feed -->
-            <div v-if="state == 'feed'">
-              <activity
-                v-for="activity in feed"
-                :activity="activity"
-                :key="activity.objectId"
-              />
-            </div>
-          </div>
+          <ion-content content-id="details">
+            <ion-router-outlet id="details"></ion-router-outlet>
+          </ion-content>
         </template>
       </div>
     </ion-content>
@@ -186,15 +104,12 @@
 </template>
 
 <script lang="ts">
-import RenderMd from "@/components/render-md.vue";
 import Avatar from "@/components/avatar.vue";
 import { DefaultIcon, Icons } from "@/components/generic/inline-link-list.vue";
 import InlineLinkList from "@/components/generic/inline-link-list.vue";
 import EditLinks from "@/components/settings/edit-links.vue";
 import CreateSubTeam from "@/components/settings/create-subteam.vue";
 import GenericEditorModal from "@/components/settings/generic-editor-modal.vue";
-import Activity from "@/components/activity.vue";
-import Qrcode from "@/components/qrcode.vue";
 import {
   IonContent,
   IonPage,
@@ -207,6 +122,7 @@ import {
   alertController,
   IonSegmentButton,
   IonSegment,
+  IonRouterOutlet,
   IonLabel,
   IonCol
 } from "@ionic/vue";
@@ -324,10 +240,18 @@ export default defineComponent({
         params: { teamSlug: this.team.slug },
       });
     },
+    subRoute(): string {
+      return this.$route.name?.toString() || "ViewTeamAbout";
+    }
   },
   methods: {
     segmentChanged(ev: CustomEvent) {
-      this.state = ev.detail.value;
+      ev.preventDefault();
+      const teamSlug =  this.$route.params.teamSlug;
+      this.$router.push({
+        name: ev.detail.value,
+        params: { teamSlug }
+      });
     },
     fetchData() {
       this.loading = true;
@@ -508,10 +432,8 @@ export default defineComponent({
   },
   components: {
     Avatar,
-    Qrcode,
-    RenderMd,
+    IonRouterOutlet,
     InlineLinkList,
-    Activity,
     IonPage,
     IonContent,
     IonIcon,
