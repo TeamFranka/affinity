@@ -80,8 +80,11 @@ done
 
 echo "Containers running"
 
-# copy .env file for live server
-cp .env.development.local.template .env.development.local
+# create .env file for live server
+cat > .env.development.local << EOF
+VUE_APP_DEFAULT_TEAM="L6hJwPdKnp"
+VUE_APP_PARSE_URL=$(gp url 8080)/parse
+EOF
 
 # init db
 npm run dev:db

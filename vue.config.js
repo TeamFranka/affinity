@@ -36,5 +36,10 @@ module.exports = {
 
   devServer: {
     disableHostCheck: true,
+    proxy: {
+      "/parse/": {
+        target: "http://localhost:1337/"
+      }
+    },
   },
 };
