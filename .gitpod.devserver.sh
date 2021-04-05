@@ -6,7 +6,7 @@ timeout=500; counter=0
 CONTAINER=affinity_mongo_1
 echo "Waiting for $CONTAINER to be ready (${counter}/${timeout})"
 
-until [[ $(docker inspect --format '{{json .State.Running}}' $CONTAINER) == true ]]; do
+until [[ $(docker inspect --format '{{json .State.Running}}' $CONTAINER 2> /dev/null) ]]; do
   if [[ $timeout -lt $counter ]]; then
     echo "ERROR: Timed out waiting for $CONTAINER to come up."
     exit 1

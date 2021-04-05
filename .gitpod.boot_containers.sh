@@ -18,7 +18,7 @@ echo "docker running"
 CONTAINER=affinity_dashboard_1
 
 # start docker-compose if not running
-if [[ ! $(docker inspect --format '{{json .State.Running}}' $CONTAINER) > /dev/null ]]; then
+if [[ ! $(docker inspect --format '{{json .State.Running}}' $CONTAINER 2> /dev/null) ]]; then
   echo "containers not running"
   export VUE_APP_PARSE_URL=$(gp url 8080)/parse
   docker-compose up > /dev/null &
@@ -31,7 +31,7 @@ timeout=500; counter=0
 echo "Waiting for $CONTAINER to be ready (${counter}/${timeout})"
 
 #This says that until docker inspect reports the container is in a running state, keep looping.
-until [[ $(docker inspect --format '{{json .State.Running}}' $CONTAINER) > /dev/null ]]; do
+until [[ $(docker inspect --format '{{json .State.Running}}' $CONTAINER 2> /dev/null) ]]; do
   # If we've reached the timeout period, report that and exit to prevent running an infinite loop.
   if [[ $timeout -lt $counter ]]; then
     echo "ERROR: Timed out waiting for $CONTAINER to come up."
@@ -52,7 +52,7 @@ echo "$CONTAINER running"
 CONTAINER=affinity_mongo_1
 echo "Waiting for $CONTAINER to be ready (${counter}/${timeout})"
 
-until [[ $(docker inspect --format '{{json .State.Running}}' $CONTAINER) > /dev/null ]]; do
+until [[ $(docker inspect --format '{{json .State.Running}}' $CONTAINER 2> /dev/null) ]]; do
   if [[ $timeout -lt $counter ]]; then
     echo "ERROR: Timed out waiting for $CONTAINER to come up."
     exit 1
@@ -70,7 +70,7 @@ echo "$CONTAINER running"
 CONTAINER=affinity_parse_1
 echo "Waiting for $CONTAINER to be ready (${counter}/${timeout})"
 
-until [[ $(docker inspect --format '{{json .State.Running}}' $CONTAINER) > /dev/null ]]; do
+until [[ $(docker inspect --format '{{json .State.Running}}' $CONTAINER 2> /dev/null) ]]; do
   if [[ $timeout -lt $counter ]]; then
     echo "ERROR: Timed out waiting for $CONTAINER to come up."
     exit 1
