@@ -1,19 +1,11 @@
 <template>
   <ion-page>
     <ion-content>
-      <div class="ion-text-center">
-        <div data-role="myAvatar" class="profile-img">
-          <avatar :profile="user" />
-        </div>
-        <ion-button
-          data-cy="setAvatar"
-          fill="clear"
-          color="medium"
-          @click="selectNewAvatar(user.objectId)"
-        >
-          <ion-icon :icon="uploadIcon"></ion-icon>
-        </ion-button>
-      </div>
+      <profile-card
+        :profile="user"
+        :can-edit="true"
+        :show-qr="true"
+      />
       <div data-cy="my-teams">
         <h2>{{ $t("me.membership.title") }}</h2>
         <router-link
@@ -21,7 +13,7 @@
           :key="t.id"
           :to="{ name: 'ViewTeam', params: { teamSlug: t.slug } }"
         >
-          <avatar :profile="t" withName />
+          <avatar size="2em" :profile="t" with-name />
         </router-link>
       </div>
     </ion-content>
@@ -29,13 +21,14 @@
 </template>
 
 <script lang="ts">
-import Avatar from "../components/avatar.vue";
-import { IonContent, IonPage, IonIcon, IonButton } from "@ionic/vue";
+import Avatar from "@/components/avatar.vue";
+import ProfileCard from "@/components/profile-card.vue";
+import { IonContent, IonPage } from "@ionic/vue";
 import { chatbubbles, logoWhatsapp, cloudUploadOutline } from "ionicons/icons";
 import { defineComponent, computed } from "vue";
-import { useStore } from "../stores/";
+import { useStore } from "@/stores/";
 import Parse from "parse";
-import { takePicture, Photo } from "../utils/camera";
+import { takePicture, Photo } from "@/utils/camera";
 
 export default defineComponent({
   name: "Me",
@@ -65,18 +58,14 @@ export default defineComponent({
   },
   components: {
     Avatar,
+    ProfileCard,
     IonPage,
     IonContent,
-    IonIcon,
-    IonButton,
   },
 });
 </script>
 <style scoped>
 ion-chip ion-icon {
   margin: 0;
-}
-.profile-img {
-  width: 50%;
 }
 </style>

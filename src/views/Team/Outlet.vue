@@ -21,7 +21,7 @@
             @intend-edit-social-links="intendEditSocialLinks"
           >
           <template v-slot:menu>
-            <div >
+            <div>
               <inline-link-list showTitle :items="footerLinks">
                 <ion-button
                   v-if="canEdit"
@@ -258,9 +258,10 @@ export default defineComponent({
       this.segmentSelected = ev.detail.value;
     },
     fetchData() {
+      const slug: any = this.$route.params.teamSlug;
+      if (!slug) { return }
       this.loading = true;
       this.segmentSelected = "about";
-      const slug: any = this.$route.params.teamSlug;
       let promise;
       if (this.store.getters.teamsBySlug[slug]) {
         promise = Promise.resolve();
