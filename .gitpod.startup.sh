@@ -92,27 +92,27 @@ echo "Init db"
 
 #bash
 
-# init db
-(npm run dev:db)
+# # init db
+# npm run dev:db
 
-echo "mock data"
-# init db fixtures
-(npm run dev:db:mock-data)
+# echo "mock data"
+# # init db fixtures
+# npm run dev:db:mock-data
 
-sleep 3s
+# sleep 3s
 
-# create .env file for live server
+# # create .env file for live server
 
-if [ ! -f .env.development.local.template ]; then
-  echo "ERROR: db init did not work"
-  exit 1
-fi
+# if [ ! -f .env.development.local.template ]; then
+#   echo "ERROR: db init did not work"
+#   exit 1
+# fi
 
-echo "create env file"
-cat .env.development.local.template > .env.development.local
-cat >> .env.development.local << EOF
-VUE_APP_PARSE_URL=$(gp url 8080)/parse
-EOF
+# echo "create env file"
+# cat .env.development.local.template > .env.development.local
+# cat >> .env.development.local << EOF
+# VUE_APP_PARSE_URL=$(gp url 8080)/parse
+# EOF
 
 # run parse dev server
 # (npm run dev:run-parse & npm run serve)

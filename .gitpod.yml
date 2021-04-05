@@ -4,3 +4,4 @@ image:
 tasks:
   - init: npm install
     command: ./.gitpod.startup.sh
+  - command: ./.gitpod.runserver.sh
