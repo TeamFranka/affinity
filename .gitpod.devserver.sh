@@ -51,4 +51,4 @@ VUE_APP_PARSE_URL=$(gp url 8080)/parse
 EOF
 
 # run parse dev server
-# (npm run dev:run-parse & npm run serve)
+(npm run dev:run-parse & npm run serve)
