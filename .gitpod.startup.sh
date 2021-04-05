@@ -93,11 +93,11 @@ echo "Init db"
 #bash
 
 # init db
-npm run dev:db
+(npm run dev:db)
 
 echo "mock data"
 # init db fixtures
-npm run dev:db:mock-data
+(npm run dev:db:mock-data)
 
 sleep 3s
 
