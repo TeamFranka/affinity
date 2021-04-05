@@ -14,7 +14,8 @@ done
 DASHBOARD_CONTAINER=affinity_dashboard_1
 
 if [[ $(docker inspect --format '{{json .State.Running}}' $DASHBOARD_CONTAINER) != true ]]; then
-  echo "not running"
+  echo "containers not running"
+  export VUE_APP_PARSE_URL=$(gp url 8080)/parse
   docker-compose up &
 else
   echo "running"
