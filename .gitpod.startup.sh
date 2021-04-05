@@ -79,7 +79,7 @@ until [[ $(docker inspect --format '{{json .State.Running}}' $CONTAINER) == true
   ((counter++))
 done
 
-sleep 5s
+sleep 3s
 
 echo "Containers running"
 
@@ -88,6 +88,8 @@ npm run dev:db
 
 # init db fixtures
 npm run dev:db:mock-data
+
+sleep 3s
 
 # create .env file for live server
 
