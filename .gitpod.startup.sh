@@ -1,24 +1,27 @@
 #!/bin/bash
 
+sleep 2
+
 # start docker if not running
 if ! pgrep -x "docker-up" > /dev/null
 then
-  sudo docker-up &
+  echo "docker daemon not running"
+  sudo docker-up 2> /dev/null &
 fi
 
 # wait for docker to run
-while ! pgrep -x "docker-up" > /dev/null; do
-  sleep 1
-done
+while [ ! -S /var/run/docker.sock ]; do sleep 1; done
+while ! pgrep -x "docker-up" > /dev/null; do sleep 1; done
+
+echo "docker running"
 
 CONTAINER=affinity_dashboard_1
 
+# start docker-compose if not running
 if [[ $(docker inspect --format '{{json .State.Running}}' $CONTAINER) != true ]]; then
   echo "containers not running"
   export VUE_APP_PARSE_URL=$(gp url 8080)/parse
-  docker-compose up &
-else
-  echo "running"
+  docker-compose up > /dev/null &
 fi
 
 # Set timeout to the number of seconds you are willing to wait.
@@ -45,8 +48,9 @@ until [[ $(docker inspect --format '{{json .State.Running}}' $CONTAINER) == true
   ((counter++))
 done
 
+echo "$CONTAINER running"
 CONTAINER=affinity_mongo_1
-echo -e "\e[1A\e[KWaiting for $CONTAINER to be ready (${counter}/${timeout})"
+echo "Waiting for $CONTAINER to be ready (${counter}/${timeout})"
 
 until [[ $(docker inspect --format '{{json .State.Running}}' $CONTAINER) == true ]]; do
   if [[ $timeout -lt $counter ]]; then
@@ -62,8 +66,9 @@ until [[ $(docker inspect --format '{{json .State.Running}}' $CONTAINER) == true
   ((counter++))
 done
 
+echo "$CONTAINER running"
 CONTAINER=affinity_parse_1
-echo -e "\e[1A\e[KWaiting for $CONTAINER to be ready (${counter}/${timeout})"
+echo "Waiting for $CONTAINER to be ready (${counter}/${timeout})"
 
 until [[ $(docker inspect --format '{{json .State.Running}}' $CONTAINER) == true ]]; do
   if [[ $timeout -lt $counter ]]; then
@@ -79,13 +84,16 @@ until [[ $(docker inspect --format '{{json .State.Running}}' $CONTAINER) == true
   ((counter++))
 done
 
-sleep 3s
+sleep 2s
 
+echo "$CONTAINER running"
 echo "Containers running"
+echo "Init db"
 
 # init db
 npm run dev:db
 
+echo "mock data"
 # init db fixtures
 npm run dev:db:mock-data
 
@@ -93,10 +101,11 @@ sleep 3s
 
 # create .env file for live server
 
-cat .env.development.local.template > .env.development.local
-cat >> .env.development.local << EOF
-VUE_APP_PARSE_URL=$(gp url 8080)/parse
-EOF
+# echo "create env file"
+# cat .env.development.local.template > .env.development.local
+# cat >> .env.development.local << EOF
+# VUE_APP_PARSE_URL=$(gp url 8080)/parse
+# EOF
 
 # run parse dev server
-(npm run dev:run-parse & npm run serve)
+# (npm run dev:run-parse & npm run serve)
