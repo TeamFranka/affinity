@@ -47,6 +47,7 @@ fi
 echo "create env file"
 cat .env.development.local.template > .env.development.local
 cat >> .env.development.local << EOF
+
 VUE_APP_PARSE_URL=$(gp url 8080)/parse
 EOF
 
