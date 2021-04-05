@@ -84,11 +84,13 @@ until [[ $(docker inspect --format '{{json .State.Running}}' $CONTAINER) == true
   ((counter++))
 done
 
-sleep 2s
-
 echo "$CONTAINER running"
 echo "Containers running"
+docker-compose ps
+sleep 5s
 echo "Init db"
+
+#bash
 
 # init db
 npm run dev:db
@@ -101,11 +103,16 @@ sleep 3s
 
 # create .env file for live server
 
-# echo "create env file"
-# cat .env.development.local.template > .env.development.local
-# cat >> .env.development.local << EOF
-# VUE_APP_PARSE_URL=$(gp url 8080)/parse
-# EOF
+if [ ! -f .env.development.local.template ]; then
+  echo "ERROR: db init did not work"
+  exit 1
+fi
+
+echo "create env file"
+cat .env.development.local.template > .env.development.local
+cat >> .env.development.local << EOF
+VUE_APP_PARSE_URL=$(gp url 8080)/parse
+EOF
 
 # run parse dev server
 # (npm run dev:run-parse & npm run serve)
