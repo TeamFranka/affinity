@@ -1,20 +1,31 @@
 <template>
   <ion-page>
     <ion-content>
-      <ion-spinner v-if="loading" />
-      <template v-else>
-        <div class="ion-text-center">
-          <div class="profile-img">
-            <avatar :profile="user" />
-          </div>
+      <div class="wrap">
+        <div class="centralizeTotal" v-if="loading">
+          <ion-spinner />
         </div>
-      </template>
+        <template v-else>
+          <profile-card
+            :profile="user"
+            :can-edit="canEdit"
+            :showMenu="true"
+            :showQr="true"
+            :seletedSegment="selectedSegment"
+            :segments="segments"
+          >
+            <template v-slot:menu>
+              <!-- FIXME: teams should go here -->
+            </template>
+          </profile-card>
+        </template>
+      </div>
     </ion-content>
   </ion-page>
 </template>
 
 <script lang="ts">
-import Avatar from "../components/avatar.vue";
+import ProfileCard from "@/components/profile-card.vue";
 import { IonContent, IonPage, IonSpinner } from "@ionic/vue";
 import { defineComponent, computed, ref } from "vue";
 import { useStore } from "../stores/";
@@ -22,6 +33,11 @@ import { useRoute } from "vue-router";
 
 export default defineComponent({
   name: "ViewUser",
+  data() {
+    return {
+      selectedSegment: "posts"
+    }
+  },
   setup() {
     const store = useStore();
     const route = useRoute();
@@ -42,12 +58,21 @@ export default defineComponent({
     }
     return {
       user: computed(() => store.getters.objectsMap[objectId]),
+      canEdit:  computed(() => store.getters["auth/userId"] == objectId),
       loading,
     };
   },
+  computed: {
+    segments(): any[] {
+      return [
+        {value: "posts", title: this.$t("profile.tabs.posts")},
+        {value: "activities", title: this.$t("profile.tabs.activities")},
+      ]
+    }
+  },
   methods: {},
   components: {
-    Avatar,
+    ProfileCard,
     IonPage,
     IonContent,
     IonSpinner,

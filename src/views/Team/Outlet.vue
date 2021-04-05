@@ -6,99 +6,39 @@
           <ion-spinner />
         </div>
         <template v-else>
-          <div class="header" :style="teamStyle">
-            <ion-col size-md="2" size-lg="2" size-sm="2" size-xs="3">
-              <div class="profile-img">
-                <avatar size="7rem" :profile="team" />
-                <ion-chip v-if="canEdit" @click="selectNewAvatar()">
-                  <ion-icon :icon="uploadIcon"></ion-icon>
-                </ion-chip>
-              </div>
-            </ion-col>
-
-            <ion-col size-xl="8" size-md="8" size-sm="8" size-xs="7" offset="2">
-              <h1 data-cy="title">
-                {{ team.name }}
-                <ion-icon
-                  size="small"
-                  :icon="editIcon"
-                  data-cy-role="editModal"
+          <profile-card
+            :profile="team"
+            :can-edit="!!canEdit"
+            :show-qr="true"
+            :show-menu="true"
+            :segments-value="segmentSelected"
+            :segments="segments"
+            @segment-selected="segmentSelected = $event"
+            @intend-select-avatar="selectNewAvatar"
+            @remove-background="removeBackground"
+            @intend-select-background="selectBackground"
+            @intend-edit-title="intendEditTitle"
+            @intend-edit-social-links="intendEditSocialLinks"
+          >
+          <template v-slot:menu>
+            <div >
+              <inline-link-list showTitle :items="footerLinks">
+                <ion-button
                   v-if="canEdit"
-                  color="light"
-                  @click="intendEditTitle"
-                />
-              </h1>
-
-              <inline-link-list :items="socialLinks" showIcon>
-                <div v-if="canEdit" style="display: inline">
-                  <ion-icon
-                    size="small"
-                    :icon="editIcon"
-                    @click="intendEditSocialLink"
-                    color="light"
-                  />
-                </div>
+                  @click="intendEditFooterLinks"
+                  size="small"
+                  fill="clear"
+                >
+                    <ion-icon size="small" :icon="editIcon" />
+                </ion-button>
               </inline-link-list>
-
-              <div class="extra-actions" v-if="canEdit">
-                <ion-chip
-                  :title="$t('team.edit.actions.remove_background')"
-                  v-if="team.background"
-                  @click="removeBackground"
-                  outline
-                >
-                  <ion-icon :icon="imageIcon" />
-                  <ion-icon :icon="trashIcon" />
-                </ion-chip>
-
-                <ion-chip
-                  v-else
-                  @click="selectBackground"
-                >
-                  <ion-icon :icon="imageIcon" />
-                  <ion-icon :icon="uploadIcon" />
-                </ion-chip>
-                <inline-link-list showTitle :items="footerLinks">
-                  <li v-if="canEdit">
-                    <ion-button
-                      @click="intendEditFooterLinks"
-                      size="small"
-                      fill="clear"
-                    >
-                      <ion-icon size="small" :icon="editIcon" />
-                    </ion-button>
-                  </li>
-                </inline-link-list>
-              </div>
-            </ion-col>
-          </div>
-
-          <ion-toolbar>
-
-            <ion-segment
-              scrollable
-              value="about"
-              mode="md"
-              @ionChange="segmentChanged($event)"
-            >
-              <ion-segment-button value="qrcode">
-                <ion-icon :icon="qrCodeIcon" />
-              </ion-segment-button>
-              <ion-segment-button value="about">
-                <ion-label>{{ $t("team.tabs.about") }}</ion-label>
-              </ion-segment-button>
-              <ion-segment-button value="news">
-                <ion-label>{{ $t("team.tabs.news") }}</ion-label>
-              </ion-segment-button>
-              <ion-segment-button value="feed">
-                <ion-label>{{ $t("team.tabs.feed") }}</ion-label>
-              </ion-segment-button>
-            </ion-segment>
-          </ion-toolbar>
+            </div>
+          </template>
+          </profile-card>
 
           <div class="body ion-padding">
             <!-- Div About -->
-            <div v-if="state == 'about'">
+            <div v-if="segmentSelected == 'about'">
               <div data-cy="description">
                 <h2 data-cy="title" class="subTitle">
                   {{ team.name }}
@@ -154,7 +94,7 @@
             </div>
 
             <!-- Div QRcode -->
-            <div v-if="state == 'qrcode'" class="ion-padding">
+            <div v-if="segmentSelected == 'qrcode'" class="ion-padding">
               <qrcode
                 :text="fullLink"
                 :logo="logo"
@@ -171,7 +111,7 @@
             </div>
 
             <!-- Div Feed -->
-            <div v-if="state == 'feed'">
+            <div v-if="segmentSelected == 'feed'">
               <activity
                 v-for="activity in feed"
                 :activity="activity"
@@ -187,13 +127,14 @@
 
 <script lang="ts">
 import RenderMd from "@/components/render-md.vue";
+import InlineLinkList from "@/components/generic/inline-link-list.vue";
 import Avatar from "@/components/avatar.vue";
 import { DefaultIcon, Icons } from "@/components/generic/inline-link-list.vue";
-import InlineLinkList from "@/components/generic/inline-link-list.vue";
 import EditLinks from "@/components/settings/edit-links.vue";
 import CreateSubTeam from "@/components/settings/create-subteam.vue";
 import GenericEditorModal from "@/components/settings/generic-editor-modal.vue";
 import Activity from "@/components/activity.vue";
+import ProfileCard from "@/components/profile-card.vue";
 import Qrcode from "@/components/qrcode.vue";
 import {
   IonContent,
@@ -202,13 +143,8 @@ import {
   IonChip,
   IonSpinner,
   IonButton,
-  IonToolbar,
   modalController,
   alertController,
-  IonSegmentButton,
-  IonSegment,
-  IonLabel,
-  IonCol
 } from "@ionic/vue";
 
 import {
@@ -228,18 +164,13 @@ import { takePicture, Photo } from "@/utils/camera";
 import { Model } from "@/utils/model";
 import { absoluteUrl } from "@/utils/url";
 
-const DEFAULT_STYLES = {
-  background: "transparent",
-  backgroundImage:
-    "linear-gradient(to right, var(--ion-color-secondary) 0%, var(--ion-color-primary) 100%)",
-};
 
 export default defineComponent({
   name: "Team",
   data() {
     return {
       loading: true,
-      state: "about",
+      segmentSelected: "about",
     };
   },
   setup() {
@@ -308,15 +239,12 @@ export default defineComponent({
     logo(): string | null {
       return this.team && this.team.avatar ? this.team.avatar.url : null;
     },
-    teamStyle(): any {
-      const customStyles = this.team.customStyles;
-      const extraStyles: any = {};
-      const backgroundImage = this.team.background;
-      if (backgroundImage) {
-        extraStyles.backgroundImage = `url(${backgroundImage.url})`;
-        extraStyles.backgroundSize = "cover";
-      }
-      return [DEFAULT_STYLES, customStyles, extraStyles];
+    segments(): any[] {
+      return [
+        {value: "about", title: this.$t("team.tabs.about")},
+        {value: "news", title: this.$t("team.tabs.news")},
+        {value: "feed", title: this.$t("team.tabs.feed")},
+      ]
     },
     fullLink(): string {
       return absoluteUrl(this.$router, {
@@ -327,11 +255,11 @@ export default defineComponent({
   },
   methods: {
     segmentChanged(ev: CustomEvent) {
-      this.state = ev.detail.value;
+      this.segmentSelected = ev.detail.value;
     },
     fetchData() {
       this.loading = true;
-      this.state = "about";
+      this.segmentSelected = "about";
       const slug: any = this.$route.params.teamSlug;
       let promise;
       if (this.store.getters.teamsBySlug[slug]) {
@@ -438,7 +366,7 @@ export default defineComponent({
         await this.setSetting({ footerLinks: res.data.items });
       }
     },
-    async intendEditSocialLink() {
+    async intendEditSocialLinks() {
       const modal = await modalController.create({
         component: EditLinks,
         componentProps: {
@@ -509,8 +437,8 @@ export default defineComponent({
   components: {
     Avatar,
     Qrcode,
-    RenderMd,
     InlineLinkList,
+    RenderMd,
     Activity,
     IonPage,
     IonContent,
@@ -518,11 +446,7 @@ export default defineComponent({
     IonChip,
     IonSpinner,
     IonButton,
-    IonToolbar,
-    IonSegment,
-    IonSegmentButton,
-    IonLabel,
-    IonCol
+    ProfileCard
   },
 });
 </script>

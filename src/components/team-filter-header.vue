@@ -46,7 +46,9 @@ import {
   IonSegment,
   IonLabel,
   IonIcon,
+  IonButtons,
   IonSegmentButton,
+  IonMenuButton,
 } from '@ionic/vue';
 import { cogOutline as settingIcon,globeOutline as globeIcon } from 'ionicons/icons';
 import { defineComponent, computed } from 'vue';
@@ -142,13 +144,15 @@ export default defineComponent({
     }
   },
   components: {
-   IonHeader,
-   IonToolbar,
-   IonSegment,
-   IonLabel,
-   IonIcon,
-   IonSegmentButton,
-   Avatar,
+    IonHeader,
+    IonToolbar,
+    IonSegment,
+    IonLabel,
+    IonIcon,
+    IonSegmentButton,
+    IonButtons,
+    Avatar,
+    IonMenuButton,
   }
 });
 </script>
