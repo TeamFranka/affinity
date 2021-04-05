@@ -33,4 +33,8 @@ module.exports = {
       fullInstall: true,
     },
   },
+
+  devServer: {
+    disableHostCheck: true,
+  },
 };
