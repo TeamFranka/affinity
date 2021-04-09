@@ -70,16 +70,18 @@ export function initInstallation(): Promise<Parse.Installation> {
   }
   const promise: Promise<Parse.Installation> = new Promise(
     (resolve, reject) => {
-      PushNotifications.addListener("registration", (token: Token) => {
-        generateInstallation({ deviceToken: token.value })
-          .then((x: Parse.Installation) => resolve(x))
-          .catch((x: any) => reject(x));
-      });
-
-      PushNotifications.addListener("registrationError", (error: any) => {
-        console.warn("Error on registration", error);
-        reject(error);
-      });
+      if (Capacitor.isPluginAvailable("PushNotifications")) {
+        PushNotifications.addListener("registration", (token: Token) => {
+          generateInstallation({ deviceToken: token.value })
+            .then((x: Parse.Installation) => resolve(x))
+            .catch((x: any) => reject(x));
+        });
+  
+        PushNotifications.addListener("registrationError", (error: any) => {
+          console.warn("Error on registration", error);
+          reject(error);
+        });  
+      }      
     }
   );
 
