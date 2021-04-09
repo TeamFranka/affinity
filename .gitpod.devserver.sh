@@ -29,11 +29,17 @@ echo "Init db"
 #bash
 
 # init db
-npm run dev:db
+# sort -u -t '=' -k 1,1 .env.development .env.development > file3
+# export VUE_APP_PARSE_URL=$(gp url 8080)/parse
+cat .env.development > sed 's/^VUE_APP_PARSE_URL=.*/VUE_APP_PARSE_URL=$(gp url 8080)/parse/' > .env.development.gitpod
+# npm run dev:db
+node -r dotenv/config bin/update-db.js dotenv_config_path=.env.development.gitpod
+
 
 echo "mock data"
 # init db fixtures
-npm run dev:db:mock-data
+# npm run dev:db:mock-data
+node -r dotenv/config bin/mock-data.js dotenv_config_path=.env.development.gitpod with-faq with-posts
 
 sleep 3s
 
