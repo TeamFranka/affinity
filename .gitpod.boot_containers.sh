@@ -21,7 +21,7 @@ CONTAINER=affinity_dashboard_1
 if [[ ! $(docker inspect --format '{{json .State.Running}}' $CONTAINER 2> /dev/null) ]]; then
   echo "containers not running"
   export VUE_APP_PARSE_URL=$(gp url 8080)/parse
-  docker-compose up > /dev/null &
+  docker-compose up -d
 fi
 
 # Set timeout to the number of seconds you are willing to wait.
