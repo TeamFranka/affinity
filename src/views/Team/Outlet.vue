@@ -51,10 +51,7 @@
                   <ion-icon :icon="trashIcon" />
                 </ion-chip>
 
-                <ion-chip
-                  v-else
-                  @click="selectBackground"
-                >
+                <ion-chip v-else @click="selectBackground">
                   <ion-icon :icon="imageIcon" />
                   <ion-icon :icon="uploadIcon" />
                 </ion-chip>
@@ -74,7 +71,6 @@
           </div>
 
           <ion-toolbar>
-
             <ion-segment
               scrollable
               value="about"
@@ -103,17 +99,17 @@
                 <h2 data-cy="title" class="subTitle">
                   {{ team.name }}
                 </h2>
-                  <render-md adminMd :source="team.info" />
-                  <ion-button
-                    data-cy-role="editModal"
-                    v-if="canEdit"
-                    color="primary"
-                    @click="intendEditInfo"
-                    size="small"
-                    fill="clear"
-                  >
-                    {{ $t("team.description.edit") }}
-                  </ion-button>
+                <render-md adminMd :source="team.info" />
+                <ion-button
+                  data-cy-role="editModal"
+                  v-if="canEdit"
+                  color="primary"
+                  @click="intendEditInfo"
+                  size="small"
+                  fill="clear"
+                >
+                  {{ $t("team.description.edit") }}
+                </ion-button>
               </div>
 
               <h2>{{ $t("team.subteams.title") }}</h2>
@@ -171,6 +167,15 @@
             </div>
 
             <!-- Div Feed -->
+            <div v-if="state == 'news'">
+              <activity
+                v-for="activity in news"
+                :activity="activity"
+                :key="activity.objectId"
+              />
+            </div>
+
+            <!-- Div Feed -->
             <div v-if="state == 'feed'">
               <activity
                 v-for="activity in feed"
@@ -208,7 +213,7 @@ import {
   IonSegmentButton,
   IonSegment,
   IonLabel,
-  IonCol
+  IonCol,
 } from "@ionic/vue";
 
 import {
@@ -268,12 +273,17 @@ export default defineComponent({
       ];
     },
     feed(): Model[] {
-      if (!this.team) {
-        return [];
-      }
+      if (!this.team) return [];
+      const teamId = this.team.objectId;
+      return this.store.state.teams.activities[teamId].map(
+        (id) => this.store.getters["objectsMap"][id]
+      );
+    },
+    news(): Model[] {
+      if (!this.team) return [];
       const teamId = this.team.objectId;
       return this.store.state.teams.news[teamId].map(
-        (id: string) => this.store.getters["objectsMap"][id]
+        (id) => this.store.getters["objectsMap"][id]
       );
     },
     subteams(): Model[] {
@@ -329,30 +339,30 @@ export default defineComponent({
     segmentChanged(ev: CustomEvent) {
       this.state = ev.detail.value;
     },
-    fetchData() {
-      this.loading = true;
-      this.state = "about";
-      const slug: any = this.$route.params.teamSlug;
-      let promise;
-      if (this.store.getters.teamsBySlug[slug]) {
-        promise = Promise.resolve();
-      } else {
-        promise = this.store.dispatch("teams/fetch", slug);
-      }
+    async fetchData() {
+      try {
+        this.loading = true;
+        this.state = "about";
+        const slug: any = this.$route.params.teamSlug;
 
-      promise
-        .then(() => {
-          const teamPointer = this.store.getters.objectsMap[
-            this.store.getters.teamsBySlug[slug]
-          ].toPointer();
-          return Promise.all([
-            this.store.dispatch("teams/fetchNews", teamPointer),
-            this.store.dispatch("teams/fetchSubteams", teamPointer),
-          ]);
-        })
-        .then(() => {
-          this.loading = false;
-        });
+        if (!this.store.getters.teamsBySlug[slug])
+          await this.store.dispatch("teams/fetch", slug);
+
+        const teamPointer = this.store.getters.objectsMap[
+          this.store.getters.teamsBySlug[slug]
+        ].toPointer();
+
+        await Promise.all([
+          this.store.dispatch("teams/fetchNews", teamPointer),
+          this.store.dispatch("teams/fetchActivities", teamPointer),
+          this.store.dispatch("teams/fetchSubteams", teamPointer),
+        ]);
+
+        this.loading = false;
+      } catch (error) {
+        // TODO: display error message
+        console.log(error);
+      }
     },
     getSocialIcon(l: string): any {
       return (Icons[l] || { icon: DefaultIcon }).icon;
@@ -522,7 +532,7 @@ export default defineComponent({
     IonSegment,
     IonSegmentButton,
     IonLabel,
-    IonCol
+    IonCol,
   },
 });
 </script>
