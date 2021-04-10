@@ -26,20 +26,15 @@ docker-compose ps
 sleep 5s
 echo "Init db"
 
-#bash
-
 # init db
-# sort -u -t '=' -k 1,1 .env.development .env.development > file3
 # export VUE_APP_PARSE_URL=$(gp url 8080)/parse
-cat .env.development > sed 's/^VUE_APP_PARSE_URL=.*/VUE_APP_PARSE_URL=$(gp url 8080)/parse/' > .env.development.gitpod
-# npm run dev:db
-node -r dotenv/config bin/update-db.js dotenv_config_path=.env.development.gitpod
+# cat .env.development | sed 's,^VUE_APP_PARSE_URL=.*,VUE_APP_PARSE_URL=$(gp url 8080)/parse/,' > .env.development.gitpod
 
+npm run dev:db
 
 echo "mock data"
 # init db fixtures
-# npm run dev:db:mock-data
-node -r dotenv/config bin/mock-data.js dotenv_config_path=.env.development.gitpod with-faq with-posts
+npm run dev:db:mock-data
 
 sleep 3s
 
@@ -50,11 +45,13 @@ if [ ! -f .env.development.local.template ]; then
   exit 1
 fi
 
+# VUE_APP_PARSE_URL=$(gp url 8080)/parse
+
 echo "create env file"
 cat .env.development.local.template > .env.development.local
 cat >> .env.development.local << EOF
 
-VUE_APP_PARSE_URL=$(gp url 8080)/parse
+VUE_APP_PARSE_URL="$(gp url 8080)/parse"
 EOF
 
 # run parse dev server

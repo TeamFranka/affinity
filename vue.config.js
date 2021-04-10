@@ -38,7 +38,9 @@ module.exports = {
     disableHostCheck: true,
     proxy: {
       "/parse/": {
-        target: "http://localhost:1337/"
+        target: "http://localhost:1337/",
+        ws: true,
+        changeOrigin: true
       }
     },
   },
