@@ -7,17 +7,17 @@ ports:
   - port: 8080  # The dev server
 
 tasks:
-  - before: .gitpod/boot_containers.sh
+  - command: .gitpod/boot_containers.sh
   - openMode: tab-after
-    command: |
+    before: |
       npm install
       .gitpod/devserver.sh
-#    init: |
-#      export VUE_APP_PARSE_URL=`(gp url 1337)`
-#      npm run dev:db
-#      npm run dev:db:mock-data
-#      cp .env.development.local.template .env.development.local
-#      echo "" >> .env.development
-#      echo "VUE_APP_PARSE_URL=`(gp url 8080)`" >> .env.development.local
-#    command: npm run serve
-#  - command: gp await-port 8080 && gp preview $(gp url 8080)
+    init: |
+      export VUE_APP_PARSE_URL=`(gp url 1337)`
+      npm run dev:db
+      npm run dev:db:mock-data
+      cp .env.development.local.template .env.development.local
+      echo "" >> .env.development
+      echo "VUE_APP_PARSE_URL=`(gp url 8080)`" >> .env.development.local
+    command: npm run serve
+  - command: gp await-port 8080 && gp preview $(gp url 8080)
