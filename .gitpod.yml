@@ -11,7 +11,7 @@ tasks:
       docker-compose up -d
       npm install
   - init: |
-    npm run dev:db
-    npm run dev:db:mock-data
-    cp .env.development.local.template .env.development.local
+      npm run dev:db
+      npm run dev:db:mock-data
+      cp .env.development.local.template .env.development.local
   - command: npm run serve
