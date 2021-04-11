@@ -7,11 +7,15 @@ ports:
   - port: 8000  # The dev server
 
 tasks:
-  - before: |
-      docker-compose up -d
+  - before: .gitpod/boot_container.sh
+  - openMode: tab-after
+    before: |
       npm install
+      .gitpod/devserver.sh
     init: |
+      echo "VUE_PARSE_SERVER_URL=`(gp url 1337)` >> .env.development.local
       npm run dev:db
       npm run dev:db:mock-data
       cp .env.development.local.template .env.development.local
     command: npm run serve
+  - command: gp await-port 8000 && gp preview $(gp url 8000)
