@@ -10,8 +10,8 @@ tasks:
   - before: |
       docker-compose up -d
       npm install
-  - init: |
+    init: |
       npm run dev:db
       npm run dev:db:mock-data
       cp .env.development.local.template .env.development.local
-  - command: npm run serve
+    command: npm run serve
