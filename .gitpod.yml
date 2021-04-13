@@ -2,14 +2,14 @@ image:
   file: .gitpod/Dockerfile
 
 ports:
-  - port: 1337  # Parse Backend from compose
-  - port: 4040  # Parse Dashboard from compose
-  - port: 8080  # The dev server
+  - port: 1337 # Parse Backend from compose
+  - port: 4040 # Parse Dashboard from compose
+  - port: 8080 # The dev server
 
 tasks:
   - command: .gitpod/boot_containers.sh
-  - openMode: tab-after
-    before: |
+  #  - openMode: tab-after
+  - before: |
       npm install
       .gitpod/devserver.sh
     init: |
@@ -20,4 +20,4 @@ tasks:
       echo "" >> .env.development.local
       echo "VUE_APP_PARSE_URL=`(gp url 8080)`" >> .env.development.local
     command: npm run serve
-  - command: gp await-port 8080 && gp preview $(gp url 8080)
+  # - command: gp await-port 8080 && gp preview $(gp url 8080)

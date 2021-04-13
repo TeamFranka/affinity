@@ -24,71 +24,71 @@ if [[ ! $(docker inspect --format '{{json .State.Running}}' $CONTAINER 2> /dev/n
   docker-compose up -d
 fi
 
-# Set timeout to the number of seconds you are willing to wait.
-timeout=500; counter=0
+# # Set timeout to the number of seconds you are willing to wait.
+# timeout=500; counter=0
 
-# This first echo is important for keeping the output clean and not overwriting the previous line of output.
-echo "Waiting for $CONTAINER to be ready (${counter}/${timeout})"
+# # This first echo is important for keeping the output clean and not overwriting the previous line of output.
+# echo "Waiting for $CONTAINER to be ready (${counter}/${timeout})"
 
-#This says that until docker inspect reports the container is in a running state, keep looping.
-until [[ $(docker inspect --format '{{json .State.Running}}' $CONTAINER 2> /dev/null) ]]; do
-  # If we've reached the timeout period, report that and exit to prevent running an infinite loop.
-  if [[ $timeout -lt $counter ]]; then
-    echo "ERROR: Timed out waiting for $CONTAINER to come up."
-    exit 1
-  fi
+# #This says that until docker inspect reports the container is in a running state, keep looping.
+# until [[ $(docker inspect --format '{{json .State.Running}}' $CONTAINER 2> /dev/null) ]]; do
+#   # If we've reached the timeout period, report that and exit to prevent running an infinite loop.
+#   if [[ $timeout -lt $counter ]]; then
+#     echo "ERROR: Timed out waiting for $CONTAINER to come up."
+#     exit 1
+#   fi
 
-  # Every 5 seconds update the status
-  if (( $counter % 5 == 0 )); then
-    echo -e "\e[1A\e[KWaiting for $CONTAINER to be ready (${counter}/${timeout})"
-  fi
+#   # Every 5 seconds update the status
+#   if (( $counter % 5 == 0 )); then
+#     echo -e "\e[1A\e[KWaiting for $CONTAINER to be ready (${counter}/${timeout})"
+#   fi
 
-  # Wait a second and increment the counter
-  sleep 1s
-  ((counter++))
-done
+#   # Wait a second and increment the counter
+#   sleep 1s
+#   ((counter++))
+# done
 
-echo "$CONTAINER running"
-CONTAINER=affinity_mongo_1
-echo "Waiting for $CONTAINER to be ready (${counter}/${timeout})"
+# echo "$CONTAINER running"
+# CONTAINER=affinity_mongo_1
+# echo "Waiting for $CONTAINER to be ready (${counter}/${timeout})"
 
-until [[ $(docker inspect --format '{{json .State.Running}}' $CONTAINER 2> /dev/null) ]]; do
-  if [[ $timeout -lt $counter ]]; then
-    echo "ERROR: Timed out waiting for $CONTAINER to come up."
-    exit 1
-  fi
+# until [[ $(docker inspect --format '{{json .State.Running}}' $CONTAINER 2> /dev/null) ]]; do
+#   if [[ $timeout -lt $counter ]]; then
+#     echo "ERROR: Timed out waiting for $CONTAINER to come up."
+#     exit 1
+#   fi
 
-  if (( $counter % 5 == 0 )); then
-    echo -e "\e[1A\e[KWaiting for $CONTAINER to be ready (${counter}/${timeout})"
-  fi
+#   if (( $counter % 5 == 0 )); then
+#     echo -e "\e[1A\e[KWaiting for $CONTAINER to be ready (${counter}/${timeout})"
+#   fi
 
-  sleep 1s
-  ((counter++))
-done
+#   sleep 1s
+#   ((counter++))
+# done
 
-echo "$CONTAINER running"
-CONTAINER=affinity_parse_1
-echo "Waiting for $CONTAINER to be ready (${counter}/${timeout})"
+# echo "$CONTAINER running"
+# CONTAINER=affinity_parse_1
+# echo "Waiting for $CONTAINER to be ready (${counter}/${timeout})"
 
-until [[ $(docker inspect --format '{{json .State.Running}}' $CONTAINER 2> /dev/null) ]]; do
-  if [[ $timeout -lt $counter ]]; then
-    echo "ERROR: Timed out waiting for $CONTAINER to come up."
-    exit 1
-  fi
+# until [[ $(docker inspect --format '{{json .State.Running}}' $CONTAINER 2> /dev/null) ]]; do
+#   if [[ $timeout -lt $counter ]]; then
+#     echo "ERROR: Timed out waiting for $CONTAINER to come up."
+#     exit 1
+#   fi
 
-  if (( $counter % 5 == 0 )); then
-    echo -e "\e[1A\e[KWaiting for $CONTAINER to be ready (${counter}/${timeout})"
-  fi
+#   if (( $counter % 5 == 0 )); then
+#     echo -e "\e[1A\e[KWaiting for $CONTAINER to be ready (${counter}/${timeout})"
+#   fi
 
-  sleep 1s
-  ((counter++))
-done
+#   sleep 1s
+#   ((counter++))
+# done
 
-echo "$CONTAINER running"
-echo "Containers running"
-docker-compose ps
-sleep 5s
-echo "Init db"
+# echo "$CONTAINER running"
+# echo "Containers running"
+# docker-compose ps
+# sleep 5s
+# echo "Init db"
 
 #bash
 
