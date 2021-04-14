@@ -1,4 +1,4 @@
-version: '3.5'
+version: "3.5"
 
 services:
   mongo:
@@ -17,7 +17,7 @@ services:
       - mongo
   dashboard:
     image: parseplatform/parse-dashboard
-    command: --dev --appId APPLICATION_ID --masterKey MASTER_KEY --serverURL "http://localhost:1337/parse" --appName affinity
+    command: --dev --appId APPLICATION_ID --masterKey MASTER_KEY --appName affinity
     ports:
       - 4040:4040
     links:

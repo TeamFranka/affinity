@@ -1,0 +1,21 @@
+image:
+  file: .gitpod/Dockerfile
+
+ports:
+  - port: 1337 # Parse Backend from compose
+  - port: 4040 # Parse Dashboard from compose
+  - port: 8080 # The dev server
+
+tasks:
+  - command: .gitpod/boot_containers.sh
+  - before: |
+      npm install
+      .gitpod/devserver.sh
+    init: |
+      export VUE_APP_PARSE_URL=`(gp url 1337)`/parse
+      npm run dev:db
+      npm run dev:db:mock-data
+      cp .env.development.local.template .env.development.local
+      echo "" >> .env.development.local
+      echo "VUE_APP_PARSE_URL=`(gp url 8080)`" >> .env.development.local
+    command: npm run serve
