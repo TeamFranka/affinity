@@ -70,32 +70,36 @@ export function initInstallation(): Promise<Parse.Installation> {
   }
   const promise: Promise<Parse.Installation> = new Promise(
     (resolve, reject) => {
-      PushNotifications.addListener("registration", (token: Token) => {
-        generateInstallation({ deviceToken: token.value })
-          .then((x: Parse.Installation) => resolve(x))
-          .catch((x: any) => reject(x));
-      });
+      if (Capacitor.isPluginAvailable("PushNotifications")) {
+        PushNotifications.addListener("registration", (token: Token) => {
+          generateInstallation({ deviceToken: token.value })
+            .then((x: Parse.Installation) => resolve(x))
+            .catch((x: any) => reject(x));
+        });
 
-      PushNotifications.addListener("registrationError", (error: any) => {
-        console.warn("Error on registration", error);
-        reject(error);
-      });
+        PushNotifications.addListener("registrationError", (error: any) => {
+          console.warn("Error on registration", error);
+          reject(error);
+        });
+      }
     }
   );
 
   // Request permission to use push notifications
   // iOS will prompt user and return if they granted permission or not
   // Android will just grant without prompting
-  PushNotifications.requestPermissions().then((result: any) => {
-    console.log("received permission for push", result);
-    if (result.receive == "granted") {
-      // Register with Apple / Google to receive push via APNS/FCM
-      PushNotifications.register();
-    } else {
-      console.warn("request for push notifications failed", result);
-      // Show some error
-    }
-  });
+  if (Capacitor.isPluginAvailable("PushNotifications")) {
+    PushNotifications.requestPermissions().then((result: any) => {
+      console.log("received permission for push", result);
+      if (result.receive == "granted") {
+        // Register with Apple / Google to receive push via APNS/FCM
+        PushNotifications.register();
+      } else {
+        console.warn("request for push notifications failed", result);
+        // Show some error
+      }
+    });
+  }
 
   return promise;
 }
