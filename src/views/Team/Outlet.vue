@@ -345,9 +345,10 @@ export default defineComponent({
         this.state = "about";
         const slug: any = this.$route.params.teamSlug;
 
-        if (!this.store.getters.teamsBySlug[slug])
+        if (!this.store.getters.teamsBySlug[slug]) {
           await this.store.dispatch("teams/fetch", slug);
-
+        }
+        
         const teamPointer = this.store.getters.objectsMap[
           this.store.getters.teamsBySlug[slug]
         ].toPointer();
