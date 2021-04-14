@@ -33,4 +33,15 @@ module.exports = {
       fullInstall: true,
     },
   },
+
+  devServer: {
+    disableHostCheck: true,
+    proxy: {
+      "/parse/": {
+        target: "http://localhost:1337/",
+        ws: true,
+        changeOrigin: true
+      }
+    },
+  },
 };
