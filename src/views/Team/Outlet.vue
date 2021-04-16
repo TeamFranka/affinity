@@ -145,7 +145,7 @@
                 fill="clear"
                 style="margin-left: 5%"
               >
-                Edit Custom Styles
+                {{ $t("team.editCustomStyles.button") }}
               </ion-button>
             </div>
 
