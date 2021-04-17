@@ -43,17 +43,17 @@
                 <h2 data-cy="title" class="subTitle">
                   {{ team.name }}
                 </h2>
-                  <render-md adminMd :source="team.info" />
-                  <ion-button
-                    data-cy-role="editModal"
-                    v-if="canEdit"
-                    color="primary"
-                    @click="intendEditInfo"
-                    size="small"
-                    fill="clear"
-                  >
-                    {{ $t("team.description.edit") }}
-                  </ion-button>
+                <render-md adminMd :source="team.info" />
+                <ion-button
+                  data-cy-role="editModal"
+                  v-if="canEdit"
+                  color="primary"
+                  @click="intendEditInfo"
+                  size="small"
+                  fill="clear"
+                >
+                  {{ $t("team.description.edit") }}
+                </ion-button>
               </div>
 
               <h2>{{ $t("team.subteams.title") }}</h2>
@@ -111,6 +111,15 @@
             </div>
 
             <!-- Div Feed -->
+            <div v-if="segmentSelected == 'news'">
+              <activity
+                v-for="activity in news"
+                :activity="activity"
+                :key="activity.objectId"
+              />
+            </div>
+
+            <!-- Div Feed -->
             <div v-if="segmentSelected == 'feed'">
               <activity
                 v-for="activity in feed"
@@ -145,6 +154,7 @@ import {
   IonButton,
   modalController,
   alertController,
+  toastController,
 } from "@ionic/vue";
 
 import {
@@ -199,12 +209,17 @@ export default defineComponent({
       ];
     },
     feed(): Model[] {
-      if (!this.team) {
-        return [];
-      }
+      if (!this.team) return [];
+      const teamId = this.team.objectId;
+      return this.store.state.teams.activities[teamId].map(
+        (id) => this.store.getters["objectsMap"][id]
+      );
+    },
+    news(): Model[] {
+      if (!this.team) return [];
       const teamId = this.team.objectId;
       return this.store.state.teams.news[teamId].map(
-        (id: string) => this.store.getters["objectsMap"][id]
+        (id) => this.store.getters["objectsMap"][id]
       );
     },
     subteams(): Model[] {
@@ -257,31 +272,41 @@ export default defineComponent({
     segmentChanged(ev: CustomEvent) {
       this.segmentSelected = ev.detail.value;
     },
-    fetchData() {
+    async fetchData() {
+      console.log(this.$route);
       const slug: any = this.$route.params.teamSlug;
-      if (!slug) { return }
+      console.log("switching to slug", slug);
       this.loading = true;
+      if (!slug) { return }
       this.segmentSelected = "about";
-      let promise;
-      if (this.store.getters.teamsBySlug[slug]) {
-        promise = Promise.resolve();
-      } else {
-        promise = this.store.dispatch("teams/fetch", slug);
-      }
 
-      promise
-        .then(() => {
-          const teamPointer = this.store.getters.objectsMap[
-            this.store.getters.teamsBySlug[slug]
-          ].toPointer();
-          return Promise.all([
-            this.store.dispatch("teams/fetchNews", teamPointer),
-            this.store.dispatch("teams/fetchSubteams", teamPointer),
-          ]);
-        })
-        .then(() => {
-          this.loading = false;
+      try {
+        if (!this.store.getters.teamsBySlug[slug]) {
+          await this.store.dispatch("teams/fetch", slug);
+        }
+
+        const teamPointer = this.store.getters.objectsMap[
+          this.store.getters.teamsBySlug[slug]
+        ].toPointer();
+
+        await Promise.all([
+          this.store.dispatch("teams/fetchNews", teamPointer),
+          this.store.dispatch("teams/fetchActivities", teamPointer),
+          this.store.dispatch("teams/fetchSubteams", teamPointer),
+        ]);
+
+        this.loading = false;
+      } catch (error) {
+        const toast = await toastController.create({
+          message: this.$t("team.error.fetch"),
+          position: "top",
+          duration: 0,
+          buttons: [{ side: "end", role: "cancel", text: "x" }],
         });
+        toast.present();
+
+        console.log(error);
+      }
     },
     getSocialIcon(l: string): any {
       return (Icons[l] || { icon: DefaultIcon }).icon;
