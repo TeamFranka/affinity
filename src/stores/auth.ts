@@ -224,6 +224,12 @@ export const AuthState = {
       await user.save();
       context.commit("setUser", toModel(user));
     },
+    async setBackground(context: any, f: Parse.File) {
+      await f.save();
+      const user = context.state.user.prepareSave({ background: f }).toParse();
+      await user.save();
+      context.commit("setUser", toModel(user));
+    },
     async setLang(context: any, lang: string) {
       const user = context.state.user.prepareSave({ lang }).toParse();
       await user.save();

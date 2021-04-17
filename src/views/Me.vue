@@ -11,7 +11,7 @@
         @segment-selected="segmentSelected = $event"
         @intend-select-avatar="selectNewAvatar"
         @remove-background="removeBackground"
-        @intend-select-background="selectBackground"
+        @intend-select-background="selectNewBackground"
         @intend-edit-title="intendEditName"
         @intend-edit-info="intendEditInfo"
         @intend-edit-social-links="intendEditSocialLinks"
@@ -57,6 +57,7 @@ export default defineComponent({
       user: computed(() => store.state.auth.user),
       myTeams: computed(() => store.getters["auth/myTeams"]),
       setUserAvatar: (f: Parse.File) => store.dispatch("auth/setAvatar", f),
+      setUserBackground: (f: Parse.File) => store.dispatch("auth/setBackground", f),
       setUserData: (d: any) => store.dispatch("auth/setUserData", d),
       chatbubbles,
       logoWhatsapp,
@@ -69,14 +70,27 @@ export default defineComponent({
     },
   },
   methods: {
-    selectNewAvatar(userId: string) {
+    selectNewAvatar() {
       takePicture().then((img: Photo) => {
         const file = new Parse.File(
-          userId + "_avatar",
+          this.user?.objectId + "_avatar",
           { uri: img.dataUrl },
           "image/" + img.format
         );
         this.setUserAvatar(file);
+      });
+    },
+    async removeBackground() {
+      await this.setUserData({ background: null });
+    },
+    selectNewBackground() {
+      takePicture().then((img: Photo) => {
+        const file = new Parse.File(
+          this.user?.objectId + "_bg",
+          { uri: img.dataUrl },
+          "image/" + img.format
+        );
+        this.setUserBackground(file);
       });
     },
 

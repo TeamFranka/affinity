@@ -48,17 +48,19 @@
         </div>
 
         <div class="extra-actions" v-if="canEdit">
-        <ion-chip
+          <ion-chip
+            data-cy="removeBackground"
             v-if="profile.background"
             @click="$emit('remove-background')"
             outline
-        >
+          >
             <ion-icon :icon="imageIcon" />
             <ion-icon :icon="trashIcon" />
-        </ion-chip>
+          </ion-chip>
 
         <ion-chip
           v-else
+          data-cy="setBackground"
           @click="$emit('intend-select-background')"
         >
             <ion-icon :icon="imageIcon" />

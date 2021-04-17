@@ -51,10 +51,26 @@ describe("User Profile", () => {
 
     cy.get("[data-cy=info]").should("contain", testDesc);
 
+
+    cy.fixture("images/background.jpg", "base64").then((data) => {
+      const blob = Cypress.Blob.base64StringToBlob(data, "image/jpg");
+      return cy.window().then((win) => {
+        return Cypress.Blob.blobToDataURL(blob).then((dataUrl) => {
+          win.CYPRESS = { nextImage: { dataUrl, format: "image/jpg" } };
+          console.log(win, win.CYPRESS.nextImage);
+        });
+      });
+    });
+    // trying avatar
+    cy.get("[data-cy=setBackground]").click();
+    cy.get("profile-card .header").should("have.css", "backgroundImage", /url(.*)/g);
+
+
     // let's make sure it persistet
     cy.reload();
     cy.get("[data-cy-role=avatar] img").should("have.attr", "src");
     cy.get("[data-cy=title]").should("contain", testStr);
     cy.get("[data-cy=info]").should("contain", testDesc);
+    cy.get("profile-card .header").should("have.css", "backgroundImage", /url(.*)/g);
   });
 });
