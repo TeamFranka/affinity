@@ -23,7 +23,7 @@
         />
         </h1>
 
-        <inline-link-list :items="profile.socialLinks" showIcon>
+        <inline-link-list data-cy="socialLinks" :items="profile.socialLinks" showIcon>
           <span v-if="canEdit">
             <ion-icon
             size="small"

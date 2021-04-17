@@ -13,6 +13,7 @@
     <ion-list>
       <ion-item v-for="(i, index) in innerItems" :key="i.target">
         <ion-button
+          :data-cy-role="`selectIcon-${index}`"
           v-if="withIcons"
           @click="selectIcon($event, index)"
           size="small"
@@ -24,12 +25,14 @@
         </ion-button>
         <div>
           <ion-input
+            :data-cy-role="`title-${index}`"
             :value="i.title"
             @change="i.title = $event.target.value"
             type="text"
             placeholder="Title"
           />
           <ion-input
+            :data-cy-role="`url-${index}`"
             :value="i.target"
             @change="i.target = $event.target.value"
             type="url"
@@ -37,6 +40,7 @@
           />
         </div>
         <ion-button
+          :data-cy-role="`remove-${index}`"
           color="medium"
           fill="clear"
           @click="removeOption(index)"
@@ -46,7 +50,7 @@
         </ion-button>
       </ion-item>
       <ion-item>
-        <ion-button @click="addOption" fill="outline">
+        <ion-button @click="addOption" data-cy="add" fill="outline">
           <ion-icon :icon="addIcon" />
           {{ $t("admin.editLinks.button.add") }}
         </ion-button>
@@ -57,6 +61,7 @@
     <ion-toolbar>
       <ion-button
         fill="outline"
+        data-cy-role="submit"
         :disabled="!canSubmit"
         @click="saveAndClose"
         slot="end"

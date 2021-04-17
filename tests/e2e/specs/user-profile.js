@@ -23,7 +23,6 @@ describe("User Profile", () => {
 
     // name
     const testStr = `User Name ${Math.random().toString(36).substring(7)}!`;
-    cy.visit("/me");
     cy.get("[data-cy=title] [data-cy-role=editModal]").click();
     cy.get("ion-modal").within(() => {
       cy.wait(500);
@@ -39,7 +38,6 @@ describe("User Profile", () => {
     const testDesc = `User Bio ${Math.random()
       .toString(36)
       .substring(7)}!`;
-    cy.visit("/me");
     cy.get("[data-cy=info] [data-cy-role=editModal]").click();
     cy.get("ion-modal").within(() => {
       cy.wait(500);
@@ -61,16 +59,38 @@ describe("User Profile", () => {
         });
       });
     });
-    // trying avatar
+    // trying background
     cy.get("[data-cy=setBackground]").click();
-    cy.get("profile-card .header").should("have.css", "backgroundImage", /url(.*)/g);
+    cy.get(".header")
+      .should("have.css", "background")
+      .and("match", /url/g);
 
+    cy.get("[data-cy=socialLinks] [data-cy-role=editModal]").click();
+    cy.get("ion-modal").within(() => {
+      cy.wait(500);
+      cy.get("[data-cy=add]").click();
+      cy.get("[data-cy-role=title-0]").type("Website");
+      cy.get("[data-cy-role=url-0] input").clear().type("https://www.doctorwho.tv");
+      cy.get("[data-cy=add]").click();
+      cy.get("[data-cy-role=title-1]").type("Instagram");
+      cy.get("[data-cy-role=url-1] input").clear().type("https://instagram.com/doctorwho");
+      cy.get("[data-cy-role=submit]").first().click();
+    });
+
+    cy.get("[data-cy=socialLinks] li:first a").should("have.attr", "href", "https://www.doctorwho.tv");
+    cy.get("[data-cy=socialLinks] li:last a").should("have.attr", "href", "https://instagram.com/doctorwho");
 
     // let's make sure it persistet
     cy.reload();
     cy.get("[data-cy-role=avatar] img").should("have.attr", "src");
     cy.get("[data-cy=title]").should("contain", testStr);
     cy.get("[data-cy=info]").should("contain", testDesc);
-    cy.get("profile-card .header").should("have.css", "backgroundImage", /url(.*)/g);
+
+    cy.get("[data-cy=socialLinks] li:first a").should("have.attr", "href", "https://www.doctorwho.tv");
+    cy.get("[data-cy=socialLinks] li:last a").should("have.attr", "href", "https://instagram.com/doctorwho");
+
+    cy.get(".header")
+      .should("have.css", "background")
+      .and("match", /url/g);
   });
 });
