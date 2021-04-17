@@ -2,9 +2,9 @@
 <div>
   <div class="header" :style="profileStyle">
     <ion-col size-md="2" size-lg="2" size-sm="2" size-xs="3">
-      <div class="profile-img">
+      <div data-cy-role="avatar" class="profile-img">
         <avatar size="7rem" :profile="profile" />
-        <ion-chip v-if="canEdit" @click="$emit('intend-select-avatar')">
+        <ion-chip data-cy="setAvatar" v-if="canEdit" @click="$emit('intend-select-avatar')">
           <ion-icon :icon="uploadIcon"></ion-icon>
         </ion-chip>
       </div>
@@ -24,15 +24,28 @@
         </h1>
 
         <inline-link-list :items="profile.socialLinks" showIcon>
-        <div v-if="canEdit" style="display: inline">
+          <span v-if="canEdit">
             <ion-icon
             size="small"
+            data-cy-role="editModal"
             :icon="editIcon"
             @click="$emit('intend-edit-social-links')"
             color="light"
             />
-        </div>
+          </span>
         </inline-link-list>
+        <div data-cy="info" v-if="showInfo" >
+          <render-md inline v-if="info" :source="info" />
+          <span v-if="canEdit">
+            <ion-icon
+            size="small"
+            data-cy-role="editModal"
+            :icon="editIcon"
+            @click="$emit('intend-edit-info')"
+            color="light"
+            />
+          </span>
+        </div>
 
         <div class="extra-actions" v-if="canEdit">
         <ion-chip
@@ -98,6 +111,7 @@ import {
 import InlineLinkList from "@/components/generic/inline-link-list.vue";
 import Avatar from "@/components/avatar.vue";
 import { Model } from "@/utils/model";
+import RenderMd from "./render-md.vue";
 
 const DEFAULT_STYLES = {
   background: "transparent",
@@ -110,6 +124,7 @@ export default defineComponent({
     // edits
     'intend-select-avatar',
     'intend-edit-title',
+    'intend-edit-info',
     'intend-edit-social-links',
     'intend-select-background',
     'remove-background',
@@ -124,6 +139,12 @@ export default defineComponent({
     profile: {
       type: Model,
       required: true
+    },
+    info: {
+      type: String,
+    },
+    showInfo: {
+      type: Boolean,
     },
     showQr: {
       type: Boolean,
@@ -168,6 +189,7 @@ export default defineComponent({
     IonIcon,
     IonChip,
     Avatar,
+    RenderMd,
   }
 })
 </script>

@@ -17,6 +17,15 @@ export const User = {
     name: { type: "String" },
     avatar: { type: "File" },
     settings: { type: "Object" },
+    info: {
+      type: "String",
+    },
+    socialLinks: {
+      type: "Array",
+    },
+    background: {
+      type: "File",
+    },
   }),
   indexes: {
     username_1: {

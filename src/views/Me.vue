@@ -2,10 +2,21 @@
   <ion-page>
     <ion-content>
       <profile-card
+        can-edit show-qr show-info
         :profile="user"
-        :can-edit="true"
-        :show-qr="true"
-      />
+        :show-menu="false"
+        :segments-value="segmentSelected"
+        :segments="segments"
+        :info="user.info"
+        @segment-selected="segmentSelected = $event"
+        @intend-select-avatar="selectNewAvatar"
+        @remove-background="removeBackground"
+        @intend-select-background="selectBackground"
+        @intend-edit-title="intendEditName"
+        @intend-edit-info="intendEditInfo"
+        @intend-edit-social-links="intendEditSocialLinks"
+      >
+      </profile-card>
       <div data-cy="my-teams">
         <h2>{{ $t("me.membership.title") }}</h2>
         <router-link
@@ -23,7 +34,14 @@
 <script lang="ts">
 import Avatar from "@/components/avatar.vue";
 import ProfileCard from "@/components/profile-card.vue";
-import { IonContent, IonPage } from "@ionic/vue";
+import GenericEditorModal from "@/components/settings/generic-editor-modal.vue";
+import EditLinks from "@/components/settings/edit-links.vue";
+import { Icons } from "@/components/generic/inline-link-list.vue";
+import {
+  IonContent,
+  IonPage,
+  modalController,
+ } from "@ionic/vue";
 import { chatbubbles, logoWhatsapp, cloudUploadOutline } from "ionicons/icons";
 import { defineComponent, computed } from "vue";
 import { useStore } from "@/stores/";
@@ -39,10 +57,16 @@ export default defineComponent({
       user: computed(() => store.state.auth.user),
       myTeams: computed(() => store.getters["auth/myTeams"]),
       setUserAvatar: (f: Parse.File) => store.dispatch("auth/setAvatar", f),
+      setUserData: (d: any) => store.dispatch("auth/setUserData", d),
       chatbubbles,
       logoWhatsapp,
       uploadIcon: cloudUploadOutline,
     };
+  },
+  computed: {
+    socialLinks(): any[] {
+      return this.user?.socialLinks || [];
+    },
   },
   methods: {
     selectNewAvatar(userId: string) {
@@ -54,6 +78,58 @@ export default defineComponent({
         );
         this.setUserAvatar(file);
       });
+    },
+
+    async intendEditName() {
+      const modal = await modalController.create({
+        component: GenericEditorModal,
+        componentProps: {
+          value: this.user?.name || "",
+          type: "text",
+          title: this.$t("user.modal.editName.title"),
+          saveLabel: this.$t("user.modal.button.save"),
+        },
+      });
+      await modal.present();
+      const res = await modal.onDidDismiss();
+      if (res.data) {
+        await this.setUserData({ name: res.data.value });
+      }
+    },
+    async intendEditInfo() {
+      const modal = await modalController.create({
+        component: GenericEditorModal,
+        componentProps: {
+          value: this.user?.info || "",
+          type: "richtext",
+          isAdminMd: false,
+          title: this.$t("team.modal.editInfo.title"),
+          saveLabel: this.$t("team.modal.button.save"),
+        },
+      });
+      await modal.present();
+      const res = await modal.onDidDismiss();
+      if (res.data) {
+        await this.setUserData({ info: res.data.value });
+      }
+    },
+    async intendEditSocialLinks() {
+      const modal = await modalController.create({
+        component: EditLinks,
+        componentProps: {
+          items: Array.from(this.socialLinks),
+          withIcons: true,
+          platforms: Object.keys(Icons).map((x) =>
+            Object.assign({}, { key: x }, Icons[x])
+          ),
+          saveLabel: this.$t("team.modal.button.save"),
+        },
+      });
+      await modal.present();
+      const res = await modal.onDidDismiss();
+      if (res.data) {
+        await this.setUserData({ socialLinks: res.data.items });
+      }
     },
   },
   components: {
