@@ -71,8 +71,7 @@ export default defineComponent({
   },
   methods: {
     async fetchData() {
-      const route = useRoute();
-      const objectId: any = route.params.userId;
+      const objectId: any = this.$route.params.userId;
       this.loading = true;
       if (!objectId) { return }
       if (!this.store.getters.objectsMap[objectId]) {
