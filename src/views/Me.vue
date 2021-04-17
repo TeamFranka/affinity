@@ -2,9 +2,8 @@
   <ion-page>
     <ion-content>
       <profile-card
-        can-edit show-qr show-info
+        can-edit show-qr show-info show-menu
         :profile="user"
-        :show-menu="false"
         :segments-value="segmentSelected"
         :segments="segments"
         :info="user.info"
@@ -17,15 +16,32 @@
         @intend-edit-social-links="intendEditSocialLinks"
       >
       </profile-card>
-      <div data-cy="my-teams">
-        <h2>{{ $t("me.membership.title") }}</h2>
-        <router-link
-          v-for="t in myTeams"
-          :key="t.id"
-          :to="{ name: 'ViewTeam', params: { teamSlug: t.slug } }"
-        >
-          <avatar size="2em" :profile="t" with-name />
-        </router-link>
+      <div v-if="segmentSelected == 'qrcode'" class="ion-padding">
+        <qrcode
+          :text="fullLink"
+          :logo="logo"
+          :height="256"
+          :width="256"
+        />
+        <div v-for="l in socialLinks" :key="l.target">
+          <qrcode
+            :text="l.target"
+            :logo="getSocialIcon(l.platform)"
+            class="socialLinks"
+          />
+        </div>
+      </div>
+      <div v-else-if="segmentSelected == 'teams'">
+        <div data-cy="my-teams">
+          <h2>{{ $t("me.membership.title") }}</h2>
+          <router-link
+            v-for="t in myTeams"
+            :key="t.id"
+            :to="{ name: 'ViewTeam', params: { teamSlug: t.slug } }"
+          >
+            <avatar size="2em" :profile="t" with-name />
+          </router-link>
+        </div>
       </div>
     </ion-content>
   </ion-page>
@@ -36,7 +52,7 @@ import Avatar from "@/components/avatar.vue";
 import ProfileCard from "@/components/profile-card.vue";
 import GenericEditorModal from "@/components/settings/generic-editor-modal.vue";
 import EditLinks from "@/components/settings/edit-links.vue";
-import { Icons } from "@/components/generic/inline-link-list.vue";
+import { Icons, DefaultIcon } from "@/components/generic/inline-link-list.vue";
 import {
   IonContent,
   IonPage,
@@ -47,9 +63,16 @@ import { defineComponent, computed } from "vue";
 import { useStore } from "@/stores/";
 import Parse from "parse";
 import { takePicture, Photo } from "@/utils/camera";
+import Qrcode from "@/components/qrcode.vue";
+import { absoluteUrl } from "@/utils/url";
 
 export default defineComponent({
   name: "Me",
+  data() {
+    return {
+      segmentSelected: "teams"
+    }
+  },
   setup() {
     const store = useStore();
 
@@ -68,8 +91,26 @@ export default defineComponent({
     socialLinks(): any[] {
       return this.user?.socialLinks || [];
     },
+    segments(): any[] {
+      return [
+        {value: "teams", title: this.$t("profile.tabs.teams")},
+     //   {value: "posts", title: this.$t("profile.tabs.posts")},
+      ]
+    },
+    logo(): string | null {
+      return this.user && this.user.avatar ? this.user.avatar.url : null;
+    },
+    fullLink(): string {
+      return absoluteUrl(this.$router, {
+        name: "ViewUser",
+        params: { userId: this.user?.objectId, },
+      });
+    },
   },
   methods: {
+    getSocialIcon(l: string): any {
+      return (Icons[l] || { icon: DefaultIcon }).icon;
+    },
     selectNewAvatar() {
       takePicture().then((img: Photo) => {
         const file = new Parse.File(
@@ -151,6 +192,7 @@ export default defineComponent({
     ProfileCard,
     IonPage,
     IonContent,
+    Qrcode,
   },
 });
 </script>

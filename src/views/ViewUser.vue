@@ -31,6 +31,7 @@ import { defineComponent } from "vue";
 import { Model } from "@/utils/model";
 import { useStore } from "../stores/";
 import { useRoute } from "vue-router";
+import { absoluteUrl } from "@/utils/url";
 
 export default defineComponent({
   name: "ViewUser",
@@ -60,7 +61,13 @@ export default defineComponent({
         {value: "posts", title: this.$t("profile.tabs.posts")},
         {value: "activities", title: this.$t("profile.tabs.activities")},
       ]
-    }
+    },
+    fullLink(): string {
+      return absoluteUrl(this.$router, {
+        name: "ViewUser",
+        params: { userid: this.user.objectId, },
+      });
+    },
   },
   methods: {
     async fetchData() {

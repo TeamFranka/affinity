@@ -146,6 +146,8 @@
   "poll.title.editAction": "Editier",
   "poll.title.result": "Results",
   "poll.title": "Poll",
+  "profile.tabs.posts": "Posts",
+  "profile.tabs.teams": "Teams",
   "richEditor.actions.bold": "Bold",
   "richEditor.actions.boldIcon": "<b>B</b>",
   "richEditor.actions.code": "Code",
