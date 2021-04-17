@@ -214,6 +214,7 @@ import {
   IonSegment,
   IonLabel,
   IonCol,
+  toastController,
 } from "@ionic/vue";
 
 import {
@@ -360,7 +361,14 @@ export default defineComponent({
 
         this.loading = false;
       } catch (error) {
-        // TODO: display error message
+        const toast = await toastController.create({
+          message: this.$t("team.error.fetch"),
+          position: "top",
+          duration: 0,
+          buttons: [{ side: "end", role: "cancel", text: "x" }],
+        });
+        toast.present();
+
         console.log(error);
       }
     },
