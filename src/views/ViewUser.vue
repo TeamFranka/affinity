@@ -8,9 +8,9 @@
         <template v-else>
           <profile-card
             :profile="user"
-            :can-edit="canEdit"
-            :showMenu="true"
-            :showQr="true"
+            :can-edit="false"
+            :showMenu="false"
+            :showQr="false"
             :seletedSegment="selectedSegment"
             :segments="segments"
           >
@@ -27,7 +27,8 @@
 <script lang="ts">
 import ProfileCard from "@/components/profile-card.vue";
 import { IonContent, IonPage, IonSpinner } from "@ionic/vue";
-import { defineComponent, computed, ref } from "vue";
+import { defineComponent } from "vue";
+import { Model } from "@/utils/model";
 import { useStore } from "../stores/";
 import { useRoute } from "vue-router";
 
@@ -35,34 +36,25 @@ export default defineComponent({
   name: "ViewUser",
   data() {
     return {
-      selectedSegment: "posts"
+      selectedSegment: "posts",
+      loading: true,
     }
+  },
+  watch: {
+    // call again the method if the route changes
+    $route: "fetchData",
   },
   setup() {
     const store = useStore();
-    const route = useRoute();
-    const objectId: any = route.params.userId;
-    const loading = ref(true);
-    if (!store.getters.objectsMap[objectId]) {
-      store
-        .dispatch("fetchModel", {
-          className: "User",
-          objectId,
-        })
-        .then(() => {
-          store.commit("doneLoading");
-          loading.value = false;
-        });
-    } else {
-      loading.value = false;
-    }
     return {
-      user: computed(() => store.getters.objectsMap[objectId]),
-      canEdit:  computed(() => store.getters["auth/userId"] == objectId),
-      loading,
+      store,
     };
   },
   computed: {
+    user(): Model {
+      const objectId: any = this.$route.params.userId;
+      return this.store.getters.objectsMap[objectId]
+    },
     segments(): any[] {
       return [
         {value: "posts", title: this.$t("profile.tabs.posts")},
@@ -70,7 +62,24 @@ export default defineComponent({
       ]
     }
   },
-  methods: {},
+  methods: {
+    async fetchData() {
+      const route = useRoute();
+      const objectId: any = route.params.userId;
+      this.loading = true;
+      if (!objectId) { return }
+      if (!this.store.getters.objectsMap[objectId]) {
+        await this.store.dispatch("fetchModel", {
+          className: "User",
+          objectId,
+        })
+      }
+      this.loading = false;
+    },
+  },
+  mounted() {
+    this.fetchData();
+  },
   components: {
     ProfileCard,
     IonPage,
