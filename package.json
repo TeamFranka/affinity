@@ -84,7 +84,7 @@
     "@vue/eslint-config-typescript": "^5.0.2",
     "@vue/test-utils": "^2.0.0-rc.1",
     "capacitor-codepush": "git+https://github.com/mapiacompany/capacitor-codepush.git",
-    "cypress": "^6.5.0",
+    "cypress": "^7.1.0",
     "cypress-localstorage-commands": "^1.4.1",
     "dotenv": "^8.2.0",
     "eslint": "^6.7.2",
