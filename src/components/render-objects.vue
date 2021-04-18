@@ -55,7 +55,6 @@ export default defineComponent({
       type: Array,
       required: false
     },
-    class: String,
   },
   setup() {
     return {
