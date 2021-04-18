@@ -113,10 +113,14 @@
               </div>
 
               <div>
-                <h2 v-if="subteams?.length || canEdit">
+                <h2 v-if="showSubteamsHeadline">
                   {{ $t("team.subteams.title") }}
                 </h2>
-                <ul v-if="subteams?.length" class="subteams" data-cy="subteams">
+                <ul
+                  v-if="!!subteams?.length"
+                  class="subteams"
+                  data-cy="subteams"
+                >
                   <li v-for="t in subteams" :key="t.id">
                     <router-link
                       :to="{ name: 'ViewTeam', params: { teamSlug: t.slug } }"
@@ -317,6 +321,9 @@ export default defineComponent({
     },
     canEdit(): boolean {
       return this.permissions.isAdmin;
+    },
+    showSubteamsHeadline(): boolean {
+      return !!this.subteams?.length || this.canEdit;
     },
     logo(): string | null {
       return this.team && this.team.avatar ? this.team.avatar.url : null;
