@@ -1,5 +1,9 @@
 <template>
-  <ion-card data-cy-type="activity" :data-cy-team="team.slug" :data-cy-verb="activity.verb">
+  <ion-card
+    data-cy-type="activity"
+    :data-cy-team="team.slug"
+    :data-cy-verb="activity.verb"
+  >
     <!-- BIREF VIEW -->
     <ion-card-header v-if="briefView">
       <div class="avatar-wrap-sml">
@@ -71,18 +75,15 @@
       <div v-if="text" class="ion-padding">
         <render-md :source="text" />
       </div>
-      <render-objects :objects="objects"  :class="objectsClass" />
+      <div :class="objectsClass">
+        <render-objects :objects="objects" />
+      </div>
     </div>
     <interaction-bar :object="interactivityObject" :link="link" />
   </ion-card>
 </template>
 <script lang="ts">
-import {
-  IonCard,
-  IonCardHeader,
-  IonIcon,
-  IonNote,
-} from "@ionic/vue";
+import { IonCard, IonCardHeader, IonIcon, IonNote } from "@ionic/vue";
 import {
   chevronForwardOutline as teamSplitterIcon,
   chatbubblesOutline,
