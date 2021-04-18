@@ -112,22 +112,28 @@
                 </ion-button>
               </div>
 
-              <h2>{{ $t("team.subteams.title") }}</h2>
-              <ul v-if="subteams" class="subteams" data-cy="subteams">
-                <li v-for="t in subteams" :key="t.id">
-                  <router-link
-                    :to="{ name: 'ViewTeam', params: { teamSlug: t.slug } }"
-                  >
-                    <ion-chip outline>
-                      <avatar withName :profile="t" size="1.5em" />
-                    </ion-chip>
-                  </router-link>
-                </li>
-
-                <ion-chip outline>
+              <div>
+                <h2 v-if="showSubteamsHeadline">
+                  {{ $t("team.subteams.title") }}
+                </h2>
+                <ul
+                  v-if="!!subteams?.length"
+                  class="subteams"
+                  data-cy="subteams"
+                >
+                  <li v-for="t in subteams" :key="t.id">
+                    <router-link
+                      :to="{ name: 'ViewTeam', params: { teamSlug: t.slug } }"
+                    >
+                      <ion-chip outline>
+                        <avatar withName :profile="t" size="1.5em" />
+                      </ion-chip>
+                    </router-link>
+                  </li>
+                </ul>
+                <ion-chip outline v-if="canEdit">
                   <ion-button
                     data-cy="addSubTeamModal"
-                    v-if="canEdit"
                     @click="intendToCreateSubTeam"
                     size="small"
                     fill="clear"
@@ -135,7 +141,7 @@
                     <ion-icon size="small" :icon="addIcon" />
                   </ion-button>
                 </ion-chip>
-              </ul>
+              </div>
               <ion-button
                 data-cy-role="edit"
                 data-cy-edit-target="styles"
@@ -144,8 +150,9 @@
                 size="small"
                 fill="clear"
                 style="margin-left: 5%"
+                v-if="canEdit"
               >
-                Edit Custom Styles
+                {{ $t("team.editCustomStyles.button") }}
               </ion-button>
             </div>
 
@@ -214,6 +221,7 @@ import {
   IonSegment,
   IonLabel,
   IonCol,
+  toastController,
 } from "@ionic/vue";
 
 import {
@@ -315,6 +323,9 @@ export default defineComponent({
     canEdit(): boolean {
       return this.permissions.isAdmin;
     },
+    showSubteamsHeadline(): boolean {
+      return !!this.subteams?.length || this.canEdit;
+    },
     logo(): string | null {
       return this.team && this.team.avatar ? this.team.avatar.url : null;
     },
@@ -345,9 +356,10 @@ export default defineComponent({
         this.state = "about";
         const slug: any = this.$route.params.teamSlug;
 
-        if (!this.store.getters.teamsBySlug[slug])
+        if (!this.store.getters.teamsBySlug[slug]) {
           await this.store.dispatch("teams/fetch", slug);
-
+        }
+        
         const teamPointer = this.store.getters.objectsMap[
           this.store.getters.teamsBySlug[slug]
         ].toPointer();
@@ -360,7 +372,14 @@ export default defineComponent({
 
         this.loading = false;
       } catch (error) {
-        // TODO: display error message
+        const toast = await toastController.create({
+          message: this.$t("team.error.fetch"),
+          position: "top",
+          duration: 0,
+          buttons: [{ side: "end", role: "cancel", text: "x" }],
+        });
+        toast.present();
+
         console.log(error);
       }
     },
