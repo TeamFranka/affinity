@@ -556,6 +556,11 @@ export default defineComponent({
 });
 </script>
 <style scoped>
+.wrap {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
 .header {
   position: relative;
   display: flex;
@@ -570,7 +575,6 @@ ion-toolbar {
 .body {
   display: block;
   overflow-y: auto;
-  height: 60vh;
 }
 h1 {
   font-size: 13px;
