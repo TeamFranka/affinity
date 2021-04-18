@@ -193,6 +193,7 @@
   "team.tabs.about": "About",
   "team.tabs.feed": "Feed",
   "team.tabs.news": "News",
+  "team.error.fetch": "Problems connecting to server. Please try again later.",
   "teamFilter.all": "All",
   "teamFilter.button.save": "Save",
   "teamFilter.showTeamName": "Show Team Names",

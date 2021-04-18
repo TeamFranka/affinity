@@ -221,6 +221,7 @@ import {
   IonSegment,
   IonLabel,
   IonCol,
+  toastController,
 } from "@ionic/vue";
 
 import {
@@ -355,9 +356,10 @@ export default defineComponent({
         this.state = "about";
         const slug: any = this.$route.params.teamSlug;
 
-        if (!this.store.getters.teamsBySlug[slug])
+        if (!this.store.getters.teamsBySlug[slug]) {
           await this.store.dispatch("teams/fetch", slug);
-
+        }
+        
         const teamPointer = this.store.getters.objectsMap[
           this.store.getters.teamsBySlug[slug]
         ].toPointer();
@@ -370,7 +372,14 @@ export default defineComponent({
 
         this.loading = false;
       } catch (error) {
-        // TODO: display error message
+        const toast = await toastController.create({
+          message: this.$t("team.error.fetch"),
+          position: "top",
+          duration: 0,
+          buttons: [{ side: "end", role: "cancel", text: "x" }],
+        });
+        toast.present();
+
         console.log(error);
       }
     },
