@@ -17,7 +17,7 @@ services:
       - mongo
   dashboard:
     image: parseplatform/parse-dashboard
-    command: --dev --appId APPLICATION_ID --masterKey MASTER_KEY --appName affinity
+    command: --dev --appId APPLICATION_ID --masterKey MASTER_KEY --serverURL "${VUE_APP_PARSE_URL}" --appName affinity
     ports:
       - 4040:4040
     links:
