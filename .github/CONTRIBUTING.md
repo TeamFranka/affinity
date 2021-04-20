@@ -19,7 +19,7 @@ When contributing to this repository, please
 
 1. Please choose a descriptive title for the PR and explain the changes you are doing and the
    reasoning for them, including all information to understand the contribution. If that has already
-   beend discussed in an issues, you may also only link that issue.
+   beend discussed in an issues, you may also only link that issue. Keep the PR atomic: only one fix or feature per PR - you the changes happen to fix another bug/are related to the code, keep it but make sure to reference the bug accordingly.
 2. Whenever possible, provide sufficient tests for the code added
 3. Every PR must pass all checks, most importantly the automated test suite. It is the contributors
    obligation to follow up on those, if they do not.
