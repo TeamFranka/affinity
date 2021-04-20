@@ -6,6 +6,7 @@ import App from "../views/App.vue";
 import Inbox from "../views/Inbox.vue";
 import CommunityOutlet from "../views/CommunityOutlet.vue";
 import Feed from "../views/Feed.vue";
+import WelcomePage from "../views/WelcomePage.vue";
 import Faq from "../views/FAQ.vue";
 import Me from "../views/Me.vue";
 import Login from "../views/Login.vue";
@@ -56,6 +57,11 @@ const routes: Array<RouteRecordRaw> = [
     path: "/donate",
     name: "Donations",
     component: Donations,
+  },
+  {
+    path: "/welcome",
+    name: "Welcome",
+    component: WelcomePage,
   },
   {
     path: "/",
