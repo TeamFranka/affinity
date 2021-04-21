@@ -1,8 +1,14 @@
+---
+layout: default
+title: Contributing
+nav_order: 4
+---
+
 # Contribution Guide
 
 Awesome, you've decided to contribute to Affinity. Please make sure your contribution is wanted by
 first discussing the change you wish to make via issue, email, or any other method with the owners
-of this repository before making a change. 
+of this repository before making a change.
 
 Please note we have a code of conduct, please follow it in all your interactions with the project.
 
@@ -13,7 +19,7 @@ how that works.
 
 # Contributing
 
-When contributing to this repository, please 
+When contributing to this repository, please
 
 ## Pull Request Process
 
@@ -170,11 +176,11 @@ This Code of Conduct is adapted from the [Contributor Covenant][homepage],
 version 2.0, available at
 [https://www.contributor-covenant.org/version/2/0/code_of_conduct.html][v2.0].
 
-Community Impact Guidelines were inspired by 
+Community Impact Guidelines were inspired by
 [Mozilla's code of conduct enforcement ladder][Mozilla CoC].
 
 For answers to common questions about this code of conduct, see the FAQ at
-[https://www.contributor-covenant.org/faq][FAQ]. Translations are available 
+[https://www.contributor-covenant.org/faq][FAQ]. Translations are available
 at [https://www.contributor-covenant.org/translations][translations].
 
 [homepage]: https://www.contributor-covenant.org

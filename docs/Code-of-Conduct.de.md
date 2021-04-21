@@ -1,3 +1,8 @@
+---
+layout: default
+title: Code of Conduct (DE)
+nav_order: 5
+---
 
 # Vereinbarung über Verhaltenskodex für Mitwirkende
 
