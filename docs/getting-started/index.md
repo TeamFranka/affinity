@@ -7,18 +7,11 @@ has_children: true
 
 # Getting started
 
-This project is developed using [Ionic]() for mobile integration of the [Vue3]() (with [VueX]() for state transitions and [VueRouter]() for routing) frontend to the [Parse Platform]() backend. It is a responsive single page app in Typescript using the [Parse Javascript SDK]() to communicate with said backend, with some external widgets that can be embedded into regular webpages. We use [cypress]() to run end to end tests against the application.
+This project is developed using [Ionic](https://ionicframework.com/) for mobile integration of the [Vue3](https://v3.vuejs.org/) (with [VueX](https://vuex.vuejs.org/) for state transitions and [VueRouter](https://router.vuejs.org/) for routing) frontend to the [Parse Platform](https://parseplatform.org/) backend. It is a responsive single page app in Typescript using the [Parse Javascript SDK](https://docs.parseplatform.org/js/guide/) ([API Ref](https://parseplatform.org/Parse-SDK-JS/api/master/)) to communicate with the backend running [Parse Cloud Code in Javascript](https://docs.parseplatform.org/cloudcode/guide/), with some external widgets that can be embedded into regular webpages. We use [cypress](https://www.cypress.io/) to run end to end tests against the application.
 
 ## Development Setup
 
 Thus, in order to develop, an development backend service is required. You can either use the cloud-based gitpod setup or set up a local development environment using `docker-compose`. Please follow the respective guides in this section.
-
-## Introduction
-
-To understand the concept and basic ideas behind the application, please watch this introduction video (while things build):
-
-<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/KKDVhntCL3s" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-
 
 ## Development accounts
 
