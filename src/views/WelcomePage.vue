@@ -17,7 +17,7 @@
           </div>
         </ion-slide>
         <ion-slide>
-          <h1>Slide 2</h1>
+          <my-teams />
         </ion-slide>
         <ion-slide>
           <h1>Slide 3</h1>
@@ -31,11 +31,12 @@
 import { defineComponent } from "vue";
 import { IonSlides, IonSlide, IonPage, IonButton, IonIcon } from "@ionic/vue";
 import { arrowForward } from "ionicons/icons";
+import MyTeams from "@/components/my-teams.vue";
 
 // import { useStore } from "../stores/";
 
 export default defineComponent({
-  components: { IonSlides, IonSlide, IonPage, IonButton, IonIcon },
+  components: { IonSlides, IonSlide, IonPage, IonButton, IonIcon, MyTeams },
   setup() {
     // const store = useStore();
 
