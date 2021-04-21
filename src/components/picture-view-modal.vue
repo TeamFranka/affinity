@@ -1,15 +1,22 @@
 <template>
- <div class="slidebox shown" :style="extraStyle" @dblclick="like" ref="slideBox">
-  <span class="like-icon" ref="liker">
-    <ion-icon :icon="likeIcon"  />
-  </span>
+  <div
+    class="slidebox shown"
+    :style="extraStyle"
+    @dblclick="like"
+    ref="slideBox"
+  >
+    <span class="like-icon" ref="liker">
+      <ion-icon :icon="likeIcon" />
+    </span>
 
-    <ion-img class="item-img" :src="imageUrl" />
-  
-   <div class="menu">
-    <router-link :to="teamLink">
-      <avatar size="4em" :profile="team" :name="teamName" />
-    </router-link>
+    <!-- <ion-img class="item-img" :id="imageUrl" v-if="imageUrl" :src="imageUrl" /> -->
+    <img class="item-img" :id="imageUrl" v-if="imageUrl" :src="imageUrl" />
+
+    <div class="menu">
+      <router-link :to="teamLink">
+        <avatar size="4em" :profile="team" :name="teamName" />
+      </router-link>
+    </div>
     <div class="interaction">
       <share-button
         icon-size="large"
@@ -21,126 +28,139 @@
     <div class="interaction">
       <router-link :to="link">
         <ion-icon :icon="commentsIcon" size="large" />
-        <ion-label>{{interactivityObject.commentsCount || 0}}</ion-label>
+        <ion-label>{{ interactivityObject.commentsCount || 0 }}</ion-label>
       </router-link>
     </div>
     <div class="interaction">
       <like-button
-          icon-size="large"
-          :has-liked="hasLiked"
-          :pointer="pointer"
-          :counter="interactivityObject.likesCount || 0"
+        icon-size="large"
+        :has-liked="hasLiked"
+        :pointer="pointer"
+        :counter="interactivityObject.likesCount || 0"
       />
     </div>
-  </div> 
-</div> 
- 
+  </div>
 </template>
 
 <script lang="ts">
-import { IonLabel, IonIcon, IonImg } from '@ionic/vue';
-import { createAnimation } from '@ionic/core';
-import { chatbubblesOutline as commentsIcon, heart as likeIcon } from 'ionicons/icons';
-import Avatar from './avatar.vue';
+import { IonIcon } from "@ionic/vue";
+import { createAnimation } from "@ionic/core";
+import {
+  chatbubblesOutline as commentsIcon,
+  heart as likeIcon,
+} from "ionicons/icons";
+import Avatar from "./avatar.vue";
 import ShareButton from "./share-button.vue";
 import LikeButton from "./like-button.vue";
-import { since } from '../utils/time';
+import { since } from "../utils/time";
 import Parse from "parse";
-import { defineComponent, computed } from 'vue';
-import { useStore } from '../stores/';
-import { Model } from '@/utils/model';
+import { defineComponent, computed } from "vue";
+import { useStore } from "../stores/";
+import { Model } from "@/utils/model";
 
 export default defineComponent({
-  name: 'PictureViewModal',
-  emits: ['next'],
+  name: "PictureViewModal",
+  emits: ["next"],
   props: {
     itemId: {
       type: String,
-      required: true
+      required: true,
     },
-    indexValue:{
+    indexValue: {
       type: Number,
-    }
+    },
+    itemData: {
+      type: Array,
+    },
   },
   components: {
-    IonLabel, IonIcon,
-    IonImg,
-    Avatar, ShareButton, LikeButton, 
+    IonIcon,
+    // IonImg,
+    Avatar,
+    ShareButton,
+    LikeButton,
   },
-  setup(props: { itemId: string }) {
+  setup(props: any) {
     const store = useStore();
-  
-    return {    
-      item: computed(() => store.getters.objectsMap[props.itemId]),
+    console.log(props);
+    console.log("uri is ", props.itemId.objects[0].file.url);
+    return {
+      item: props.itemId,
+      allData: props.itemData,
+      indexOfImg: props.indexValue,
       objs: computed(() => store.getters.objectsMap),
-      store, commentsIcon, likeIcon
-    }
+      store,
+      commentsIcon,
+      likeIcon,
+    };
   },
   computed: {
-  
     link(): string {
-      return '/a/' + this.item.objectId
+      return "/a/" + this.item.objectId;
     },
     fullLink(): string {
       return process.env.BASE_URL + this.link;
     },
     hasLiked(): boolean {
       if (!this.store.getters["auth/isLoggedIn"]) return false;
-      return (this.item.likedBy || []).indexOf(this.store.getters["auth/myId"]) !== -1;
+      return (
+        (this.item.likedBy || []).indexOf(this.store.getters["auth/myId"]) !==
+        -1
+      );
     },
     team(): Model {
-      return this.objs[this.item.team.objectId]
+      return this.objs[this.item.team.objectId];
     },
     teamName(): string {
-      return this.team.name
+      return this.team.name;
     },
     teamLink(): string {
-      return '/t/' + this.team.slug
+      return "/t/" + this.team.slug;
     },
     since(): string {
-      return since(this.item.createdAt)
+      return since(this.item.createdAt);
     },
     text(): string {
-        return this.item.text || ""
+      return this.item.text || "";
     },
     objects(): Model[] {
-      return (this.item.objects || []).map(
-            (o: Model) => this.objs[o.objectId])
+      return (this.item.objects || []).map((o: Model) => this.objs[o.objectId]);
     },
     interactivityObject(): any {
       if (this.objects.length == 1) {
-        return this.objects[0]
+        return this.objects[0];
       }
-      return this.item
+      return this.item;
     },
     obj(): Model {
-      return this.objects[0]
+      return this.objects[0];
     },
     pointer(): Parse.Pointer {
-      return this.item?.toPointer()
+      return this.item?.toPointer();
     },
     image(): Model | null {
-        return this.item.objects.find((x: Model) => x.className == "Picture");
+      return this.item.objects[0];
     },
     imageUrl(): string | null {
-        return this.image?.file.url
+      return this.image?.file.url;
     },
     extraStyle(): object {
-      const style =  {
-        'background': "var(--ion-color-tertiary )"
+      const style = {
+        background: "var(--ion-color-tertiary )",
       };
       const localStyle = {
-        'z-index': this.indexValue,
+        "z-index": this.indexValue,
       };
       return Object.assign({}, style, localStyle);
-    
-    }
+    },
   },
   methods: {
-   
     async like(ev: MouseEvent) {
       if (!this.hasLiked) {
-        this.store.dispatch("auth/like", Object.assign({}, this.interactivityObject.toPointer()));
+        this.store.dispatch(
+          "auth/like",
+          Object.assign({}, this.interactivityObject.toPointer())
+        );
       }
       const l: any = this.$refs.liker;
       await createAnimation()
@@ -150,12 +170,12 @@ export default defineComponent({
           top: `${ev.y}px`,
           left: `${ev.x}px`,
           opacity: 1,
-          transform: 'scale(1)',
+          transform: "scale(1)",
         })
-        .fromTo('transform', 'scale(1)', 'scale(3)')
+        .fromTo("transform", "scale(1)", "scale(3)")
         .afterStyles({
-          "opacity": 0,
-          transform: 'scale(1)',
+          opacity: 0,
+          transform: "scale(1)",
         })
         .play();
     },
@@ -218,7 +238,6 @@ export default defineComponent({
 .menu a {
   color: white;
   text-decoration: none;
-
 }
 .interaction {
   margin-bottom: 0.5em;
@@ -232,12 +251,12 @@ export default defineComponent({
   align-items: center;
 }
 .interaction > span ion-label {
-  font-size: 0.5em
+  font-size: 0.5em;
 }
-.item-img{
-    display: block;
-    height: 100%;
-    width: 100%;
-    object-fit: cover;
+.item-img {
+  display: block;
+  height: 100%;
+  width: 100%;
+  object-fit: cover;
 }
 </style>

@@ -10,17 +10,18 @@
             </ion-button>
         </ion-toolbar>
     </ion-header>
-     
-      <div class="flip-in" ref="box" v-if="imgDetails">
-          <picture-view-modal 
-            v-for="(item,index) in imgDetails"        
-            :itemId="item"
-            :key="item"
-            :z-index="index"
-        />
-      </div>
-    </ion-content>
-    
+
+    <div class="flip-in" ref="box" v-if="imgDetails && imgDetails.length > 0">
+      <picture-view-modal
+        v-for="(item, index) in imgDetails"
+        :itemId="item"
+        :key="item"
+        :z-index="index"
+        :indexValue="currentIndex"
+        :itemData="imgDetails"
+      />
+    </div>
+  </ion-content>
 </template>
 
 <script lang="ts">
@@ -58,12 +59,14 @@ export default defineComponent({
     IonButton,
     IonContent
   },
-  
-  setup() {
+
+  setup(props: any) {
     const store = useStore();
     return {
-      closeIcon, store
-    }
+      closeIcon,
+      store,
+      currentIndex: props.zIndex
+    };
   },
   
   methods:{
