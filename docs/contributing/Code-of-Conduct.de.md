@@ -1,7 +1,8 @@
 ---
 layout: default
 title: Code of Conduct (DE)
-nav_order: 5
+parent: Contributing
+nav_order: 2
 ---
 
 # Vereinbarung über Verhaltenskodex für Mitwirkende
