@@ -17,8 +17,6 @@
         :itemId="item"
         :key="item"
         :z-index="index"
-        :indexValue="currentIndex"
-        :itemData="imgDetails"
       />
     </div>
   </ion-content>

@@ -62,7 +62,6 @@ export default defineComponent({
     const pictureArr: any[] = [];
     return {
       elem: computed(() => store.getters["feed/latestPosts"]),
-      temppictureArray: computed(() => store.getters["feed/latestPosts"]),
       store,
       pictureArr,
     };

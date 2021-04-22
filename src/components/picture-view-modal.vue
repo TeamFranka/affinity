@@ -10,40 +10,40 @@
     </span>
 
     <!-- <ion-img class="item-img" :id="imageUrl" v-if="imageUrl" :src="imageUrl" /> -->
-    <img class="item-img" :id="imageUrl" v-if="imageUrl" :src="imageUrl" />
+    <img class="item-img" :src="imageUrl" />
 
     <div class="menu">
       <router-link :to="teamLink">
         <avatar size="4em" :profile="team" :name="teamName" />
       </router-link>
-    </div>
-    <div class="interaction">
-      <share-button
-        icon-size="large"
-        :link="fullLink"
-        :pointer="pointer"
-        :counter="interactivityObject.sharesCount || 0"
-      />
-    </div>
-    <div class="interaction">
-      <router-link :to="link">
-        <ion-icon :icon="commentsIcon" size="large" />
-        <ion-label>{{ interactivityObject.commentsCount || 0 }}</ion-label>
-      </router-link>
-    </div>
-    <div class="interaction">
-      <like-button
-        icon-size="large"
-        :has-liked="hasLiked"
-        :pointer="pointer"
-        :counter="interactivityObject.likesCount || 0"
-      />
+      <div class="interaction">
+        <share-button
+          icon-size="large"
+          :link="fullLink"
+          :pointer="pointer"
+          :counter="interactivityObject.sharesCount || 0"
+        />
+      </div>
+      <div class="interaction">
+        <router-link :to="link">
+          <ion-icon :icon="commentsIcon" size="large" />
+          <ion-label>{{ interactivityObject.commentsCount || 0 }}</ion-label>
+        </router-link>
+      </div>
+      <div class="interaction">
+        <like-button
+          icon-size="large"
+          :has-liked="hasLiked"
+          :pointer="pointer"
+          :counter="interactivityObject.likesCount || 0"
+        />
+      </div>
     </div>
   </div>
 </template>
 
 <script lang="ts">
-import { IonIcon } from "@ionic/vue";
+import { IonLabel, IonIcon } from "@ionic/vue";
 import { createAnimation } from "@ionic/core";
 import {
   chatbubblesOutline as commentsIcon,
@@ -68,26 +68,20 @@ export default defineComponent({
     },
     indexValue: {
       type: Number,
-    },
-    itemData: {
-      type: Array,
-    },
+    }
   },
   components: {
+    IonLabel,
     IonIcon,
     // IonImg,
     Avatar,
     ShareButton,
     LikeButton,
   },
-  setup(props: any) {
+  setup(props: { itemId: any; }) {
     const store = useStore();
-    console.log(props);
-    console.log("uri is ", props.itemId.objects[0].file.url);
     return {
       item: props.itemId,
-      allData: props.itemData,
-      indexOfImg: props.indexValue,
       objs: computed(() => store.getters.objectsMap),
       store,
       commentsIcon,
