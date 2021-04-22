@@ -1,69 +1,46 @@
 import { Parse, Activity, Verb } from "../config/Consts";
+import { Feed } from "./globals";
 
 const MODEL_KEYS = ["objects", "team"];
+const FEED_ID = "news"
+// eslint-disable-next-line @typescript-eslint/no-empty-interface
 export interface NewsT {
-  loading: boolean;
-  latest: Array<string>;
+
 }
 
 export const News = {
   namespaced: true,
-  state: () => ({
-    loading: false,
-    latest: [],
-  }),
   getters: {
-    loading(state: NewsT): boolean {
-      return state.loading;
+    feed(
+      state: NewsT,
+      getters: any,
+      rootState: any,
+      rootGetters: any
+    ): Feed | null {
+      return rootGetters.feeds[FEED_ID];
     },
-    latest(state: NewsT): Array<string> {
-      return state.latest;
+    loading(state: NewsT, getters: any): boolean {
+      return getters.feed?.loading;
     },
-  },
-  mutations: {
-    setNews(state: NewsT, items: Array<string>) {
-      state.latest = items;
-    },
-    setLoading(state: NewsT, val: boolean) {
-      state.loading = val;
-    },
-    addItem(state: NewsT, item: string) {
-      state.latest.unshift(item);
-    },
-    rmItem(state: NewsT, item: string) {
-      state.latest = state.latest.filter((x) => x !== item);
+    latest(state: NewsT, getters: any): Array<string> {
+      return getters.feed?.entries;
     },
   },
+  mutations: { },
   actions: {
     async refresh(context: any) {
-      context.commit("setLoading", true);
       const teams = context.rootGetters["auth/teamPointers"];
       const query = new Parse.Query(Activity)
         .equalTo("verb", Verb.Announce)
         .containedIn("team", teams)
         .include(MODEL_KEYS)
         .descending("createdAt");
-
-      const news = await query.find();
-
       await context.dispatch(
-        "addItems",
-        { items: news, keys: MODEL_KEYS },
-        { root: true }
-      );
-      await context.commit(
-        "setNews",
-        news.map((a) => a.id)
-      );
-      await context.commit("setLoading", false);
-      await context.dispatch(
-        "subscribe",
+        "queryFeed",
         {
-          id: "news",
+          id: FEED_ID,
           keys: MODEL_KEYS,
           query,
-          addCb: "news/addItem",
-          rmCb: "news/rmItem",
         },
         { root: true }
       );
