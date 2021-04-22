@@ -7,7 +7,7 @@
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
     "test:unit": "vue-cli-service test:unit",
-    "test:e2e": "vue-cli-service test:e2e --url http://localhost:8100/",
+    "test:e2e": "vue-cli-service test:e2e --url http://localhost:8080/",
     "build:widget": "vue-cli-service build --target wc --inline-vue --name affinity-chat ./src/components/config/Widget.vue",
     "ci:run-parse": "npm run dev:build-parse && docker-compose up -d && docker-compose logs --tail 30",
     "ci:setup-db": "npm run dev:db && npm run dev:db:mock-data && cp .env.development.local.template .env.development.local",
