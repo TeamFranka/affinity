@@ -38,7 +38,9 @@ export const FaqEntry = {
     find: {
       "*": true,
     },
-    count: {},
+    count: {
+      "*": true,
+    },
     get: {
       "*": true,
     },

@@ -1,48 +1,79 @@
-import { Parse } from "../config/Consts";
+
+import { Parse, Verb } from "../config/Consts";
 import { FaqEntry } from "../db/models";
+import { Model } from "@/utils/model";
+import { Feed as FeedEntry } from "./globals";
+
+
+const MODEL_KEYS = ["objects", "author", "team"];
 
 export interface FaqT {
-  loading: boolean;
-  entries: Array<string>;
+  selectedTeam: string | null;
 }
 
 export const Faq = {
   namespaced: true,
   state: () => ({
-    loading: false,
-    entries: [],
+    seletedTeam: null,
   }),
   getters: {
-    loading(state: FaqT): boolean {
-      return state.loading;
+    feedId(state: FaqT): string {
+      return state.selectedTeam ? `${state.selectedTeam}-faq` : "faq"
     },
-    entries(state: FaqT): Array<string> {
-      return state.entries;
+    currentFeed(
+      state: FaqT,
+      getters: any,
+      rootState: any,
+      rootGetters: any,
+    ): FeedEntry | null {
+      return rootGetters.feeds[getters.feedId] || null
+    },
+    loading(state: FaqT, getters: any): boolean {
+      return getters.currentFeed?.loading;
+    },
+    entries( state: FaqT, getters: any,): Model[] {
+      return getters.currentFeed?.entries || []
+    },
+    canLoadMore(state: FaqT, getters: any): boolean {
+      if (getters.loading) return false;
+      return getters.currentFeed?.currentPos < getters.currentFeed?.total;
     },
   },
   mutations: {
-    setFaq(state: FaqT, items: Array<string>) {
-      state.entries = items;
-    },
-    setLoading(state: FaqT, val: boolean) {
-      state.loading = val;
+    setSelectedTeam(state: FaqT, name: string | null) {
+      state.selectedTeam = name;
     },
   },
   actions: {
+    async loadMore(context: any) {
+      context.dispatch("loadMore", context.getters.feedId, { root: true });
+    },
+    async selectTeam(context: any, selection: string | null) {
+      // informing the root, we are leaving the view
+      await context.dispatch("leaveFeed", context.getters.feedId, { root: true });
+      await context.commit("setSelectedTeam", selection);
+      await context.dispatch("refresh");
+    },
     async refresh(context: any) {
-      context.commit("setLoading", true);
       const teams = context.rootGetters["auth/teamPointers"];
-      const entries = await new Parse.Query(FaqEntry)
-        .containedIn("team", teams)
+      const baseQuery = new Parse.Query(FaqEntry)
         .descending("createdAt")
-        .find();
+        .include(MODEL_KEYS);
 
-      await context.dispatch("addItems", { items: entries }, { root: true });
-      context.commit(
-        "setFaq",
-        entries.map((a) => a.id)
-      );
-      context.commit("setLoading", false);
+      const query = context.state.selectedTeam ?
+        baseQuery.equalTo("team", {
+            __type: "Pointer",
+            className: "Team",
+            objectId: context.state.selectedTeam,
+          }) :
+        baseQuery.containedIn("team", teams);
+
+      const feedId = context.getters.feedId;
+      await context.dispatch("queryFeed", {
+        id: feedId,
+        keys: MODEL_KEYS,
+        query,
+      }, { root: true })
     },
   },
 };
