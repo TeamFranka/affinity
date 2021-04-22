@@ -32,6 +32,7 @@ export interface GlobalStateT {
   objects: Record<string, Model>;
   teamsBySlug: Record<string, string>;
   feeds: Record<string, Feed>;
+  globalError: Parse.Error | null;
 }
 
 export const GlobalState = {
@@ -41,6 +42,7 @@ export const GlobalState = {
     feeds: {},
     defaultTeamId: (window as any) ? (window as any).AFFINITY_DEFAULT_TEAM : "",
     teamsBySlug: {},
+    globalError: null,
   }),
   getters: {
     defaultTeamId(state: GlobalStateT): string {
@@ -71,6 +73,9 @@ export const GlobalState = {
           state.teamsBySlug[model.slug] = model.objectId;
         }
       });
+    },
+    setError(state: GlobalStateT, err: any) {
+      state.globalError = err;
     },
     setItem(state: GlobalStateT, model: Model) {
       state.objects[model.objectId] = model;
@@ -146,7 +151,8 @@ export const GlobalState = {
           context.commit("doneLoading");
         },
         (err) => {
-          console.error("fetching default team failed", err);
+          console.error("fetching default team failed", err.code, err);
+          context.dispatch("globalError", err);
           context.commit("doneLoading");
         }
       );
@@ -165,6 +171,15 @@ export const GlobalState = {
     },
     routingEnd(context: any) {
       context.commit("doneLoading");
+    },
+    globalError(context: any, error: Parse.Error) {
+      if (error.code == 209) {
+        // our session has been revoke, let's log out locally and restart
+        console.warn("We have been logged out remotely, clearing locally and reloading");
+        Parse.User.logOut();
+        window.location.reload();
+      }
+      context.commit("setError", error);
     },
     addItems(context: any, inp: any) {
       const { items, key, keys } = inp;
