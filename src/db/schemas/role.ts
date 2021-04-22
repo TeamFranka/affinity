@@ -34,7 +34,9 @@ export const Role = {
     find: {
       requiresAuthentication: true,
     },
-    count: {},
+    count: {
+      "*": true,
+    },
     get: {
       requiresAuthentication: true,
     },
