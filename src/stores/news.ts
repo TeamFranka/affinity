@@ -1,12 +1,11 @@
 import { Parse, Activity, Verb } from "../config/Consts";
 import { Feed } from "./globals";
 
-const MODEL_KEYS = ["objects", "team"];
+const MODEL_KEYS = ["objects", "author", "team"];
 const FEED_ID = "news"
-// eslint-disable-next-line @typescript-eslint/no-empty-interface
-export interface NewsT {
 
-}
+// eslint-disable-next-line @typescript-eslint/no-empty-interface
+export interface NewsT { }
 
 export const News = {
   namespaced: true,

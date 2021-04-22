@@ -35,6 +35,72 @@ export interface GlobalStateT {
   globalError: Parse.Error | null;
 }
 
+export function genFeedState(keyword: string, baseQueryFn: () => Parse.Query, keys: Array<string>) {
+  return {
+      namespaced: true,
+      getters: {
+        feedId(
+          state: any,
+          getters: any,
+          rootState: any,
+          rootGetters: any,
+        ): string {
+          return rootGetters["auth/selectedTeam"] ? `${rootGetters["auth/selectedTeam"]}-${keyword}` : keyword;
+        },
+        currentFeed(
+          state: any,
+          getters: any,
+          rootState: any,
+          rootGetters: any,
+        ): Feed | null {
+          return rootGetters.feeds[getters.feedId] || null
+        },
+        loading(state: any, getters: any): boolean {
+          return getters.currentFeed?.loading;
+        },
+        entries(
+          state: any,
+          getters: any,
+          rootState: any,
+          rootGetters: any
+        ): Model[] {
+          const objs = rootGetters["objectsMap"];
+          return getters.currentFeed?.entries.map((id: string) => objs[id]);
+        },
+        canLoadMore(state: any, getters: any): boolean {
+          if (getters.loading) return false;
+          return getters.currentFeed?.currentPos < getters.currentFeed?.total;
+        },
+      },
+      actions: {
+        async loadMore(context: any) {
+          context.dispatch("loadMore", context.getters.feedId, { root: true });
+        },
+        async selectTeam(context: any, selection: string | null) {
+          // informing the root, we are leaving the view
+          await context.dispatch("leaveFeed", context.getters.feedId, { root: true });
+          await context.commit("auth/setSelectedTeam", selection, { root: true } );
+          await context.dispatch("refresh");
+        },
+        async refresh(context: any) {
+          const baseQuery = baseQueryFn();
+
+          const query = context.rootGetters["auth/selectedTeam"] ?
+            baseQuery.equalTo("team", {
+                __type: "Pointer",
+                className: "Team",
+                objectId: context.rootGetters["auth/selectedTeam"],
+              }) :
+            baseQuery.containedIn("team", context.rootGetters["auth/teamPointers"]);
+
+          await context.dispatch("queryFeed", {
+            id: context.getters.feedId, keys, query,
+          }, { root: true })
+        },
+      },
+  };
+}
+
 export const GlobalState = {
   state: () => ({
     loadingCounter: 0,
