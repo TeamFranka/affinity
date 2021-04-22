@@ -78,7 +78,7 @@ export default defineComponent({
       ),
       canPost: computed(() => store.getters["auth/postableTeamIds"].length > 0),
       teamName: computed(() => store.getters["auth/myTeams"]),
-      loading: computed(() => store.state.feed.loading),
+      loading: computed(() => store.getters["feed/loading"]),
       canLoadMore: computed(() => store.getters["feed/canLoadMore"]),
       latestPosts: computed(() => store.getters["feed/latestPosts"]),
       showTeams: computed(() => store.getters["auth/myTeams"].length > 1 && !store.state.feed.selectedTeam),
