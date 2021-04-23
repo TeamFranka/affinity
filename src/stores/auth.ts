@@ -193,6 +193,9 @@ export const AuthState = {
       Parse.User.logOut();
       context.commit("setUser", null);
     },
+    selectTeam(context: any, team: any) {
+      context.commit("setSelectedTeam", team);
+    },
     openLogin(context: any) {
       context.commit("setWantsToLogin", true);
     },

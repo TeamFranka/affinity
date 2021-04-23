@@ -83,7 +83,7 @@ export default defineComponent({
       latestPosts: computed(() => store.getters["feed/entries"]),
       showTeams: computed(() => store.getters["auth/myTeams"].length > 1 && !store.state.auth.selectedTeam),
       selectTeam: async (name: string) => {
-        await store.dispatch("auth/selectTeam", name === "ALL" ? null : name);
+        await store.dispatch("feed/selectTeam", name === "ALL" ? null : name);
       },
       loadMore: (ev: CustomEvent) => {
         store.dispatch("feed/loadMore").then(() => {
