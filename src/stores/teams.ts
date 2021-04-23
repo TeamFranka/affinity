@@ -1,38 +1,64 @@
 import { Parse, Verb } from "@/config/Consts";
 import { Activity, Team } from "@/db/models";
 import { toModel, Model } from "@/utils/model";
+import { genFeedState } from "./globals";
 
 export interface TeamsT {
-  loading: boolean;
-  news: Record<string, Array<string>>;
-  activities: Record<string, Array<string>>;
-  subteams: Record<string, Array<string>>;
+  selectedTeam: string | null;
+  news: {};
+  feed: {};
+  subteams: Array<string>;
 }
 
-const MODEL_KEYS = ["objects"];
+const MODEL_KEYS = ["objects", "author", "team"];
+
+export const news = genFeedState({
+  keyword: "news",
+  customSelectedTeam: "teams/selectedTeam",
+  baseQueryFn: () =>new Parse.Query(Activity)
+            .equalTo("verb", Verb.Announce)
+            .include(MODEL_KEYS)
+            .descending("createdAt"),
+  keys: MODEL_KEYS,
+});
+
+export const feed = genFeedState({
+  keyword: "feed",
+  customSelectedTeam: "teams/selectedTeam",
+  baseQueryFn: () => new Parse.Query(Activity)
+            .equalTo("verb", Verb.Post) // the single team feed doesn't contains announcements
+            .include(MODEL_KEYS)
+            .descending("createdAt"),
+  keys: MODEL_KEYS,
+});
 
 export const Teams = {
   namespaced: true,
+  modules: {
+    news: news,
+    feed: feed,
+  },
   state: () => ({
-    loading: true,
-    news: {},
-    activities: {},
-    subteams: {},
+    selectedTeam: null,
+    subteams: [],
   }),
-  getters: {},
+  getters: {
+    selectedTeam(
+      state: any,
+      getters: any,
+      rootState: any,
+      rootGetters: any,
+    ): string {
+      return state.selectedTeam || rootGetters["auth/selectedTeam"]
+    }
+  },
   mutations: {
-    setNews(state: TeamsT, res: any) {
-      const { teamId, news } = res;
-      state.news[teamId] = news;
+    setSelectedTeam(state: TeamsT, teamId: string) {
+      state.selectedTeam  = teamId;
     },
-    setActivities(state: TeamsT, res: any) {
-      const { teamId, activities } = res;
-      state.activities[teamId] = activities;
-    },
-    setSubteams(state: TeamsT, res: any) {
-      const { teamId, teams } = res;
-      state.subteams[teamId] = teams;
-    },
+    setSubteams(state: TeamsT, teams: Array<string>) {
+      state.subteams = teams;
+    }
   },
   actions: {
     async fetch(context: any, slug: string) {
@@ -42,15 +68,20 @@ export const Teams = {
         root: true,
       });
     },
+    async setTeam(context: any, teamId: string) {
+      await context.commit("setSelectedTeam", teamId);
+      await Promise.all([
+        context.dispatch("news/refresh"),
+        context.dispatch("feed/refresh"),
+        context.dispatch("fetchSubteams", context.rootGetters["objectsMap"][teamId].toPointer())
+      ])
+    },
     async fetchSubteams(context: any, parentTeam: Parse.Pointer) {
       const query = new Parse.Query(Team).equalTo("subOf", parentTeam);
       const teams = await query.find();
 
       await context.commit("setItems", teams.map(toModel), { root: true });
-      await context.commit("setSubteams", {
-        teamId: parentTeam.objectId,
-        teams: teams.map((x: any) => x.id),
-      });
+      await context.commit("setSubteams", teams.map((x: any) => x.id));
     },
     async createSubteam(context: any, data: any): Promise<Model> {
       const team = new Team(data);
@@ -58,41 +89,6 @@ export const Teams = {
       const converted = toModel(team);
       await context.commit("setItems", [converted], { root: true });
       return converted;
-    },
-    async fetchNews(context: any, team: Parse.Pointer) {
-      const query = new Parse.Query(Activity)
-        .equalTo("verb", Verb.Announce)
-        .equalTo("team", team)
-        .include(MODEL_KEYS)
-        .descending("createdAt");
-      const news = await query.find();
-
-      await context.dispatch(
-        "addItems",
-        { items: news, keys: MODEL_KEYS },
-        { root: true }
-      );
-      context.commit("setNews", {
-        teamId: team.objectId,
-        news: news.map((a) => a.id),
-      });
-    },
-    async fetchActivities(context: any, team: Parse.Pointer) {
-      const query = new Parse.Query(Activity)
-        .equalTo("team", team)
-        .include(MODEL_KEYS)
-        .descending("createdAt");
-      const items = await query.find();
-
-      await context.dispatch(
-        "addItems",
-        { items, keys: MODEL_KEYS },
-        { root: true }
-      );
-      context.commit("setActivities", {
-        teamId: team.objectId,
-        activities: items.map((a) => a.id),
-      });
     },
   },
 };

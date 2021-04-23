@@ -39,9 +39,13 @@ export interface GlobalStateT {
  */
 export interface GenFeedOptions {
   /**
-   * They keyword we use to identify this feed
+   * The keyword we use to identify this feed
    */
   keyword: string;
+  /**
+   * Look up the selectedTeam through this selector
+   */
+  customSelectedTeam?: string;
   /**
    * The fn to run when generating the base query
    */
@@ -94,11 +98,18 @@ export function genFeedState(opts: GenFeedOptions): any {
         feedId(
           state: any,
           getters: any,
+        ): string {
+          if (ignoreTeamSelection) { return keyword };
+          const selectedTeam = getters.selectedTeam;
+          return selectedTeam ? `${selectedTeam}-${keyword}` : keyword;
+        },
+        selectedTeam(
+          state: any,
+          getters: any,
           rootState: any,
           rootGetters: any,
         ): string {
-          if (ignoreTeamSelection) { return keyword };
-          return rootGetters["auth/selectedTeam"] ? `${rootGetters["auth/selectedTeam"]}-${keyword}` : keyword;
+          return rootGetters[opts.customSelectedTeam || "auth/selectedTeam"]
         },
         currentFeed(
           state: any,
@@ -142,7 +153,7 @@ export function genFeedState(opts: GenFeedOptions): any {
           await context.dispatch("leaveFeed", context.getters.feedId, { root: true });
         },
         async refresh(context: any) {
-          const selectedTeam = context.rootGetters["auth/selectedTeam"];
+          const selectedTeam = context.getters.selectedTeam;
           const teamPointers = context.rootGetters["auth/teamPointers"];
           const query = queryFn(selectedTeam, teamPointers);
 
