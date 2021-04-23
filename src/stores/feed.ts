@@ -7,11 +7,11 @@ export interface FeedT { }
 
 const MODEL_KEYS = ["objects", "author", "team"];
 
-export const Feed = genFeedState(
-  "feed",
-  () => new Parse.Query(Activity)
-          .containedIn("verb", [Verb.Post, Verb.Announce])
-          .include(MODEL_KEYS)
-          .descending("createdAt"),
-  MODEL_KEYS
-);
+export const Feed = genFeedState({
+  keyword: "feed",
+  baseQueryFn: () => new Parse.Query(Activity)
+            .containedIn("verb", [Verb.Post, Verb.Announce])
+            .include(MODEL_KEYS)
+            .descending("createdAt"),
+  keys: MODEL_KEYS
+});

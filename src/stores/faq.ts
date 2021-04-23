@@ -8,10 +8,10 @@ export interface FaqT { }
 
 const MODEL_KEYS = ["objects", "author", "team"];
 
-export const Faq = genFeedState(
-  "faq",
-  () => new Parse.Query(FaqEntry)
+export const Faq = genFeedState({
+  keyword:"faq",
+  baseQueryFn: () => new Parse.Query(FaqEntry)
       .descending("createdAt")
       .include(MODEL_KEYS),
-  MODEL_KEYS
-);
+  keys: MODEL_KEYS
+});

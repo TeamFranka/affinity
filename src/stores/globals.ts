@@ -34,8 +34,60 @@ export interface GlobalStateT {
   feeds: Record<string, Feed>;
   globalError: Parse.Error | null;
 }
+/**
+ * genFeedState Configuration Options
+ */
+export interface GenFeedOptions {
+  /**
+   * They keyword we use to identify this feed
+   */
+  keyword: string;
+  /**
+   * The fn to run when generating the base query
+   */
+  baseQueryFn?: () => Parse.Query;
+  /**
+   * The fn to run when generating the base query
+   */
+  fullQueryFn?: (selected: string | null, all: any) => Parse.Query;
+  /**
+   * The array of keys the base query includes and we pass on
+   */
+  keys?: Array<string>;
+  /**
+   * Ignore team selection changes
+   */
+  ignoreTeamSelection?: boolean;
+}
 
-export function genFeedState(keyword: string, baseQueryFn: () => Parse.Query, keys: Array<string>) {
+/**
+ *  Generates a generic feed state manager wrapper for the `keywword` string,
+ *  based on the given query (including the given keys). Leaves all actual state management
+ *  to the global state, just plugs the query in for convience. Contains a bunch of helper
+ *  implementations that are used a lot - like selected-team based feed Ids.
+ *   - getters for: `feedId`, `currentFeed`, `loading`, `entries` and `canLoadMore`
+ *   - actions: `loadMore`,  `selectTeam`, `refresh` and `leaving`
+ */
+export function genFeedState(opts: GenFeedOptions): any {
+  const { keyword, baseQueryFn, fullQueryFn, keys, ignoreTeamSelection } = opts;
+  if (!baseQueryFn && !fullQueryFn) {
+    throw "Either baseQuery or fullQuery must be set for genFeedState for " + keyword;
+  }
+  const queryFn = fullQueryFn ?
+    fullQueryFn :
+    (selectedTeam: string | null, teamPointers: any): Parse.Query => {
+      // eslint-disable-next-line
+      const baseQuery = (baseQueryFn!)();
+      const query = selectedTeam ?
+        baseQuery.equalTo("team", {
+            __type: "Pointer",
+            className: "Team",
+            objectId: selectedTeam,
+          }) :
+        baseQuery.containedIn("team", teamPointers);
+      return query
+    };
+
   return {
       namespaced: true,
       getters: {
@@ -45,6 +97,7 @@ export function genFeedState(keyword: string, baseQueryFn: () => Parse.Query, ke
           rootState: any,
           rootGetters: any,
         ): string {
+          if (ignoreTeamSelection) { return keyword };
           return rootGetters["auth/selectedTeam"] ? `${rootGetters["auth/selectedTeam"]}-${keyword}` : keyword;
         },
         currentFeed(
@@ -65,6 +118,9 @@ export function genFeedState(keyword: string, baseQueryFn: () => Parse.Query, ke
           rootGetters: any
         ): Model[] {
           const objs = rootGetters["objectsMap"];
+          if (!getters.currentFeed) {
+            return []
+          }
           return getters.currentFeed?.entries.map((id: string) => objs[id]);
         },
         canLoadMore(state: any, getters: any): boolean {
@@ -82,16 +138,13 @@ export function genFeedState(keyword: string, baseQueryFn: () => Parse.Query, ke
           await context.commit("auth/setSelectedTeam", selection, { root: true } );
           await context.dispatch("refresh");
         },
+        async leaving(context: any) {
+          await context.dispatch("leaveFeed", context.getters.feedId, { root: true });
+        },
         async refresh(context: any) {
-          const baseQuery = baseQueryFn();
-
-          const query = context.rootGetters["auth/selectedTeam"] ?
-            baseQuery.equalTo("team", {
-                __type: "Pointer",
-                className: "Team",
-                objectId: context.rootGetters["auth/selectedTeam"],
-              }) :
-            baseQuery.containedIn("team", context.rootGetters["auth/teamPointers"]);
+          const selectedTeam = context.rootGetters["auth/selectedTeam"];
+          const teamPointers = context.rootGetters["auth/teamPointers"];
+          const query = queryFn(selectedTeam, teamPointers);
 
           await context.dispatch("queryFeed", {
             id: context.getters.feedId, keys, query,

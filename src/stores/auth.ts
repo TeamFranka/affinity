@@ -7,7 +7,6 @@ import { watch } from "vue";
 import { deviceLocale } from "@/utils/setup";
 import { dayjs } from "@/config/Consts";
 import i18n from "@/utils/i18n";
-import StateCore from "markdown-it/lib/rules_core/state_core";
 
 export interface AuthStateT {
   wantsToLogin: boolean;
