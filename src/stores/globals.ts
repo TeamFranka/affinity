@@ -445,7 +445,7 @@ export const GlobalState = {
       await context.commit("updateFeed", {feedId: id, feed: {subscription, alive: true}});
     },
     leaveFeed(context: any, id: string) {
-      context.commmit("decrementSubscribers", id);
+      context.commit("decrementSubscribers", id);
     },
   },
 };
