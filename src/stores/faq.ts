@@ -1,48 +1,17 @@
+
 import { Parse } from "../config/Consts";
 import { FaqEntry } from "../db/models";
+import { genFeedState } from "./globals";
 
-export interface FaqT {
-  loading: boolean;
-  entries: Array<string>;
-}
+// eslint-disable-next-line @typescript-eslint/no-empty-interface
+export interface FaqT { }
 
-export const Faq = {
-  namespaced: true,
-  state: () => ({
-    loading: false,
-    entries: [],
-  }),
-  getters: {
-    loading(state: FaqT): boolean {
-      return state.loading;
-    },
-    entries(state: FaqT): Array<string> {
-      return state.entries;
-    },
-  },
-  mutations: {
-    setFaq(state: FaqT, items: Array<string>) {
-      state.entries = items;
-    },
-    setLoading(state: FaqT, val: boolean) {
-      state.loading = val;
-    },
-  },
-  actions: {
-    async refresh(context: any) {
-      context.commit("setLoading", true);
-      const teams = context.rootGetters["auth/teamPointers"];
-      const entries = await new Parse.Query(FaqEntry)
-        .containedIn("team", teams)
-        .descending("createdAt")
-        .find();
+const MODEL_KEYS = ["objects", "author", "team"];
 
-      await context.dispatch("addItems", { items: entries }, { root: true });
-      context.commit(
-        "setFaq",
-        entries.map((a) => a.id)
-      );
-      context.commit("setLoading", false);
-    },
-  },
-};
+export const Faq = genFeedState({
+  keyword:"faq",
+  baseQueryFn: () => new Parse.Query(FaqEntry)
+      .descending("createdAt")
+      .include(MODEL_KEYS),
+  keys: MODEL_KEYS
+});

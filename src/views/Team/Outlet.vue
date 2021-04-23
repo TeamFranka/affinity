@@ -174,7 +174,7 @@ import {
   createOutline as editIcon,
   addCircleOutline as addIcon,
 } from "ionicons/icons";
-import { defineComponent } from "vue";
+import { defineComponent, computed } from "vue";
 import { useStore } from "@/stores/";
 import Parse from "parse";
 import { takePicture, Photo } from "@/utils/camera";
@@ -193,6 +193,8 @@ export default defineComponent({
   setup() {
     const store = useStore();
     return {
+      news: computed(()=> store.getters["teams/news/entries"]),
+      feed: computed(()=> store.getters["teams/feed/entries"]),
       store,
       chatbubbles,
       logoWhatsapp,
@@ -215,26 +217,11 @@ export default defineComponent({
         this.store.getters.teamsBySlug[slug]
       ];
     },
-    feed(): Model[] {
-      if (!this.team) return [];
-      const teamId = this.team.objectId;
-      return this.store.state.teams.activities[teamId].map(
-        (id) => this.store.getters["objectsMap"][id]
-      );
-    },
-    news(): Model[] {
-      if (!this.team) return [];
-      const teamId = this.team.objectId;
-      return this.store.state.teams.news[teamId].map(
-        (id) => this.store.getters["objectsMap"][id]
-      );
-    },
     subteams(): Model[] {
       if (!this.team) {
         return [];
       }
-      const teamId = this.team.objectId;
-      return (this.store.state.teams.subteams[teamId] || []).map(
+      return (this.store.state.teams.subteams || []).map(
         (id: string) => this.store.getters["objectsMap"][id]
       );
     },
@@ -295,15 +282,8 @@ export default defineComponent({
           await this.store.dispatch("teams/fetch", slug);
         }
 
-        const teamPointer = this.store.getters.objectsMap[
-          this.store.getters.teamsBySlug[slug]
-        ].toPointer();
-
-        await Promise.all([
-          this.store.dispatch("teams/fetchNews", teamPointer),
-          this.store.dispatch("teams/fetchActivities", teamPointer),
-          this.store.dispatch("teams/fetchSubteams", teamPointer),
-        ]);
+        const teamId = this.store.getters.teamsBySlug[slug];
+        await this.store.dispatch("teams/setTeam", teamId);
 
         this.loading = false;
       } catch (error) {
@@ -314,8 +294,6 @@ export default defineComponent({
           buttons: [{ side: "end", role: "cancel", text: "x" }],
         });
         toast.present();
-
-        console.log(error);
       }
     },
     getSocialIcon(l: string): any {
