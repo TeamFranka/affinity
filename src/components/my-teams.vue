@@ -9,16 +9,12 @@
     </ion-toolbar>
   </ion-header>
   <ion-content>
-    <my-team-card
-      v-for="teamId in store.state.teams.teamIds"
-      :key="teamId"
-      :teamId="teamId"
-    />
+    <my-team-card v-for="teamId in teamIds" :key="teamId" :teamId="teamId" />
   </ion-content>
 </template>
 
 <script lang="ts">
-import { defineComponent } from "vue";
+import { defineComponent, ref, onMounted, computed } from "vue";
 import { IonHeader, IonContent, IonToolbar, IonSearchbar } from "@ionic/vue";
 import { checkmarkOutline, addCircle, closeCircle } from "ionicons/icons";
 import { useStore } from "@/stores/";
@@ -29,25 +25,20 @@ export default defineComponent({
   components: { IonHeader, IonContent, IonToolbar, IonSearchbar, MyTeamCard },
   setup() {
     const store = useStore();
-    return { store, checkmarkOutline, addCircle, closeCircle };
-  },
-  data: () => ({
-    loading: true,
-  }),
-  computed: {},
-  mounted() {
-    this.fetchData();
-  },
-  methods: {
-    async fetchData() {
+    const loading = ref(true);
+    const teamIds = computed(() => store.state.teams.teamIds);
+
+    onMounted(async () => {
       try {
-        this.loading = true;
-        await this.store.dispatch("teams/fetchTeams");
-        this.loading = false;
+        loading.value = true;
+        await store.dispatch("teams/fetchTeams");
+        loading.value = false;
       } catch (error) {
         console.log(error);
       }
-    },
+    });
+
+    return { loading, teamIds, checkmarkOutline, addCircle, closeCircle };
   },
 });
 </script>
