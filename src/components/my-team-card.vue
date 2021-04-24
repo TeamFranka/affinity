@@ -5,10 +5,14 @@
         <img src="https://placeimg.com/200/200/people" />
       </ion-avatar>
       <div class="header-content">
-        <ion-card-title>Team Franka</ion-card-title>
-        <ion-chip>
+        <ion-card-title>{{ team.name }}</ion-card-title>
+        <ion-chip v-if="isMember">
           <ion-icon :icon="checkmarkOutline"></ion-icon>
           <ion-label>Member</ion-label>
+        </ion-chip>
+        <ion-chip v-if="!isMember" color="light" class="join">
+          <ion-icon :icon="add"></ion-icon>
+          <ion-label>Join</ion-label>
         </ion-chip>
       </div>
     </ion-card-header>
@@ -38,10 +42,18 @@ import {
   IonLabel,
   IonIcon,
 } from "@ionic/vue";
-import { checkmarkOutline, addCircle, closeCircle } from "ionicons/icons";
+import { checkmarkOutline, addCircle, closeCircle, add } from "ionicons/icons";
+import { useStore } from "@/stores/";
+import { Model } from "@/utils/model";
 
 export default defineComponent({
   name: "my-team-card",
+  props: {
+    teamId: {
+      type: String,
+      required: true,
+    },
+  },
   components: {
     IonCard,
     IonCardHeader,
@@ -53,12 +65,30 @@ export default defineComponent({
     IonIcon,
   },
   setup() {
-    return { checkmarkOutline, addCircle, closeCircle };
+    const store = useStore();
+    return { store, add, checkmarkOutline, addCircle, closeCircle };
+  },
+  computed: {
+    team(): Model {
+      return this.store.getters.objectsMap[this.teamId];
+    },
+    isMember(): boolean {
+      return !!this.store.state.auth.teamPermissions[this.teamId]?.isMember;
+    },
   },
 });
 </script>
 
 <style scoped>
+.join {
+  background: #fff;
+  color: #000;
+}
+
+.join ion-icon {
+  color: #000;
+}
+
 ion-card {
   text-align: left;
 }
