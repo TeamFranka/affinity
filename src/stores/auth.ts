@@ -142,10 +142,10 @@ export const AuthState = {
         resp.permissions
       );
     },
-    addPermissions(state: AuthStateT, resp: any) {
+    addPermissions(state: AuthStateT, permissions: any) {
       state.teamPermissions = Object.assign(
         state.teamPermissions,
-        resp.permissions
+        permissions
       );
     },
   },
