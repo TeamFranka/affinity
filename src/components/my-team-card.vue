@@ -31,7 +31,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from "vue";
+import { defineComponent, computed, toRefs } from "vue";
 import {
   IonCard,
   IonCardHeader,
@@ -44,7 +44,6 @@ import {
 } from "@ionic/vue";
 import { checkmarkOutline, addCircle, closeCircle, add } from "ionicons/icons";
 import { useStore } from "@/stores/";
-import { Model } from "@/utils/model";
 
 export default defineComponent({
   name: "my-team-card",
@@ -64,17 +63,16 @@ export default defineComponent({
     IonLabel,
     IonIcon,
   },
-  setup() {
-    const store = useStore();
-    return { store, add, checkmarkOutline, addCircle, closeCircle };
-  },
-  computed: {
-    team(): Model {
-      return this.store.getters.objectsMap[this.teamId];
-    },
-    isMember(): boolean {
-      return !!this.store.state.auth.teamPermissions[this.teamId]?.isMember;
-    },
+  setup(props) {
+    const { state, getters } = useStore();
+    const { teamId } = toRefs(props);
+
+    const team = computed(() => getters.objectsMap[teamId.value]);
+    const isMember = computed(
+      () => state.auth.teamPermissions[teamId.value]?.isMember
+    );
+
+    return { team, isMember, add, checkmarkOutline, addCircle, closeCircle };
   },
 });
 </script>
