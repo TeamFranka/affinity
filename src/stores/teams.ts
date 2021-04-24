@@ -1,5 +1,6 @@
 import { Parse, Verb } from "@/config/Consts";
 import { Activity, Team } from "@/db/models";
+import TTeam from "@/types/team";
 import { toModel, Model } from "@/utils/model";
 
 export interface TeamsT {
@@ -22,7 +23,7 @@ export const Teams = {
     teamIds: [],
   }),
   getters: {
-    teams(state: TeamsT, getters: any, rootState: any, { objectsMap }: any) {
+    teams(state: TeamsT, getters: any, rootState: any, { objectsMap }: any): TTeam[] {
       return state.teamIds.map(x => objectsMap[x]);
     },
   },
