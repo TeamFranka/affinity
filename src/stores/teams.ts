@@ -7,6 +7,7 @@ export interface TeamsT {
   news: Record<string, Array<string>>;
   activities: Record<string, Array<string>>;
   subteams: Record<string, Array<string>>;
+  teamIds: string[];
 }
 
 const MODEL_KEYS = ["objects"];
@@ -18,9 +19,17 @@ export const Teams = {
     news: {},
     activities: {},
     subteams: {},
+    teamIds: [],
   }),
-  getters: {},
+  getters: {
+    teams(state: TeamsT, getters: any, rootState: any, { objectsMap }: any) {
+      return state.teamIds.map(x => objectsMap[x]);
+    },
+  },
   mutations: {
+    setTeams(state: TeamsT, teams: { id: string }[]) {
+      state.teamIds = teams.map(({ id }) => id);
+    },
     setNews(state: TeamsT, res: any) {
       const { teamId, news } = res;
       state.news[teamId] = news;
@@ -35,6 +44,12 @@ export const Teams = {
     },
   },
   actions: {
+    async fetchTeams(context: any) {
+      const { teams, permissions } = await Parse.Cloud.run("getTeams");
+      await context.commit("setItems", teams, { root: true });
+      await context.commit("setTeams", teams);
+      await context.commit("auth/addPermissions", permissions, { root: true });
+    },
     async fetch(context: any, slug: string) {
       const resp = await Parse.Cloud.run("getTeam", { slug });
       await context.commit("setItems", resp.teams, { root: true });
