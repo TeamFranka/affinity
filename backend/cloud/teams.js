@@ -33,70 +33,21 @@ Parse.Cloud.define("getTeams", async (request) => {
 
 Parse.Cloud.define("myTeams", async (request) => {
   const { teams, roleIds } = await fetchMyTeams(request.user);
+  const permissions = Object.assign({}, ...teams.map(team => ({ [team.id]: getPermissionsForTeam(roleIds, team) })));
 
-  const permissions = {};
-
-  for (let idx = 0; idx < teams.length; idx++) {
-    const team = teams[idx];
-    const isLeader = roleIds.includes(team.get("leaders").id);
-    const isMod = roleIds.includes(team.get("mods").id);
-    const isPublisher = roleIds.includes(team.get("publishers").id);
-    const isAgent = roleIds.includes(team.get("agents").id);
-
-    permissions[team.id] = Object.assign({
-      isMember: true,
-      isLeader: isLeader,
-      isMod: isMod,
-      isPublisher: isPublisher,
-      isAgent: isAgent,
-    },
-      team.genPermissions(isLeader, isMod, isAgent, isPublisher, true)
-    );
-  }
-
-  return {
-    teams: teams,
-    permissions: permissions,
-  }
-}, {
-  requireUser: true
-});
+  return { teams, permissions };
+}, { requireUser: true });
 
 Parse.Cloud.define("getTeam", async (request) => {
-  const user = request.user;
   const slug = request.params.slug;
   const team = await ((new Parse.Query(Team))
     .equalTo("slug", slug)
     .first());
 
-  const roles = await (new Parse.Query(Parse.Role))
-    .equalTo("users", user)
-    .find({ useMasterKey: true });
+  const roleIds = fetchRoles(request.user);
+  const permissions = { [team.id]: getPermissionsForTeam(roleIds, team) };
 
-  const roleIds = roles.map(r => r.id);
-
-  const permissions = {};
-
-  const isMember = roleIds.includes(team.get("members").id);
-  const isLeader = roleIds.includes(team.get("leaders").id);
-  const isMod = roleIds.includes(team.get("mods").id);
-  const isPublisher = roleIds.includes(team.get("publishers").id);
-  const isAgent = roleIds.includes(team.get("agents").id);
-  permissions[team.id] = Object.assign({
-    isMember: isMember,
-    isLeader: isLeader,
-    isMod: isMod,
-    isPublisher: isPublisher,
-    isAgent: isAgent,
-  },
-    team.genPermissions(isLeader, isMod, isAgent, isPublisher, isMember)
-  );
-
-  return {
-    teams: [team],
-    permissions: permissions,
-  }
-
+  return { teams: [team], permissions };
 }, {
   fields: {
     slug: {
