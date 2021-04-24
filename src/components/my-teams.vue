@@ -5,7 +5,7 @@
       <div>4 selected</div>
     </div>
     <ion-toolbar>
-      <ion-searchbar placeholder="Search"></ion-searchbar>
+      <ion-searchbar v-model="query" placeholder="Search"></ion-searchbar>
     </ion-toolbar>
   </ion-header>
   <ion-content>
@@ -19,6 +19,7 @@ import { IonHeader, IonContent, IonToolbar, IonSearchbar } from "@ionic/vue";
 import { checkmarkOutline, addCircle, closeCircle } from "ionicons/icons";
 import { useStore } from "@/stores/";
 import MyTeamCard from "./my-team-card.vue";
+import TTeam from "@/types/team";
 
 export default defineComponent({
   name: "my-teams",
@@ -26,7 +27,17 @@ export default defineComponent({
   setup() {
     const store = useStore();
     const loading = ref(true);
-    const teamIds = computed(() => store.state.teams.teamIds);
+    const teams = computed(() => store.getters["teams/teams"] as TTeam[]);
+    const query = ref("");
+    const teamIds = computed(() =>
+      teams.value
+        .filter(
+          ({ name }) =>
+            !query.value ||
+            name?.toLocaleLowerCase().includes(query.value.toLocaleLowerCase())
+        )
+        .map(({ objectId }) => objectId)
+    );
 
     onMounted(async () => {
       try {
@@ -38,7 +49,14 @@ export default defineComponent({
       }
     });
 
-    return { loading, teamIds, checkmarkOutline, addCircle, closeCircle };
+    return {
+      teamIds,
+      query,
+      loading,
+      checkmarkOutline,
+      addCircle,
+      closeCircle,
+    };
   },
 });
 </script>
