@@ -15,6 +15,7 @@ import { FaqT, Faq } from "./faq";
 import { TeamsT, Teams } from "./teams";
 import { CommentsT, Comments } from "./comments";
 import { DraftT, Draft } from "./draft";
+import { TeamsStoreState } from "./TeamsStore";
 
 export interface State {
   global: GlobalStateT;
@@ -24,6 +25,7 @@ export interface State {
   faq: FaqT;
   inbox: InboxT;
   teams: TeamsT;
+  teams2?: TeamsStoreState; // Temporary name (team2).  Will be merged with team in future.
   draft: DraftT;
   feed: FeedT;
 }
