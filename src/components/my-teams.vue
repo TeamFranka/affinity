@@ -17,17 +17,15 @@
 import { defineComponent, ref, onMounted, computed } from "vue";
 import { IonHeader, IonContent, IonToolbar, IonSearchbar } from "@ionic/vue";
 import { checkmarkOutline, addCircle, closeCircle } from "ionicons/icons";
-import { useStore } from "@/stores/";
 import MyTeamCard from "./my-team-card.vue";
-import TTeam from "@/types/team";
+import TeamsStore from "@/stores/TeamsStore";
 
 export default defineComponent({
   name: "my-teams",
   components: { IonHeader, IonContent, IonToolbar, IonSearchbar, MyTeamCard },
   setup() {
-    const store = useStore();
     const loading = ref(true);
-    const teams = computed(() => store.getters["teams/teams"] as TTeam[]);
+    const teams = computed(() => TeamsStore.teams);
     const query = ref("");
     const teamIds = computed(() =>
       teams.value
@@ -42,7 +40,7 @@ export default defineComponent({
     onMounted(async () => {
       try {
         loading.value = true;
-        await store.dispatch("teams/fetchTeams");
+        TeamsStore.fetchTeams();
         loading.value = false;
       } catch (error) {
         console.log(error);

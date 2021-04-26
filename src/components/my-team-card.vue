@@ -5,7 +5,7 @@
         <img src="https://placeimg.com/200/200/people" />
       </ion-avatar>
       <div class="header-content">
-        <ion-card-title>{{ team.name }}</ion-card-title>
+        <ion-card-title>{{ team?.name }}</ion-card-title>
         <ion-chip v-if="isMember">
           <ion-icon :icon="checkmarkOutline"></ion-icon>
           <ion-label>Member</ion-label>
@@ -44,6 +44,7 @@ import {
 } from "@ionic/vue";
 import { checkmarkOutline, addCircle, closeCircle, add } from "ionicons/icons";
 import { useStore } from "@/stores/";
+import TeamsStore from '@/stores/TeamsStore';
 
 export default defineComponent({
   name: "my-team-card",
@@ -64,10 +65,11 @@ export default defineComponent({
     IonIcon,
   },
   setup(props) {
-    const { state, getters } = useStore();
+    const { state } = useStore();
     const { teamId } = toRefs(props);
 
-    const team = computed(() => getters.objectsMap[teamId.value]);
+    const team = computed(() => TeamsStore.team(teamId.value));
+
     const isMember = computed(
       () => state.auth.teamPermissions[teamId.value]?.isMember
     );
