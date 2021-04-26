@@ -1,5 +1,7 @@
-export default interface TTeam extends Parse.Object {
-  objectId: string;
+import Parse from "parse";
+import { TModel } from "./globals";
+
+export interface TTeam extends TModel {
   name: string;
   slug: string;
   leaders: Parse.Pointer; // to Role
@@ -25,3 +27,5 @@ export default interface TTeam extends Parse.Object {
   socialLinks?: string[];
   footerLinks?: string[];
 }
+
+export type ParseTeam = Parse.Object<TTeam>;
