@@ -1,6 +1,6 @@
 import { Parse, Verb } from "@/config/Consts";
 import { Activity, Team } from "@/db/models";
-import TTeam from "@/types/team";
+import { TTeam } from "@/types/team";
 import { toModel, Model } from "@/utils/model";
 
 export interface TeamsT {
