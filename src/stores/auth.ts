@@ -15,6 +15,7 @@ export interface AuthStateT {
   currentInstallationId: string | null;
   teams: Array<string>;
   teamPermissions: Record<string, any>;
+  selectedTeam: string | null;
 }
 
 function currentUser(): Model | null {
@@ -48,6 +49,7 @@ export const AuthState = {
       installations: [],
       currentInstallationId: null,
       teamPermissions: {},
+      selectedTeam: null,
     };
   },
   getters: {
@@ -61,6 +63,7 @@ export const AuthState = {
       rootGetters: any
     ) => rootGetters["defaultTeam"],
     user: (state: AuthStateT) => state.user,
+    selectedTeam: (state: AuthStateT) => state.selectedTeam,
     wantsToLogin: (state: AuthStateT) => state.wantsToLogin,
     userPtr: (state: AuthStateT) => state.user?.toPointer(),
     myTeams: (
@@ -112,9 +115,19 @@ export const AuthState = {
   mutations: {
     setUser(state: AuthStateT, newUser: Model | null) {
       state.user = newUser;
-      if (newUser && newUser.lang) {
-        setLocale(newUser.lang);
+      if (newUser) {
+        if (newUser.lang) {
+          setLocale(newUser.lang);
+        }
+        if (newUser.settings && newUser.settings.teamTabs) {
+          if (newUser.settings.teamTabs.tabs && newUser.settings.teamTabs.tabs.length > 0) {
+            // FIXME: set first selector per default
+          }
+        }
       }
+    },
+    setSelectedTeam(state: AuthStateT, name: string | null) {
+      state.selectedTeam = name;
     },
     setInstallations(state: AuthStateT, installations: Model[]) {
       state.installations = installations;
@@ -179,6 +192,9 @@ export const AuthState = {
     logout(context: any) {
       Parse.User.logOut();
       context.commit("setUser", null);
+    },
+    selectTeam(context: any, team: any) {
+      context.commit("setSelectedTeam", team);
     },
     openLogin(context: any) {
       context.commit("setWantsToLogin", true);

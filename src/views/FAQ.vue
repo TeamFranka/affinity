@@ -101,11 +101,7 @@ export default defineComponent({
       refresh() {
         store.dispatch("faq/refresh");
       },
-      entries: computed(() =>
-        store.getters["faq/entries"].map(
-          (id: string) => store.getters["objectsMap"][id]
-        )
-      ),
+      entries: computed(() => store.getters["faq/entries"]),
     };
   },
   data() {

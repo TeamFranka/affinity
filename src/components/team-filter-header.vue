@@ -69,7 +69,7 @@ export default defineComponent({
     const store = useStore();
     return {
       myTeams: computed(() => store.getters["auth/myTeams"]),
-      selection: computed(() => store.state.feed.selectedTeam || 'ALL'),
+      selection: computed(() => store.state.auth.selectedTeam || 'ALL'),
       settings: computed(() => (store.getters["auth/settings"].teamTabs || DEFAULT_SETTINGS)),
       teamsMap: computed(() => store.getters.objectsMap),
       settingIcon,

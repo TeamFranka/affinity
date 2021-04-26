@@ -211,10 +211,10 @@ const randomUser = () => Users[Math.floor(Math.random() * Users.length)].usernam
 
 for (var i = 0; i < 100; i++) {
     Posts.push({
-        team: i % 5 ? "team-earth" : "doctor-who",
-        verb: i % 7 ? "announce" :  "post",
-        author: i % 7 ? 'river' : randomUser(),
+        team: i % 5 == 0 ? "team-earth" : "doctor-who",
+        verb: i % 7 == 0 ? "announce" :  "post",
+        author: i % 7 == 0 ? 'river' : randomUser(),
         text: "This is post number " + i,
-        visibility: "public",
+        visibility: i % 3 == 0 ? "members" : "public",
     })
 }
