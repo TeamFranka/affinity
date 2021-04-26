@@ -1,10 +1,13 @@
 import { Parse } from "@/config/Consts";
+import { TModel } from "@/types/globals";
 import { Model, SaveModel, toModel } from "@/utils/model";
+import { keyBy } from "lodash";
 
 export interface GlobalStateT {
   loadingCounter: number;
   defaultTeamId: string;
   objects: Record<string, Model>;
+  parseObjects: Record<string, Parse.Object>;
   teamsBySlug: Record<string, string>;
   subscriptions: Record<string, any>;
 }
@@ -13,11 +16,30 @@ export const GlobalState = {
   state: () => ({
     loadingCounter: 0,
     objects: {},
+    parseObjects: {},
     defaultTeamId: (window as any) ? (window as any).AFFINITY_DEFAULT_TEAM : "",
     teamsBySlug: {},
     subscriptions: {},
   }),
   getters: {
+    parseObject<T extends TModel>(state: GlobalStateT) {
+      return (id: Parse.Object['id']) => state.parseObjects[id] as Parse.Object<T>;
+    },
+    parseModel<T extends TModel>(_: GlobalStateT, getters: any) {
+      return (id: Parse.Object['id']) => {
+        const obj = { objectId: id, ...getters.parseObject(id)?.attributes } as T;
+        return Object.freeze(obj);
+      };
+    },
+    parseObjects<T extends TModel>(_: GlobalStateT, getters: any) {
+      return (ids: Parse.Object['id'][]) => ids?.map(id => getters.parseObject(id) as Parse.Object<T>);
+    },
+    parseModels<T extends TModel>(state: GlobalStateT, getters: any) {
+      return (ids: Parse.Object['id'][]) => ids?.map(id => getters.parseModel(id) as T);
+    },
+    parseObjectsMap(state: GlobalStateT): Record<Parse.Object['id'], Parse.Object> {
+      return state.parseObjects;
+    },
     defaultTeamId(state: GlobalStateT): string {
       return state.defaultTeamId;
     },
@@ -35,6 +57,9 @@ export const GlobalState = {
     },
   },
   mutations: {
+    setParseObjects(state: GlobalStateT, items: Parse.Object[]) {
+      Object.assign(state.parseObjects, keyBy(items, 'id'));
+    },
     setItems(state: GlobalStateT, items: Array<Parse.Object | Model>) {
       items.forEach((item) => {
         const model: Model = item instanceof Model ? item : toModel(item);
