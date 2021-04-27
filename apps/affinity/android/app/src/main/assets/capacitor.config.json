@@ -3,7 +3,7 @@
 	"appName": "Team Franka Community",
 	"bundledWebRuntime": false,
 	"npmClient": "npm",
-	"webDir": "dist",
+	"webDir": "../../dist",
 	"plugins": {
 		"SplashScreen": {
 			"launchShowDuration": 0
