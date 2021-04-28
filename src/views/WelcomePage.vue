@@ -31,7 +31,7 @@
 import { defineComponent } from "vue";
 import { IonSlides, IonSlide, IonPage, IonButton, IonIcon } from "@ionic/vue";
 import { arrowForward } from "ionicons/icons";
-import MyTeams from "@/components/my-teams.vue";
+import MyTeams from "@/components/my-teams/my-teams.vue";
 
 // import { useStore } from "../stores/";
 

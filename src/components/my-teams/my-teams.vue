@@ -17,7 +17,7 @@
 import { defineComponent, ref, onMounted, computed } from "vue";
 import { IonHeader, IonContent, IonToolbar, IonSearchbar } from "@ionic/vue";
 import { checkmarkOutline, addCircle, closeCircle } from "ionicons/icons";
-import MyTeamCard from "./my-team-card.vue";
+import MyTeamCard from "../my-teams/my-team-card.vue";
 import TeamsStore from "@/stores/TeamsStore";
 
 export default defineComponent({

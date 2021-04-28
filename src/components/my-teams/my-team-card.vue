@@ -18,14 +18,11 @@
     </ion-card-header>
 
     <ion-card-content class="ion-padding">
-      <ion-chip v-for="subteam in subteams" :key="subteam.objectId">
-        <ion-icon :icon="addCircle"></ion-icon>
-        <ion-label>{{ subteam.name }}</ion-label>
-      </ion-chip>
-      <ion-chip>
-        <ion-icon :icon="closeCircle"></ion-icon>
-        <ion-label>Newsroom</ion-label>
-      </ion-chip>
+      <my-team-subteam
+        v-for="subteam in subteams"
+        :key="subteam.objectId"
+        :teamId="subteam.objectId"
+      />
     </ion-card-content>
   </ion-card>
 </template>
@@ -45,6 +42,7 @@ import {
 import { checkmarkOutline, addCircle, closeCircle, add } from "ionicons/icons";
 import { useStore } from "@/stores/";
 import TeamsStore from "@/stores/TeamsStore";
+import MyTeamSubteam from "./my-team-subteam.vue";
 
 export default defineComponent({
   name: "my-team-card",
@@ -63,6 +61,7 @@ export default defineComponent({
     IonChip,
     IonLabel,
     IonIcon,
+    MyTeamSubteam,
   },
   setup(props) {
     const { state } = useStore();
@@ -80,7 +79,10 @@ export default defineComponent({
     });
 
     watchEffect(() => {
-      console.log(team.value.objectId, subteams.value.map(team => team.subOf));
+      console.log(
+        team.value.objectId,
+        subteams.value.map((team) => team.subOf)
+      );
     });
 
     return {
