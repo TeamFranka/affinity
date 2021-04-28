@@ -34,6 +34,10 @@ class TeamsStoreModule extends VuexModule {
     return (id: ParseTeam['id']) => this.context.rootGetters.parseModel(id) as TTeam;
   }
 
+  get rootTeams(): TTeam[] {
+    return (this.context.rootGetters.parseModels(this.teamIds) as TTeam[]).filter(team => !team.subOf);
+  }
+
   @Mutation
   setLoading(loading: boolean) {
     this.loading = loading;

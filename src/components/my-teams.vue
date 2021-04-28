@@ -25,7 +25,7 @@ export default defineComponent({
   components: { IonHeader, IonContent, IonToolbar, IonSearchbar, MyTeamCard },
   setup() {
     const loading = ref(true);
-    const teams = computed(() => TeamsStore.teams);
+    const teams = computed(() => TeamsStore.rootTeams);
     const query = ref("");
     const teamIds = computed(() =>
       teams.value
