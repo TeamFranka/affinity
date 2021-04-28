@@ -9,7 +9,7 @@ export interface TTeam extends TModel {
   mods: Parse.Pointer; // to Role
   agents: Parse.Pointer; // to Role
   publishers: Parse.Pointer; // to Role
-  subOf?: Parse.Pointer; // to Team
+  subOf?: Parse.Pointer | Parse.Object<TTeam>; // to Team
   membershipAccess?: 'open' | 'parent_open' | 'apply' | ' parent_apply' | 'invite'; // open is default
   avatar?: Parse.File;
   background?: Parse.File;
