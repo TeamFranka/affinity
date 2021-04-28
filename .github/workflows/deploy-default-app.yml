@@ -1,7 +1,7 @@
 name: Deploy Affinity App
 on:
   workflow_run:
-    workflows: ["Parse Deploy"]
+    workflows: [ "Deploy Parse" ]
     branches: [ main ]
     types:
       - completed
@@ -27,7 +27,7 @@ jobs:
       - name: Download /dist
         uses: dawidd6/download-artifact@v2
         with:
-          workflow: "Parse Deploy"
+          workflow: "Deploy Parse"
           name: dist-production
           path: dist
       - name: Patch dist
@@ -42,6 +42,7 @@ jobs:
   android-app:
     needs: release-build
     environment: android_app
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
       - name: Cache node modules

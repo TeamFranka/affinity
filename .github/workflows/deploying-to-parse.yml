@@ -1,7 +1,7 @@
-name: Parse Deploy
+name: Deploy Parse
 on:
   workflow_run:
-    workflows: ["E2E Test"]
+    workflows: [ "Test E2E" ]
     branches: [ smain ]
     types:
       - completed
