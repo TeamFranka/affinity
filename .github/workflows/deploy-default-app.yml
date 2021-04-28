@@ -27,7 +27,7 @@ jobs:
       - name: Download /dist
         uses: dawidd6/action-download-artifact@v2
         with:
-          workflow: "Deploy Parse"
+          workflow: deploying-to-parse.yml
           name: dist-production
           path: dist
       - name: Patch dist
