@@ -38,6 +38,15 @@ class TeamsStoreModule extends VuexModule {
     return (this.context.rootGetters.parseModels(this.teamIds) as TTeam[]).filter(team => !team.subOf);
   }
 
+  get subTeams() {
+    return (id: ParseTeam['id']) => (this.context.rootGetters.parseModels(this.teamIds) as TTeam[])
+      .filter(({ subOf }) => {
+        if ((subOf as Parse.Pointer)?.objectId === id) return true;
+        if ((subOf as Parse.Object<TTeam>)?.id === id) return true;
+        return false;
+      });
+  }
+
   @Mutation
   setLoading(loading: boolean) {
     this.loading = loading;
