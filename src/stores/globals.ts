@@ -22,9 +22,11 @@ export const GlobalState = {
     subscriptions: {},
   }),
   getters: {
+    // returns original parse object for id
     parseObject<T extends TModel>(state: GlobalStateT) {
       return (id: Parse.Object['id']) => state.parseObjects[id] as Parse.Object<T>;
     },
+    // returns attributes of parse object for id
     parseModel<T extends TModel>(_: GlobalStateT, getters: any) {
       return (id: Parse.Object['id']) => {
         const obj = { objectId: id, ...getters.parseObject(id)?.attributes } as T;
