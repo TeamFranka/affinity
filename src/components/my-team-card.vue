@@ -18,9 +18,9 @@
     </ion-card-header>
 
     <ion-card-content class="ion-padding">
-      <ion-chip>
+      <ion-chip v-for="subteam in subteams" :key="subteam.objectId">
         <ion-icon :icon="addCircle"></ion-icon>
-        <ion-label>Olvenstedt</ion-label>
+        <ion-label>{{ subteam.name }}</ion-label>
       </ion-chip>
       <ion-chip>
         <ion-icon :icon="closeCircle"></ion-icon>
@@ -44,7 +44,7 @@ import {
 } from "@ionic/vue";
 import { checkmarkOutline, addCircle, closeCircle, add } from "ionicons/icons";
 import { useStore } from "@/stores/";
-import TeamsStore from '@/stores/TeamsStore';
+import TeamsStore from "@/stores/TeamsStore";
 
 export default defineComponent({
   name: "my-team-card",
@@ -69,6 +69,7 @@ export default defineComponent({
     const { teamId } = toRefs(props);
 
     const team = computed(() => TeamsStore.team(teamId.value));
+    const subteams = computed(() => TeamsStore.subTeams(teamId.value));
 
     const isMember = computed(
       () => state.auth.teamPermissions[teamId.value]?.isMember
@@ -79,10 +80,19 @@ export default defineComponent({
     });
 
     watchEffect(() => {
-      console.log(avatarUrl.value);
+      console.log(team.value.objectId, subteams.value.map(team => team.subOf));
     });
 
-    return { avatarUrl, team, isMember, add, checkmarkOutline, addCircle, closeCircle };
+    return {
+      avatarUrl,
+      team,
+      subteams,
+      isMember,
+      add,
+      checkmarkOutline,
+      addCircle,
+      closeCircle,
+    };
   },
 });
 </script>
