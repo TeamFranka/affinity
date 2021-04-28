@@ -25,13 +25,13 @@ module.exports = {
       }
     }),
     "affinity": Object.assign({}, PAGE_DEFAULTS, {
-      filename: "app.affinity.wtf.html",
+      filename: "community.affinity.wtf.html",
       templateParameters: {
         title: "Affinity Community Organising",
         settings: Object.assign({}, APP_SETTING_DEFAULTS, {
           AFFINITY_DEFAULT_TEAM: "adbcdef",
-          PARSE_URL: "https://app.affinity.wtf/parse",
-          PARSE_LIVE_URL: "wss://app.affinity.wtf/parse",
+          PARSE_URL: "https://community.affinity.wtf/parse",
+          PARSE_LIVE_URL: "wss://community.affinity.wtf/parse",
         })
       }
     }),

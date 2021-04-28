@@ -10,7 +10,7 @@ on:
   workflow_dispatch:
 
 env:
-  INDEX_HTML: app.affinity.wtf.html
+  INDEX_HTML: community.affinity.wtf.html
   CAP_PROJECT: affinity-app
   CAP_PATH: affinity
   APPCENTER_PROJECT_ANDROID: TeamFranka/Affinity-Live
