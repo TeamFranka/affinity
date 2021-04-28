@@ -9,10 +9,10 @@
       "launchShowDuration": 0
     },
     "CodePush": {
-      "IOS_DEPLOY_KEY": "S_Edqr7tR4tm_H-ktYF1zeoKB7VYGhCRZHP0N",
-      "IOS_PUBLIC_KEY": "fd92f0de-c33d-446b-bf5a-7704002f8cf4",
-      "ANDROID_DEPLOY_KEY": "VeQdYazJ52FbRlI_Xkk4k_T10M_CuxkwC27ts",
-      "ANDROID_PUBLIC_KEY": "9c42c872-b53b-4f89-8e04-c9903ea20226",
+      "IOS_DEPLOY_KEY": "hEyAraojKDKPG96sY3Eyge4Iafj9OJpdtN6wz",
+      "IOS_PUBLIC_KEY": "719c74c6-d753-49d4-bba9-c79d0761d848",
+      "ANDROID_DEPLOY_KEY": "N0t4W2Q1IamJsdyaxEXhVZvAYGwzWAN_Wdogc",
+      "ANDROID_PUBLIC_KEY": "9b3e7b07-1a94-4b7f-a68e-d136dcc4f53a",
       "SERVER_URL": "https://codepush.appcenter.ms/"
     }
   },
