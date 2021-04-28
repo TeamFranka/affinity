@@ -1,8 +1,8 @@
 name: "Deploy Wir.md App"
 on:
   workflow_run:
-    workflows: [ "Test App Build" ]
-#    branches: [ main ]
+    workflows: [ "Deploy Parse" ]
+    branches: [ main ]
     types:
       - completed
 
@@ -26,8 +26,8 @@ jobs:
     steps:
       - name: Download /dist
         uses: dawidd6/download-artifact@v2
-        with:
-          workflow: "Test App Build"
+        with:"
+          workflow: "Deploy Parse"
           name: dist-production
           path: dist
       - name: Patch dist

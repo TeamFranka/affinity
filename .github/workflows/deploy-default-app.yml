@@ -1,7 +1,7 @@
 name: Deploy Affinity App
 on:
   workflow_run:
-    workflows: [ "Test App Build" ]
+    workflows: [ "Deploy Parse" ]
     branches: [ main ]
     types:
       - completed
@@ -27,7 +27,7 @@ jobs:
       - name: Download /dist
         uses: dawidd6/download-artifact@v2
         with:
-          workflow: "Test App Build"
+          workflow: "Deploy Parse"
           name: dist-production
           path: dist
       - name: Patch dist
