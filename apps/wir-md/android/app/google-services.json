@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "112154473685",
+    "project_id": "affinity-franka-jetzt",
+    "storage_bucket": "affinity-franka-jetzt.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:112154473685:android:34dbfe5d89633e6cf19e5c",
+        "android_client_info": {
+          "package_name": "jetzt.franka.affinity"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "112154473685-9e5j7573589rvt8qubdq9rf25ipmcam8.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDg41c_J5s2H8qy1MQUNoR1I-x6DOw2vtQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "112154473685-9e5j7573589rvt8qubdq9rf25ipmcam8.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
