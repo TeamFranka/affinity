@@ -35,7 +35,7 @@ export const GlobalState = {
       return (ids: Parse.Object['id'][]) => ids?.map(id => getters.parseObject(id) as Parse.Object<T>);
     },
     parseModels<T extends TModel>(state: GlobalStateT, getters: any) {
-      return (ids: Parse.Object['id'][]) => ids?.map(id => getters.parseModel(id) as T);
+      return (ids: Parse.Object['id'][]) => (ids?.map(id => getters.parseModel(id) as T) || [] as T[]);
     },
     parseObjectsMap(state: GlobalStateT): Record<Parse.Object['id'], Parse.Object> {
       return state.parseObjects;
