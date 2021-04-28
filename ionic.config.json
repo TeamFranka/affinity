@@ -14,6 +14,15 @@
       },
       "type": "vue",
       "root": "apps/affinity"
+    },
+    "wir-md": {
+      "name": "Wir.md",
+      "integrations": {
+        "cordova": {},
+        "capacitor": {}
+      },
+      "type": "vue",
+      "root": "apps/wir-md"
     }
   }
 }
