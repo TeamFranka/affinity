@@ -2,7 +2,7 @@
   <ion-card>
     <ion-card-header>
       <ion-avatar>
-        <img src="https://placeimg.com/200/200/people" />
+        <img :src="avatarUrl" />
       </ion-avatar>
       <div class="header-content">
         <ion-card-title>{{ team?.name }}</ion-card-title>
@@ -31,7 +31,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, computed, toRefs } from "vue";
+import { defineComponent, computed, toRefs, watchEffect } from "vue";
 import {
   IonCard,
   IonCardHeader,
@@ -74,7 +74,15 @@ export default defineComponent({
       () => state.auth.teamPermissions[teamId.value]?.isMember
     );
 
-    return { team, isMember, add, checkmarkOutline, addCircle, closeCircle };
+    const avatarUrl = computed(() => {
+      return team.value.avatar?.url() || null;
+    });
+
+    watchEffect(() => {
+      console.log(avatarUrl.value);
+    });
+
+    return { avatarUrl, team, isMember, add, checkmarkOutline, addCircle, closeCircle };
   },
 });
 </script>
