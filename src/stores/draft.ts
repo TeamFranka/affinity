@@ -4,12 +4,18 @@ import { takePicture, Photo } from "@/utils/camera";
 import { CreateModel } from "@/utils/model";
 import getUrls from "get-urls";
 
+type ExtraStyles = {
+  background: string | null;
+  buttonColor: string | null;
+}
+
 export interface DraftT {
   team: Parse.Object | null;
   text: string;
   verb: Verb;
   visibility: Visibility;
   objects: Array<CreateModel>;
+  extraStyles: ExtraStyles,
 }
 
 const convertObjects = (
@@ -39,6 +45,7 @@ export const Draft = {
     verb: Verb.Post,
     visibility: Visibility.Public,
     objects: [],
+    extraStyles: {}
   }),
   getters: {
     selectedTeam(
@@ -52,8 +59,11 @@ export const Draft = {
     canSubmit(state: DraftT): boolean {
       return state.text.length > 0 || state.objects.length > 0;
     },
-    selectedType(state: DraftT) {
+    selectedType(state: DraftT): Verb {
       return state.verb;
+    },
+    extraStyles(state: DraftT): ExtraStyles {
+      return state.extraStyles;
     },
     objects(state: DraftT) {
       return state.objects;
@@ -112,6 +122,9 @@ export const Draft = {
     },
     setText(state: DraftT, text: string) {
       state.text = text;
+    },
+    setExtraStyle(state: DraftT, inp: any) {
+      state.extraStyles = Object.assign(state.extraStyles, inp);
     },
     setType(state: DraftT, t: Verb) {
       state.verb = t;
@@ -246,6 +259,9 @@ export const Draft = {
         team,
         objects,
       });
+      if (state.verb == Verb.Announce) {
+        activity.set("extra", { styles: context.getters.extraStyles })
+      }
       await activity.save();
 
       context.commit("clear");

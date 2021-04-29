@@ -19,8 +19,13 @@
               {{ $t(`post.types.${selectedType}`) }}
             </span>
             <span v-if="showTeamSelector"
-              >to <avatar size="1.5em" :profile="selectedTeam" withName /></span
-            ><ion-button size="small" fill="clear"
+              >to <avatar size="1.5em" :profile="selectedTeam" withName />
+            </span>
+            <span v-if="showColorSelector">
+              <span :style="`background: ${backgroundColor}`" class="color-indicator" />
+              <span :style="`background: ${buttonColor}`" class="color-indicator" />
+            </span>
+            <ion-button size="small" fill="clear"
               ><ion-icon :icon="editIcon"
             /></ion-button>
           </p>
@@ -40,7 +45,7 @@
         </ion-col>
       </ion-row>
       <ion-row v-if="showOptions">
-        <ion-col size-md="4" size-xs="12" v-if="showTeamSelector">
+        <ion-col size-md="auto" size-xs="12" v-if="showTeamSelector">
           <selector
             label="Team"
             popoverTitle="Team"
@@ -63,7 +68,46 @@
             </template>
           </selector>
         </ion-col>
-        <ion-col size-md="3" size-xs="12" v-if="showTypeSelector" data-cy-role="selectType">
+        <ion-col size-md="auto" size-xs="12" v-if="canChangeVisiblity">
+          <selector
+            @select="setVisibility($event)"
+            popoverTitle="Visibility"
+            :items="selectableVisibility"
+          >
+            <template #label>
+              <ion-label
+                class="sc-ion-label-md-h sc-ion-label-md-s ion-color ion-color-dark md hydrated"
+                style="padding-right: 0.5em;"
+              >
+                <ion-icon :icon="eyeOutline" /> {{ $t("newPost.label.visibility") }}: </ion-label>
+            </template>
+            <template #current>
+              <ion-label>
+                <ion-icon :icon="VISIBILITY_ICONS[visibility]"></ion-icon>
+                {{ $t(`newPost.visibilities.${visibility}`) }}
+              </ion-label>
+            </template>
+            <template #item="sProps">
+              <ion-item
+                @click="sProps.select(sProps.item)"
+                :key="sProps.item"
+                button
+              >
+                <ion-icon
+                  slot="start"
+                  :icon="VISIBILITY_ICONS[sProps.item]"
+                ></ion-icon>
+                {{ sProps.item }}
+                <ion-icon
+                  v-if="sProps.item == visibility"
+                  slot="end"
+                  :icon="selectedIcon"
+                />
+              </ion-item>
+            </template>
+          </selector>
+        </ion-col>
+        <ion-col size-md="auto" size-xs="12" v-if="showTypeSelector" data-cy-role="selectType">
           <selector
             label="Type"
             popoverTitle="Post Type"
@@ -94,39 +138,46 @@
             </template>
           </selector>
         </ion-col>
-        <ion-col size-md="4" size-xs="12" v-if="canChangeVisiblity">
+        <ion-col size-md="auto" size-xs="12" v-if="showColorSelector" data-cy-role="selectColors">
           <selector
-            @select="setVisibility($event)"
-            popoverTitle="Visibility"
-            :items="selectableVisibility"
+            popoverTitle="Background"
+            @select="setExtraStyle({background: $event})"
+            :items="SELECTABLE_BACKGROUND_STYLES"
           >
-            <template #label>
-              <ion-icon :icon="eyeOutline" />
-              <ion-label>{{ $t("newPost.label.visibility") }}: </ion-label>
-            </template>
             <template #current>
               <ion-label>
-                <ion-icon :icon="VISIBILITY_ICONS[visibility]"></ion-icon>
-                {{ $t(`newPost.visibilities.${visibility}`) }}
+                <span :style="`background: ${backgroundColor}`" class="color-indicator" />
               </ion-label>
             </template>
             <template #item="sProps">
-              <ion-item
+              <span
                 @click="sProps.select(sProps.item)"
                 :key="sProps.item"
-                button
-              >
-                <ion-icon
-                  slot="start"
-                  :icon="VISIBILITY_ICONS[sProps.item]"
-                ></ion-icon>
-                {{ sProps.item }}
-                <ion-icon
-                  v-if="sProps.item == visibility"
-                  slot="end"
-                  :icon="selectedIcon"
-                />
-              </ion-item>
+                :data-cy-select="sProps.item"
+                :style="`background: ${sProps.item}`"
+                class="color-indicator"
+              />
+            </template>
+          </selector>
+
+          <selector
+            popoverTitle="Button Color"
+            @select="setExtraStyle({buttonColor: $event})"
+            :items="SELECTABLE_BUTTON_STYLES"
+          >
+            <template #current>
+              <ion-label>
+                <span :style="`background: ${buttonColor}`" class="color-indicator" />
+              </ion-label>
+            </template>
+            <template #item="sProps">
+              <span
+                @click="sProps.select(sProps.item)"
+                :key="sProps.item"
+                :data-cy-select="sProps.item"
+                :style="`background: ${sProps.item}`"
+                class="color-indicator"
+              />
             </template>
           </selector>
         </ion-col>
@@ -410,6 +461,23 @@ VISIBILITY_ICONS[Visibility.Members] = peopleOutline;
 VISIBILITY_ICONS[Visibility.Mods] = shieldCheckmarkOutline;
 VISIBILITY_ICONS[Visibility.Leaders] = rocketOutline;
 
+const SELECTABLE_BACKGROUND_STYLES = [
+  "var(--ion-color-primary)",
+  "var(--ion-color-secondary)",
+  "var(--ion-color-tertiary)",
+  "linear-gradient(to top right, var(--ion-color-primary), var(--ion-color-secondary))",
+  "linear-gradient(to top right, var(--ion-color-secondary), var(--ion-color-tertiary))",
+  "linear-gradient(to top right, var(--ion-color-primary), var(--ion-color-tertiary))",
+];
+
+const SELECTABLE_BUTTON_STYLES: string[] = [
+  "var(--ion-color-primary)",
+  "var(--ion-color-secondary)",
+  "var(--ion-color-tertiary)",
+  "#000000",
+  "#FFFFFF",
+];
+
 export default defineComponent({
   name: "DraftPost",
   emits: ["submitted"],
@@ -438,6 +506,8 @@ export default defineComponent({
       store,
       VERB_ICONS,
       VISIBILITY_ICONS,
+      SELECTABLE_BACKGROUND_STYLES,
+      SELECTABLE_BUTTON_STYLES,
       // generic
       text: computed(() => store.state.draft.text),
       selectedType: computed(() => store.getters["draft/selectedType"]),
@@ -455,7 +525,13 @@ export default defineComponent({
       selectedTeam: computed(() => store.getters["draft/selectedTeam"]),
       selectedTeamId: computed(() => store.getters["draft/selectedTeamId"]),
       showTypeSelector: computed(() => store.getters["draft/showTypeSelector"]),
+      showColorSelector: computed(() => store.getters["draft/selectedType"] == "announce" ),
 
+      backgroundColor: computed(() => (store.getters["draft/extraStyles"].background || "var(--ion-color-primary)")),
+      buttonColor: computed(() => (store.getters["draft/extraStyles"].buttonColor || "var(--ion-color-light)")),
+      setExtraStyle: (updates: any) => {
+        store.commit("draft/setExtraStyle", updates);
+      },
       // permissions
       selectableTypes: computed(() => store.getters["draft/selectableTypes"]),
       selectableVisibility: computed(
@@ -651,5 +727,17 @@ export default defineComponent({
 }
 ion-back-button{
   display: block;
+}
+.color-indicator {
+  display: inline-block;
+  height: 0.75rem;
+  width: 0.75rem;
+  border: 1px solid var(--ion-color-dark);
+  margin-left: 0.2rem;
+  border-radius: 0.2rem;
+}
+.popover-viewport .color-indicator {
+  height: 2rem;
+  width: 2rem;
 }
 </style>

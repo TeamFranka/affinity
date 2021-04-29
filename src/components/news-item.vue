@@ -37,11 +37,12 @@
           icon-size="large"
           :link="fullLink"
           :pointer="pointer"
+          :style="buttonStyle"
           :counter="interactivityObject.sharesCount || 0"
         />
       </div>
       <div class="interaction">
-        <router-link :to="link">
+        <router-link :to="link" :style="buttonStyle">
           <ion-icon :icon="commentsIcon" size="large" />
           <ion-label>{{ interactivityObject.commentsCount || 0 }}</ion-label>
         </router-link>
@@ -51,6 +52,7 @@
           icon-size="large"
           :has-liked="hasLiked"
           :pointer="pointer"
+          :style="buttonStyle"
           :counter="interactivityObject.likesCount || 0"
         />
       </div>
@@ -161,8 +163,17 @@ export default defineComponent({
     imageUrl(): string | null {
       return this.image?.file?.url;
     },
+    buttonStyle(): object {
+      const style = (this.item.extra || {})["styles"] || {};
+      if (style.buttonColor) {
+        return {
+          color: style.buttonColor
+        }
+      }
+      return {}
+    },
     extraStyle(): object {
-      const style = (this.item.extra || {})["style"] || {
+      const style = (this.item.extra || {})["styles"] || {
         background: "var(--ion-color-tertiary )",
       };
       const localStyle = {
@@ -255,7 +266,7 @@ export default defineComponent({
   display: flex;
   flex-direction: column-reverse;
   align-content: center;
-  color: white;
+  color: var(--button-color);
 }
 .like-icon {
   position: absolute;
@@ -266,7 +277,7 @@ export default defineComponent({
   color: #900;
 }
 .menu a {
-  color: white;
+  color: var(--button-color);
   text-decoration: none;
 }
 .interaction {
