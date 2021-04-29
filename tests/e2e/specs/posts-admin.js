@@ -61,7 +61,9 @@ describe("Posting to the feed as an admin User", () => {
       "contain",
       testStr
     );
-    cy.get("[data-cy-role=news]:last").should("have.css", {background: `var(--ion-color-${backgroundSelection})`});
-    cy.get("[data-cy-role=news]:last .interaction a").should("have.css", {background: `var(--ion-color-${backgroundSelection})`});
+    cy.get("[data-cy-role=news]:last")
+      .should("have.css", {background: `var(--ion-color-${backgroundSelection})`});
+    cy.get("[data-cy-role=news]:last .interaction a")
+      .should("have.css", {background: `var(--ion-color-${backgroundSelection})`});
   });
 });
