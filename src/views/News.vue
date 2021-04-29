@@ -33,7 +33,11 @@ export default defineComponent({
   setup() {
     const store = useStore();
     return {
-      loading: computed(() => store.getters["news/loading"]),
+      loading: computed(() => store.getters["news/loading"] && !store.getters["news/entries"]),
+      canLoadMore: computed(() => store.getters["news/canLoadMore"]),
+      loadMore() {
+        store.dispatch("news/loadMore");
+      },
       refresh() {
         store.dispatch("news/refresh");
       },
@@ -110,6 +114,11 @@ export default defineComponent({
               next.classList.remove("hidden");
               next.classList.add("shown");
             }
+          };
+
+          const shown = c.getElementsByClassName("shown");
+          if (this.canLoadMore && shown.length < 5) {
+            this.loadMore();
           }
         },
       });
