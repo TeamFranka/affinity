@@ -3,6 +3,7 @@ import { Activity, Message } from "@/db/models";
 import { takePicture, Photo } from "@/utils/camera";
 import { CreateModel } from "@/utils/model";
 import getUrls from "get-urls";
+
 export interface DraftT {
   team: Parse.Object | null;
   text: string;

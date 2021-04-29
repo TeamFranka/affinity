@@ -11,11 +11,13 @@
           ></rich-editor>
           <p
             @click="showOptions = true"
-            v-if="canChangeVisiblity &&  !showOptions"
+            v-if="canChangeVisiblity && !showOptions"
             data-cy-role="editSettings"
           >
             {{ $t(`newPost.visibilities.${visibility}`) }}
-            <span v-if="showTypeSelector">{{ selectedType }}</span>
+            <span data-cy-role="postType" :data-cy-value="selectedType" v-if="showTypeSelector">
+              {{ $t(`post.types.${selectedType}`) }}
+            </span>
             <span v-if="showTeamSelector"
               >to <avatar size="1.5em" :profile="selectedTeam" withName /></span
             ><ion-button size="small" fill="clear"
@@ -59,8 +61,9 @@
                 />
               </ion-item>
             </template>
-          </selector> </ion-col
-        ><ion-col size-md="3" size-xs="12" v-if="showTypeSelector">
+          </selector>
+        </ion-col>
+        <ion-col size-md="3" size-xs="12" v-if="showTypeSelector" data-cy-role="selectType">
           <selector
             label="Type"
             popoverTitle="Post Type"
@@ -70,17 +73,18 @@
             <template #current>
               <ion-label>
                 <ion-icon :icon="VERB_ICONS[selectedType]"></ion-icon>
-                {{ selectedType }}
+              {{ $t(`post.types.${selectedType}`) }}
               </ion-label>
             </template>
             <template #item="sProps">
               <ion-item
                 @click="sProps.select(sProps.item)"
                 :key="sProps.item"
+                :data-cy-select="sProps.item"
                 button
               >
                 <ion-icon slot="start" :icon="VERB_ICONS[sProps.item]" />
-                {{ sProps.item }}
+                  {{ $t(`post.types.${sProps.item}`) }}
                 <ion-icon
                   v-if="sProps.item == selectedType"
                   slot="end"
@@ -131,6 +135,7 @@
           size="small"
           fill="clear"
           @click="showOptions = false"
+          data-cy-role="closeSettings"
         >
           <ion-icon :icon="closeIcon" />
         </ion-button>

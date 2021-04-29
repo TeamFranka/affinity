@@ -146,6 +146,8 @@
   "poll.title.editAction": "Editier",
   "poll.title.result": "Results",
   "poll.title": "Poll",
+  "post.types.announce": "News",
+  "post.types.post": "Post",
   "profile.tabs.posts": "Posts",
   "profile.tabs.teams": "Teams",
   "richEditor.actions.bold": "Bold",

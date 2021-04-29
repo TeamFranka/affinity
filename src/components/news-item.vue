@@ -1,6 +1,7 @@
 <template>
   <div
     class="slidebox shown"
+    data-cy-role="news"
     :style="extraStyle"
     @dblclick="like"
     ref="slideBox"
@@ -15,7 +16,7 @@
       </ion-card>
     </template>
     <template v-else-if="is('Post')">
-      <ion-card class="post-text ion-padding">
+      <ion-card class="post-text ion-padding" data-cy-role="content">
         <render-md :source="text" />
         <p><reactions :item="interactivityObject" /></p>
       </ion-card>
