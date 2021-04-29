@@ -145,7 +145,7 @@
             :items="SELECTABLE_BACKGROUND_STYLES"
           >
             <template #current>
-              <ion-label>
+              <ion-label data-cy-role="selectBackgroundColor">
                 <span :style="`background: ${backgroundColor}`" class="color-indicator" />
               </ion-label>
             </template>
@@ -166,7 +166,7 @@
             :items="SELECTABLE_BUTTON_STYLES"
           >
             <template #current>
-              <ion-label>
+              <ion-label data-cy-role="selectButtonColor">
                 <span :style="`background: ${buttonColor}`" class="color-indicator" />
               </ion-label>
             </template>
