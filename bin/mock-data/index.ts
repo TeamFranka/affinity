@@ -200,7 +200,7 @@ export const Posts = [
     {
         team: "team-earth",
         verb: "announce",
-        author: 'clara',
+        author: 'yaz',
         text: "Ein freundliches Hallo zu Doctor huge!!!",
         visibility: "public",
         objects: [
