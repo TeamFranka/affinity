@@ -436,7 +436,25 @@ export default defineComponent({
       await this.store.dispatch("auth/joinTeam", this.team.objectId)
     },
     async intentToLeave() {
-      await this.store.dispatch("auth/leaveTeam", this.team.objectId)
+      const alert = await alertController.create({
+        header: this.$t("team.actions.leave.title"),
+        message: this.$t("team.actions.leave.message"),
+        buttons: [
+          {
+            text: this.$t("generic.cancel"),
+            role: "cancel",
+            cssClass: "secondary",
+          },
+          {
+            text: this.$t("team.actions.leave.confirm"),
+            role: "confirm",
+            handler: () => {
+              this.store.dispatch("auth/leaveTeam", this.team.objectId)
+            },
+          },
+        ],
+      });
+      alert.present();
     },
     async setSetting(params: any) {
       const model = this.team.prepareSave(params);
@@ -455,16 +473,16 @@ export default defineComponent({
     },
     async removeBackground() {
       const alert = await alertController.create({
-        header: "Hintergrund löschen?",
-        message: "Soll der Hintergrund wirklich gelöscht werden?",
+        header: this.$t("team.actions.rmBackground.title"),
+        message: this.$t("team.actions.rmBackground.message"),
         buttons: [
           {
-            text: "Abbruch",
+            text: this.$t("generic.cancel"),
             role: "cancel",
             cssClass: "secondary",
           },
           {
-            text: "Ja, löschen",
+            text: this.$t("team.actions.rmBackground.confirm"),
             handler: () => {
               this.setSetting({ background: null });
             },

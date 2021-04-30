@@ -22,6 +22,8 @@ describe("Joining team", () => {
     // nothing changed
     cy.get("[data-cy-role=leave]").should("exist");
     cy.get("[data-cy-role=leave]").click();
+    // confirm the shown alert
+    cy.get("ion-alert .alert-button-role-confirm").click();
     cy.get("[data-cy-role=join]").should("exist");
   });
 });
