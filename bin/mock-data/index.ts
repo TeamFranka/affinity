@@ -133,6 +133,7 @@ export const Teams = [
         name: "Doctor Who",
         admin: 'river',
         members: ['clara', 'graham', 'yaz'],
+        publishers: ['clara'],
         agents: ['yaz'],
         params: {
             avatar: makeFile('doctor.png')
@@ -143,6 +144,7 @@ export const Teams = [
         name: "Team Earth",
         admin: 'graham',
         members: ['graham', 'yaz'],
+        publishers: ['yaz'],
         agents: ['yaz'],
         params: {
             subOf: "doctor-who",
