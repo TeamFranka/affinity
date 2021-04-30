@@ -53,6 +53,15 @@ export enum Visibility {
   Leaders = "leaders",
 }
 
+export enum TeamMembershipAccess {
+  Open = "open",
+  ParentOpen = "parent_open",
+  Apply = "apply",
+  ParentApply = "parent_apply",
+  InviteOnly = "invite_only",
+}
+
+
 export interface ModelT {
   id: string;
 }

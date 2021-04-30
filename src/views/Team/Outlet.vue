@@ -20,6 +20,29 @@
             @intend-edit-title="intendEditTitle"
             @intend-edit-social-links="intendEditSocialLinks"
           >
+          <template v-slot:extra>
+            <ion-button
+              v-if="canJoin"
+              data-cy-role="join"
+              size="small"
+              shape="round"
+              color="primary"
+              @click="intentToJoin"
+            >
+              {{$t("team.actions.join")}}
+            </ion-button>
+            <ion-button
+              v-if="canLeave"
+              data-cy-role="leave"
+              size="small"
+              shape="round"
+              fill="outline"
+              color="warning"
+              @click="intentToLeave"
+            >
+              {{$t("team.actions.leave")}}
+            </ion-button>
+          </template>
           <template v-slot:menu>
             <div>
               <inline-link-list showTitle :items="footerLinks">
@@ -174,6 +197,7 @@ import {
   createOutline as editIcon,
   addCircleOutline as addIcon,
 } from "ionicons/icons";
+import { TeamMembershipAccess } from "@/config/Consts";
 import { defineComponent, computed } from "vue";
 import { useStore } from "@/stores/";
 import Parse from "parse";
@@ -216,6 +240,16 @@ export default defineComponent({
       return this.store.getters.objectsMap[
         this.store.getters.teamsBySlug[slug]
       ];
+    },
+    canJoin(): boolean {
+      if (this.canLeave) {
+        return false
+      }
+      const access = this.team.membershipAccess || TeamMembershipAccess.Open;
+      return access === TeamMembershipAccess.Open;
+    },
+    canLeave(): boolean {
+      return !!this.store.getters["auth/teamPermissions"][this.team.objectId];
     },
     subteams(): Model[] {
       if (!this.team) {
@@ -398,6 +432,30 @@ export default defineComponent({
         await this.setSetting({ socialLinks: res.data.items });
       }
     },
+    async intentToJoin() {
+      await this.store.dispatch("auth/joinTeam", this.team.objectId)
+    },
+    async intentToLeave() {
+      const alert = await alertController.create({
+        header: this.$t("team.actions.leave.title"),
+        message: this.$t("team.actions.leave.message"),
+        buttons: [
+          {
+            text: this.$t("generic.cancel"),
+            role: "cancel",
+            cssClass: "secondary",
+          },
+          {
+            text: this.$t("team.actions.leave.confirm"),
+            role: "confirm",
+            handler: () => {
+              this.store.dispatch("auth/leaveTeam", this.team.objectId)
+            },
+          },
+        ],
+      });
+      alert.present();
+    },
     async setSetting(params: any) {
       const model = this.team.prepareSave(params);
       await this.store.dispatch("updateModel", model);
@@ -415,16 +473,16 @@ export default defineComponent({
     },
     async removeBackground() {
       const alert = await alertController.create({
-        header: "Hintergrund löschen?",
-        message: "Soll der Hintergrund wirklich gelöscht werden?",
+        header: this.$t("team.actions.rmBackground.title"),
+        message: this.$t("team.actions.rmBackground.message"),
         buttons: [
           {
-            text: "Abbruch",
+            text: this.$t("generic.cancel"),
             role: "cancel",
             cssClass: "secondary",
           },
           {
-            text: "Ja, löschen",
+            text: this.$t("team.actions.rmBackground.confirm"),
             handler: () => {
               this.setSetting({ background: null });
             },

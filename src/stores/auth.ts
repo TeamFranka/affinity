@@ -150,10 +150,7 @@ export const AuthState = {
     },
     setTeams(state: AuthStateT, resp: any) {
       state.teams = resp.teams.map((x: any) => x.id);
-      state.teamPermissions = Object.assign(
-        state.teamPermissions,
-        resp.permissions
-      );
+      state.teamPermissions = Object.assign({}, resp.permissions);
     },
     addPermissions(state: AuthStateT, resp: any) {
       state.teamPermissions = Object.assign(
@@ -261,6 +258,18 @@ export const AuthState = {
       const user = context.state.user.prepareSave(userdata).toParse();
       await user.save();
       context.commit("setUser", toModel(user));
+    },
+    async joinTeam(context: any, teamId: string) {
+      const resp = await Parse.Cloud.run("joinTeam", { teamId });
+      await context.commit("setItems", resp.teams, { root: true });
+      await context.commit("setTeams", resp);
+      context.dispatch("refreshRoot", null, { root: true });
+    },
+    async leaveTeam(context: any, teamId: string) {
+      const resp = await Parse.Cloud.run("leaveTeam", { teamId });
+      await context.commit("setItems", resp.teams, { root: true });
+      await context.commit("setTeams", resp);
+      context.dispatch("refreshRoot", null, { root: true });
     },
     async afterLogin(context: any) {
       if (context.getters["isLoggedIn"]) {

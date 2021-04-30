@@ -100,7 +100,7 @@ console.log('myArgs: ', args);
             defaultTeamId = team.id
         }
 
-        await Promise.all(["members", "leaders", "agents", "mods"].map( key => {
+        await Promise.all(["members", "leaders", "agents", "mods", "publishers"].map( key => {
             if(!data[key]) return Promise.resolve(key);
             console.info(`Updating membership ${data.name}'${key} adding: ${data[key]}`);
             const role = team.get(key);
@@ -158,6 +158,7 @@ console.log('myArgs: ', args);
             } else {
                 data.objects = [];
             }
+            // console.log("Posting", username, data);
             await (new Activity(data)).save(null, {sessionToken});
         }
     }
