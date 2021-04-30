@@ -146,6 +146,8 @@
   "poll.title.editAction": "Editieren",
   "poll.title.result": "Ergebenis",
   "poll.title": "Umfrage",
+  "post.types.announce": "Neuigkeit",
+  "post.types.post": "Beitrag",
   "profile.tabs.posts": "Beiträge",
   "profile.tabs.teams": "Teams",
   "richEditor.actions.bold": "Fett",

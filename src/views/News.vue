@@ -5,7 +5,7 @@
       <div class="flip-in" ref="box">
         <news-item
           v-for="(o, index) in feed"
-          :z-index="index"
+          :z-index="feed.length - index"
           :itemId="o.objectId"
           :key="o.objectId"
         />
@@ -28,24 +28,20 @@ import NewsItem from "../components/news-item.vue";
 import { useStore } from "../stores/";
 import { createGesture } from "@ionic/core";
 
-function reversed<T>(input: Array<T>): Array<T> {
-  const ret = [];
-  for (let i = input.length - 1; i >= 0; i--) {
-    ret.push(input[i]);
-  }
-  return ret;
-}
-
 export default defineComponent({
   name: "NewsFeed",
   setup() {
     const store = useStore();
     return {
-      loading: computed(() => store.getters["news/loading"]),
+      loading: computed(() => store.getters["news/loading"] && !store.getters["news/entries"]),
+      canLoadMore: computed(() => store.getters["news/canLoadMore"]),
+      loadMore() {
+        store.dispatch("news/loadMore");
+      },
       refresh() {
         store.dispatch("news/refresh");
       },
-      feed: computed(() => reversed(store.getters["news/entries"])),
+      feed: computed(() => store.getters["news/entries"]),
       chatbubbles,
       like: heartOutline,
       mail: mailOutline,
@@ -83,7 +79,7 @@ export default defineComponent({
           }
 
           if (shown.length > 1) {
-            next = shown[shown.length - 1];
+            next = shown[0];
           } else {
             next = null;
           }
@@ -118,6 +114,11 @@ export default defineComponent({
               next.classList.remove("hidden");
               next.classList.add("shown");
             }
+          };
+
+          const shown = c.getElementsByClassName("shown");
+          if (this.canLoadMore && shown.length < 5) {
+            this.loadMore();
           }
         },
       });
