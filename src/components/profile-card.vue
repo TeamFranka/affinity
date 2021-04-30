@@ -58,15 +58,16 @@
             <ion-icon :icon="trashIcon" />
           </ion-chip>
 
-        <ion-chip
-          v-else
-          data-cy="setBackground"
-          @click="$emit('intend-select-background')"
-        >
+          <ion-chip
+            v-else
+            data-cy="setBackground"
+            @click="$emit('intend-select-background')"
+          >
             <ion-icon :icon="imageIcon" />
             <ion-icon :icon="uploadIcon" />
-        </ion-chip>
+          </ion-chip>
         </div>
+      <slot name="extra"></slot>
     </ion-col>
   </div>
   <slot name="menu"></slot>

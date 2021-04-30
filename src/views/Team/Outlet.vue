@@ -20,6 +20,27 @@
             @intend-edit-title="intendEditTitle"
             @intend-edit-social-links="intendEditSocialLinks"
           >
+          <template v-slot:extra>
+            <ion-button
+              v-if="canJoin"
+              data-cy-role="join"
+              size="small"
+              shape="round"
+              color="primary"
+            >
+              {{$t("teams.join")}}
+            </ion-button>
+            <ion-button
+              v-if="canLeave"
+              data-cy-role="leave"
+              size="small"
+              shape="round"
+              fill="outline"
+              color="warning"
+            >
+              {{$t("teams.leave")}}
+            </ion-button>
+          </template>
           <template v-slot:menu>
             <div>
               <inline-link-list showTitle :items="footerLinks">
@@ -174,6 +195,7 @@ import {
   createOutline as editIcon,
   addCircleOutline as addIcon,
 } from "ionicons/icons";
+import { TeamMembershipAccess } from "@/config/Consts";
 import { defineComponent, computed } from "vue";
 import { useStore } from "@/stores/";
 import Parse from "parse";
@@ -216,6 +238,16 @@ export default defineComponent({
       return this.store.getters.objectsMap[
         this.store.getters.teamsBySlug[slug]
       ];
+    },
+    canJoin(): boolean {
+      if (this.canLeave) {
+        return false
+      }
+      const access = this.team.membershipAccess || TeamMembershipAccess.Open;
+      return access === TeamMembershipAccess.Open;
+    },
+    canLeave(): boolean {
+      return !!this.store.getters["auth/teamPermissions"][this.team.objectId];
     },
     subteams(): Model[] {
       if (!this.team) {

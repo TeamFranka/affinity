@@ -45,7 +45,7 @@ export const Team = {
     membershipAccess: {
       type: "String",
       required: false,
-      // values: open (default), parent_open, apply,  parent_apply, invite,
+      // values: open (default), parent_open, apply,  parent_apply, invite_only,
     },
     avatar: {
       type: "File",
