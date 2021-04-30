@@ -132,7 +132,7 @@ export const Teams = [
         slug: "doctor-who",
         name: "Doctor Who",
         admin: 'river',
-        members: ['clara', 'graham', 'yaz'],
+        members: ['clara', 'graham', 'yaz', 'ryan', 'bill'],
         publishers: ['clara'],
         agents: ['yaz'],
         params: {
@@ -143,7 +143,7 @@ export const Teams = [
         slug: "team-earth",
         name: "Team Earth",
         admin: 'graham',
-        members: ['graham', 'yaz'],
+        members: ['graham', 'yaz', 'clara', 'river', 'ryan', 'bill'],
         publishers: ['yaz'],
         agents: ['yaz'],
         params: {
@@ -213,7 +213,7 @@ const randomUser = () => Users[Math.floor(Math.random() * Users.length)].usernam
 
 for (var i = 0; i < 100; i++) {
     Posts.push({
-        team: i % 5 == 0 ? "team-earth" : "doctor-who",
+        team: i % 7 == 0 ? 'doctor-who' : (i % 5 == 0 ? "team-earth" : "doctor-who"),
         verb: i % 7 == 0 ? "announce" :  "post",
         author: i % 7 == 0 ? 'river' : randomUser(),
         text: "This is post number " + i,
