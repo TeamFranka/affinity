@@ -25,13 +25,13 @@ describe("Posting to the feed as an admin User", () => {
     );
     cy.visit("/news");
 
-    cy.get("[data-cy-role=news]:last [data-cy-role=content] p", { includeShadowDom: true }).should(
+    cy.get("[data-cy-role=news]:first [data-cy-role=content] p", { includeShadowDom: true }).should(
       "contain",
       testStr
     );
   });
 
-  it.only("Posts a news item with custom colors", () => {
+  it("Posts a news item with custom colors", () => {
     const testStr = `This is an announcement ${Math.abs(Math.random() * 1000000)}!`;
     const backgroundSelection = "secondary";
     const buttonSelection = "tertiary";
@@ -43,6 +43,7 @@ describe("Posting to the feed as an admin User", () => {
     cy.get("[data-cy-select=announce]").first().click();
     cy.get("[data-cy=newPost] [data-cy-role=selectBackgroundColor]").first().click();
     cy.get(`[data-cy-select=var\\(--ion-color-${backgroundSelection}\\)]`).first().click();
+    cy.wait(500) // give it a cycle to refresh
     cy.get("[data-cy=newPost] [data-cy-role=selectButtonColor]").first().click();
     cy.get(`[data-cy-select=var\\(--ion-color-${buttonSelection}\\)]`).first().click();
     cy.get("[data-cy=newPost] [data-cy-role=closeSettings]").first().click();
@@ -57,13 +58,13 @@ describe("Posting to the feed as an admin User", () => {
 
     // check that is used
     cy.visit("/news");
-    cy.get("[data-cy-role=news]:last [data-cy-role=content] p", { includeShadowDom: true }).should(
+    cy.get("[data-cy-role=news]:first [data-cy-role=content] p", { includeShadowDom: true }).should(
       "contain",
       testStr
     );
-    cy.get("[data-cy-role=news]:last")
+    cy.get("[data-cy-role=news]:first")
       .should("have.css", {background: `var(--ion-color-${backgroundSelection})`});
-    cy.get("[data-cy-role=news]:last .interaction a")
+    cy.get("[data-cy-role=news]:first .interaction a")
       .should("have.css", {background: `var(--ion-color-${backgroundSelection})`});
   });
 });
