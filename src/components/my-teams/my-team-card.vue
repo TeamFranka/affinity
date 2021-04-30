@@ -1,11 +1,17 @@
 <template>
   <ion-card>
     <ion-card-header>
-      <ion-avatar>
-        <img :src="avatarUrl" />
-      </ion-avatar>
+      <router-link :to="linkUrl">
+        <ion-avatar>
+          <img :src="avatarUrl" />
+        </ion-avatar>
+      </router-link>
       <div class="header-content">
-        <ion-card-title>{{ team?.name }}</ion-card-title>
+        <ion-card-title>
+          <router-link :to="linkUrl">
+            {{ team?.name }}
+          </router-link>
+        </ion-card-title>
         <ion-chip v-if="isMember">
           <ion-icon :icon="checkmarkOutline"></ion-icon>
           <ion-label>Member</ion-label>
@@ -73,10 +79,9 @@ export default defineComponent({
     const isMember = computed(
       () => state.auth.teamPermissions[teamId.value]?.isMember
     );
+    const linkUrl = computed(() => `/t/${team.value?.slug}`);
 
-    const avatarUrl = computed(() => {
-      return team.value.avatar?.url() || null;
-    });
+    const avatarUrl = computed(() =>  team.value.avatar?.url() || null);
 
     watchEffect(() => {
       console.log(
@@ -86,6 +91,7 @@ export default defineComponent({
     });
 
     return {
+      linkUrl,
       avatarUrl,
       team,
       subteams,
@@ -123,11 +129,17 @@ ion-card-title {
   margin-bottom: 8px;
 }
 
+ion-card-title a {
+  text-decoration: none;
+  color: var(--ion-text-color);
+}
+
 ion-card-header ion-chip {
   margin: 0;
 }
 
 ion-avatar {
+  display: inline;
   width: 30%;
   height: 30%;
   margin-right: 2em;
@@ -136,6 +148,8 @@ ion-avatar {
 ion-avatar img {
   border: 3px solid #fff;
   background: #fff;
+  width: 25vw;
+  height: 25vw;
 }
 
 ion-card-content {
