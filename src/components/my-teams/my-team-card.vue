@@ -16,7 +16,7 @@
           <ion-icon :icon="checkmarkOutline"></ion-icon>
           <ion-label>Member</ion-label>
         </ion-chip>
-        <ion-chip v-if="!isMember" color="light" class="join">
+        <ion-chip v-if="!isMember" color="light" class="join" @click="join">
           <ion-icon :icon="add"></ion-icon>
           <ion-label>Join</ion-label>
         </ion-chip>
@@ -34,6 +34,7 @@
 </template>
 
 <script lang="ts">
+import Parse from "parse";
 import { defineComponent, computed, toRefs, watchEffect } from "vue";
 import {
   IonCard,
@@ -75,13 +76,21 @@ export default defineComponent({
 
     const team = computed(() => TeamsStore.team(teamId.value));
     const subteams = computed(() => TeamsStore.subTeams(teamId.value));
-
+    const linkUrl = computed(() => `/t/${team.value?.slug}`);
+    const avatarUrl = computed(() => team.value.avatar?.url() || null);
     const isMember = computed(
       () => state.auth.teamPermissions[teamId.value]?.isMember
     );
-    const linkUrl = computed(() => `/t/${team.value?.slug}`);
 
-    const avatarUrl = computed(() =>  team.value.avatar?.url() || null);
+    async function join() {
+      console.log("join", { teamId: teamId.value });
+      await Parse.Cloud.run("join", { teamId: teamId.value });
+    }
+
+    async function leave() {
+      console.log("leave", { teamId: teamId.value });
+      await Parse.Cloud.run("leave", { teamId: teamId.value });
+    }
 
     watchEffect(() => {
       console.log(
@@ -91,6 +100,8 @@ export default defineComponent({
     });
 
     return {
+      leave,
+      join,
       linkUrl,
       avatarUrl,
       team,

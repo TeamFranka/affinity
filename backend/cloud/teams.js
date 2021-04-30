@@ -60,6 +60,28 @@ Parse.Cloud.define("getTeam", async (request) => {
   },
 });
 
+Parse.Cloud.define("join", async (request) => {
+  const { params, user } = request;
+  const teamId = params.teamId;
+  const team = await ((new Parse.Query(Team))
+    .equalTo("objectId", teamId)
+    .first());
+
+  team.members.getUsers().add(user);
+  team.members.save();
+}, { requireUser: true });
+
+Parse.Cloud.define("leave", async (request) => {
+  const { params, user } = request;
+  const teamId = params.teamId;
+  const team = await ((new Parse.Query(Team))
+    .equalTo("objectId", teamId)
+    .first());
+
+  team.members.getUsers().remove(user);
+  team.members.save();
+}, { requireUser: true });
+
 
 const CANT_BE_CHANGED = [
   "subOf", "slug", "ACL",
