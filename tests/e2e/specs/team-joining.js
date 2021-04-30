@@ -21,5 +21,7 @@ describe("Joining team", () => {
     cy.visit("/t/team-earth");
     // nothing changed
     cy.get("[data-cy-role=leave]").should("exist");
+    cy.get("[data-cy-role=leave]").click();
+    cy.get("[data-cy-role=join]").should("exist");
   });
 });

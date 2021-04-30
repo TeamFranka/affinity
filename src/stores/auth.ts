@@ -150,10 +150,7 @@ export const AuthState = {
     },
     setTeams(state: AuthStateT, resp: any) {
       state.teams = resp.teams.map((x: any) => x.id);
-      state.teamPermissions = Object.assign(
-        state.teamPermissions,
-        resp.permissions
-      );
+      state.teamPermissions = Object.assign({}, resp.permissions);
     },
     addPermissions(state: AuthStateT, resp: any) {
       state.teamPermissions = Object.assign(
