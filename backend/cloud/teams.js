@@ -6,38 +6,99 @@ const CONSTS = require("./consts.js");
 const { fetchMyTeams } = require("./utils.js");
 const { Team, Conversation } = CONSTS;
 
+const ROLES = [
+  "members",
+  "mods",
+  "agents",
+  "publishers",
+  "leaders",
+]
 
-Parse.Cloud.define("myTeams", async (request) => {
-    const {teams, roleIds} = await fetchMyTeams(request.user);
+async function myTeams(request) {
+  const {teams, roleIds} = await fetchMyTeams(request.user);
 
-    const permissions = {};
+  const permissions = {};
 
-    for (let idx = 0; idx < teams.length; idx++) {
-      const team = teams[idx];
-      const isLeader = roleIds.includes(team.get("leaders").id);
-      const isMod = roleIds.includes(team.get("mods").id);
-      const isPublisher = roleIds.includes(team.get("publishers").id);
-      const isAgent = roleIds.includes(team.get("agents").id);
+  for (let idx = 0; idx < teams.length; idx++) {
+    const team = teams[idx];
+    const isLeader = roleIds.includes(team.get("leaders").id);
+    const isMod = roleIds.includes(team.get("mods").id);
+    const isPublisher = roleIds.includes(team.get("publishers").id);
+    const isAgent = roleIds.includes(team.get("agents").id);
 
-      permissions[team.id] = Object.assign({
-          isMember: true,
-          isLeader: isLeader,
-          isMod: isMod,
-          isPublisher: isPublisher,
-          isAgent: isAgent,
-        },
-        team.genPermissions(isLeader, isMod, isAgent, isPublisher, true)
-      );
-    }
+    permissions[team.id] = Object.assign({
+        isMember: true,
+        isLeader: isLeader,
+        isMod: isMod,
+        isPublisher: isPublisher,
+        isAgent: isAgent,
+      },
+      team.genPermissions(isLeader, isMod, isAgent, isPublisher, true)
+    );
+  }
 
-    return {
-      teams: teams,
-      permissions: permissions,
-    }
-}, {
+  return {
+    teams: teams,
+    permissions: permissions,
+  }
+}
+
+
+Parse.Cloud.define("myTeams", myTeams, {
   requireUser: true
 });
 
+Parse.Cloud.define("joinTeam", async (request) => {
+  console.log("join started");
+  const user = request.user;
+  const teamId = request.params.teamId;
+  const team = await (new Parse.Query(Team)).get(teamId);
+  console.log("3");
+
+  if (!await team.isMember("members", user.id)) {
+    console.log("4");
+    await team.applyForMembership(user);
+  }
+  console.log("done");
+
+  return myTeams(request)
+}, {
+  fields: {
+    teamId: {
+      required: true,
+      type: String,
+    },
+  },
+  requireUser: true
+});
+
+Parse.Cloud.define("leaveTeam", async (request) => {
+  const user = request.user;
+  const teamId = request.params.teamId;
+  const team = await (new Parse.Query(Team)).get(teamId);
+  console.log(team, team.toJSON());
+  const rolesToUpdate = [];
+  for (let index = 0; index < ROLES.length; index++) {
+    const role = ROLES[index];
+    if (await team.isMember(role, user.id)) {
+      const rl = team.get(role);
+      rl.getUsers().remove(user);
+      rolesToUpdate.push(rl);
+    }
+  }
+  if (rolesToUpdate.length > 0){
+    await Parse.Object.saveAll(rolesToUpdate, {useMasterKey: true});
+  }
+  return myTeams(request)
+}, {
+  fields: {
+    teamId: {
+      required: true,
+      type: String,
+    },
+  },
+  requireUser: true
+});
 
 Parse.Cloud.define("getTeam", async (request) => {
   const user = request.user;
@@ -111,7 +172,7 @@ Parse.Cloud.beforeSave("Team", async (request) => {
   if (request.original) {
     // enforce some fields can't be changed
     const team = request.original;
-    if (!request.master && !team.isMember("leaders", user.id)) {
+    if (!request.master && !await team.isMember("leaders", user.id)) {
       throw "Only admins can edit team"
     }
     CANT_BE_CHANGED.forEach(key => {
@@ -139,7 +200,7 @@ Parse.Cloud.beforeSave("Team", async (request) => {
     if (parentTeam) {
       await parentTeam.fetch({ useMasterKey: true });
 
-      if (!parentTeam.isMember("leaders", user.id)) {
+      if (!await parentTeam.isMember("leaders", user.id)) {
         throw "Only admins can create sub teams"
       }
 

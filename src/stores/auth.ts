@@ -262,6 +262,18 @@ export const AuthState = {
       await user.save();
       context.commit("setUser", toModel(user));
     },
+    async joinTeam(context: any, teamId: string) {
+      const resp = await Parse.Cloud.run("joinTeam", { teamId });
+      await context.commit("setItems", resp.teams, { root: true });
+      await context.commit("setTeams", resp);
+      context.dispatch("refreshRoot", null, { root: true });
+    },
+    async leaveTeam(context: any, teamId: string) {
+      const resp = await Parse.Cloud.run("leaveTeam", { teamId });
+      await context.commit("setItems", resp.teams, { root: true });
+      await context.commit("setTeams", resp);
+      context.dispatch("refreshRoot", null, { root: true });
+    },
     async afterLogin(context: any) {
       if (context.getters["isLoggedIn"]) {
         // all good, continue

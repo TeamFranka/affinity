@@ -27,8 +27,9 @@
               size="small"
               shape="round"
               color="primary"
+              @click="intentToJoin"
             >
-              {{$t("teams.join")}}
+              {{$t("team.actions.join")}}
             </ion-button>
             <ion-button
               v-if="canLeave"
@@ -37,8 +38,9 @@
               shape="round"
               fill="outline"
               color="warning"
+              @click="intentToLeave"
             >
-              {{$t("teams.leave")}}
+              {{$t("team.actions.leave")}}
             </ion-button>
           </template>
           <template v-slot:menu>
@@ -429,6 +431,12 @@ export default defineComponent({
       if (res.data) {
         await this.setSetting({ socialLinks: res.data.items });
       }
+    },
+    async intentToJoin() {
+      await this.store.dispatch("auth/joinTeam", this.team.objectId)
+    },
+    async intentToLeave() {
+      await this.store.dispatch("auth/leaveTeam", this.team.objectId)
     },
     async setSetting(params: any) {
       const model = this.team.prepareSave(params);
