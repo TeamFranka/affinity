@@ -31,11 +31,11 @@
                 ></ion-item
               >
               <ion-item>
-                <router-link :to="{name: 'Gallery'}"
-                ><ion-icon :icon="galleryIcon" />
-                 {{ $t('menu.picture') }}</router-link
-                ></ion-item>
-              
+                <router-link :to="{ name: 'Gallery' }"
+                  ><ion-icon :icon="galleryIcon" />
+                  {{ $t("menu.picture") }}</router-link
+                ></ion-item
+              >
             </ion-item-group>
             <ion-item-group v-if="showTeamSubmenu">
               <ion-item-divider>
@@ -104,7 +104,7 @@ import {
   walletOutline,
 } from "ionicons/icons";
 import { useStore } from "../stores/";
-import { defineComponent, computed } from "vue";
+import { defineComponent, computed, watchEffect } from "vue";
 import InlineLinkList from "../components/generic/inline-link-list.vue";
 import Avatar from "../components/avatar.vue";
 
@@ -113,6 +113,17 @@ export default defineComponent({
 
   setup() {
     const store = useStore();
+    const user = computed(() => store.state.auth.user);
+
+    watchEffect(() => {
+      if (user.value) {
+        const welcomeDisplayed = user.value?.welcomeDisplayed;
+        if (!welcomeDisplayed) {
+          console.log("redirect to welcome");
+        }
+      }
+    });
+
     return {
       homeIcon,
       feedIcon,
