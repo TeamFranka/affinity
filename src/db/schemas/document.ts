@@ -43,7 +43,9 @@ export const Document = {
     find: {
       "*": true,
     },
-    count: {},
+    count: {
+      "*": true,
+    },
     get: {
       "*": true,
     },

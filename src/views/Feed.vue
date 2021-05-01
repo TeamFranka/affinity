@@ -12,7 +12,7 @@
       <div class="wrap">
         <ion-card class="ion-hide-sm-down" v-if="canPost">
           <ion-card-content>
-            <new-post canChangeVisiblity="true" :teams="canPostInTeams" />
+            <new-post :can-change-visiblity="true" :teams="canPostInTeams" />
           </ion-card-content>
         </ion-card>
         <ion-spinner v-if="loading" name="dots"></ion-spinner>
@@ -78,10 +78,10 @@ export default defineComponent({
       ),
       canPost: computed(() => store.getters["auth/postableTeamIds"].length > 0),
       teamName: computed(() => store.getters["auth/myTeams"]),
-      loading: computed(() => store.state.feed.loading),
+      loading: computed(() => store.getters["feed/loading"]),
       canLoadMore: computed(() => store.getters["feed/canLoadMore"]),
-      latestPosts: computed(() => store.getters["feed/latestPosts"]),
-      showTeams: computed(() => store.getters["auth/myTeams"].length > 1 && !store.state.feed.selectedTeam),
+      latestPosts: computed(() => store.getters["feed/entries"]),
+      showTeams: computed(() => store.getters["auth/myTeams"].length > 1 && !store.state.auth.selectedTeam),
       selectTeam: async (name: string) => {
         await store.dispatch("feed/selectTeam", name === "ALL" ? null : name);
       },

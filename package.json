@@ -25,7 +25,8 @@
     "dev:db:reset": "npm run dev:db:destroy && docker-compose up -d && npm run dev:db && npm run dev:db:mock-data && cp .env.development.local.template .env.development.local",
     "dev:ios": "ionic capacitor run ios -l --external",
     "dev:lint": "vue-cli-service lint --fix",
-    "dev:restart-parse": "npm run dev:build-parse && docker-compose stop parse && docker-compose up -d && docker-compose logs -f --tail 10 parse",
+    "dev:refresh-parse": "npm run dev:build-parse && npm run dev:restart-parse",
+    "dev:restart-parse": "docker-compose stop parse && docker-compose up -d && docker-compose logs -f --tail 10 parse",
     "dev:run-parse": "docker-compose up -d && docker-compose logs -f --tail 30 parse",
     "i18n:report": "vue-cli-service i18n:report --src \"./src/**/*.?(js|vue)\" --locales \"./src/locales/**/*.json\" --output locales-report.json"
   },
@@ -84,7 +85,7 @@
     "@vue/eslint-config-typescript": "^5.0.2",
     "@vue/test-utils": "^2.0.0-rc.1",
     "capacitor-codepush": "git+https://github.com/mapiacompany/capacitor-codepush.git",
-    "cypress": "^6.5.0",
+    "cypress": "^7.1.0",
     "cypress-localstorage-commands": "^1.4.1",
     "dotenv": "^8.2.0",
     "eslint": "^6.7.2",

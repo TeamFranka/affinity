@@ -6,95 +6,62 @@
           <ion-spinner />
         </div>
         <template v-else>
-          <div class="header" :style="teamStyle">
-            <ion-col size-md="2" size-lg="2" size-sm="2" size-xs="3">
-              <div class="profile-img">
-                <avatar size="7rem" :profile="team" />
-                <ion-chip v-if="canEdit" @click="selectNewAvatar()">
-                  <ion-icon :icon="uploadIcon"></ion-icon>
-                </ion-chip>
-              </div>
-            </ion-col>
-
-            <ion-col size-xl="8" size-md="8" size-sm="8" size-xs="7" offset="2">
-              <h1 data-cy="title">
-                {{ team.name }}
-                <ion-icon
-                  size="small"
-                  :icon="editIcon"
-                  data-cy-role="editModal"
-                  v-if="canEdit"
-                  color="light"
-                  @click="intendEditTitle"
-                />
-              </h1>
-
-              <inline-link-list :items="socialLinks" showIcon>
-                <div v-if="canEdit" style="display: inline">
-                  <ion-icon
-                    size="small"
-                    :icon="editIcon"
-                    @click="intendEditSocialLink"
-                    color="light"
-                  />
-                </div>
-              </inline-link-list>
-
-              <div class="extra-actions" v-if="canEdit">
-                <ion-chip
-                  :title="$t('team.edit.actions.remove_background')"
-                  v-if="team.background"
-                  @click="removeBackground"
-                  outline
-                >
-                  <ion-icon :icon="imageIcon" />
-                  <ion-icon :icon="trashIcon" />
-                </ion-chip>
-
-                <ion-chip v-else @click="selectBackground">
-                  <ion-icon :icon="imageIcon" />
-                  <ion-icon :icon="uploadIcon" />
-                </ion-chip>
-                <inline-link-list showTitle :items="footerLinks">
-                  <li v-if="canEdit">
-                    <ion-button
-                      @click="intendEditFooterLinks"
-                      size="small"
-                      fill="clear"
-                    >
-                      <ion-icon size="small" :icon="editIcon" />
-                    </ion-button>
-                  </li>
-                </inline-link-list>
-              </div>
-            </ion-col>
-          </div>
-
-          <ion-toolbar>
-            <ion-segment
-              scrollable
-              value="about"
-              mode="md"
-              @ionChange="segmentChanged($event)"
+          <profile-card
+            :profile="team"
+            :can-edit="!!canEdit"
+            :show-qr="true"
+            :show-menu="true"
+            :segments-value="segmentSelected"
+            :segments="segments"
+            @segment-selected="segmentSelected = $event"
+            @intend-select-avatar="selectNewAvatar"
+            @remove-background="removeBackground"
+            @intend-select-background="selectBackground"
+            @intend-edit-title="intendEditTitle"
+            @intend-edit-social-links="intendEditSocialLinks"
+          >
+          <template v-slot:extra>
+            <ion-button
+              v-if="canJoin"
+              data-cy-role="join"
+              size="small"
+              shape="round"
+              color="primary"
+              @click="intentToJoin"
             >
-              <ion-segment-button value="qrcode">
-                <ion-icon :icon="qrCodeIcon" />
-              </ion-segment-button>
-              <ion-segment-button value="about">
-                <ion-label>{{ $t("team.tabs.about") }}</ion-label>
-              </ion-segment-button>
-              <ion-segment-button value="news">
-                <ion-label>{{ $t("team.tabs.news") }}</ion-label>
-              </ion-segment-button>
-              <ion-segment-button value="feed">
-                <ion-label>{{ $t("team.tabs.feed") }}</ion-label>
-              </ion-segment-button>
-            </ion-segment>
-          </ion-toolbar>
+              {{$t("team.actions.join")}}
+            </ion-button>
+            <ion-button
+              v-if="canLeave"
+              data-cy-role="leave"
+              size="small"
+              shape="round"
+              fill="outline"
+              color="warning"
+              @click="intentToLeave"
+            >
+              {{$t("team.actions.leave")}}
+            </ion-button>
+          </template>
+          <template v-slot:menu>
+            <div>
+              <inline-link-list showTitle :items="footerLinks">
+                <ion-button
+                  v-if="canEdit"
+                  @click="intendEditFooterLinks"
+                  size="small"
+                  fill="clear"
+                >
+                    <ion-icon size="small" :icon="editIcon" />
+                </ion-button>
+              </inline-link-list>
+            </div>
+          </template>
+          </profile-card>
 
           <div class="body ion-padding">
             <!-- Div About -->
-            <div v-if="state == 'about'">
+            <div v-if="segmentSelected == 'about'">
               <div data-cy="description">
                 <h2 data-cy="title" class="subTitle">
                   {{ team.name }}
@@ -157,7 +124,7 @@
             </div>
 
             <!-- Div QRcode -->
-            <div v-if="state == 'qrcode'" class="ion-padding">
+            <div v-if="segmentSelected == 'qrcode'" class="ion-padding">
               <qrcode
                 :text="fullLink"
                 :logo="logo"
@@ -174,7 +141,7 @@
             </div>
 
             <!-- Div Feed -->
-            <div v-if="state == 'news'">
+            <div v-if="segmentSelected == 'news'">
               <activity
                 v-for="activity in news"
                 :activity="activity"
@@ -183,7 +150,7 @@
             </div>
 
             <!-- Div Feed -->
-            <div v-if="state == 'feed'">
+            <div v-if="segmentSelected == 'feed'">
               <activity
                 v-for="activity in feed"
                 :activity="activity"
@@ -199,13 +166,14 @@
 
 <script lang="ts">
 import RenderMd from "@/components/render-md.vue";
+import InlineLinkList from "@/components/generic/inline-link-list.vue";
 import Avatar from "@/components/avatar.vue";
 import { DefaultIcon, Icons } from "@/components/generic/inline-link-list.vue";
-import InlineLinkList from "@/components/generic/inline-link-list.vue";
 import EditLinks from "@/components/settings/edit-links.vue";
 import CreateSubTeam from "@/components/settings/create-subteam.vue";
 import GenericEditorModal from "@/components/settings/generic-editor-modal.vue";
 import Activity from "@/components/activity.vue";
+import ProfileCard from "@/components/profile-card.vue";
 import Qrcode from "@/components/qrcode.vue";
 import {
   IonContent,
@@ -214,13 +182,8 @@ import {
   IonChip,
   IonSpinner,
   IonButton,
-  IonToolbar,
   modalController,
   alertController,
-  IonSegmentButton,
-  IonSegment,
-  IonLabel,
-  IonCol,
   toastController,
 } from "@ionic/vue";
 
@@ -234,30 +197,28 @@ import {
   createOutline as editIcon,
   addCircleOutline as addIcon,
 } from "ionicons/icons";
-import { defineComponent } from "vue";
+import { TeamMembershipAccess } from "@/config/Consts";
+import { defineComponent, computed } from "vue";
 import { useStore } from "@/stores/";
 import Parse from "parse";
 import { takePicture, Photo } from "@/utils/camera";
 import { Model } from "@/utils/model";
 import { absoluteUrl } from "@/utils/url";
 
-const DEFAULT_STYLES = {
-  background: "transparent",
-  backgroundImage:
-    "linear-gradient(to right, var(--ion-color-secondary) 0%, var(--ion-color-primary) 100%)",
-};
 
 export default defineComponent({
   name: "Team",
   data() {
     return {
       loading: true,
-      state: "about",
+      segmentSelected: "about",
     };
   },
   setup() {
     const store = useStore();
     return {
+      news: computed(()=> store.getters["teams/news/entries"]),
+      feed: computed(()=> store.getters["teams/feed/entries"]),
       store,
       chatbubbles,
       logoWhatsapp,
@@ -280,26 +241,21 @@ export default defineComponent({
         this.store.getters.teamsBySlug[slug]
       ];
     },
-    feed(): Model[] {
-      if (!this.team) return [];
-      const teamId = this.team.objectId;
-      return this.store.state.teams.activities[teamId].map(
-        (id) => this.store.getters["objectsMap"][id]
-      );
+    canJoin(): boolean {
+      if (this.canLeave) {
+        return false
+      }
+      const access = this.team.membershipAccess || TeamMembershipAccess.Open;
+      return access === TeamMembershipAccess.Open;
     },
-    news(): Model[] {
-      if (!this.team) return [];
-      const teamId = this.team.objectId;
-      return this.store.state.teams.news[teamId].map(
-        (id) => this.store.getters["objectsMap"][id]
-      );
+    canLeave(): boolean {
+      return !!this.store.getters["auth/teamPermissions"][this.team.objectId];
     },
     subteams(): Model[] {
       if (!this.team) {
         return [];
       }
-      const teamId = this.team.objectId;
-      return (this.store.state.teams.subteams[teamId] || []).map(
+      return (this.store.state.teams.subteams || []).map(
         (id: string) => this.store.getters["objectsMap"][id]
       );
     },
@@ -329,15 +285,12 @@ export default defineComponent({
     logo(): string | null {
       return this.team && this.team.avatar ? this.team.avatar.url : null;
     },
-    teamStyle(): any {
-      const customStyles = this.team.customStyles;
-      const extraStyles: any = {};
-      const backgroundImage = this.team.background;
-      if (backgroundImage) {
-        extraStyles.backgroundImage = `url(${backgroundImage.url})`;
-        extraStyles.backgroundSize = "cover";
-      }
-      return [DEFAULT_STYLES, customStyles, extraStyles];
+    segments(): any[] {
+      return [
+        {value: "about", title: this.$t("team.tabs.about")},
+        {value: "news", title: this.$t("team.tabs.news")},
+        {value: "feed", title: this.$t("team.tabs.feed")},
+      ]
     },
     fullLink(): string {
       return absoluteUrl(this.$router, {
@@ -348,27 +301,23 @@ export default defineComponent({
   },
   methods: {
     segmentChanged(ev: CustomEvent) {
-      this.state = ev.detail.value;
+      this.segmentSelected = ev.detail.value;
     },
     async fetchData() {
-      try {
-        this.loading = true;
-        this.state = "about";
-        const slug: any = this.$route.params.teamSlug;
+      console.log(this.$route);
+      const slug: any = this.$route.params.teamSlug;
+      console.log("switching to slug", slug);
+      this.loading = true;
+      if (!slug) { return }
+      this.segmentSelected = "about";
 
+      try {
         if (!this.store.getters.teamsBySlug[slug]) {
           await this.store.dispatch("teams/fetch", slug);
         }
-        
-        const teamPointer = this.store.getters.objectsMap[
-          this.store.getters.teamsBySlug[slug]
-        ].toPointer();
 
-        await Promise.all([
-          this.store.dispatch("teams/fetchNews", teamPointer),
-          this.store.dispatch("teams/fetchActivities", teamPointer),
-          this.store.dispatch("teams/fetchSubteams", teamPointer),
-        ]);
+        const teamId = this.store.getters.teamsBySlug[slug];
+        await this.store.dispatch("teams/setTeam", teamId);
 
         this.loading = false;
       } catch (error) {
@@ -379,8 +328,6 @@ export default defineComponent({
           buttons: [{ side: "end", role: "cancel", text: "x" }],
         });
         toast.present();
-
-        console.log(error);
       }
     },
     getSocialIcon(l: string): any {
@@ -467,7 +414,7 @@ export default defineComponent({
         await this.setSetting({ footerLinks: res.data.items });
       }
     },
-    async intendEditSocialLink() {
+    async intendEditSocialLinks() {
       const modal = await modalController.create({
         component: EditLinks,
         componentProps: {
@@ -484,6 +431,30 @@ export default defineComponent({
       if (res.data) {
         await this.setSetting({ socialLinks: res.data.items });
       }
+    },
+    async intentToJoin() {
+      await this.store.dispatch("auth/joinTeam", this.team.objectId)
+    },
+    async intentToLeave() {
+      const alert = await alertController.create({
+        header: this.$t("team.actions.leave.title"),
+        message: this.$t("team.actions.leave.message"),
+        buttons: [
+          {
+            text: this.$t("generic.cancel"),
+            role: "cancel",
+            cssClass: "secondary",
+          },
+          {
+            text: this.$t("team.actions.leave.confirm"),
+            role: "confirm",
+            handler: () => {
+              this.store.dispatch("auth/leaveTeam", this.team.objectId)
+            },
+          },
+        ],
+      });
+      alert.present();
     },
     async setSetting(params: any) {
       const model = this.team.prepareSave(params);
@@ -502,16 +473,16 @@ export default defineComponent({
     },
     async removeBackground() {
       const alert = await alertController.create({
-        header: "Hintergrund löschen?",
-        message: "Soll der Hintergrund wirklich gelöscht werden?",
+        header: this.$t("team.actions.rmBackground.title"),
+        message: this.$t("team.actions.rmBackground.message"),
         buttons: [
           {
-            text: "Abbruch",
+            text: this.$t("generic.cancel"),
             role: "cancel",
             cssClass: "secondary",
           },
           {
-            text: "Ja, löschen",
+            text: this.$t("team.actions.rmBackground.confirm"),
             handler: () => {
               this.setSetting({ background: null });
             },
@@ -538,8 +509,8 @@ export default defineComponent({
   components: {
     Avatar,
     Qrcode,
-    RenderMd,
     InlineLinkList,
+    RenderMd,
     Activity,
     IonPage,
     IonContent,
@@ -547,11 +518,7 @@ export default defineComponent({
     IonChip,
     IonSpinner,
     IonButton,
-    IonToolbar,
-    IonSegment,
-    IonSegmentButton,
-    IonLabel,
-    IonCol,
+    ProfileCard
   },
 });
 </script>

@@ -26,6 +26,7 @@ import {
   modalController,
   isPlatform,
   toastController,
+  popoverController,
 } from "@ionic/vue";
 import { logInOutline as logInIcon } from "ionicons/icons";
 import { defineComponent, computed, watch } from "vue";
@@ -79,8 +80,9 @@ export default defineComponent({
           component: LoginModal,
         });
         loginModal.present();
-        loginModal.onDidDismiss().then(() => {
+        loginModal.onWillDismiss().then((): void => {
           store.dispatch("auth/dismissLogin");
+          if (isPlatform("android") || isPlatform("ios")) popoverController.dismiss();
         });
       } else if (!newVal && loginModal) {
         loginModal.dismiss();
@@ -150,7 +152,6 @@ export default defineComponent({
       teamStyles: computed(() => store.getters.defaultTeam?.customStyles),
       openLoginModal: () => store.dispatch("auth/openLogin"),
       loading: store.getters.isLoading,
-      // openLoginModal: () => store.dispatch("auth/openLogin"),
       fetchUser: () => store.dispatch("auth/fetchUser"),
     };
   },

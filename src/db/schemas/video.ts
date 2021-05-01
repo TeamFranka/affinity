@@ -33,7 +33,9 @@ export const Video = {
     find: {
       "*": true,
     },
-    count: {},
+    count: {
+      "*": true,
+    },
     get: {
       "*": true,
     },

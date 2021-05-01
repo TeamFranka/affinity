@@ -30,7 +30,9 @@ export const Picture = {
     find: {
       "*": true,
     },
-    count: {},
+    count: {
+      "*": true,
+    },
     get: {
       "*": true,
     },

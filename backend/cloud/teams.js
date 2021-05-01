@@ -6,6 +6,14 @@ const CONSTS = require("./consts.js");
 const { fetchMyTeams } = require("./utils.js");
 const { Team, Conversation } = CONSTS;
 
+const ROLES = [
+  "members",
+  "mods",
+  "agents",
+  "publishers",
+  "leaders",
+]
+
 async function fetchRoles(user) {
   return await (new Parse.Query(Parse.Role)).equalTo("users", user).find({ useMasterKey: true });
 }
@@ -31,12 +39,66 @@ Parse.Cloud.define("getTeams", async (request) => {
   return { teams, permissions };
 });
 
-Parse.Cloud.define("myTeams", async (request) => {
+async function myTeams(request) {
   const { teams, roleIds } = await fetchMyTeams(request.user);
   const permissions = Object.assign({}, ...teams.map(team => ({ [team.id]: getPermissionsForTeam(roleIds, team) })));
 
   return { teams, permissions };
-}, { requireUser: true });
+}
+
+Parse.Cloud.define("myTeams", myTeams, { requireUser: true });
+
+Parse.Cloud.define("joinTeam", async (request) => {
+  console.log("join started");
+  const user = request.user;
+  const teamId = request.params.teamId;
+  const team = await (new Parse.Query(Team)).get(teamId);
+  console.log("3");
+
+  if (!await team.isMember("members", user.id)) {
+    console.log("4");
+    await team.applyForMembership(user);
+  }
+  console.log("done");
+
+  return myTeams(request)
+}, {
+  fields: {
+    teamId: {
+      required: true,
+      type: String,
+    },
+  },
+  requireUser: true
+});
+
+Parse.Cloud.define("leaveTeam", async (request) => {
+  const user = request.user;
+  const teamId = request.params.teamId;
+  const team = await (new Parse.Query(Team)).get(teamId);
+  console.log(team, team.toJSON());
+  const rolesToUpdate = [];
+  for (let index = 0; index < ROLES.length; index++) {
+    const role = ROLES[index];
+    if (await team.isMember(role, user.id)) {
+      const rl = team.get(role);
+      rl.getUsers().remove(user);
+      rolesToUpdate.push(rl);
+    }
+  }
+  if (rolesToUpdate.length > 0) {
+    await Parse.Object.saveAll(rolesToUpdate, { useMasterKey: true });
+  }
+  return myTeams(request)
+}, {
+  fields: {
+    teamId: {
+      required: true,
+      type: String,
+    },
+  },
+  requireUser: true
+});
 
 Parse.Cloud.define("getTeam", async (request) => {
   const slug = request.params.slug;
@@ -107,7 +169,7 @@ Parse.Cloud.beforeSave("Team", async (request) => {
   if (request.original) {
     // enforce some fields can't be changed
     const team = request.original;
-    if (!request.master && !team.isMember("leaders", user.id)) {
+    if (!request.master && !await team.isMember("leaders", user.id)) {
       throw "Only admins can edit team"
     }
     CANT_BE_CHANGED.forEach(key => {
@@ -135,7 +197,7 @@ Parse.Cloud.beforeSave("Team", async (request) => {
     if (parentTeam) {
       await parentTeam.fetch({ useMasterKey: true });
 
-      if (!parentTeam.isMember("leaders", user.id)) {
+      if (!await parentTeam.isMember("leaders", user.id)) {
         throw "Only admins can create sub teams"
       }
 

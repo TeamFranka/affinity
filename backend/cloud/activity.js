@@ -20,9 +20,9 @@ Parse.Cloud.beforeSave(Activity, async (request) => {
     const verb = activity.get("verb");
 
     console.log("can", verb, team);
-    if (verb == "post" && team.canDo(user, "canPost")) {
+    if (verb == "post" && await team.canDo(user, "canPost")) {
         // is okay
-    } else if (verb == "announce" && team.canDo(user, "canPublish")) {
+    } else if (verb == "announce" && await team.canDo(user, "canPublish")) {
         // also okay
     } else {
         // nope, sorry!

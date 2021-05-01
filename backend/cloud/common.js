@@ -89,7 +89,7 @@ const genericObjectsPreSave = async (request) => {
       if (!request.object['can' + verb](request.user, team)) {
         throw request.user.id + " can't " + verb + " " + request.object.className + " in team " + team.get("name") +  " because model rules disallow that";
       }
-    } else if (!team.canDo(request.user, 'can' + verb + request.object.className, team)) {
+    } else if (!await team.canDo(request.user, 'can' + verb + request.object.className, team)) {
       throw request.user.id + " can't " + verb + " " + request.object.className + " in team " + team.get("name")
     }
   }

@@ -15,6 +15,7 @@ export interface AuthStateT {
   currentInstallationId: string | null;
   teams: Array<string>;
   teamPermissions: Record<string, any>;
+  selectedTeam: string | null;
 }
 
 function currentUser(): Model | null {
@@ -48,6 +49,7 @@ export const AuthState = {
       installations: [],
       currentInstallationId: null,
       teamPermissions: {},
+      selectedTeam: null,
     };
   },
   getters: {
@@ -61,6 +63,7 @@ export const AuthState = {
       rootGetters: any
     ) => rootGetters["defaultTeam"],
     user: (state: AuthStateT) => state.user,
+    selectedTeam: (state: AuthStateT) => state.selectedTeam,
     wantsToLogin: (state: AuthStateT) => state.wantsToLogin,
     userPtr: (state: AuthStateT) => state.user?.toPointer(),
     myTeams: (
@@ -112,9 +115,19 @@ export const AuthState = {
   mutations: {
     setUser(state: AuthStateT, newUser: Model | null) {
       state.user = newUser;
-      if (newUser && newUser.lang) {
-        setLocale(newUser.lang);
+      if (newUser) {
+        if (newUser.lang) {
+          setLocale(newUser.lang);
+        }
+        if (newUser.settings && newUser.settings.teamTabs) {
+          if (newUser.settings.teamTabs.tabs && newUser.settings.teamTabs.tabs.length > 0) {
+            // FIXME: set first selector per default
+          }
+        }
       }
+    },
+    setSelectedTeam(state: AuthStateT, name: string | null) {
+      state.selectedTeam = name;
     },
     setInstallations(state: AuthStateT, installations: Model[]) {
       state.installations = installations;
@@ -137,10 +150,7 @@ export const AuthState = {
     },
     setTeams(state: AuthStateT, resp: any) {
       state.teams = resp.teams.map((x: any) => x.id);
-      state.teamPermissions = Object.assign(
-        state.teamPermissions,
-        resp.permissions
-      );
+      state.teamPermissions = Object.assign({}, resp.permissions);
     },
     addPermissions(state: AuthStateT, permissions: any) {
       state.teamPermissions = Object.assign(
@@ -179,6 +189,9 @@ export const AuthState = {
     logout(context: any) {
       Parse.User.logOut();
       context.commit("setUser", null);
+    },
+    selectTeam(context: any, team: any) {
+      context.commit("setSelectedTeam", team);
     },
     openLogin(context: any) {
       context.commit("setWantsToLogin", true);
@@ -224,6 +237,12 @@ export const AuthState = {
       await user.save();
       context.commit("setUser", toModel(user));
     },
+    async setBackground(context: any, f: Parse.File) {
+      await f.save();
+      const user = context.state.user.prepareSave({ background: f }).toParse();
+      await user.save();
+      context.commit("setUser", toModel(user));
+    },
     async setLang(context: any, lang: string) {
       const user = context.state.user.prepareSave({ lang }).toParse();
       await user.save();
@@ -234,6 +253,23 @@ export const AuthState = {
       const user = context.state.user.prepareSave({ settings }).toParse();
       await user.save();
       context.commit("setUser", toModel(user));
+    },
+    async setUserData(context: any, userdata: any) {
+      const user = context.state.user.prepareSave(userdata).toParse();
+      await user.save();
+      context.commit("setUser", toModel(user));
+    },
+    async joinTeam(context: any, teamId: string) {
+      const resp = await Parse.Cloud.run("joinTeam", { teamId });
+      await context.commit("setItems", resp.teams, { root: true });
+      await context.commit("setTeams", resp);
+      context.dispatch("refreshRoot", null, { root: true });
+    },
+    async leaveTeam(context: any, teamId: string) {
+      const resp = await Parse.Cloud.run("leaveTeam", { teamId });
+      await context.commit("setItems", resp.teams, { root: true });
+      await context.commit("setTeams", resp);
+      context.dispatch("refreshRoot", null, { root: true });
     },
     async afterLogin(context: any) {
       if (context.getters["isLoggedIn"]) {

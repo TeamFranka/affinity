@@ -58,11 +58,20 @@ describe("Notification Configuration", () => {
 
     /// give it some time
     cy.wait(1000);
-    cy.reload({
+
+    cy.visit("/", {
       onBeforeLoad: (win) => {
         win.CYPRESS = Object.assign({}, setup);
       },
     });
+
+    cy.get("[data-cy=anon-menu-trigger]").click();
+    cy.get("[data-cy=anon-menu]").within(() => {
+      cy.get("[data-cy=push-settings-link]").click();
+    });
+
+    cy.url().should("match", /settings\/notifications/);
+
     // they are still like that.
     cy.get("ion-item[data-cy-channel=news] ion-toggle").should(
       "have.attr",
@@ -73,6 +82,21 @@ describe("Notification Configuration", () => {
       "have.attr",
       "aria-checked",
       "true"
+    );
+
+    // and reset ---
+
+    cy.get("ion-item[data-cy-channel=news] ion-toggle").click();
+    cy.get("ion-item[data-cy-channel=news] ion-toggle").should(
+      "have.attr",
+      "aria-checked",
+      "true"
+    );
+    cy.get("ion-item[data-cy-channel=notifications] ion-toggle").click();
+    cy.get("ion-item[data-cy-channel=notifications] ion-toggle").should(
+      "have.attr",
+      "aria-checked",
+      "false"
     );
   });
 });

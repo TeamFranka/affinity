@@ -1,6 +1,6 @@
 <template>
-  <span v-if="inline" v-html="compiled"></span>
-  <div v-else v-html="compiled"></div>
+  <span :v-bind="$attrs" v-if="inline" v-html="compiled"></span>
+  <div :v-bind="$attrs" v-else v-html="compiled"></div>
 </template>
 <script>
 import { adminMd, userMd } from "../utils/md";

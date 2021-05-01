@@ -22,24 +22,24 @@ const Team = Parse.Object.extend("Team", {
         switch(accessLevel) {
             case "open":
                 await this.get("members").getUsers().add(user).save(null, {useMasterKey: true});
-                console.log("done for", user);
                 break
             default:
                 throw "Access to team denied. Level not implemeted: " + accessLevel;
         }
     },
-    isMember: function(groupName, userId) {
-        return this
+    isMember: async function(groupName, userId) {
+        const isMember = !!await this
             .get(groupName)
             .getUsers()
             .query()
-            .contains("id", userId)
-            .exists({ useMasterKey: true })
+            .contains("objectId", userId)
+            .first( { useMasterKey: true } );
+        return isMember
     },
     checkLevel: function(field, level) {
         return Levels.indexOf(this.get(field) || Defaults[field]) <= Levels.indexOf(level);
     },
-    canDo: function(user, field) {
+    canDo: async function(user, field) {
         const lvl = this.get(field) || Defaults[field];
         console.log("allowed for", this.get("name"), field, user, lvl);
         if (lvl === "anyone") {
@@ -47,9 +47,13 @@ const Team = Parse.Object.extend("Team", {
         } else if (lvl === "nobody") {
             return false
         } else if (lvl === "members"  || lvl === "leaders") {
-            return this.isMember(lvl, user.id)
+            return await this.isMember(lvl, user.id)
         } else if (lvl === "mods" || lvl === "agents" || lvl === "publishers") {
-            return this.isMember(lvl, user.id) ? true : this.isMember("leaders", user.id)
+            if (await this.isMember(lvl, user.id)) {
+                return true
+            } else {
+                return await this.isMember("leaders", user.id)
+            }
         }
 
         console.log("unknown level, returning false");

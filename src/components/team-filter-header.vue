@@ -46,7 +46,9 @@ import {
   IonSegment,
   IonLabel,
   IonIcon,
+  IonButtons,
   IonSegmentButton,
+  IonMenuButton,
 } from '@ionic/vue';
 import { cogOutline as settingIcon,globeOutline as globeIcon } from 'ionicons/icons';
 import { defineComponent, computed } from 'vue';
@@ -67,7 +69,7 @@ export default defineComponent({
     const store = useStore();
     return {
       myTeams: computed(() => store.getters["auth/myTeams"]),
-      selection: computed(() => store.state.feed.selectedTeam || 'ALL'),
+      selection: computed(() => store.state.auth.selectedTeam || 'ALL'),
       settings: computed(() => (store.getters["auth/settings"].teamTabs || DEFAULT_SETTINGS)),
       teamsMap: computed(() => store.getters.objectsMap),
       settingIcon,
@@ -142,13 +144,15 @@ export default defineComponent({
     }
   },
   components: {
-   IonHeader,
-   IonToolbar,
-   IonSegment,
-   IonLabel,
-   IonIcon,
-   IonSegmentButton,
-   Avatar,
+    IonHeader,
+    IonToolbar,
+    IonSegment,
+    IonLabel,
+    IonIcon,
+    IonSegmentButton,
+    IonButtons,
+    Avatar,
+    IonMenuButton,
   }
 });
 </script>

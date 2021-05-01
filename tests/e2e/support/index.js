@@ -15,6 +15,16 @@
 
 // Import commands.js using ES2015 syntax:
 import "./commands";
+import "./gestures";
 
 // Alternatively you can use CommonJS syntax:
 // require('./commands')
+
+Cypress.on('uncaught:exception', (err, runnable) => {
+  if (err.message.includes("Cannot read property 'dismiss' of undefined")) {
+    /// this is an ionic internal error,
+    return false
+  }
+  // we still want to ensure there are no other unexpected
+  // errors, so we let them fail the test
+});
