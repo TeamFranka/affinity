@@ -1,5 +1,5 @@
 <template>
-  <ion-chip>
+  <ion-chip @click="click">
     <ion-icon :icon="isMember ? closeCircle : addCircle"></ion-icon>
     <ion-label>{{ team.name }}</ion-label>
   </ion-chip>
@@ -26,7 +26,7 @@ export default defineComponent({
     IonIcon,
   },
   setup(props) {
-    const { state } = useStore();
+    const { state, dispatch } = useStore();
     const { teamId } = toRefs(props);
 
     const team = computed(() => TeamsStore.team(teamId.value));
@@ -34,7 +34,12 @@ export default defineComponent({
       () => state.auth.teamPermissions[teamId.value]?.isMember
     );
 
-    return { team, isMember, addCircle, closeCircle };
+    async function click() {
+      if (isMember.value) await dispatch("auth/leaveTeam", teamId.value);
+      else await dispatch("auth/joinTeam", teamId.value);
+    }
+
+    return { click, team, isMember, addCircle, closeCircle };
   },
 });
 </script>
