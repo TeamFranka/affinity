@@ -18,6 +18,10 @@
         </ion-slide>
         <ion-slide>
           <my-teams />
+          <ion-button fill="clear" size="large" @click="done()">
+            Done
+            <ion-icon slot="end" :icon="checkmark"></ion-icon>
+          </ion-button>
         </ion-slide>
         <ion-slide>
           <h1>Slide 3</h1>
@@ -28,9 +32,9 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from "vue";
+import { defineComponent, ref } from "vue";
 import { IonSlides, IonSlide, IonPage, IonButton, IonIcon } from "@ionic/vue";
-import { arrowForward } from "ionicons/icons";
+import { arrowForward, checkmark } from "ionicons/icons";
 import MyTeams from "@/components/my-teams/my-teams.vue";
 
 // import { useStore } from "../stores/";
@@ -39,6 +43,7 @@ export default defineComponent({
   components: { IonSlides, IonSlide, IonPage, IonButton, IonIcon, MyTeams },
   setup() {
     // const store = useStore();
+    const sliderRef = ref<typeof IonSlides>();
 
     const slideOpts = {
       initialSlide: 0,
@@ -49,13 +54,16 @@ export default defineComponent({
       spaceBetween: 0,
     };
 
-    return { slideOpts, arrowForward };
-  },
-  methods: {
-    async slideTo(index: number) {
-      const slider = this.$refs.sliderRef as typeof IonSlides;
-      await slider.$el.slideTo(index);
-    },
+    async function slideTo(index: number) {
+      const slider = sliderRef.value;
+      await slider?.$el.slideTo(index);
+    }
+
+    async function done() {
+      console.log("finished");
+    }
+
+    return { slideTo, done, sliderRef, slideOpts, checkmark, arrowForward };
   },
 });
 </script>
