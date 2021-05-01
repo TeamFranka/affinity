@@ -15,10 +15,13 @@ while ! pgrep -x "docker-up" > /dev/null; do sleep 1; done
 
 echo "docker running"
 
+sleep 3
+
 CONTAINER=affinity_dashboard_1
 
 # start docker-compose if not running
-if [ $(docker inspect --format '{{json .State.Running}}' $CONTAINER 2> /dev/null) == false ]; then
+# if [[ ! $(docker inspect --format '{{json .State.Running}}' affinity_dashboard_1 2> /dev/null) ]]; then echo 'not running'; fi
+if [[ ! $(docker inspect --format '{{json .State.Running}}' $CONTAINER 2> /dev/null) == false ]]; then
   echo "containers not running"
   export VUE_APP_PARSE_URL=$(gp url 8080)/parse
   docker-compose up -d
