@@ -21,7 +21,17 @@ CONTAINER=affinity_dashboard_1
 
 # start docker-compose if not running
 # if [[ ! $(docker inspect --format '{{json .State.Running}}' affinity_dashboard_1 2> /dev/null) ]]; then echo 'not running'; fi
-if [[ ! $(docker inspect --format '{{json .State.Running}}' $CONTAINER 2> /dev/null) ]]; then
+# STATUS=$(docker inspect --format '{{json .State.Running}}' affinity_dashboard_1 2> /dev/null)
+# STATUS=$(! (docker inspect --format '{{json .State.Running}}' affinity_mongo_1) || (docker inspect --format '{{json .State.Running}}' affinity_mongo_1 == false)  2> /dev/null)
+
+#
+# if [ -z "$STATUS" ] || [[ $STATUS == false ]]; then echo 'not running'; fi
+
+# if [[ $(docker inspect --format '{{json .State.Running}}' affinity_dashboard_1 2> /dev/null) == false ]]; then echo 'not running'; fi
+# if [[ ! $(docker inspect --format '{{json .State.Running}}' $CONTAINER 2> /dev/null) ]]; then
+
+STATUS=$(docker inspect --format '{{json .State.Running}}' affinity_mongo_1 2> /dev/null)
+if [ -z "$STATUS" ] || [[ $STATUS == false ]]; then
   echo "containers not running"
   export VUE_APP_PARSE_URL=$(gp url 8080)/parse
   docker-compose up -d
