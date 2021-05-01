@@ -83,7 +83,8 @@ console.log('myArgs: ', args);
     }));
 
     console.info("Looking up Team(s)")
-    await Promise.all(mocks.Teams.map(async (data, index) => {
+    for (let index = 0; index < mocks.Teams.length; index++) {
+        const data = mocks.Teams[index];
         const Team = Parse.Object.extend("Team");
         let team = await (new Parse.Query(Team))
             .equalTo("slug", data.slug)
@@ -118,7 +119,7 @@ console.log('myArgs: ', args);
         }
 
         teams[data.slug] = team
-    }));
+    }
 
     console.info("Ensuring Devices");
     for (let i = 0; i < mocks.Devices.length; i++) {
