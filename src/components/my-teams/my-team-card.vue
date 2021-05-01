@@ -12,7 +12,7 @@
             {{ team?.name }}
           </router-link>
         </ion-card-title>
-        <ion-chip v-if="isMember">
+        <ion-chip v-if="isMember" @click="leave">
           <ion-icon :icon="checkmarkOutline"></ion-icon>
           <ion-label>Member</ion-label>
         </ion-chip>
@@ -34,7 +34,6 @@
 </template>
 
 <script lang="ts">
-import Parse from "parse";
 import { defineComponent, computed, toRefs, watchEffect } from "vue";
 import {
   IonCard,
@@ -71,7 +70,7 @@ export default defineComponent({
     MyTeamSubteam,
   },
   setup(props) {
-    const { state } = useStore();
+    const { state, dispatch } = useStore();
     const { teamId } = toRefs(props);
 
     const team = computed(() => TeamsStore.team(teamId.value));
@@ -84,12 +83,12 @@ export default defineComponent({
 
     async function join() {
       console.log("join", { teamId: teamId.value });
-      await Parse.Cloud.run("join", { teamId: teamId.value });
+      await dispatch("auth/joinTeam", teamId.value);
     }
 
     async function leave() {
       console.log("leave", { teamId: teamId.value });
-      await Parse.Cloud.run("leave", { teamId: teamId.value });
+      await dispatch("auth/leaveTeam", teamId.value);
     }
 
     watchEffect(() => {
