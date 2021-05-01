@@ -200,7 +200,7 @@ Parse.Cloud.beforeSave("Team", async (request) => {
     if (parentTeam) {
       await parentTeam.fetch({ useMasterKey: true });
 
-      if (!await parentTeam.isMember("leaders", user.id)) {
+      if (!request.master && !await parentTeam.isMember("leaders", user.id)) {
         throw "Only admins can create sub teams"
       }
 
