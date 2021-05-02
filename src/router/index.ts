@@ -47,15 +47,31 @@ const routes: Array<RouteRecordRaw> = [
     beforeEnter: ensureLoggedIn,
   },
   {
+    path: "/donate",
+    name: "Donations",
+    component: Donations,
+  },
+  {
     path: "/me",
     name: "Me",
     component: Me,
     beforeEnter: ensureLoggedIn,
   },
   {
-    path: "/donate",
-    name: "Donations",
-    component: Donations,
+    path: "/settings/notifications",
+    name: "SettingsNotifications",
+    component: SettingsNotifications,
+  },
+  {
+    path: "/settings/general",
+    name: "SettingsGeneral",
+    component: SettingsGeneral,
+    beforeEnter: ensureLoggedIn,
+  },
+  {
+    path: "/settings/",
+    name: "Settings",
+    component: Settings,
   },
   {
     path: "/",
@@ -103,21 +119,6 @@ const routes: Array<RouteRecordRaw> = [
         path: 'gallery',
         name: 'Gallery',
         component: Gallery
-      },
-      {
-        path: "/settings/notifications",
-        name: "SettingsNotifications",
-        component: SettingsNotifications,
-      },
-      {
-        path: "/settings/general",
-        name: "SettingsGeneral",
-        component: SettingsGeneral,
-      },
-      {
-        path: "/settings/",
-        name: "Settings",
-        component: Settings,
       },
       {
         path: "/",
