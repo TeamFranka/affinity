@@ -3,7 +3,7 @@
     <ion-item v-if="isBookmarked" data-cy-role="unbookmark" button  @click="unbookmark">
         <ion-icon :icon="bookmarkIcon" slot="start" />
         <i18n-t keypath="activity.extras.bookmarked" />
-        <ion-icon :icon="check" slot="end" />
+        <ion-icon :icon="check" color="success" slot="end" />
     </ion-item>
     <ion-item v-else data-cy-role="bookmark" button  @click="bookmark">
         <ion-icon :icon="bookmarkIcon" slot="start" />

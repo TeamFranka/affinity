@@ -1,5 +1,7 @@
 {
   "activity.shared": "shared {since}",
+  "activity.extras.bookmark": "Bookmark",
+  "activity.extras.bookmarked": "Bookmarked",
   "admin.createSubteam.button.create": "Create",
   "admin.createSubteam.label.details": "team description",
   "admin.createSubteam.label.name": "team name",
