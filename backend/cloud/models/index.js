@@ -13,6 +13,7 @@ const Picture = Parse.Object.extend("Picture");
 const FaqEntry = Parse.Object.extend("FaqEntry");
 const Video = Parse.Object.extend("Video");
 const Notification = Parse.Object.extend("Notification");
+const Bookmark = Parse.Object.extend("Bookmark");
 const User = Parse.User;
 const Role = Parse.Role;
 
@@ -55,4 +56,5 @@ module.exports = {
     Video: Video,
     Notification: Notification,
     Objects: Objects,
+    Bookmark: Bookmark,
 }

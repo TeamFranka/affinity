@@ -1,6 +1,6 @@
 /* global Parse */
 
-const { Comment, Notification } = require('./consts');
+const { Comment, Notification, Bookmark } = require('./consts');
 const { GenericObjectParams, fetchModel } = require('./common');
 
 const F_LIKED_BY = "likedBy";
@@ -147,6 +147,7 @@ Parse.Cloud.define("like", async (request) => {
 },
 GenericObjectParams);
 
+
 Parse.Cloud.define("unlike", async (request) => {
   const model = await fetchModel(request);
   const user = request.user;
@@ -160,6 +161,37 @@ Parse.Cloud.define("unlike", async (request) => {
       await model.save(null, { useMasterKey: true });
     }
   }
+  return model
+},
+GenericObjectParams);
+
+
+Parse.Cloud.define("bookmark", async (request) => {
+  const model = await fetchModel(request);
+  const user = request.user;
+  const bookmark = (new Parse.Query(Bookmark))
+    .equalTo("author", user)
+    .equalTo("on". model.toPointer())
+    .first({sessionToken: user.getSessionToken()});
+  if (!bookmark) {
+    await Bookmark({
+      author: user,
+      on: model.toPointer()
+    }).save();
+    model.set("bookmarked", true);
+  }
+  return model
+},
+GenericObjectParams);
+
+Parse.Cloud.define("unbookmark", async (request) => {
+  const model = await fetchModel(request);
+  const user = request.user;
+  await (new Parse.Query(Bookmark))
+    .equalTo("author", user)
+    .equalTo("on". model.toPointer())
+    .delete({sessionToken: user.getSessionToken()});
+  model.set("bookmarked", false);
   return model
 },
 GenericObjectParams);
