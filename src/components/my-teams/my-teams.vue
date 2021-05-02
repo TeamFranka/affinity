@@ -2,7 +2,7 @@
   <ion-header>
     <div class="title ion-padding-horizontal">
       <h2>My Teams</h2>
-      <div>4 selected</div>
+      <div>{{ count }} selected</div>
     </div>
     <ion-toolbar>
       <ion-searchbar v-model="query" placeholder="Search"></ion-searchbar>
@@ -19,11 +19,13 @@ import { IonHeader, IonContent, IonToolbar, IonSearchbar } from "@ionic/vue";
 import { checkmarkOutline, addCircle, closeCircle } from "ionicons/icons";
 import MyTeamCard from "../my-teams/my-team-card.vue";
 import TeamsStore from "@/stores/TeamsStore";
+import { useStore } from "@/stores";
 
 export default defineComponent({
   name: "my-teams",
   components: { IonHeader, IonContent, IonToolbar, IonSearchbar, MyTeamCard },
   setup() {
+    const { state } = useStore();
     const loading = ref(true);
     const teams = computed(() => TeamsStore.rootTeams);
     const query = ref("");
@@ -35,6 +37,12 @@ export default defineComponent({
             name?.toLocaleLowerCase().includes(query.value.toLocaleLowerCase())
         )
         .map(({ objectId }) => objectId)
+    );
+    const count = computed(
+      () =>
+        teamIds.value.filter(
+          (teamId) => state.auth.teamPermissions[teamId]?.isMember
+        )?.length
     );
 
     onMounted(async () => {
@@ -48,6 +56,7 @@ export default defineComponent({
     });
 
     return {
+      count,
       teamIds,
       query,
       loading,
