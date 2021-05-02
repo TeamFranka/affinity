@@ -107,19 +107,22 @@ import { useStore } from "../stores/";
 import { defineComponent, computed, watchEffect } from "vue";
 import InlineLinkList from "../components/generic/inline-link-list.vue";
 import Avatar from "../components/avatar.vue";
+import { useRouter } from "vue-router";
 
 export default defineComponent({
   name: "CommunityOutlet",
 
   setup() {
     const store = useStore();
+    const router = useRouter();
     const user = computed(() => store.state.auth.user);
 
     watchEffect(() => {
       if (user.value) {
-        const welcomeDisplayed = user.value?.welcomeDisplayed;
-        if (!welcomeDisplayed) {
+        const welcomeDone = user.value?.settings?.welcomeDone;
+        if (!welcomeDone) {
           console.log("redirect to welcome");
+          router.push("/welcome");
         }
       }
     });
