@@ -18,13 +18,10 @@
         </ion-slide>
         <ion-slide>
           <my-teams />
-          <ion-button fill="clear" size="large" @click="done()">
+          <ion-button class="done" fill="outline" size="large" @click="done()">
             Done
             <ion-icon slot="end" :icon="checkmark"></ion-icon>
           </ion-button>
-        </ion-slide>
-        <ion-slide>
-          <h1>Slide 3</h1>
         </ion-slide>
       </ion-slides>
     </div>
@@ -37,12 +34,9 @@ import { IonSlides, IonSlide, IonPage, IonButton, IonIcon } from "@ionic/vue";
 import { arrowForward, checkmark } from "ionicons/icons";
 import MyTeams from "@/components/my-teams/my-teams.vue";
 
-// import { useStore } from "../stores/";
-
 export default defineComponent({
   components: { IonSlides, IonSlide, IonPage, IonButton, IonIcon, MyTeams },
   setup() {
-    // const store = useStore();
     const sliderRef = ref<typeof IonSlides>();
 
     const slideOpts = {
@@ -79,10 +73,15 @@ ion-slide {
   max-width: 100vw;
   display: flex;
   flex-direction: column;
-  padding-bottom: 120px;
+  padding-bottom: 10px;
 }
 
 ion-slide > img {
   display: block;
+}
+
+.done {
+  align-self: flex-end;
+  margin: 10px 10px 0 0;
 }
 </style>
