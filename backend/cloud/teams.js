@@ -52,7 +52,8 @@ Parse.Cloud.define("joinTeam", async (request) => {
   console.log("join started");
   const user = request.user;
   const teamId = request.params.teamId;
-  const team = await (new Parse.Query(Team)).get(teamId);
+  const sessionToken = user.getSessionToken();
+  const team = await (new Parse.Query(Team)).get(teamId, { sessionToken });
   console.log("3");
 
   if (!await team.isMember("members", user.id)) {
@@ -75,8 +76,8 @@ Parse.Cloud.define("joinTeam", async (request) => {
 Parse.Cloud.define("leaveTeam", async (request) => {
   const user = request.user;
   const teamId = request.params.teamId;
-  const team = await (new Parse.Query(Team)).get(teamId);
-  console.log(team, team.toJSON());
+  const sessionToken = user.getSessionToken();
+  const team = await (new Parse.Query(Team)).get(teamId, { sessionToken });
   const rolesToUpdate = [];
   for (let index = 0; index < ROLES.length; index++) {
     const role = ROLES[index];
@@ -101,10 +102,15 @@ Parse.Cloud.define("leaveTeam", async (request) => {
 });
 
 Parse.Cloud.define("getTeam", async (request) => {
+  const user = request.user;
   const slug = request.params.slug;
   const team = await ((new Parse.Query(Team))
     .equalTo("slug", slug)
-    .first());
+    .first(user ? { sessionToken: user.getSessionToken() } : null));
+
+  if (!team) {
+    return Promise.reject(Parse.Error.OBJECT_NOT_FOUND)
+  }
 
   const roleIds = fetchRoles(request.user);
   const permissions = { [team.id]: getPermissionsForTeam(roleIds, team) };
@@ -197,7 +203,7 @@ Parse.Cloud.beforeSave("Team", async (request) => {
     if (parentTeam) {
       await parentTeam.fetch({ useMasterKey: true });
 
-      if (!await parentTeam.isMember("leaders", user.id)) {
+      if (!request.master && !await parentTeam.isMember("leaders", user.id)) {
         throw "Only admins can create sub teams"
       }
 

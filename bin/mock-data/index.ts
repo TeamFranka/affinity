@@ -47,8 +47,33 @@ export const Users = [
     {
         username: "graham",
         password: "graham",
-        name: "Graham",
+        name: "graham",
         avatar: makeFile('graham.png')
+    },
+    {
+        username: "jack",
+        password: "jack",
+        name: "Jack Harness"
+    },
+    {
+        username: "gwen",
+        password: "gwen",
+        name: "Gwen Cooper"
+    },
+    {
+        username: "owen",
+        password: "owen",
+        name: "Owen Harper",
+    },
+    {
+        username: "toshiko",
+        password: "toshiko",
+        name: "Toshiko Sato",
+    },
+    {
+        username: "martha",
+        password: "martha",
+        name: "Martha Jones",
     }
 ]
 
@@ -143,12 +168,23 @@ export const Teams = [
         slug: "team-earth",
         name: "Team Earth",
         admin: 'graham',
-        members: ['graham', 'yaz', 'clara', 'river', 'ryan', 'bill'],
+        members: ['graham', 'yaz', 'clara', 'ryan', 'bill'],
         publishers: ['yaz'],
         agents: ['yaz'],
         params: {
             subOf: "doctor-who",
             avatar: makeFile('doctor.png')
+        }
+    },
+    { //non default top-level team
+        slug: "torchwood",
+        name: "Torchwood",
+        admin: 'jack',
+        members: ['jack', 'gwen', 'owen', 'toshiko', 'martha'],
+        publishers: ['gwen'],
+        agents: ['owen'],
+        params: {
+            avatar: makeFile('team-torchwood.jpg')
         }
     }
 ];
@@ -209,13 +245,19 @@ export const Posts = [
     }
 ]
 
-const randomUser = () => Users[Math.floor(Math.random() * Users.length)].username;
+const TeamsBySlug : Record<any, any> = {};
+Teams.forEach(t => {
+    TeamsBySlug[t.slug] = t
+});
+
+const randomEntry = (base: any[]) => base[Math.floor(Math.random() * base.length)];
+const randomTeam = () => randomEntry(Teams).slug;
 
 for (var i = 0; i < 100; i++) {
-    Posts.push({
-        team: i % 7 == 0 ? 'doctor-who' : (i % 5 == 0 ? "team-earth" : "doctor-who"),
-        verb: i % 7 == 0 ? "announce" :  "post",
-        author: i % 7 == 0 ? 'river' : randomUser(),
+    const team : string = i % 7 == 0 ? 'doctor-who' : randomTeam();
+    const verb : string = i % 7 == 0 ? "announce" :  "post";
+    const author = randomEntry(TeamsBySlug[team][verb == "announce" ? "publishers" : "members"])
+    Posts.push({team, verb, author,
         text: "This is post number " + i,
         visibility: i % 3 == 0 ? "members" : "public",
     })
