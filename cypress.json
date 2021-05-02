@@ -1,5 +1,6 @@
 {
   "pluginsFile": "tests/e2e/plugins/index.js",
   "defaultCommandTimeout": 10000,
+  "projectId": "cd1zgr",
   "baseUrl": "http://localhost:8080/"
 }
