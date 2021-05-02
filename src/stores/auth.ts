@@ -314,6 +314,24 @@ export const AuthState = {
         (e: string) => console.warn("Aborted unliking: ", e)
       );
     },
+    async bookmark(context: any, params: any) {
+      return context.dispatch("afterLogin").then(
+        async () => {
+          const obj = await Parse.Cloud.run("bookmark", params);
+          await context.commit("setItem", toModel(obj), { root: true });
+        },
+        (e: string) => console.warn("Aborted bookmarking: ", e)
+      );
+    },
+    async unbookmark(context: any, params: any) {
+      return context.dispatch("afterLogin").then(
+        async () => {
+          const obj = await Parse.Cloud.run("unbookmark", params);
+          await context.commit("setItem", toModel(obj), { root: true });
+        },
+        (e: string) => console.warn("Aborted unbookmarking: ", e)
+      );
+    },
     async react(context: any, params: any) {
       return context.dispatch("afterLogin").then(
         async () => {
