@@ -42,10 +42,10 @@
         </i18n-t>
       </div>
       <div>
-        <ion-icon v-if="isBookmarked">
+        <ion-button data-cy-role="bookmarked" @click="unbookmark"  v-if="isBookmarked" fill="clear" color="dark">
           <ion-icon :icon="bookmarkIcon" />
-        </ion-icon>
-        <ion-button data-cy-role="extra" v-if="showExtraActions" fill="clear" color="dark">
+        </ion-button>
+        <ion-button data-cy-role="extra" v-if="showExtraActions" @click="openExtrasMenu" fill="clear" color="dark">
           <ion-icon :icon="extraMenuIcon" />
         </ion-button>
       </div>
@@ -81,10 +81,10 @@
         </router-link>
       </div>
       <div>
-        <ion-icon v-if="isBookmarked">
+        <ion-button data-cy-role="bookmarked" @click="unbookmark" v-if="isBookmarked" fill="clear" color="dark">
           <ion-icon :icon="bookmarkIcon" />
-        </ion-icon>
-        <ion-button data-cy-role="extra" v-if="showExtraActions" fill="clear" color="dark">
+        </ion-button>
+        <ion-button data-cy-role="extra" v-if="showExtraActions" @click="openExtrasMenu" fill="clear" color="dark">
           <ion-icon :icon="extraMenuIcon" />
         </ion-button>
       </div>
@@ -103,6 +103,7 @@
 <script lang="ts">
 import {
   IonCard, IonCardHeader, IonIcon, IonNote, IonButton,
+  popoverController,
 } from "@ionic/vue";
 import {
   chevronForwardOutline as teamSplitterIcon,
@@ -118,6 +119,7 @@ import Avatar from "./avatar.vue";
 import RenderObjects from "./render-objects.vue";
 import InteractionBar from "./interaction-bar.vue";
 import RenderMd from "./render-md.vue";
+import ActivityExtrasMenu from "./activity-extras-menu.vue";
 import { useStore } from "../stores/";
 import { defineComponent, computed } from "vue";
 import { Parse } from "../config/Consts";
@@ -163,7 +165,7 @@ export default defineComponent({
         this.objects[0].className == "Link"
       );
     },
-    bookmarked(): boolean {
+    isBookmarked(): boolean {
       return !!this.activity.bookmarked
     },
     objectsClass(): string {
@@ -230,6 +232,9 @@ export default defineComponent({
       );
       this.showComments = true;
     },
+    unbookmark() {
+      this.store.dispatch("auth/unbookmark", this.activity.toPointer());
+    },
     setDraft(text: string) {
       this.store.commit("comments/setDraft", {
         objectId: this.activity.objectId,
@@ -242,6 +247,19 @@ export default defineComponent({
         ptr: this.activity.toPointer(),
         text,
       });
+    },
+    async openExtrasMenu(ev: Event) {
+      const popover = await popoverController
+        .create({
+          component: ActivityExtrasMenu,
+          cssClass: 'my-custom-class',
+          componentProps: {
+            activity: this.activity,
+          },
+          event: ev,
+          translucent: true
+        })
+      await popover.present();
     },
   },
   components: {

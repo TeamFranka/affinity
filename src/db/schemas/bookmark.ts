@@ -19,23 +19,33 @@ export const Bookmark = {
   ),
   classLevelPermissions: {
     find: {
-      requiresAuthentication: true,
+        pointerFields: [
+            "author"
+        ]
     },
     count: {
-      requiresAuthentication: true,
+        pointerFields: [
+            "author"
+        ]
     },
     get: {
-      requiresAuthentication: true,
+        pointerFields: [
+            "author"
+        ]
     },
     create: {
-      requiresAuthentication: true,
+        requiresAuthentication: true
     },
-    update: {},
+    update: {
+        pointerFields: [
+            "author"
+        ]
+    },
     delete: {
-      requiresAuthentication: true,
+        pointerFields: [
+            "author"
+        ]
     },
-    addField: {},
-    protectedFields: {},
   },
   indexes: {},
 };

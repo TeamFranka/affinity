@@ -168,31 +168,39 @@ GenericObjectParams);
 
 Parse.Cloud.define("bookmark", async (request) => {
   const model = await fetchModel(request);
+  const className = request.params.className;
+  const objectId = model.id;
   const user = request.user;
-  const bookmark = (new Parse.Query(Bookmark))
+  const sessionToken = user.getSessionToken();
+  const bookmark = await (new Parse.Query(Bookmark))
     .equalTo("author", user)
-    .equalTo("on". model.toPointer())
-    .first({sessionToken: user.getSessionToken()});
+    .equalTo("on.className", className)
+    .equalTo("on.objectId", objectId)
+    .first({sessionToken});
   if (!bookmark) {
-    await Bookmark({
+    await (new Bookmark()).save({
       author: user,
-      on: model.toPointer()
-    }).save();
-    model.set("bookmarked", true);
+      on: { className, objectId }
+    }, {sessionToken});
   }
-  return model
+  return {objectId, bookmarked: true}
 },
 GenericObjectParams);
 
 Parse.Cloud.define("unbookmark", async (request) => {
   const model = await fetchModel(request);
   const user = request.user;
-  await (new Parse.Query(Bookmark))
-    .equalTo("author", user)
-    .equalTo("on". model.toPointer())
-    .delete({sessionToken: user.getSessionToken()});
-  model.set("bookmarked", false);
-  return model
+  const sessionToken = user.getSessionToken();
+  const className = request.params.className;
+  const objectId = model.id;
+  const bookmark = await (new Parse.Query(Bookmark))
+    .equalTo("on.className", className)
+    .equalTo("on.objectId", objectId)
+    .first({sessionToken});
+  if (bookmark) {
+    await bookmark.destroy({sessionToken});
+  }
+  return {objectId, bookmarked: false}
 },
 GenericObjectParams);
 

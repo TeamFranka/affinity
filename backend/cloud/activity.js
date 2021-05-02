@@ -37,11 +37,12 @@ Parse.Cloud.beforeSave(Activity, async (request) => {
 
 Parse.Cloud.afterFind(Activity, async (request) => {
     if (request.user) {
-        const pointers = request.objects.map(a => a.toPointer());
+        const ids = request.objects.map(model => model.id);
         const bookmarks = {};
         (await (new Parse.Query(Bookmark))
             .equalTo("author", request.user)
-            .containedIn("on", pointers)
+            .equalTo("on.className", "Activity")
+            .containedBy("on.objectId", ids)
             .find({sessionToken: request.user.getSessionToken()})
         ).map((b) => {
             bookmarks[b.get("on").objectId] = true;

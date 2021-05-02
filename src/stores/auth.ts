@@ -317,8 +317,8 @@ export const AuthState = {
     async bookmark(context: any, params: any) {
       return context.dispatch("afterLogin").then(
         async () => {
-          const obj = await Parse.Cloud.run("bookmark", params);
-          await context.commit("setItem", toModel(obj), { root: true });
+          const data = await Parse.Cloud.run("bookmark", params);
+          await context.commit("updateItem", data, { root: true });
         },
         (e: string) => console.warn("Aborted bookmarking: ", e)
       );
@@ -326,8 +326,8 @@ export const AuthState = {
     async unbookmark(context: any, params: any) {
       return context.dispatch("afterLogin").then(
         async () => {
-          const obj = await Parse.Cloud.run("unbookmark", params);
-          await context.commit("setItem", toModel(obj), { root: true });
+          const data = await Parse.Cloud.run("unbookmark", params);
+          await context.commit("updateItem", data, { root: true });
         },
         (e: string) => console.warn("Aborted unbookmarking: ", e)
       );

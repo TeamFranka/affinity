@@ -213,6 +213,9 @@ export const GlobalState = {
         state.teamsBySlug[model.slug] = model.objectId;
       }
     },
+    updateItem(state: GlobalStateT, model: Model) {
+      state.objects[model.objectId] = Object.assign(state.objects[model.objectId], model);
+    },
     setDefaultTeamId(state: GlobalStateT, teamId: string) {
       state.defaultTeamId = teamId;
     },
