@@ -168,7 +168,7 @@ export const Teams = [
         slug: "team-earth",
         name: "Team Earth",
         admin: 'graham',
-        members: ['graham', 'yaz', 'clara', 'river', 'ryan', 'bill'],
+        members: ['graham', 'yaz', 'clara', 'ryan', 'bill'],
         publishers: ['yaz'],
         agents: ['yaz'],
         params: {
