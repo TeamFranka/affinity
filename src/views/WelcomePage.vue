@@ -34,10 +34,12 @@ import { useRouter } from "vue-router";
 import { IonSlides, IonSlide, IonPage, IonButton, IonIcon } from "@ionic/vue";
 import { arrowForward, checkmark } from "ionicons/icons";
 import MyTeams from "@/components/my-teams/my-teams.vue";
+import { useStore } from "@/stores";
 
 export default defineComponent({
   components: { IonSlides, IonSlide, IonPage, IonButton, IonIcon, MyTeams },
   setup() {
+    const { dispatch } = useStore();
     const sliderRef = ref<typeof IonSlides>();
     const router = useRouter();
 
@@ -56,6 +58,7 @@ export default defineComponent({
     }
 
     async function done() {
+      await dispatch("auth/setWelcomeDone");
       router.push("/");
     }
 

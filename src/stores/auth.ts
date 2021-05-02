@@ -4,9 +4,11 @@ import { Model, toModel } from "@/utils/model";
 import { initInstallation } from "@/utils/setup";
 import { getCypressEntry } from "@/utils/env";
 import { watch } from "vue";
+import { Module } from "vuex";
 import { deviceLocale } from "@/utils/setup";
 import { dayjs } from "@/config/Consts";
 import i18n from "@/utils/i18n";
+import { State } from ".";
 
 export interface AuthStateT {
   wantsToLogin: boolean;
@@ -30,7 +32,7 @@ function setLocale(locale: string) {
   dayjs.locale(lang);
 }
 
-export const AuthState = {
+export const AuthState: Module<AuthStateT, State> = {
   namespaced: true,
   state: () => {
     const user = currentUser();
@@ -258,6 +260,9 @@ export const AuthState = {
       const user = context.state.user.prepareSave(userdata).toParse();
       await user.save();
       context.commit("setUser", toModel(user));
+    },
+    async setWelcomeDone({ dispatch }) {
+      await dispatch('setSetting', { welcomeDone: true });
     },
     async joinTeam(context: any, teamId: string) {
       const resp = await Parse.Cloud.run("joinTeam", { teamId });
