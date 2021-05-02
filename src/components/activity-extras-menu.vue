@@ -1,12 +1,12 @@
 <template>
   <ion-list>
-    <ion-item v-if="isBookmarked" data-cy-role="unbookmark" button  @click="unbookmark">
-        <ion-icon color="success" :icon="bookmarkIcon" slot="start" />
-        <i18n-t keypath="activity.extras.bookmarked" />
+    <ion-item v-if="isBookmarked" data-cy-role="unbookmark" button @click="unbookmark">
+      <ion-icon color="success" :icon="bookmarkIcon" slot="start" />
+      <i18n-t keypath="activity.extras.bookmarked" />
     </ion-item>
-    <ion-item v-else data-cy-role="bookmark" button  @click="bookmark">
-        <ion-icon color="dark" :icon="bookmarkIcon" slot="start" />
-        <i18n-t keypath="activity.extras.bookmark" />
+    <ion-item v-else data-cy-role="bookmark" button @click="bookmark">
+      <ion-icon color="dark" :icon="bookmarkIcon" slot="start" />
+      <i18n-t keypath="activity.extras.bookmark" />
     </ion-item>
   </ion-list>
 </template>
