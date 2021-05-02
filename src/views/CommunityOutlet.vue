@@ -121,7 +121,6 @@ export default defineComponent({
       if (user.value) {
         const welcomeDone = user.value?.settings?.welcomeDone;
         if (!welcomeDone) {
-          console.log("redirect to welcome");
           router.push("/welcome");
         }
       }

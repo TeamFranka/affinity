@@ -34,7 +34,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, computed, toRefs, watchEffect } from "vue";
+import { defineComponent, computed, toRefs } from "vue";
 import {
   IonCard,
   IonCardHeader,
@@ -82,21 +82,12 @@ export default defineComponent({
     );
 
     async function join() {
-      console.log("join", { teamId: teamId.value });
       await dispatch("auth/joinTeam", teamId.value);
     }
 
     async function leave() {
-      console.log("leave", { teamId: teamId.value });
       await dispatch("auth/leaveTeam", teamId.value);
     }
-
-    watchEffect(() => {
-      console.log(
-        team.value.objectId,
-        subteams.value.map((team) => team.subOf)
-      );
-    });
 
     return {
       leave,
