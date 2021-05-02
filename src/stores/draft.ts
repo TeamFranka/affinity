@@ -72,10 +72,10 @@ export const Draft = {
       return getters.selectedTeam.objectId;
     },
     selectedTeamPerms(state: DraftT, getters: any, rootState: any): any {
-      return rootState.auth.teamPermissions[getters.selectedTeamId];
+      return rootState.auth.teamPermissions[getters.selectedTeamId] || {};
     },
     selectableTypes(state: DraftT, getters: any): Verb[] {
-      const perms = getters.selectedTeamPerms;
+      const perms = getters.selectedTeamPerms || {};
       const types = [];
       if (perms.canPost) {
         types.push(Verb.Post);
