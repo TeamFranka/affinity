@@ -2,7 +2,7 @@
 describe("Visiting the public feed", () => {
   it("Visits the feed", () => {
     const testStr = "This is post number 98";
-    const testStr2 = "This is post number 82";
+    const testStr2 = "This is post number 70";
     cy.visit("/feed");
 
     // there is an element with the default sentence
