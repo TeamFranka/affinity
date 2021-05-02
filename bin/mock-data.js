@@ -13,7 +13,6 @@ Parse.initialize(
 Parse.serverURL = process.env.VUE_APP_PARSE_URL;
 
 const mocks = require('./mock-data/index.ts');
-const { SSL_OP_SSLEAY_080_CLIENT_DH_BUG } = require("constants");
 const users = {};
 const userTokens = {};
 const teams = {};
@@ -82,14 +81,15 @@ console.log('myArgs: ', args);
         users[e.username] = u
     }));
 
+    const Team = Parse.Object.extend("Team");
     console.info("Looking up Team(s)")
     for (let index = 0; index < mocks.Teams.length; index++) {
         const data = mocks.Teams[index];
-        const Team = Parse.Object.extend("Team");
         let team = await (new Parse.Query(Team))
             .equalTo("slug", data.slug)
             .first({ useMasterKey: true });
         if (!team) {
+            console.info(`Creating ${data.name}`)
             team = new Team(Object.assign({
                 slug: data.slug,
                 name: data.name,
@@ -97,6 +97,9 @@ console.log('myArgs: ', args);
             }, remap(data.params)));
             await team.save(null, { useMasterKey: true });
         }
+
+        teams[data.slug] = team
+
         if (index === 0){
             defaultTeamId = team.id
         }
@@ -117,8 +120,6 @@ console.log('myArgs: ', args);
 
             await settings.save(data.settings, {useMasterKey: true});
         }
-
-        teams[data.slug] = team
     }
 
     console.info("Ensuring Devices");
@@ -144,6 +145,10 @@ console.log('myArgs: ', args);
         const Activity = Parse.Object.extend("Activity");
         for (let i = 0; i < mocks.Posts.length; i++) {
             const username = mocks.Posts[i].author;
+            if (!username) {
+                console.warn("Username missing in", mocks.Posts[i]);
+                continue
+            }
             const data = remap(mocks.Posts[i]);
             const sessionToken = await getUserToken(username);
             if (data.objects) {
