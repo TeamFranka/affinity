@@ -30,6 +30,7 @@
 
 <script lang="ts">
 import { defineComponent, ref } from "vue";
+import { useRouter } from "vue-router";
 import { IonSlides, IonSlide, IonPage, IonButton, IonIcon } from "@ionic/vue";
 import { arrowForward, checkmark } from "ionicons/icons";
 import MyTeams from "@/components/my-teams/my-teams.vue";
@@ -38,6 +39,7 @@ export default defineComponent({
   components: { IonSlides, IonSlide, IonPage, IonButton, IonIcon, MyTeams },
   setup() {
     const sliderRef = ref<typeof IonSlides>();
+    const router = useRouter();
 
     const slideOpts = {
       initialSlide: 0,
@@ -54,7 +56,7 @@ export default defineComponent({
     }
 
     async function done() {
-      console.log("finished");
+      router.push("/");
     }
 
     return { slideTo, done, sliderRef, slideOpts, checkmark, arrowForward };
