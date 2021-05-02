@@ -6,7 +6,7 @@
     <ion-item button @click="select({ name: 'Me' })">
       <ion-label
         ><ion-icon :icon="profileIcon" />
-        {{ $t("menu.my.myStuff") }}</ion-label
+        {{ $t("my.menu.title") }}</ion-label
       >
     </ion-item>
     <ion-item button @click="select({ name: 'Settings' })">

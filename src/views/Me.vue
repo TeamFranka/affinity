@@ -21,11 +21,11 @@
             <ion-back-button default-href="home"></ion-back-button>
           </ion-button>
           <ion-label>
-            <i18n-t keypath="me.menu.title"></i18n-t>
+            <i18n-t keypath="my.menu.title"></i18n-t>
           </ion-label>
         </ion-list-header>
         <template v-if="isLoggedIn">
-          <ion-item button @click="$router.push({ name: 'MyBookmarks' })" data-cy-role="bookmark">
+          <ion-item button @click="$router.push({ name: 'Bookmarks' })" data-cy-role="bookmarks">
             <ion-icon :icon="bookmarkIcon" slot="start"/> <i18n-t keypath="menu.bookmarks"/>
           </ion-item>
         </template>

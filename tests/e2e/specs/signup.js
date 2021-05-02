@@ -2,7 +2,7 @@
 describe("Sign up", () => {
   it("Applies for membership of default team", () => {
     cy.signUpAsNewUser();
-    cy.visit("/me");
+    cy.visit("/my");
 
     // Make sure we are a member of the default team
     cy.get("[data-cy=my-teams]").within(() => {
