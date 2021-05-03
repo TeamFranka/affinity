@@ -1,7 +1,7 @@
 /* global Parse */
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
-const Activity = require("./consts.js").Activity;
+const { Activity, Bookmark } = require("./consts.js");
 const common = require('./common');
 const fetchModel = common.fetchModel;
 const enforcACL = common.enforcACL;
@@ -34,6 +34,27 @@ Parse.Cloud.beforeSave(Activity, async (request) => {
 }, {
     requireUser: true
 });
+
+Parse.Cloud.afterFind(Activity, async (request) => {
+    if (request.user) {
+        const ids = request.objects.map(model => model.id);
+        const bookmarks = {};
+        (await (new Parse.Query(Bookmark))
+            .equalTo("author", request.user)
+            .equalTo("on.className", "Activity")
+            .containedBy("on.objectId", ids)
+            .find({sessionToken: request.user.getSessionToken()})
+        ).map((b) => {
+            bookmarks[b.get("on").objectId] = true;
+        })
+
+        request.objects.forEach((x) => {
+            x.set("bookmarked", !!bookmarks[x.id])
+        })
+    }
+    return Promise.resolve(request.objects)
+})
+
 
 // const CHANNELS_MAP = {'announce': 'news', 'post': 'posts'};
 // // We want to push news and actiities

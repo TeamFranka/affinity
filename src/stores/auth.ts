@@ -5,8 +5,25 @@ import { initInstallation } from "@/utils/setup";
 import { getCypressEntry } from "@/utils/env";
 import { watch } from "vue";
 import { deviceLocale } from "@/utils/setup";
-import { dayjs } from "@/config/Consts";
+import { dayjs, Activity } from "@/config/Consts";
 import i18n from "@/utils/i18n";
+
+import { genFeedState } from "./globals";
+
+const MODEL_KEYS = ["object"];
+
+// eslint-disable-next-line @typescript-eslint/no-empty-interface
+export interface NewsT { }
+
+export const Bookmarks = genFeedState({
+  keyword: "bookmarks",
+  fullQueryFn: (_s: any, teams: any) =>
+    new Parse.Query("Bookmark")
+      .include(MODEL_KEYS)
+      .descending("createdAt"),
+  ignoreTeamSelection: true,
+  keys: MODEL_KEYS
+});
 
 export interface AuthStateT {
   wantsToLogin: boolean;
@@ -32,6 +49,9 @@ function setLocale(locale: string) {
 
 export const AuthState = {
   namespaced: true,
+  modules: {
+    bookmarks: Bookmarks
+  },
   state: () => {
     const user = currentUser();
     if (user && user.lang) {
@@ -312,6 +332,24 @@ export const AuthState = {
           await context.commit("setItem", toModel(obj), { root: true });
         },
         (e: string) => console.warn("Aborted unliking: ", e)
+      );
+    },
+    async bookmark(context: any, params: any) {
+      return context.dispatch("afterLogin").then(
+        async () => {
+          const data = await Parse.Cloud.run("bookmark", params);
+          await context.commit("updateItem", data, { root: true });
+        },
+        (e: string) => console.warn("Aborted bookmarking: ", e)
+      );
+    },
+    async unbookmark(context: any, params: any) {
+      return context.dispatch("afterLogin").then(
+        async () => {
+          const data = await Parse.Cloud.run("unbookmark", params);
+          await context.commit("updateItem", data, { root: true });
+        },
+        (e: string) => console.warn("Aborted unbookmarking: ", e)
       );
     },
     async react(context: any, params: any) {

@@ -13,6 +13,7 @@ module.exports = {
     Comment: models.Comment,
     Link: models.Link,
     Notification: models.Notification,
+    Bookmark: models.Bookmark,
     Picture: models.Picture,
     Video: models.Video,
     Objects: models.Objects,

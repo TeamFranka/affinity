@@ -6,7 +6,7 @@ describe("User Profile", () => {
   });
 
   it("can change details", () => {
-    cy.visit("/me");
+    cy.visit("/my");
 
     cy.fixture("images/sontaran.jpg", "base64").then((data) => {
       const avatarBlob = Cypress.Blob.base64StringToBlob(data, "image/jpg");

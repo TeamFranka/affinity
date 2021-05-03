@@ -1,9 +1,12 @@
 <template>
   <ion-list>
+    <ion-item button @click="select({ name: 'ViewUser', params: {userId: user.objectId} })" lines="full" >
+      <avatar size="2rem" :profile="user" with-name />
+    </ion-item>
     <ion-item button @click="select({ name: 'Me' })">
       <ion-label
         ><ion-icon :icon="profileIcon" />
-        {{ $t("menu.my.MyProfile") }}</ion-label
+        {{ $t("my.menu.title") }}</ion-label
       >
     </ion-item>
     <ion-item button @click="select({ name: 'Settings' })">
@@ -29,6 +32,7 @@ import {
   logOutOutline as logOutIcon,
   personCircleOutline as profileIcon,
 } from 'ionicons/icons';
+import Avatar from "@/components/avatar.vue";
 import { useStore } from '../stores/';
 import { defineComponent, computed } from 'vue';
 
@@ -36,6 +40,7 @@ export default defineComponent({
   name: 'MyMenu',
   components: {
     IonList, IonItem, IonLabel, IonIcon,
+    Avatar,
   },
   setup() {
     const store = useStore();
