@@ -7,8 +7,9 @@ import Inbox from "@/views/Inbox.vue";
 import CommunityOutlet from "@/views/CommunityOutlet.vue";
 import Feed from "@/views/Feed.vue";
 import Faq from "@/views/FAQ.vue";
-import Me from "@/views/Me.vue";
-import Bookmarks from "@/views/Bookmarks.vue";
+import My from "@/views/my/Main.vue";
+import Bookmarks from "@/views/my/Bookmarks.vue";
+import MyTeams from "@/views/my/Teams.vue";
 import Login from "@/views/Login.vue";
 import Donations from "@/views/Donations.vue";
 import ViewTeam from "@/views/ViewTeam.vue";
@@ -55,13 +56,19 @@ const routes: Array<RouteRecordRaw> = [
   {
     path: "/my",
     name: "Me",
-    component: Me,
+    component: My,
     beforeEnter: ensureLoggedIn,
   },
   {
     path: "/my/bookmarks",
     name: "Bookmarks",
     component: Bookmarks,
+    beforeEnter: ensureLoggedIn,
+  },
+  {
+    path: "/my/teams",
+    name: "MyTeams",
+    component: MyTeams,
     beforeEnter: ensureLoggedIn,
   },
   {

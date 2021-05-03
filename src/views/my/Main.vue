@@ -29,6 +29,11 @@
             <ion-icon :icon="bookmarkIcon" slot="start"/> <i18n-t keypath="menu.bookmarks"/>
           </ion-item>
         </template>
+        <template v-if="isLoggedIn">
+          <ion-item button @click="$router.push({ name: 'MyTeams' })" data-cy-role="myTeams">
+            <ion-icon :icon="teamsIcon" slot="start"/> <i18n-t keypath="menu.myTeams"/>
+          </ion-item>
+        </template>
         <ion-item
           button
           @click="$router.push({ name: 'Settings' })"
@@ -58,10 +63,10 @@ import {
   IonLabel,
  } from "@ionic/vue";
 import {
-  chatbubbles, logoWhatsapp, cloudUploadOutline,
   notificationsOutline as notificationIcon,
   globeOutline as generalIcon,
   bookmarkOutline as bookmarkIcon,
+  peopleCircleOutline as teamsIcons,
 } from "ionicons/icons";
 import { defineComponent, computed } from "vue";
 import { useStore } from "@/stores/";
@@ -89,9 +94,7 @@ export default defineComponent({
       generalIcon,
       notificationIcon,
       bookmarkIcon,
-      chatbubbles,
-      logoWhatsapp,
-      uploadIcon: cloudUploadOutline,
+      teamsIcons,
     };
   },
   computed: {

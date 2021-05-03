@@ -6,7 +6,7 @@
           <ion-buttons slot="start">
             <ion-back-button />
           </ion-buttons>
-          <ion-label><i18n-t keypath="my.bookmarks.title"/></ion-label>
+          <ion-label><i18n-t keypath="menu.bookmarks"/></ion-label>
         </ion-toolbar>
       </ion-header>
       <div class="wrap">
