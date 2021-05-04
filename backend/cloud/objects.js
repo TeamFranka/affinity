@@ -43,7 +43,7 @@ Parse.Cloud.define("fetchLinkMetadata", async (request) => {
   const html = await response.text();
   const result = await metascraper({ html, url: stripped });
 
-  console.log("results", result);
+
 
   const imgPath = result.image;
 

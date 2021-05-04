@@ -16,12 +16,12 @@ Parse.Cloud.beforeSave(Parse.User, async (request) => {
 });
 
 Parse.Cloud.afterSave(Parse.User, async (request) => {
-    console.log(request.context);
+
     const teams = request.context[TEAM_AUTOSIGNUP];
     const user = request.object;
     if (teams) {
         for (const t of teams) {
-            console.log("asking to join", t);
+
             const team = await (new Parse.Query(Team)).get(t, { useMasterKey: true });
             await team.applyForMembership(user);
         }

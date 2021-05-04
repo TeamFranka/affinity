@@ -49,18 +49,18 @@ Parse.Cloud.define("myTeams", myTeams, {
 });
 
 Parse.Cloud.define("joinTeam", async (request) => {
-  console.log("join started");
+
   const user = request.user;
   const teamId = request.params.teamId;
   const sessionToken = user.getSessionToken();
   const team = await (new Parse.Query(Team)).get(teamId, {sessionToken});
-  console.log("3");
+
 
   if (!await team.isMember("members", user.id)) {
-    console.log("4");
+
     await team.applyForMembership(user);
   }
-  console.log("done");
+
 
   return myTeams(request)
 }, {
@@ -264,7 +264,7 @@ Parse.Cloud.afterSave("Team", async (request) => {
   if (request.original) {
     return // we don't do anything on an update
   }
-  console.log(request.object);
+
   await request.object.fetchWithInclude(CONVO_TEAMS, { useMasterKey: true });
   // create team internal conversations:
   await Parse.Object.saveAll(CONVO_TEAMS.map((roleName) => {

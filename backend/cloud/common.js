@@ -13,19 +13,19 @@ const enforcACL = async (request, team) => {
   const user = request.user;
   if (!user) throw "User must be set";
   if (!leadersRole) throw "Leaders must be set";
-  console.log("checking if leader", user, leadersRole);
+
   const isLeader = await leadersRole
     .getUsers()
     .query()
     .contains("id", user.id)
     .exists({useMasterKey: true});
-  console.log("starting ACL");
+
   const acl = new Parse.ACL();
 
-  console.log("visibility check:", visibility);
+
 
   if (visibility === "public") {
-    console.log("making public");
+
     acl.setPublicReadAccess(true);
   } else if (visibility === "leaders") {
     if (!isLeader) {
@@ -33,12 +33,12 @@ const enforcACL = async (request, team) => {
     }
     // this is set anyways.
   } else {
-    console.log("checking for role", visibility);
+
     const role = team.get(visibility);
     if (!role) {
       throw "Unknown visibility "+ visibility
     }
-    console.log("checking for user");
+
     const isMember = await role
       .getUsers()
       .query()
@@ -48,18 +48,18 @@ const enforcACL = async (request, team) => {
     if (!isLeader && !isMember) {
         throw "Only team leaders and members of the same role can set visibility to it"
     }
-    console.log("setting role");
+
     acl.setRoleReadAccess(role, true);
   }
 
-  console.log("setting admin", leadersRole);
+
   // Admins can read and write all objects
   acl.setRoleReadAccess(leadersRole, true);
   acl.setRoleWriteAccess(leadersRole, true);
 
   const whoCanEdit = team.get("canEdit" + request.object.className);
   if (whoCanEdit) {
-    console.log("canEdit", whoCanEdit);
+
     const editGroup = team.get(whoCanEdit);
     if (editGroup) {
       acl.setRoleReadAccess(editGroup, true);
@@ -67,7 +67,7 @@ const enforcACL = async (request, team) => {
     }
   }
 
-  console.log("end");
+
   // remove the field.
   request.object.unset("visibility");
   // set the ACL
@@ -139,7 +139,7 @@ const fetchModel = async(request, pointer, includes) => {
   if (includes) {
     includes.forEach((i) => query.include(i))
   }
-  console.log('fetching', pointer, request.params, request.context, request.user.getSessionToken());
+
   return await query.get(pointer ? (pointer.objectId || pointer.id ): request.params.objectId,
           {sessionToken: request.context.sessionToken || request.user.getSessionToken()}
       );
