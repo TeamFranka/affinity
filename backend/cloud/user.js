@@ -1,6 +1,6 @@
 /* global Parse */
 const TEAM_AUTOSIGNUP = "signUpForTeams";
-const { Team } = require('./models');
+const { joinTeam } = require("./utils.js");
 
 Parse.Cloud.beforeSave(Parse.User, async (request) => {
     if (request.original) {
@@ -20,10 +20,6 @@ Parse.Cloud.afterSave(Parse.User, async (request) => {
     const teams = request.context[TEAM_AUTOSIGNUP];
     const user = request.object;
     if (teams) {
-        for (const t of teams) {
-
-            const team = await (new Parse.Query(Team)).get(t, { useMasterKey: true });
-            await team.applyForMembership(user);
-        }
+        await Promise.all(teams.map(async (id) => await joinTeam(id, user)));
     };
 });
