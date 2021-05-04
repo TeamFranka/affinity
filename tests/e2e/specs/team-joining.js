@@ -1,6 +1,6 @@
 /// <reference types="Cypress" />
 describe("Joining team", () => {
-  it.skip("Try to join a root team", () => {
+  it("Try to join a root team", () => {
     cy.signUpAsNewUser();
 
     cy.visit("/t/doctor-who");
@@ -26,7 +26,7 @@ describe("Joining team", () => {
     cy.get("ion-alert .alert-button-role-confirm").click();
     cy.get("[data-cy-role=join]").should("exist");
   });
-  it.skip("Try to join a sub team", () => {
+  it("Try to join a sub team", () => {
     cy.signUpAsNewUser();
 
     cy.visit("/t/doctor-who");
@@ -53,7 +53,7 @@ describe("Joining team", () => {
     cy.get("[data-cy-role=join]").should("exist");
   });
 
-  it.skip("Autojoins a subteam team", () => {
+  it("Autojoins a subteam team", () => {
     cy.signUpAsNewUser();
 
     cy.visit("/t/doctor-who");
