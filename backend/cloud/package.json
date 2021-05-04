@@ -3,6 +3,8 @@
   "version": "0.0.1",
   "private": true,
   "dependencies": {
+    "@codepunkt/wasm-layout-text": "^3.0.0",
+    "jimp": "^0.16.1",
     "node-fetch": "^2.6.1",
     "graphql": "^14.0.0",
     "metascraper": "^5.18.12",
