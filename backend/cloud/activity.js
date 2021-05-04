@@ -19,7 +19,7 @@ Parse.Cloud.beforeSave(Activity, async (request) => {
     await team.fetchWithInclude(["members", "publishers", "agents", "mods", "leaders"], {useMasterKey: true})
     const verb = activity.get("verb");
 
-    console.log("can", verb, team);
+
     if (verb == "post" && await team.canDo(user, "canPost")) {
         // is okay
     } else if (verb == "announce" && await team.canDo(user, "canPublish")) {
@@ -28,7 +28,7 @@ Parse.Cloud.beforeSave(Activity, async (request) => {
         // nope, sorry!
         throw "Sorry, I can't let you do " + verb + ", " + user.username
     }
-    console.log("enforcing acl", request, team);
+
     await enforcACL(request, team);
 
 }, {
@@ -96,7 +96,7 @@ Parse.Cloud.afterFind(Activity, async (request) => {
 //             notification.body = `${username}: ${body}`;
 //         }
 //     } else {
-//         console.log("Not pushing", activity);
+//
 //         return
 //     }
 
@@ -131,7 +131,7 @@ Parse.Cloud.afterFind(Activity, async (request) => {
 //         message.where = query;
 //     }
 
-//     console.log("sending push notification", message);
+//
 
 //     return Parse.Push.send(message, { useMasterKey: true });
 // });

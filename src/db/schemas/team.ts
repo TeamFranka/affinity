@@ -42,6 +42,11 @@ export const Team = {
       targetClass: "Team",
       required: false,
     },
+    autojoin: {
+      // when joining here, also automatically join these teams:
+      type: "Array",
+      required: false,
+    },
     membershipAccess: {
       type: "String",
       required: false,

@@ -82,19 +82,24 @@ console.log('myArgs: ', args);
     }));
 
     const Team = Parse.Object.extend("Team");
-    console.info("Looking up Team(s)")
+    console.info("Looking up Team(s)");
+    const teamAutojoins = {};
+
     for (let index = 0; index < mocks.Teams.length; index++) {
         const data = mocks.Teams[index];
         let team = await (new Parse.Query(Team))
             .equalTo("slug", data.slug)
             .first({ useMasterKey: true });
+        if (data.params.autojoin && data.params.autojoin.length > 0) {
+            teamAutojoins[data.slug] = data.params.autojoin;
+        }
         if (!team) {
             console.info(`Creating ${data.name}`)
             team = new Team(Object.assign({
                 slug: data.slug,
                 name: data.name,
                 admin: getUser(data.admin).id
-            }, remap(data.params)));
+            }, remap(data.params), {"autojoin": []}));
             await team.save(null, { useMasterKey: true });
         }
 
@@ -112,15 +117,13 @@ console.log('myArgs: ', args);
             users.add(data[key].map(getUser));
             return role.save(null, { useMasterKey: true })
         }));
-
-        if (data.settings) {
-            console.info(`Setting ${data.name}' Team Settings`);
-            const settings = await (new Parse.Query("TeamSettings"))
-                .get(team.get("settings").id, { useMasterKey: true });
-
-            await settings.save(data.settings, {useMasterKey: true});
-        }
     }
+    console.info("Updating autojoins");
+    await Promise.all(Object.entries(teamAutojoins).map(async ([slug, values]) => {
+        const team = teams[slug];
+        const autojoin = values.map(getTeam);
+        await team.save({autojoin}, { useMasterKey: true })
+    }));
 
     console.info("Ensuring Devices");
     for (let i = 0; i < mocks.Devices.length; i++) {

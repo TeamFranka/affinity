@@ -84,7 +84,7 @@ Parse.Cloud.afterSave("Message", async (request) => {
     throw "Messages can't be edited at the moment"
   }
 
-  console.log("after", request);
+
 
   const pointer = request.object.get("conversation");
   const convo = await fetchModel(request, pointer);

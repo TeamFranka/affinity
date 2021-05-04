@@ -41,7 +41,7 @@ const Team = Parse.Object.extend("Team", {
     },
     canDo: async function(user, field) {
         const lvl = this.get(field) || Defaults[field];
-        console.log("allowed for", this.get("name"), field, user, lvl);
+
         if (lvl === "anyone") {
             return true
         } else if (lvl === "nobody") {
@@ -56,7 +56,7 @@ const Team = Parse.Object.extend("Team", {
             }
         }
 
-        console.log("unknown level, returning false");
+
         return false;
     },
     genPermissions: function(isLeader, isMod, isAgent, isPublisher, isMember) {

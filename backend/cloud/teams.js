@@ -3,7 +3,7 @@
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const CONSTS = require("./consts.js");
 // eslint-disable-next-line @typescript-eslint/no-var-requires
-const { fetchMyTeams } = require("./utils.js");
+const { fetchMyTeams, joinTeam } = require("./utils.js");
 const { Team, Conversation } = CONSTS;
 
 const ROLES = [
@@ -49,19 +49,10 @@ Parse.Cloud.define("myTeams", myTeams, {
 });
 
 Parse.Cloud.define("joinTeam", async (request) => {
-  console.log("join started");
+
   const user = request.user;
   const teamId = request.params.teamId;
-  const sessionToken = user.getSessionToken();
-  const team = await (new Parse.Query(Team)).get(teamId, {sessionToken});
-  console.log("3");
-
-  if (!await team.isMember("members", user.id)) {
-    console.log("4");
-    await team.applyForMembership(user);
-  }
-  console.log("done");
-
+  await joinTeam(teamId, user);
   return myTeams(request)
 }, {
   fields: {
@@ -209,9 +200,9 @@ Parse.Cloud.beforeSave("Team", async (request) => {
         throw "Only admins can create sub teams"
       }
 
-      // FIXME: setting visbility
-
     } else {
+      /// root teams are always public
+      request.object.unset("visibility");
       acl.setPublicReadAccess(true);
     }
 
@@ -243,7 +234,17 @@ Parse.Cloud.beforeSave("Team", async (request) => {
       leaders.getRoles().add(parentLeaders);
       await leaders.save(null, { useMasterKey: true });
 
-      acl.setRoleReadAccess(parentMembers, true);
+      const visibility = request.object.get("visibility");
+      request.object.unset("visibility");
+
+      if (visibility === "public") {
+        acl.setPublicReadAccess(true);
+      } else if (visibility === "private") {
+        // no one else than the parents leaders can see it
+      } else {
+        // by default the parent members can see it
+        acl.setRoleReadAccess(parentMembers, true);
+      }
     }
 
     request.object.set({
@@ -264,7 +265,7 @@ Parse.Cloud.afterSave("Team", async (request) => {
   if (request.original) {
     return // we don't do anything on an update
   }
-  console.log(request.object);
+
   await request.object.fetchWithInclude(CONVO_TEAMS, { useMasterKey: true });
   // create team internal conversations:
   await Parse.Object.saveAll(CONVO_TEAMS.map((roleName) => {
