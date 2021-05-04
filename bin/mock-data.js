@@ -90,6 +90,9 @@ console.log('myArgs: ', args);
         let team = await (new Parse.Query(Team))
             .equalTo("slug", data.slug)
             .first({ useMasterKey: true });
+        if (data.params.autojoin && data.params.autojoin.length > 0) {
+            teamAutojoins[data.slug] = data.params.autojoin;
+        }
         if (!team) {
             console.info(`Creating ${data.name}`)
             team = new Team(Object.assign({
@@ -118,7 +121,8 @@ console.log('myArgs: ', args);
     console.info("Updating autojoins");
     await Promise.all(Object.entries(teamAutojoins).map(async ([slug, values]) => {
         const team = teams[slug];
-        await team.save({"autojoin": values.map(getTeam)}, { useMasterKey: true })
+        const autojoin = values.map(getTeam);
+        await team.save({autojoin}, { useMasterKey: true })
     }));
 
     console.info("Ensuring Devices");
