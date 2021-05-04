@@ -172,6 +172,7 @@ export const Teams = [
         publishers: ['yaz'],
         agents: ['yaz'],
         params: {
+            visibility: "public",
             subOf: "doctor-who",
             avatar: makeFile('doctor.png')
         }
@@ -200,7 +201,7 @@ export const Teams = [
             avatar: makeFile('team-torchwood.jpg')
         }
     },
-    { // non auto-join subteam
+    { // non auto-join subteam that is public
         slug: "tw-london",
         name: "London Base",
         admin: 'jack',
@@ -208,6 +209,7 @@ export const Teams = [
         publishers: ['gwen'],
         agents: ['owen'],
         params: {
+            visibility: "public",
             subOf: "torchwood",
             avatar: makeFile('team-torchwood.jpg')
         }

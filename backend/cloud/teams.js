@@ -222,9 +222,9 @@ Parse.Cloud.beforeSave("Team", async (request) => {
         throw "Only admins can create sub teams"
       }
 
-      // FIXME: setting visbility
-
     } else {
+      /// root teams are always public
+      request.object.unset("visibility");
       acl.setPublicReadAccess(true);
     }
 
@@ -256,7 +256,17 @@ Parse.Cloud.beforeSave("Team", async (request) => {
       leaders.getRoles().add(parentLeaders);
       await leaders.save(null, { useMasterKey: true });
 
-      acl.setRoleReadAccess(parentMembers, true);
+      const visibility = request.object.get("visibility");
+      request.object.unset("visibility");
+
+      if (visibility === "public") {
+        acl.setPublicReadAccess(true);
+      } else if (visibility === "private") {
+        // no one else than the parents leaders can see it
+      } else {
+        // by default the parent members can see it
+        acl.setRoleReadAccess(parentMembers, true);
+      }
     }
 
     request.object.set({
