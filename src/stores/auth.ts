@@ -5,7 +5,7 @@ import { initInstallation } from "@/utils/setup";
 import { getCypressEntry } from "@/utils/env";
 import { watch } from "vue";
 import { deviceLocale } from "@/utils/setup";
-import { dayjs, Activity } from "@/config/Consts";
+import { dayjs } from "@/config/Consts";
 import i18n from "@/utils/i18n";
 
 import { genFeedState } from "./globals";
@@ -17,7 +17,7 @@ export interface NewsT { }
 
 export const Bookmarks = genFeedState({
   keyword: "bookmarks",
-  fullQueryFn: (_s: any, teams: any) =>
+  fullQueryFn: () =>
     new Parse.Query("Bookmark")
       .include(MODEL_KEYS)
       .descending("createdAt"),
