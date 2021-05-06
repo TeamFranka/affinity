@@ -1,5 +1,5 @@
 // Follow the JSON structure from REST API https://docs.parseplatform.org/rest/guide/#schema
-import { CommonFields } from "./common";
+import { CommonFields, Meta } from "./common";
 
 export const Team = {
   className: "Team",
@@ -41,6 +41,12 @@ export const Team = {
       type: "Pointer",
       targetClass: "Team",
       required: false,
+    },
+    ogTemplate: {
+      type: "File",
+    },
+    ogSettings: {
+      type: "Object",
     },
     autojoin: {
       // when joining here, also automatically join these teams:
@@ -97,7 +103,9 @@ export const Team = {
     footerLinks: {
       type: "Array",
     },
-  }),
+  },
+    Meta
+  ),
   classLevelPermissions: {
     find: {
       "*": true,

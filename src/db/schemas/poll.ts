@@ -1,4 +1,4 @@
-import { CommonFields, Interactable, ViewTracking, Closable } from "./common";
+import { CommonFields, Interactable, ViewTracking, Closable, Meta } from "./common";
 
 export const Poll = {
   className: "Poll",
@@ -58,7 +58,8 @@ export const Poll = {
     },
     Closable,
     Interactable,
-    ViewTracking
+    ViewTracking,
+    Meta,
   ),
   classLevelPermissions: {
     find: {

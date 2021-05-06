@@ -53,3 +53,9 @@ export const Closable = {
     targetClass: "_User",
   },
 };
+
+export const Meta = {
+  ogImage: {
+    type: "File"
+  },
+}

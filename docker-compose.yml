@@ -7,10 +7,13 @@ services:
   parse:
     build: ./backend/
     image: "lightyear/affinity-backend:latest"
-    command: "--appId APPLICATION_ID --masterKey MASTER_KEY --databaseURI mongodb://mongo/dev --cloud /parse-server/cloud/main.js /parse-server/custom-config.json"
+    environment:
+      PUBLIC_PATH: "/public"
+    command: "./server.js"
     volumes:
       - ./backend/cloud:/parse-server/cloud
-      - ./backend/parse-config.json:/parse-server/custom-config.json
+      - ./backend/public:/parse-server/cloud/public
+      - ./backend/server.js:/parse-server/server.js
     ports:
       - 1337:1337
     links:

@@ -14,8 +14,27 @@ const FaqEntry = Parse.Object.extend("FaqEntry");
 const Video = Parse.Object.extend("Video");
 const Notification = Parse.Object.extend("Notification");
 const Bookmark = Parse.Object.extend("Bookmark");
-const User = Parse.User;
+const User = Parse.Object.extend(Parse.User, {
+  makeOpenGraphData: function(req) {
+    const data = {
+        "ogTitle": this.get("name"),
+        "ogDescription": this.get("info"),
+        "ogUsername": this.get("slug"),
+        "ogType": "profile",
+        "images": [
+            `${req.protocol}://${req.hostname}/og/user/${this.id}/image.png`
+        ]
+    }
+    const avatar = this.get("avatar");
+    if (avatar) {
+        data.images.push(avatar.url())
+    }
+    return data;
+  }
+});
 const Role = Parse.Role;
+
+
 
 const Poll = Parse.Object.extend("Poll", {
     canEdit: function(user, team) {
@@ -38,23 +57,35 @@ const Objects = [
     Video,
 ];
 
+const OGObjects = {
+  FaqEntry,
+  Poll,
+  Document,
+  Link,
+  Picture,
+  Video,
+  Team,
+  User,
+};
+
 module.exports = {
-    User: User,
-    Role: Role,
-    Parse: Parse,
-    Team: Team,
-    Activity: Activity,
-    ChatWidgetSettings: ChatWidgetSettings,
-    Conversation: Conversation,
-    Document: Document,
-    Comment: Comment,
-    Message: Message,
-    Link: Link,
-    Poll: Poll,
-    Picture: Picture,
-    FaqEntry: FaqEntry,
-    Video: Video,
-    Notification: Notification,
-    Objects: Objects,
-    Bookmark: Bookmark,
+  OGObjects,
+  User,
+  Role,
+  Parse,
+  Team,
+  Activity,
+  ChatWidgetSettings,
+  Conversation,
+  Document,
+  Comment,
+  Message,
+  Link,
+  Poll,
+  Picture,
+  FaqEntry,
+  Video,
+  Notification,
+  Objects,
+  Bookmark,
 }
