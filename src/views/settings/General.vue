@@ -21,10 +21,10 @@
             <ion-label>
             {{ $t('setting.general.forceDarkMode') }}
             </ion-label>
-            <ion-toggle 
+            <ion-toggle
             @ion-change="forceDark($event.detail.checked)"
             :checked="forceDarkMode" slot="end"/>
-            
+
           </ion-item>
 
         </ion-list>
@@ -50,6 +50,7 @@ import {
 } from "ionicons/icons";
 import { defineComponent, computed } from "vue";
 import { useStore } from "@/stores/";
+import { forceDarkTheme, automaticDarkMode } from "@/utils/theme";
 
 const SUPPORTED_LANGUAGES = [
   ["de", "Deutsch"],
@@ -67,7 +68,14 @@ export default defineComponent({
       themes: computed(() => store.state.auth.user?.settings?.themes),
       hasPush: computed(() => store.getters['auth/hasPush']),
       langChange:  (lang: string) => store.dispatch("auth/setLang", lang),
-      forceDark: (forceDarkMode: boolean) => {store.dispatch("auth/setSetting", {forceDarkMode}); document.body.classList.toggle('dark', forceDarkMode);  },
+      forceDark: (force: boolean) => {
+        store.dispatch("auth/setSetting", {forceDarkMode: force});
+        if(force) {
+          forceDarkTheme(true);
+        } else {
+          automaticDarkMode();
+        }
+      },
       SUPPORTED_LANGUAGES, generalIcon, notificationIcon,
     }
   },
