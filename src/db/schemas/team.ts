@@ -42,6 +42,12 @@ export const Team = {
       targetClass: "Team",
       required: false,
     },
+    ogTemplate: {
+      type: "File",
+    },
+    ogSettings: {
+      type: "Object",
+    },
     autojoin: {
       // when joining here, also automatically join these teams:
       type: "Array",
