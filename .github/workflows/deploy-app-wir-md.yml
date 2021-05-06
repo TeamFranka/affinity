@@ -14,7 +14,7 @@ env:
   CAP_PROJECT: wir-md
   CAP_PATH: wir-md
   APPCENTER_PROJECT_ANDROID: TeamFranka/Wir.md-Android
-  APPCENTER_PROJECT_IOS: TeamFranka/Affinity-Live-iOS
+  APPCENTER_PROJECT_IOS: TeamFranka/Wir.md-iOS
 
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
