@@ -8,5 +8,7 @@ COPY cloud/package*.json ./affinity/
 RUN npm install ./affinity
 
 USER node
+CMD ["./bin/parse-server"]
+ENTRYPOINT ["node"]
 
 EXPOSE 1337
