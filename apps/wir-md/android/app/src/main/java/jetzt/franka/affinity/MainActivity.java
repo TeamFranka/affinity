@@ -1,4 +1,4 @@
-package jetzt.franka.affinity;
+package md.wir.app;
 
 import android.os.Bundle;
 
