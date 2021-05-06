@@ -1,10 +1,10 @@
 import Parse from "parse";
 import { TModel } from "./globals";
-import User from "./user";
+import { ParseUser } from "./user";
 
 export default interface TRole extends TModel {
   name: string;
-  users: Parse.Relation<ParseRole, User>;
+  users: Parse.Relation<ParseRole, ParseUser>;
   roles: Parse.Relation<ParseRole, ParseRole>;
   type: string;
 }
