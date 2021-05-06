@@ -22,5 +22,5 @@ app.use('/parse', api);
 require("/parse-server/cloud/app.js");
 
 app.listen(1337, function() {
-  console.log('parse-server-example running on port 1337.');
+  console.log('------- parse-server-example running on port 1337.');
 });

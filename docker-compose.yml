@@ -7,9 +7,12 @@ services:
   parse:
     build: ./backend/
     image: "lightyear/affinity-backend:latest"
+    environment:
+      PUBLIC_PATH: "/public"
     command: "./server.js"
     volumes:
       - ./backend/cloud:/parse-server/cloud
+      - ./backend/public:/parse-server/cloud/public
       - ./backend/server.js:/parse-server/server.js
     ports:
       - 1337:1337
