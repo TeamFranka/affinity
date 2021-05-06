@@ -7,8 +7,8 @@ const KEYS = [
   "Parse/APPLICATION_ID/currentUser",
 ];
 
-Cypress.Commands.add("signUpAsNewUser", (u) => {
-  const username = u || `sontaran-${Math.floor(Math.random() * 1000000)}`;
+Cypress.Commands.add("signUpAsNewUser", ({ user, handleWelcome } = { handleWelcome: true }) => {
+  const username = user || `sontaran-${Math.floor(Math.random() * 1000000)}`;
 
   cy.visit("/news");
   cy.get("[data-cy-role=loginModal]").click();
@@ -25,6 +25,11 @@ Cypress.Commands.add("signUpAsNewUser", (u) => {
     cy.get("ion-button[data-cy-role=registerSubmit]").click();
   });
   cy.get("[data-cy-role=loginModal]").should("not.exist", { timeout: 10000 });
+
+  // handles welcome only if displayed - no assertion
+  if (handleWelcome) {
+    cy.get('ion-slide + ion-slide ion-button.done')?.click();
+  }
 });
 
 Cypress.Commands.add("loggedInAs", (username) => {
