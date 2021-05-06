@@ -36,6 +36,7 @@ import FooterMenu from "@/components/footer-menu.vue";
 import LoginModal from "@/components/login-modal.vue";
 import HeaderBar from "@/components/header-bar.vue";
 import { isMobileInstallation, setupNotificationActions } from "@/utils/setup";
+import { forceDarkTheme, automaticDarkMode } from "@/utils/theme";
 import {
   ActionPerformed,
   PushNotificationSchema,
@@ -94,12 +95,16 @@ export default defineComponent({
     if (store.state.auth.wantsToLogin) {
       updateLoginModal(true, false);
     }
-        
+
     watch(
       () => store.state.auth.user,
       async (newVal, oldVal) => {
         if (newVal && newVal != oldVal) {
-          document.body.classList.toggle('dark', newVal?.settings?.forceDarkMode);
+          if(newVal?.settings?.forceDarkMode) {
+            forceDarkTheme(true);
+          } else {
+            automaticDarkMode();
+          }
           if (!newVal.emailVerified) {
             const inDanger = olderThanDays(newVal.createdAt, 5);
             const toast = await toastController.create({
