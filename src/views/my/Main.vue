@@ -2,12 +2,10 @@
   <ion-page>
     <ion-content>
       <profile-card
-        can-edit show-qr show-info show-menu
+        v-if="user"
+        can-edit show-qr show-info
         :profile="user"
-        :segments-value="segmentSelected"
-        :segments="segments"
         :info="user.info"
-        @segment-selected="segmentSelected = $event"
         @intend-select-avatar="selectNewAvatar"
         @remove-background="removeBackground"
         @intend-select-background="selectNewBackground"
@@ -16,39 +14,38 @@
         @intend-edit-social-links="intendEditSocialLinks"
       >
       </profile-card>
-      <div v-if="segmentSelected == 'qrcode'" class="ion-padding">
-        <qrcode
-          :text="fullLink"
-          :logo="logo"
-          :height="256"
-          :width="256"
-        />
-        <div v-for="l in socialLinks" :key="l.target">
-          <qrcode
-            :text="l.target"
-            :logo="getSocialIcon(l.platform)"
-            class="socialLinks"
-          />
-        </div>
-      </div>
-      <div v-else-if="segmentSelected == 'teams'">
-        <div data-cy="my-teams">
-          <h2>{{ $t("me.membership.title") }}</h2>
-          <router-link
-            v-for="t in myTeams"
-            :key="t.id"
-            :to="{ name: 'ViewTeam', params: { teamSlug: t.slug } }"
-          >
-            <avatar size="2em" :profile="t" with-name />
-          </router-link>
-        </div>
-      </div>
+
+      <ion-list>
+        <ion-list-header>
+          <ion-button size="small" color="dark">
+            <ion-back-button default-href="home"></ion-back-button>
+          </ion-button>
+          <ion-label>
+            <i18n-t keypath="my.menu.title"></i18n-t>
+          </ion-label>
+        </ion-list-header>
+        <template v-if="isLoggedIn">
+          <ion-item button @click="$router.push({ name: 'Bookmarks' })" data-cy-role="bookmarks">
+            <ion-icon :icon="bookmarkIcon" slot="start"/> <i18n-t keypath="menu.bookmarks"/>
+          </ion-item>
+        </template>
+        <template v-if="isLoggedIn">
+          <ion-item button @click="$router.push({ name: 'MyTeams' })" data-cy-role="myTeams">
+            <ion-icon :icon="teamsIcon" slot="start"/> <i18n-t keypath="menu.myTeams"/>
+          </ion-item>
+        </template>
+        <ion-item
+          button
+          @click="$router.push({ name: 'Settings' })"
+        >
+          <ion-icon :icon="generalIcon" slot="start" /> <i18n-t keypath="menu.settings"/>
+        </ion-item>
+      </ion-list>
     </ion-content>
   </ion-page>
 </template>
 
 <script lang="ts">
-import Avatar from "@/components/avatar.vue";
 import ProfileCard from "@/components/profile-card.vue";
 import GenericEditorModal from "@/components/settings/generic-editor-modal.vue";
 import EditLinks from "@/components/settings/edit-links.vue";
@@ -57,13 +54,24 @@ import {
   IonContent,
   IonPage,
   modalController,
+  IonList,
+  IonListHeader,
+  IonItem,
+  IonIcon,
+  IonBackButton,
+  IonButton,
+  IonLabel,
  } from "@ionic/vue";
-import { chatbubbles, logoWhatsapp, cloudUploadOutline } from "ionicons/icons";
+import {
+  notificationsOutline as notificationIcon,
+  globeOutline as generalIcon,
+  bookmarkOutline as bookmarkIcon,
+  peopleCircleOutline as teamsIcons,
+} from "ionicons/icons";
 import { defineComponent, computed } from "vue";
 import { useStore } from "@/stores/";
 import Parse from "parse";
 import { takePicture, Photo } from "@/utils/camera";
-import Qrcode from "@/components/qrcode.vue";
 import { absoluteUrl } from "@/utils/url";
 
 export default defineComponent({
@@ -82,9 +90,11 @@ export default defineComponent({
       setUserAvatar: (f: Parse.File) => store.dispatch("auth/setAvatar", f),
       setUserBackground: (f: Parse.File) => store.dispatch("auth/setBackground", f),
       setUserData: (d: any) => store.dispatch("auth/setUserData", d),
-      chatbubbles,
-      logoWhatsapp,
-      uploadIcon: cloudUploadOutline,
+      isLoggedIn: computed(() => store.getters["auth/isLoggedIn"]),
+      generalIcon,
+      notificationIcon,
+      bookmarkIcon,
+      teamsIcons,
     };
   },
   computed: {
@@ -188,11 +198,16 @@ export default defineComponent({
     },
   },
   components: {
-    Avatar,
     ProfileCard,
     IonPage,
     IonContent,
-    Qrcode,
+    IonList,
+    IonListHeader,
+    IonItem,
+    IonIcon,
+    IonBackButton,
+    IonButton,
+    IonLabel,
   },
 });
 </script>

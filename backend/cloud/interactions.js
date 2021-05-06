@@ -1,6 +1,6 @@
 /* global Parse */
 
-const { Comment, Notification } = require('./consts');
+const { Comment, Notification, Bookmark } = require('./consts');
 const { GenericObjectParams, fetchModel } = require('./common');
 
 const F_LIKED_BY = "likedBy";
@@ -147,6 +147,7 @@ Parse.Cloud.define("like", async (request) => {
 },
 GenericObjectParams);
 
+
 Parse.Cloud.define("unlike", async (request) => {
   const model = await fetchModel(request);
   const user = request.user;
@@ -161,6 +162,45 @@ Parse.Cloud.define("unlike", async (request) => {
     }
   }
   return model
+},
+GenericObjectParams);
+
+
+Parse.Cloud.define("bookmark", async (request) => {
+  const model = await fetchModel(request);
+  const className = request.params.className;
+  const objectId = model.id;
+  const user = request.user;
+  const sessionToken = user.getSessionToken();
+  const bookmark = await (new Parse.Query(Bookmark))
+    .equalTo("author", user)
+    .equalTo("on.className", className)
+    .equalTo("on.objectId", objectId)
+    .first({sessionToken});
+  if (!bookmark) {
+    await (new Bookmark()).save({
+      author: user,
+      on: { className, objectId }
+    }, {sessionToken});
+  }
+  return {objectId, bookmarked: true}
+},
+GenericObjectParams);
+
+Parse.Cloud.define("unbookmark", async (request) => {
+  const model = await fetchModel(request);
+  const user = request.user;
+  const sessionToken = user.getSessionToken();
+  const className = request.params.className;
+  const objectId = model.id;
+  const bookmark = await (new Parse.Query(Bookmark))
+    .equalTo("on.className", className)
+    .equalTo("on.objectId", objectId)
+    .first({sessionToken});
+  if (bookmark) {
+    await bookmark.destroy({sessionToken});
+  }
+  return {objectId, bookmarked: false}
 },
 GenericObjectParams);
 

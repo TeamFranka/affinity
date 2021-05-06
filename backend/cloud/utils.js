@@ -15,6 +15,33 @@ async function fetchMyTeams(user) {
   return { roleIds, teams }
 }
 
+async function joinTeam(teamId, user) {
+  console.log(user.id, "wants to join", teamId);
+  const sessionToken = user.getSessionToken();
+  const team = await (new Parse.Query(Team)).get(teamId, {sessionToken});
+
+  if (!await team.isMember("members", user.id)) {
+    // before joining, make sure we are member of their parent, too
+    const subOf = team.get("subOf");
+    if (subOf) {
+      await joinTeam(subOf.id, user);
+    }
+
+    await team.applyForMembership(user);
+    // need to refresh after becoming a member to ensure we can see the teams we should autojoin
+    await team.fetch({sessionToken});
+
+    const autojoinTeams = team.get("autojoin") || [];
+
+    if (autojoinTeams.length > 0) {
+      await Promise.all(autojoinTeams.map(async ptr =>
+        await joinTeam(ptr.id, user)
+      ))
+    }
+  }
+}
+
 module.exports = {
-  fetchMyTeams
+  fetchMyTeams,
+  joinTeam,
 };

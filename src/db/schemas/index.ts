@@ -13,6 +13,7 @@ import { Comment } from "./comment";
 import { Activity } from "./activity";
 import { Installation } from "./installation";
 import { Notification } from "./notification";
+import { Bookmark } from "./bookmark";
 
 export const All = [
   User,
@@ -30,6 +31,7 @@ export const All = [
   Activity,
   Comment,
   Notification,
+  Bookmark,
   // direct Messaging
   Message,
   Conversation,

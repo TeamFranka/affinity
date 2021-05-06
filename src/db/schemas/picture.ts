@@ -1,4 +1,4 @@
-import { CommonFields, Interactable, ViewTracking } from "./common";
+import { CommonFields, Interactable, ViewTracking, Meta } from "./common";
 
 export const Picture = {
   className: "Picture",
@@ -24,7 +24,8 @@ export const Picture = {
       },
     },
     Interactable,
-    ViewTracking
+    ViewTracking,
+    Meta,
   ),
   classLevelPermissions: {
     find: {

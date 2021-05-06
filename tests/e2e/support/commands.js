@@ -45,7 +45,7 @@ Cypress.Commands.add("loggedInAs", (username) => {
     }
   }
 
-  cy.visit("/inbox");
+  cy.visit("/my");
   // cy.get('[data-cy-role=userMenu]').should('not.exist');
   // cy.get('[data-cy-role=loginModal]').click();
   cy.get("ion-modal").within(() => {

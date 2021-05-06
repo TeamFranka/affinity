@@ -17,6 +17,22 @@ const Defaults = {
 const Levels = ["anyone", "members", "publishers", "mods", "leaders", "nobody"];
 
 const Team = Parse.Object.extend("Team", {
+    makeOpenGraphData: function(req) {
+        const data = {
+            "ogTitle": this.get("name"),
+            "ogDescription": this.get("info"),
+            "ogUsername": this.get("slug"),
+            "ogType": "profile",
+            "images": [
+                `${req.protocol}://${req.hostname}/og/Team/${this.id}/image.png`
+            ]
+        }
+        const avatar = this.get("avatar");
+        if (avatar) {
+            data.images.push(avatar.url())
+        }
+        return data;
+    },
     applyForMembership: async function(user) {
         const accessLevel = this.get("membershipAccess") || 'open';
         switch(accessLevel) {
@@ -41,7 +57,7 @@ const Team = Parse.Object.extend("Team", {
     },
     canDo: async function(user, field) {
         const lvl = this.get(field) || Defaults[field];
-        console.log("allowed for", this.get("name"), field, user, lvl);
+
         if (lvl === "anyone") {
             return true
         } else if (lvl === "nobody") {
@@ -56,7 +72,7 @@ const Team = Parse.Object.extend("Team", {
             }
         }
 
-        console.log("unknown level, returning false");
+
         return false;
     },
     genPermissions: function(isLeader, isMod, isAgent, isPublisher, isMember) {

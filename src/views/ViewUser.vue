@@ -30,7 +30,6 @@ import { IonContent, IonPage, IonSpinner } from "@ionic/vue";
 import { defineComponent } from "vue";
 import { Model } from "@/utils/model";
 import { useStore } from "../stores/";
-import { useRoute } from "vue-router";
 import { absoluteUrl } from "@/utils/url";
 
 export default defineComponent({

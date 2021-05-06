@@ -172,6 +172,7 @@ export const Teams = [
         publishers: ['yaz'],
         agents: ['yaz'],
         params: {
+            visibility: "public",
             subOf: "doctor-who",
             avatar: makeFile('doctor.png')
         }
@@ -184,6 +185,32 @@ export const Teams = [
         publishers: ['gwen'],
         agents: ['owen'],
         params: {
+            autojoin: ["tw-cardiff"],
+            avatar: makeFile('team-torchwood.jpg')
+        }
+    },
+    { // auto-join subteam
+        slug: "tw-cardiff",
+        name: "Cardiff Base",
+        admin: 'jack',
+        members: ['jack', 'gwen', 'owen', 'toshiko', 'martha'],
+        publishers: ['gwen'],
+        agents: ['owen'],
+        params: {
+            subOf: "torchwood",
+            avatar: makeFile('team-torchwood.jpg')
+        }
+    },
+    { // non auto-join subteam that is public
+        slug: "tw-london",
+        name: "London Base",
+        admin: 'jack',
+        members: ['jack', 'gwen', 'owen', 'toshiko', 'martha'],
+        publishers: ['gwen'],
+        agents: ['owen'],
+        params: {
+            visibility: "public",
+            subOf: "torchwood",
             avatar: makeFile('team-torchwood.jpg')
         }
     }
