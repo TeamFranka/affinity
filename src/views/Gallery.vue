@@ -9,7 +9,7 @@
       :value="searchValue"
       @ion-change="searchValue = $event.target.value"
     />
-    <ion-content scroll-x="false" scroll-y="false">
+    <ion-content scroll-x="false" scroll-y="false" data-cy="activity-gallery">
       <ion-grid>
         <ion-row>
           <ion-col
@@ -20,6 +20,7 @@
           >
             <div :key="index" class="grid-div">
               <img
+                data-cy="image"
                 class="grid-img"
                 :src="item.file?.url"
                 @click="viewPicture(item, index)"
