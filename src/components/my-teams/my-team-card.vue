@@ -14,11 +14,11 @@
         </ion-card-title>
         <ion-chip v-if="isMember" @click="leave">
           <ion-icon :icon="checkmarkOutline"></ion-icon>
-          <ion-label>Member</ion-label>
+          <ion-label>{{ $t("myTeams.button.leave") }}</ion-label>
         </ion-chip>
         <ion-chip v-if="!isMember" color="light" class="join" @click="join">
           <ion-icon :icon="add"></ion-icon>
-          <ion-label>Join</ion-label>
+          <ion-label>{{ $t("myTeams.button.join") }}</ion-label>
         </ion-chip>
       </div>
     </ion-card-header>

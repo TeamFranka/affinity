@@ -3,19 +3,16 @@
     <div class="wrapper">
       <ion-slides pager="true" :options="slideOpts" ref="sliderRef">
         <ion-slide>
-          <img src="assets/welcome.svg" alt="Welcome" />
+          <img src="assets/welcome.svg" :alt="$t('welcome.title')" />
           <div class="ion-padding" @click="slideTo(1)">
-            <h1>Welcome</h1>
-            <p>
-              Glad, you've decided to join us. <br />Just a few more steps to
-              get you all set up and ready to go.
-            </p>
+            <h1>{{ $t("welcome.title") }}</h1>
+            <p v-html="$t('welcome.message')"></p>
             <ion-button
               fill="clear"
               size="large"
               data-cy="welcome-slide1-next-button"
             >
-              Let's go
+              {{ $t("welcome.button.go") }}
               <ion-icon slot="end" :icon="arrowForward"></ion-icon>
             </ion-button>
           </div>
@@ -23,7 +20,7 @@
         <ion-slide>
           <my-teams />
           <ion-button class="done" fill="outline" size="large" @click="done()">
-            Done
+            {{ $t("welcome.button.done") }}
             <ion-icon slot="end" :icon="checkmark"></ion-icon>
           </ion-button>
         </ion-slide>

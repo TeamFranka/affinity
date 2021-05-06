@@ -1,11 +1,14 @@
 <template>
   <ion-header>
     <div class="title ion-padding-horizontal">
-      <h2>My Teams</h2>
-      <div>{{ count }} selected</div>
+      <h2>{{ $t("myTeams.title") }}</h2>
+      <div>{{ $t("myTeams.selectedNumber", { count }) }}</div>
     </div>
     <ion-toolbar>
-      <ion-searchbar v-model="query" placeholder="Search"></ion-searchbar>
+      <ion-searchbar
+        v-model="query"
+        :placeholder="$t('myTeams.placeholder.search')"
+      ></ion-searchbar>
     </ion-toolbar>
   </ion-header>
   <ion-content>
