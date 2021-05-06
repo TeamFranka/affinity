@@ -10,7 +10,11 @@
               Glad, you've decided to join us. <br />Just a few more steps to
               get you all set up and ready to go.
             </p>
-            <ion-button fill="clear" size="large">
+            <ion-button
+              fill="clear"
+              size="large"
+              data-cy="welcome-slide1-next-button"
+            >
               Let's go
               <ion-icon slot="end" :icon="arrowForward"></ion-icon>
             </ion-button>

@@ -1,5 +1,5 @@
 <template>
-  <ion-chip @click="click">
+  <ion-chip @click="click" :class="isMember ? 'leave' : 'join'">
     <ion-icon :icon="isMember ? closeCircle : addCircle"></ion-icon>
     <ion-label>{{ team.name }}</ion-label>
   </ion-chip>
