@@ -10,7 +10,7 @@ tasks:
   - command: .gitpod/boot_containers.sh
   - before: |
       npm install
-      export VUE_APP_PARSE_URL=`(gp url 1337)`/parse
+      export VUE_APP_PARSE_URL=`(gp url 8080)`/parse
       .gitpod/devserver.sh
     init: .gitpod/init.sh
     # init: |
