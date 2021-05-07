@@ -13,7 +13,7 @@ export interface TTeam extends TModel {
   membershipAccess?: 'open' | 'parent_open' | 'apply' | ' parent_apply' | 'invite'; // open is default
   avatar?: Parse.File;
   background?: Parse.File;
-  customStyles?: string;
+  customStyles?: Partial<CSSStyleDeclaration>;
   info?: string;
   canPost?: string;
   canComment?: string;
