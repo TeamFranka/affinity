@@ -1,7 +1,0 @@
-<?xml version='1.0' encoding='utf-8'?>
-<resources>
-    <string name="app_name">TeamFranka</string>
-    <string name="title_activity_main">TeamFranka</string>
-    <string name="package_name">md.wir.app</string>
-    <string name="custom_url_scheme">md.wir.app</string>
-</resources>
