@@ -1,6 +1,6 @@
 <template>
   <ion-card>
-    <ion-card-header>
+    <ion-card-header :style="headerStyles">
       <router-link :to="linkUrl">
         <ion-avatar>
           <img :src="avatarUrl" />
@@ -12,11 +12,11 @@
             {{ team?.name }}
           </router-link>
         </ion-card-title>
-        <ion-chip v-if="isMember" @click="leave">
+        <ion-chip color="primary" v-if="isMember" class="leave" @click="leave">
           <ion-icon :icon="checkmarkOutline"></ion-icon>
           <ion-label>{{ $t("myTeams.button.leave") }}</ion-label>
         </ion-chip>
-        <ion-chip v-if="!isMember" color="light" class="join" @click="join">
+        <ion-chip color="light" v-if="!isMember" class="join" @click="join">
           <ion-icon :icon="add"></ion-icon>
           <ion-label>{{ $t("myTeams.button.join") }}</ion-label>
         </ion-chip>
@@ -49,6 +49,7 @@ import { checkmarkOutline, addCircle, closeCircle, add } from "ionicons/icons";
 import { useStore } from "@/stores/";
 import TeamsStore from "@/stores/TeamsStore";
 import MyTeamSubteam from "./my-team-subteam.vue";
+import useHeaderStyles from "@/utils/hooks/useHeaderStyles";
 
 export default defineComponent({
   name: "my-team-card",
@@ -74,6 +75,7 @@ export default defineComponent({
     const { teamId } = toRefs(props);
 
     const team = computed(() => TeamsStore.team(teamId.value));
+    const headerStyles = useHeaderStyles(team);
     const subteams = computed(() => TeamsStore.subTeams(teamId.value));
     const linkUrl = computed(() => `/t/${team.value?.slug}`);
     const avatarUrl = computed(() => team.value.avatar?.url() || null);
@@ -90,6 +92,7 @@ export default defineComponent({
     }
 
     return {
+      headerStyles,
       leave,
       join,
       linkUrl,
@@ -107,21 +110,11 @@ export default defineComponent({
 </script>
 
 <style scoped>
-.join {
-  background: #fff;
-  color: #000;
-}
-
-.join ion-icon {
-  color: #000;
-}
-
 ion-card {
   text-align: left;
 }
 
 ion-card-header {
-  background: #118;
   display: flex;
   flex-direction: row;
 }
@@ -132,12 +125,27 @@ ion-card-title {
 
 ion-card-title a {
   text-decoration: none;
-  color: var(--ion-text-color);
+  color: inherit;
 }
 
 ion-card-header ion-chip {
+  border-width: 1px;
+  border-style: solid;
   margin: 0;
 }
+
+ion-card-header ion-chip.leave {
+  border-color: var(--ion-color-contrast);
+  color: var(--ion-color-contrast);
+  background-color: var(--ion-color-primary);
+}
+
+ion-card-header ion-chip.join {
+  border-color: var(--color);
+  color: var(--color);
+  background-color: var(--ion-color-base);
+}
+
 
 ion-avatar {
   display: inline;
@@ -155,15 +163,6 @@ ion-avatar img {
 
 ion-card-content {
   padding: 13px;
-}
-
-ion-chip {
-  color: #fff;
-}
-
-ion-chip ion-icon {
-  color: #fff;
-  margin-right: 5px;
 }
 
 ion-chip ion-label {

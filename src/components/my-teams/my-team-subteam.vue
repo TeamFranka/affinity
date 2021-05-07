@@ -1,5 +1,5 @@
 <template>
-  <ion-chip @click="click" :class="isMember ? 'leave' : 'join'">
+  <ion-chip outline :color="isMember ? 'primary' : ''" @click="click" :class="isMember ? 'leave' : 'join'">
     <ion-icon :icon="isMember ? closeCircle : addCircle"></ion-icon>
     <ion-label>{{ team.name }}</ion-label>
   </ion-chip>
@@ -45,12 +45,17 @@ export default defineComponent({
 </script>
 
 <style scoped>
-ion-chip {
-  color: #fff;
+ion-chip.leave {
+  color: var(--ion-color-primary);
+}
+
+ion-chip.leave ion-icon {
+  color: var(--ion-color-primary);
+  margin-right: 5px;
 }
 
 ion-chip ion-icon {
-  color: #fff;
+  color: var(--color);
   margin-right: 5px;
 }
 
