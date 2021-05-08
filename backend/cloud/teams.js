@@ -19,11 +19,11 @@ async function fetchRoles(user) {
 }
 
 function getPermissionsForTeam(roleIds, team) {
-  const isMember = roleIds.includes(team.get("members").id);
-  const isLeader = roleIds.includes(team.get("leaders").id);
-  const isMod = roleIds.includes(team.get("mods").id);
-  const isPublisher = roleIds.includes(team.get("publishers").id);
-  const isAgent = roleIds.includes(team.get("agents").id);
+  const isMember = !!roleIds && !!team && roleIds.includes(team.get("members").id);
+  const isLeader = !!roleIds && !!team && roleIds.includes(team.get("leaders").id);
+  const isMod = !!roleIds && !!team && roleIds.includes(team.get("mods").id);
+  const isPublisher = !!roleIds && !!team && roleIds.includes(team.get("publishers").id);
+  const isAgent = !!roleIds && !!team && roleIds.includes(team.get("agents").id);
 
   return {
     isMember, isLeader, isMod, isPublisher, isAgent,
@@ -100,11 +100,11 @@ Parse.Cloud.define("getTeam", async (request) => {
     .first(user ? { sessionToken: user.getSessionToken() } : null));
 
   if (!team) {
-    return Promise.reject(Parse.Error.OBJECT_NOT_FOUND)
+    return Promise.reject(Parse.Error.OBJECT_NOT_FOUND);
   }
 
-  const roleIds = fetchRoles(request.user);
-  const permissions = { [team.id]: getPermissionsForTeam(roleIds, team) };
+  const roleIds = await fetchRoles(request.user);
+  const permissions = team ? { [team.id]: getPermissionsForTeam(roleIds, team) } : {};
 
   return { teams: [team], permissions };
 }, {
