@@ -63,6 +63,9 @@ module.exports = {
           : "[name].[chunkhash:8].js";
       },
     },
+    resolve: {
+      symlinks: true
+    }
   },
 
   pluginOptions: {

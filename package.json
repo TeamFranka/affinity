@@ -15,6 +15,7 @@
     "deploy:b4a": "npm run deploy:web && npm run deploy:db",
     "deploy:db": "node -r dotenv/config bin/update-db.js dotenv_config_path=.env.production.local",
     "deploy:web": "ionic build --engine browser && cd backend/cloud && npm install && cd ../ && b4a deploy",
+    "dev:wir-md:android": "ionic capacitor run android -l --external --project wir-md ",
     "dev:android": "ionic capacitor run android -l --external",
     "dev:build-parse": "docker-compose build --no-cache parse",
     "dev:db": "node -r dotenv/config bin/update-db.js dotenv_config_path=.env.development",
