@@ -30,6 +30,7 @@ Cypress.Commands.add("signUpAsNewUser", ({ user, handleWelcome } = { handleWelco
   if (handleWelcome) {
     cy.get('ion-slide + ion-slide ion-button.done')?.click();
   }
+  cy.wait(250);
 });
 
 Cypress.Commands.add("loggedInAs", (username) => {
