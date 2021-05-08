@@ -32,7 +32,8 @@ function getPermissionsForTeam(roleIds, team) {
 }
 
 Parse.Cloud.define("getTeams", async (request) => {
-  const teams = await ((new Parse.Query(Team)).find({ useMasterKey: true }));
+  const user = request.user;
+  const teams = await ((new Parse.Query(Team)).find(user ? { sessionToken: user.getSessionToken() } : null));
   const roleIds = (await fetchRoles(request.user) || []).map(({ id }) => id);
   const permissions = Object.assign({}, ...teams.map(team => ({ [team.id]: getPermissionsForTeam(roleIds, team) })));
 
