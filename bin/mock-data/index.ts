@@ -8,7 +8,7 @@ const fs = require('fs');
 const makeFile = (path: string) => {
     return new Parse.File(
         path,
-        {base64: fs.readFileSync(`${__dirname}/files/${path}`, {encoding: "base64"})}
+        { base64: fs.readFileSync(`${ __dirname }/files/${ path }`, { encoding: "base64" }) }
     );
 }
 
@@ -18,62 +18,95 @@ export const Users = [
         username: "clara",
         password: "clara",
         name: "Clara Oswald",
-        avatar: makeFile('clara.png')
+        avatar: makeFile('clara.png'),
+        settings: {
+            "welcomeDone": true,
+        },
     },
     {
         username: "river",
         password: "river",
         name: "River Song",
-        avatar: makeFile('river.png')
+        avatar: makeFile('river.png'),
+        settings: {
+            "welcomeDone": true,
+        },
     },
     {
         username: "bill",
         password: "bill",
         name: "Bill",
-        avatar: makeFile('bill.png')
+        avatar: makeFile('bill.png'),
+        settings: {
+            "welcomeDone": true,
+        },
     },
     {
         username: "ryan",
         password: "ryan",
         name: "Ryan",
-        avatar: makeFile('ryan.png')
+        avatar: makeFile('ryan.png'),
+        settings: {
+            "welcomeDone": true,
+        },
     },
     {
         username: "yaz",
         password: "yaz",
         name: "Yaz",
-        avatar: makeFile('yaz.png')
+        avatar: makeFile('yaz.png'),
+        settings: {
+            "welcomeDone": true,
+        },
     },
     {
         username: "graham",
         password: "graham",
         name: "graham",
-        avatar: makeFile('graham.png')
+        avatar: makeFile('graham.png'),
+        settings: {
+            "welcomeDone": true,
+        },
     },
     {
         username: "jack",
         password: "jack",
-        name: "Jack Harness"
+        name: "Jack Harness",
+        settings: {
+            "welcomeDone": true,
+        },
     },
     {
         username: "gwen",
         password: "gwen",
-        name: "Gwen Cooper"
+        name: "Gwen Cooper",
+        settings: {
+            "welcomeDone": true,
+        },
     },
     {
         username: "owen",
         password: "owen",
         name: "Owen Harper",
+        settings: {
+            "welcomeDone": true,
+        },
     },
     {
         username: "toshiko",
         password: "toshiko",
         name: "Toshiko Sato",
+        settings: {
+            "welcomeDone": true,
+        },
     },
     {
         username: "martha",
         password: "martha",
         name: "Martha Jones",
+        settings: {
+            "welcomeDone": true,
+        },
     }
 ]
 
@@ -84,10 +117,10 @@ export const UserOverrides = {
     'graham': {
         'emailVerified': true,
     },
-    'river':  {
+    'river': {
         'emailVerified': true,
     },
-    'yaz':  {
+    'yaz': {
         'emailVerified': true,
     },
 }
@@ -257,7 +290,7 @@ export const Posts = [
         text: "Ein freundliches Hallo zu Yaz!!!",
         visibility: "public",
         objects: [
-            {cls: "Picture", file: makeFile('yaz-huge.jpg')}
+            { cls: "Picture", file: makeFile('yaz-huge.jpg') }
         ]
     },
     {
@@ -267,12 +300,12 @@ export const Posts = [
         text: "Ein freundliches Hallo zu Doctor huge!!!",
         visibility: "public",
         objects: [
-            {cls: "Picture", file: makeFile('doctor-huge.jpg')}
+            { cls: "Picture", file: makeFile('doctor-huge.jpg') }
         ]
     }
 ]
 
-const TeamsBySlug : Record<any, any> = {};
+const TeamsBySlug: Record<any, any> = {};
 Teams.forEach(t => {
     TeamsBySlug[t.slug] = t
 });
@@ -281,10 +314,11 @@ const randomEntry = (base: any[]) => base[Math.floor(Math.random() * base.length
 const randomTeam = () => randomEntry(Teams).slug;
 
 for (var i = 0; i < 100; i++) {
-    const team : string = i % 7 == 0 ? 'doctor-who' : randomTeam();
-    const verb : string = i % 7 == 0 ? "announce" :  "post";
+    const team: string = i % 7 == 0 ? 'doctor-who' : randomTeam();
+    const verb: string = i % 7 == 0 ? "announce" : "post";
     const author = randomEntry(TeamsBySlug[team][verb == "announce" ? "publishers" : "members"])
-    Posts.push({team, verb, author,
+    Posts.push({
+        team, verb, author,
         text: "This is post number " + i,
         visibility: i % 3 == 0 ? "members" : "public",
     })
