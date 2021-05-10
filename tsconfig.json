@@ -18,7 +18,7 @@
     ],
     "paths": {
       "@/*": [
-        "src/*",
+        "src/*"
       ]
     },
     "lib": [
@@ -33,7 +33,7 @@
     "src/**/*.tsx",
     "src/**/*.vue",
     "tests/**/*.ts",
-    "tests/**/*.tsx", "src/chat-widget.js"
+    "tests/**/*.tsx"
   ],
   "exclude": [
     "node_modules"
