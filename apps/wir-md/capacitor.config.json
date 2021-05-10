@@ -16,9 +16,5 @@
       "SERVER_URL": "https://codepush.appcenter.ms/"
     }
   },
-  "cordova": {},
-  "server": {
-    "url": "http://192.168.0.117:8100",
-    "cleartext": true
-  }
+  "cordova": {}
 }

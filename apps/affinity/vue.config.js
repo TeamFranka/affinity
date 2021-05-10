@@ -1,6 +1,7 @@
-// eslint-disable-next-line @typescript-eslint/no-var-requires
 const path = require('path');
 const ROOT = path.resolve(__dirname);
+
+console.log("-----ROOOOOT", ROOT);
 
 const PAGE_DEFAULTS = {
   entry: "src/main.ts",
