@@ -19,8 +19,6 @@
     "paths": {
       "@/*": [
         "src/*",
-        "apps/affinity/*",
-        "apps/wir-md/*"
       ]
     },
     "lib": [
@@ -31,7 +29,6 @@
     ]
   },
   "include": [
-    "apps/*/src/**/*.ts",
     "src/**/*.ts",
     "src/**/*.tsx",
     "src/**/*.vue",

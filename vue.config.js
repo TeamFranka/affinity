@@ -1,6 +1,11 @@
+const path = require('path');
+const ROOT = path.resolve(__dirname);
+
+console.log("-----ROOOOOT", ROOT);
+
 const PAGE_DEFAULTS = {
   entry: "src/main.ts",
-  favicon: "public/assets/icon/favicon.png",
+  favicon: path.join(ROOT,"public/assets/icon/favicon.png"),
   template: "src/templates/app.html",
   filename: "index.html",
 };
@@ -52,9 +57,20 @@ module.exports = {
       entry: "src/chat-widget.js",
       template: "src/templates/chat-widget.html",
       filename: "chat-example.html",
+      templateParameters: {
+        settings: Object.assign({}, APP_SETTING_DEFAULTS)
+      }
     },
   },
 
+  // chainWebpack: config => {
+  //   config
+  //     .plugin('fork-ts-checker')
+  //     .tap(args => {
+  //       args[0].typescript.configFile = 'tsconfig.json';
+  //       return args;
+  //     });
+  // },
   configureWebpack: {
     output: {
       filename: (chunkData) => {
@@ -63,9 +79,6 @@ module.exports = {
           : "[name].[chunkhash:8].js";
       },
     },
-    resolve: {
-      symlinks: true
-    }
   },
 
   pluginOptions: {

@@ -14,8 +14,6 @@
     <meta name="format-detection" content="telephone=no" />
     <meta name="msapplication-tap-highlight" content="no" />
 
-    <link rel="shortcut icon" type="image/png" href="<%= BASE_URL %>assets/icon/favicon.png" />
-
     <!-- add to homescreen for ios -->
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-title" content="Affinity" />
@@ -25,7 +23,11 @@
   <body>
     <h1>Affinity Chat Example</h1>
     <script>
-      window.AFFINITY_CHAT_WIDGET = "<%= VUE_APP_DEFAULT_TEAM %>";
+      window.AFFINITY_DEFAULT_TEAM = "<%= settings.AFFINITY_DEFAULT_TEAM %>";
+      window.PARSE_APP_ID = "<%= settings.PARSE_APP_ID %>";
+      window.PARSE_JS_KEY = "<%= settings.PARSE_JS_KEY %>";
+      window.PARSE_URL = "<%= settings.PARSE_URL %>";
+      window.PARSE_LIVE_URL = "<%= settings.PARSE_LIVE_URL %>";
     </script>
   </body>
 
