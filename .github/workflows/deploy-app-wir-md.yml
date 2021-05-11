@@ -201,7 +201,7 @@ jobs:
           appName: ${{env.APPCENTER_PROJECT_ANDROID}}
           token: ${{secrets.APPCENTER_ACCESS_TOKEN}}
           group: "Public Beta"
-          file: app-release-signed.aab
+          file: app-release.aab
           notifyTesters: false
           debug: false
 
