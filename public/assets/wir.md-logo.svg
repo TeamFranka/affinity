@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:xlink="http://www.w3.org/1999/xlink"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="1080"
+   height="1080"
+   viewBox="0 0 285.75 285.75001"
+   version="1.1"
+   id="svg8"
+   inkscape:version="1.0.2 (e86c870879, 2021-01-15, custom)"
+   sodipodi:docname="wir.md-logo.svg">
+  <defs
+     id="defs2">
+    <linearGradient
+       inkscape:collect="always"
+       id="linearGradient839">
+      <stop
+         style="stop-color:#07a8a2;stop-opacity:1"
+         offset="0"
+         id="stop835" />
+      <stop
+         style="stop-color:#22bd91;stop-opacity:1"
+         offset="0.21414298"
+         id="stop847" />
+      <stop
+         style="stop-color:#67ce6f;stop-opacity:1"
+         offset="0.50796604"
+         id="stop843" />
+      <stop
+         style="stop-color:#add942;stop-opacity:1"
+         offset="0.75484711"
+         id="stop845" />
+      <stop
+         style="stop-color:#fbdb00;stop-opacity:1"
+         offset="1"
+         id="stop837" />
+    </linearGradient>
+    <linearGradient
+       inkscape:collect="always"
+       xlink:href="#linearGradient839"
+       id="linearGradient841"
+       x1="0.49825633"
+       y1="0.49825633"
+       x2="285.25174"
+       y2="285.25174"
+       gradientUnits="userSpaceOnUse" />
+  </defs>
+  <sodipodi:namedview
+     id="base"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageopacity="0.0"
+     inkscape:pageshadow="2"
+     inkscape:zoom="0.98994949"
+     inkscape:cx="383.33248"
+     inkscape:cy="560"
+     inkscape:document-units="mm"
+     inkscape:current-layer="text869"
+     inkscape:document-rotation="0"
+     showgrid="false"
+     units="px"
+     inkscape:window-width="1920"
+     inkscape:window-height="1021"
+     inkscape:window-x="0"
+     inkscape:window-y="0"
+     inkscape:window-maximized="1"
+     showguides="true"
+     inkscape:guide-bbox="true" />
+  <metadata
+     id="metadata5">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1">
+    <rect
+       style="fill:url(#linearGradient841);stroke:#ffffff;stroke-width:0.996513;stroke-linecap:round;stroke-linejoin:bevel;paint-order:stroke fill markers;fill-opacity:1"
+       id="rect833"
+       width="284.75348"
+       height="284.75348"
+       x="0.49825633"
+       y="0.49825633" />
+    <g
+       id="g887"
+       transform="translate(4.2222915,-14.346904)">
+      <g
+         aria-label="Wir.md"
+         transform="scale(0.92240874,1.0841181)"
+         id="text869"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:63.4629px;line-height:1.25;font-family:'Futura Stencil ICG';-inkscape-font-specification:'Futura Stencil ICG';letter-spacing:0px;word-spacing:0px;fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:1.58699999;stroke-miterlimit:4;stroke-dasharray:none">
+        <path
+           d="m 56.031717,147.15178 h 8.694417 l 9.582897,-33.25456 10.344453,33.25456 h 8.504028 l 12.819508,-44.04325 h -8.250179 l -8.630954,33.19109 -9.836749,-32.93724 h -9.011732 l -9.519435,33.63534 -8.377102,-33.88919 h -9.329046 z"
+           style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-family:System-ui;-inkscape-font-specification:'System-ui Bold';fill:#ffffff;fill-opacity:1;stroke-width:1.58699999;stroke-miterlimit:4;stroke-dasharray:none;paint-order:stroke fill markers"
+           id="path889" />
+        <path
+           d="m 110.80008,147.15178 h 8.12325 v -30.84297 h -8.12325 z"
+           style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-family:System-ui;-inkscape-font-specification:'System-ui Bold';fill:#ffffff;fill-opacity:1;stroke-width:1.58699999;stroke-miterlimit:4;stroke-dasharray:none;paint-order:stroke fill markers"
+           id="path891"
+           sodipodi:nodetypes="ccccc" />
+        <path
+           d="m 128.06194,147.15178 h 8.12325 V 127.0975 c 1.84042,-2.2212 4.4424,-3.49046 7.29823,-3.49046 1.26926,0 2.79237,0.25386 3.9347,0.6981 l 1.84043,-7.42516 c -1.26926,-0.57117 -2.9193,-0.88848 -4.56933,-0.88848 -3.68085,0 -7.04438,1.77696 -9.39251,4.88664 l -0.76155,-4.56933 h -6.47322 z"
+           style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-family:System-ui;-inkscape-font-specification:'System-ui Bold';fill:#ffffff;fill-opacity:1;stroke-width:1.58699999;stroke-miterlimit:4;stroke-dasharray:none;paint-order:stroke fill markers"
+           id="path893" />
+        <path
+           d="m 158.14335,147.78641 c 3.23661,0 5.39434,-2.34813 5.39434,-5.39435 0,-3.23661 -2.15773,-5.58473 -5.39434,-5.58473 -3.30007,0 -5.45781,2.34812 -5.45781,5.58473 0,3.04622 2.15774,5.39435 5.45781,5.39435 z"
+           style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-family:System-ui;-inkscape-font-specification:'System-ui Bold';fill:#ffffff;fill-opacity:1;stroke-width:1.58699999;stroke-miterlimit:4;stroke-dasharray:none;paint-order:stroke fill markers"
+           id="path895" />
+        <path
+           d="m 211.64257,147.15178 h 8.12325 v -19.03887 c 0,-7.61555 -4.31548,-12.3118 -11.23294,-12.3118 -4.12508,0 -7.99632,1.65003 -10.85215,4.82318 -1.84043,-3.10968 -5.07703,-4.82318 -9.26558,-4.82318 -3.68085,0 -7.17131,1.33272 -9.90022,3.80777 l -1.39618,-3.30007 h -5.83859 v 30.84297 h 8.12325 v -22.14855 c 1.77697,-1.39619 3.87124,-2.15774 6.15591,-2.15774 3.93469,0 5.90204,2.2212 5.90204,6.40975 v 17.89654 h 8.12326 v -19.03887 c 0,-1.01541 -0.0635,-1.96735 -0.25386,-2.91929 1.84043,-1.52311 4.06163,-2.34813 6.40976,-2.34813 3.9347,0 5.90205,2.2212 5.90205,6.40975 z"
+           style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-family:System-ui;-inkscape-font-specification:'System-ui Bold';fill:#ffffff;fill-opacity:1;stroke-width:1.58699999;stroke-miterlimit:4;stroke-dasharray:none;paint-order:stroke fill markers"
+           id="path897" />
+        <path
+           d="m 239.75655,147.78641 c 3.87124,0 7.17131,-1.52311 9.45597,-4.18855 l 1.7135,3.55392 h 5.20396 V 100.2527 h -7.8694 v 17.76961 c -1.96735,-1.58657 -4.50587,-2.34813 -7.42516,-2.34813 -8.69442,0 -14.46954,6.47322 -14.46954,16.30997 0,9.51943 5.52127,15.80226 13.39067,15.80226 z m 8.50403,-9.64636 c -1.39619,1.77696 -3.49046,2.79237 -5.96552,2.79237 -4.75971,0 -7.74247,-3.68085 -7.74247,-9.45598 0,-5.52127 2.79237,-8.94827 7.3617,-8.94827 2.60198,0 4.88664,1.07887 6.34629,2.9193 z"
+           style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-family:System-ui;-inkscape-font-specification:'System-ui Bold';fill:#ffffff;fill-opacity:1;stroke-width:1.58699999;stroke-miterlimit:4;stroke-dasharray:none;paint-order:stroke fill markers"
+           id="path899" />
+      </g>
+      <path
+         style="fill:none;stroke:#e00043;stroke-width:5.17682;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+         d="M 115.3479,114.70928 H 222.68192"
+         id="path871" />
+      <path
+         style="fill:none;stroke:#e00043;stroke-width:5.33946;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+         d="M 44.160457,170.76931 H 233.14496"
+         id="path873" />
+      <text
+         xml:space="preserve"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:18.2335px;line-height:1.25;font-family:'Futura Stencil ICG';-inkscape-font-specification:'Futura Stencil ICG';letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.455837"
+         x="67.864784"
+         y="212.25623"
+         id="text879"
+         transform="rotate(-5.1782228)"><tspan
+           sodipodi:role="line"
+           id="tspan877"
+           x="67.864784"
+           y="212.25623"
+           style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-family:'Permanent Marker';-inkscape-font-specification:'Permanent Marker';fill:#e00043;fill-opacity:1;stroke-width:0.455837">by #TeamFrankA</tspan></text>
+    </g>
+  </g>
+</svg>

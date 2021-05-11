@@ -1,4 +1,4 @@
-import { Parse, Activity, Verb } from "../config/Consts";
+import { Parse, Activity, Verb } from "@/config/Consts";
 import { genFeedState } from "./globals";
 
 const MODEL_KEYS = ["objects", "author", "team"];

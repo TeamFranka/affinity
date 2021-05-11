@@ -15,3 +15,5 @@ export function popCypressEntry(key: string): any {
 
   return value;
 }
+
+export const DEBUG = process.env.NODE_ENV == "development";
