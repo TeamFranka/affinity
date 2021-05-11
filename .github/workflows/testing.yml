@@ -36,7 +36,9 @@ jobs:
         run: npm install
       # Runs
       - name: Check docker
-        run: docker ps -a && docker-compose logs --tail 10
+        run: |
+          docker ps -a && docker-compose logs --tail 10
+          [ `docker ps -q --filter "name=parse" | wc -l` -eq 1 ]
       - name: Set up DB
         run: 'npm run ci:setup-db'
       - name: Running e2e with cypress
