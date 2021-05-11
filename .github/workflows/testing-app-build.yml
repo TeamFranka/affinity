@@ -81,7 +81,7 @@ jobs:
         # ID used to access action output
         id: sign_app
         with:
-          releaseDirectory: apps/${{ env.CAP_PATH }}/android/app/build/outputs/vundle/release
+          releaseDirectory: apps/${{ env.CAP_PATH }}/android/app/build/outputs/bundle/release
           signingKeyBase64: ${{ secrets.ANDROID_KEYSTORE }}
           alias: ${{ secrets.ANDROID_KEY_ALIAS }}
           keyStorePassword: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
