@@ -12,7 +12,7 @@
     </ion-header>
 
     <div class="flip-in" ref="box" v-if="imgDetails && imgDetails.length > 0">
-      <picture-view-modal
+      <picture-view-modal 
         v-for="(item, index) in imgDetails"
         :itemId="item"
         :key="item"
@@ -75,8 +75,6 @@ export default defineComponent({
 
   mounted() {
     if (this.imgDetails.length !== 0) {
-    
- 
     const c: any  = this.$refs.box;
     let prev: any, next: any;
 

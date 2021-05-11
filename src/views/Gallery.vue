@@ -61,8 +61,10 @@ export default defineComponent({
   setup() {
     const store = useStore();
     const pictureArr: any[] = [];
+    
     return {
-      elem: computed(() => store.getters["feed/latestPosts"]),
+      //  elem: computed(() => store.getters["feed/latestPosts"]), 
+       elem: computed(() => store.getters["gallery/entries"]), 
       store,
       pictureArr,
     };
@@ -115,6 +117,9 @@ export default defineComponent({
           tempData.push(x);
         }
       });
+
+      console.log("From gallery page : " , tempData.slice().reverse());
+      
       
       const popover = await modalController.create({
         component: PictureView,

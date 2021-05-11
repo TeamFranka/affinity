@@ -85,7 +85,7 @@ export default defineComponent({
       objs: computed(() => store.getters.objectsMap),
       store,
       commentsIcon,
-      likeIcon,
+      likeIcon
     };
   },
   computed: {
