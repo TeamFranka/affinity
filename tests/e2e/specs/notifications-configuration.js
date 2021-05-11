@@ -1,6 +1,7 @@
 /// <reference types="Cypress" />
 describe("Notification Configuration", () => {
-  it("anon mobile can disable notifications", () => {
+  // FIXME: https://github.com/TeamFranka/affinity/issues/237
+  it.skip("anon mobile can disable notifications", () => {
     const testStr = `${Math.random().toString(36).substring(18)}!`;
 
     const setup = {
