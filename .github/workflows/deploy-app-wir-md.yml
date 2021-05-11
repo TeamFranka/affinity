@@ -70,6 +70,7 @@ jobs:
         with:
           project-path: apps/${{ env.CAP_PATH }}/android
           output-path: android-app.apk
+          gradle-task: assembleRelease
       - uses: r0adkll/sign-android-release@v1
         name: Sign app APK
         # ID used to access action output
