@@ -75,13 +75,13 @@ jobs:
       - name: Build Android App
         run: |
           cd apps/${{ env.CAP_PATH }}/android
-          ./gradlew assembleRelease
+          ./gradlew bundleRelease
       - uses: r0adkll/sign-android-release@v1
-        name: Sign app APK
+        name: Sign app Bundke
         # ID used to access action output
         id: sign_app
         with:
-          releaseDirectory: apps/${{ env.CAP_PATH }}/android/app/build/outputs/apk/release
+          releaseDirectory: apps/${{ env.CAP_PATH }}/android/app/build/outputs/vundle/release
           signingKeyBase64: ${{ secrets.ANDROID_KEYSTORE }}
           alias: ${{ secrets.ANDROID_KEY_ALIAS }}
           keyStorePassword: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
