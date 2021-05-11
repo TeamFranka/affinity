@@ -52,6 +52,9 @@ module.exports = {
       entry: "src/chat-widget.js",
       template: "src/templates/chat-widget.html",
       filename: "chat-example.html",
+      templateParameters: {
+        settings: Object.assign({}, APP_SETTING_DEFAULTS)
+      }
     },
   },
 
