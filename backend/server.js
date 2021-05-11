@@ -1,4 +1,5 @@
 const express = require('express');
+const { createServer } = require('http');
 const { Parse, ParseServer } = require('./lib');
 const app = express();
 global.app = app;
@@ -21,6 +22,10 @@ app.use('/parse', api);
 
 require("/parse-server/cloud/app.js");
 
-app.listen(1337, function() {
-  console.log('------- parse-server-example running on port 1337.');
+
+const httpServer = createServer(app);
+const parseLiveQueryServer = ParseServer.createLiveQueryServer(httpServer);
+
+httpServer.listen(1337, function() {
+  console.warn('------- parse-server-example running on port 1337.');
 });
