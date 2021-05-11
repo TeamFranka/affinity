@@ -13,6 +13,9 @@
 // https://on.cypress.io/configuration
 // ***********************************************************
 
+// enable fail-fast
+import "cypress-fail-fast";
+
 // Import commands.js using ES2015 syntax:
 import "./commands";
 import "./gestures";
