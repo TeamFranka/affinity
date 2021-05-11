@@ -2,7 +2,7 @@ import { createApp } from "vue";
 import { IonicVue } from "@ionic/vue";
 import Widget from "./config/Widget.vue";
 
-import "./registerServiceWorker";
+import "./registerServiceWorker.ts";
 
 /* Core CSS required for Ionic components to work properly */
 import "@ionic/vue/css/core.css";

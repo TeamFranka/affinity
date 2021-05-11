@@ -1,4 +1,4 @@
-import { Parse, Comment } from "../config/Consts";
+import { Parse, Comment } from "@/config/Consts";
 
 export interface CommentT {
   objectId: string;

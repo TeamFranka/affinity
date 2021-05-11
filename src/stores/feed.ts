@@ -1,5 +1,5 @@
-import { Parse, Verb } from "../config/Consts";
-import { Activity } from "../db/models";
+import { Parse, Verb } from "@/config/Consts";
+import { Activity } from "@/db/models";
 import { genFeedState } from "./globals";
 
 // eslint-disable-next-line @typescript-eslint/no-empty-interface

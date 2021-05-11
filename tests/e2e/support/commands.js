@@ -27,6 +27,13 @@ Cypress.Commands.add("signUpAsNewUser", (u) => {
   cy.get("[data-cy-role=loginModal]").should("not.exist", { timeout: 10000 });
 });
 
+Cypress.Commands.add("clearUser", () => {
+  for (const key of KEYS) {
+    // resetting
+    cy.removeLocalStorage(key);
+  }
+})
+
 Cypress.Commands.add("loggedInAs", (username) => {
   if (LOGINS[username]) {
     for (const key of KEYS) {
@@ -34,21 +41,10 @@ Cypress.Commands.add("loggedInAs", (username) => {
     }
     return;
   } else {
-    for (const key of KEYS) {
-      // resetting
-      cy.removeLocalStorage(key);
-    }
+    cy.clearUser();
   }
 
-  cy.visit("/my");
-  // cy.get('[data-cy-role=userMenu]').should('not.exist');
-  // cy.get('[data-cy-role=loginModal]').click();
-  cy.get("ion-modal").within(() => {
-    cy.wait(1000);
-    cy.get("input[name=username]:visible").type(username, { delay: 100 });
-    cy.get("input[name=password]:visible").type(username, { delay: 100 });
-    cy.get("ion-button[data-cy-role=loginSubmit]").click();
-  });
+  cy.visit(`/login?username=${username}&next=/my`);
   cy.get("[data-cy-role=loginModal]").should("not.exist", { timeout: 10000 });
 
   LOGINS[username] = {};

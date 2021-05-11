@@ -1,6 +1,6 @@
 
-import { Parse } from "../config/Consts";
-import { FaqEntry } from "../db/models";
+import { Parse } from "@/config/Consts";
+import { FaqEntry } from "@/db/models";
 import { genFeedState } from "./globals";
 
 // eslint-disable-next-line @typescript-eslint/no-empty-interface

@@ -1,6 +1,10 @@
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const path = require('path');
+const ROOT = path.resolve(__dirname);
+
 const PAGE_DEFAULTS = {
   entry: "src/main.ts",
-  favicon: "public/assets/icon/favicon.png",
+  favicon: path.join(ROOT,"public/assets/icon/favicon.png"),
   template: "src/templates/app.html",
   filename: "index.html",
 };
@@ -57,7 +61,6 @@ module.exports = {
       }
     },
   },
-
   configureWebpack: {
     output: {
       filename: (chunkData) => {

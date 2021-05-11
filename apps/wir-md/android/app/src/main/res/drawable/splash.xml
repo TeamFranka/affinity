@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:opacity="opaque">
+    <item android:drawable="@drawable/ic_launcher_background"/>
+    <item
+        android:gravity="center"
+        android:width="480dp"
+        android:height="480dp"
+        android:drawable="@drawable/ic_launcher_foreground"/>
+</layer-list>
