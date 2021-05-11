@@ -73,16 +73,15 @@ jobs:
       - name: Sync assets
         run: npx ionic capacitor sync --no-build --project ${{ env.CAP_PROJECT }} --verbose android
       - name: Build Android App
-        uses: sparkfabrik/android-build-action@v1.0.0
-        with:
-          project-path: apps/${{ env.CAP_PATH }}/android
-          output-path: android-app.apk
+        run: |
+          cd apps/${{ env.CAP_PATH }}/android
+          ./gradlew assembleRelease
       - uses: r0adkll/sign-android-release@v1
         name: Sign app APK
         # ID used to access action output
         id: sign_app
         with:
-          releaseDirectory: ./
+          releaseDirectory: apps/${{ env.CAP_PATH }}/android/app/build/outputs/apk/release
           signingKeyBase64: ${{ secrets.ANDROID_KEYSTORE }}
           alias: ${{ secrets.ANDROID_KEY_ALIAS }}
           keyStorePassword: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
