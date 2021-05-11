@@ -61,15 +61,6 @@ module.exports = {
       }
     },
   },
-
-  // chainWebpack: config => {
-  //   config
-  //     .plugin('fork-ts-checker')
-  //     .tap(args => {
-  //       args[0].typescript.configFile = 'tsconfig.json';
-  //       return args;
-  //     });
-  // },
   configureWebpack: {
     output: {
       filename: (chunkData) => {
