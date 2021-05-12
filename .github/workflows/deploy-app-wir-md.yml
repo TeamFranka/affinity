@@ -1,8 +1,8 @@
 name: "Deploy Wir.md App"
 on:
   workflow_run:
-    workflows: [ "Test App Build" ]
-    branches: [ main, ben-prepping-wir-md-releasing ]
+    workflows: [ "Deploy Parse" ]
+    branches: [ main, ]
     types:
       - completed
 
@@ -22,7 +22,7 @@ jobs:
 
   release-build:
     runs-on: ubuntu-latest
-    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    # if: ${{ github.event.workflow_run.conclusion == 'success' }}
     steps:
       - name: Download /dist
         uses: dawidd6/action-download-artifact@v2
