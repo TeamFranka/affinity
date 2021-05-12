@@ -44,10 +44,10 @@ module.exports = {
       templateParameters: {
         title: "Wir.md",
         settings: Object.assign({}, APP_SETTING_DEFAULTS, {
-          AFFINITY_DEFAULT_TEAM: "adbcdef",
+          AFFINITY_DEFAULT_TEAM: "jZ4ZFLEnzO",
           PARSE_URL: "https://app.wir.md/parse",
           PARSE_LIVE_URL: "wss://app.wir.md/parse",
-          ANDROID_INSTALL_URL: "https://install.appcenter.ms/orgs/teamfranka/apps/wir.md-android/distribution_groups/public%20beta",
+          ANDROID_INSTALL_URL: "https://play.google.com/store/apps/details?id=md.wir.app",
           IOS_INSTALL_URL: "https://install.appcenter.ms/orgs/teamfranka/apps/wir.md-ios/distribution_groups/public%20beta"
         })
       }
