@@ -132,6 +132,7 @@ jobs:
             ios-app.ipa
       - name: Deploy to App store
         run: |
+          xcrun altool --validate-app --type ios --file ios-app.ipa --username ${{ secrets.APPLE_APP_USER_NAME }} --password ${{ secrets.APPLE_APP_SPECIFIC_PASSWORD }}
           xcrun altool --upload-app --type ios --file ios-app.ipa --username ${{ secrets.APPLE_APP_USER_NAME }} --password ${{ secrets.APPLE_APP_SPECIFIC_PASSWORD }}
 
   deploy-code-push-android:
