@@ -143,9 +143,9 @@ jobs:
           name: dist-production
           path: dist
       - name: Install appcenter
-        run: npm install -g appcenter
+        run: npm install appcenter-cli
       - name: Codepush Android
-        run: appcenter release --token ${{ secrets.APPCENTER_ACCESS_TOKEN }} -m -a ${{env.APPCENTER_PROJECT_ANDROID}} -d Production -c dist -t 1.0.0
+        run: npx appcenter release --token ${{ secrets.APPCENTER_ACCESS_TOKEN }} -m -a ${{env.APPCENTER_PROJECT_ANDROID}} -d Production -c dist -t 1.0.0
 
   deploy-code-push-ios:
     environment: appcenter_deploy
@@ -159,9 +159,9 @@ jobs:
           name: dist-production
           path: dist
       - name: Install appcenter
-        run: npm install -g appcenter
+        run: npm install appcenter-cli
       - name: Codepush iOS
-        run: appcenter release --token ${{ secrets.APPCENTER_ACCESS_TOKEN }} -m -a ${{env.APPCENTER_PROJECT_IOS}} -d Production -c dist -t 1.0.0
+        run: npx appcenter release --token ${{ secrets.APPCENTER_ACCESS_TOKEN }} -m -a ${{env.APPCENTER_PROJECT_IOS}} -d Production -c dist -t 1.0.0
 
   deploy-ios-app:
     environment: appcenter_deploy
@@ -173,9 +173,9 @@ jobs:
         with:
           name: ios-app
       - name: Install appcenter
-        run: npm install -g appcenter
+        run: npm install appcenter-cli
       - name: Deploy to Test Group
-        run: appcenter distribute release --app ${{env.APPCENTER_PROJECT_IOS}} --token ${{secrets.APPCENTER_ACCESS_TOKEN}} --group "Public Beta" -- file ios-app.ipa
+        run: npx appcenter distribute release --app ${{env.APPCENTER_PROJECT_IOS}} --token ${{secrets.APPCENTER_ACCESS_TOKEN}} --group "Public Beta" -- file ios-app.ipa
 
   deploy-android-app:
     environment: appcenter_deploy
@@ -187,6 +187,6 @@ jobs:
         with:
           name: android-app
       - name: Install appcenter
-        run: npm install -g appcenter
+        run: npm install appcenter-cli
       - name: Deploy to Store
-        run: appcenter distribute release --app ${{env.APPCENTER_PROJECT_ANDROID}} --token ${{secrets.APPCENTER_ACCESS_TOKEN}} --store "Production" --file app-release.aab
+        run: npx appcenter distribute release --app ${{env.APPCENTER_PROJECT_ANDROID}} --token ${{secrets.APPCENTER_ACCESS_TOKEN}} --store "Production" --file app-release.aab
