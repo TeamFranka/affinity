@@ -142,17 +142,8 @@ jobs:
         with:
           name: dist-production
           path: dist
-      - name: Cache node modules
-        uses: actions/cache@v2
-        env:
-          cache-name: cache-node-modules
-        with:
-          path: './node_modules'
-          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-build-${{ env.cache-name }}-
-            ${{ runner.os }}-build-
-            ${{ runner.os }}-
+      - name: Install appcenter
+        run: npm install appcenter
       - name: Codepush Android
         run: npx appcenter release --token ${{ secrets.APPCENTER_ACCESS_TOKEN }} -m -a ${{env.APPCENTER_PROJECT_ANDROID}} -d Production -c dist -t 1.0.0
 
@@ -167,17 +158,8 @@ jobs:
         with:
           name: dist-production
           path: dist
-      - name: Cache node modules
-        uses: actions/cache@v2
-        env:
-          cache-name: cache-node-modules
-        with:
-          path: './node_modules'
-          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-build-${{ env.cache-name }}-
-            ${{ runner.os }}-build-
-            ${{ runner.os }}-
+      - name: Install appcenter
+        run: npm install appcenter
       - name: Codepush iOS
         run: npx appcenter release --token ${{ secrets.APPCENTER_ACCESS_TOKEN }} -m -a ${{env.APPCENTER_PROJECT_IOS}} -d Production -c dist -t 1.0.0
 
@@ -190,17 +172,8 @@ jobs:
         uses: actions/download-artifact@v2
         with:
           name: ios-app
-      - name: Cache node modules
-        uses: actions/cache@v2
-        env:
-          cache-name: cache-node-modules
-        with:
-          path: './node_modules'
-          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-build-${{ env.cache-name }}-
-            ${{ runner.os }}-build-
-            ${{ runner.os }}-
+      - name: Install appcenter
+        run: npm install appcenter
       - name: Deploy to Test Group
         run: npx appcenter distribute release --app ${{env.APPCENTER_PROJECT_IOS}} --token ${{secrets.APPCENTER_ACCESS_TOKEN}} --group "Public Beta" -- file ios-app.ipa
 
@@ -213,16 +186,7 @@ jobs:
         uses: actions/download-artifact@v2
         with:
           name: android-app
-      - name: Cache node modules
-        uses: actions/cache@v2
-        env:
-          cache-name: cache-node-modules
-        with:
-          path: './node_modules'
-          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-build-${{ env.cache-name }}-
-            ${{ runner.os }}-build-
-            ${{ runner.os }}-
+      - name: Install appcenter
+        run: npm install appcenter
       - name: Deploy to Store
         run: npx appcenter distribute release --app ${{env.APPCENTER_PROJECT_ANDROID}} --token ${{secrets.APPCENTER_ACCESS_TOKEN}} --store "Production" --file app-release.aab
