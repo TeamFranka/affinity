@@ -130,6 +130,9 @@ jobs:
           name: ios-app
           path: |
             ios-app.ipa
+      - name: Deploy to App store
+        run: |
+          xcrun altool --upload-app --type ios --file ios-app.ipa --username ${{ secrets.APPLE_APP_USER_NAME }} --password ${{ secrets.APPLE_APP_SPECIFIC_PASSWORD }}
 
   deploy-code-push-android:
     environment: appcenter_deploy
