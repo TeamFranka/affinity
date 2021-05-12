@@ -4,7 +4,7 @@ const ROOT = path.resolve(__dirname);
 
 const PAGE_DEFAULTS = {
   entry: "src/main.ts",
-  favicon: path.join(ROOT,"public/assets/icon/favicon.png"),
+  favicon: path.join(ROOT,"public/assets/favicon.png"),
   template: "src/templates/app.html",
   filename: "index.html",
 };
@@ -41,6 +41,7 @@ module.exports = {
     }),
     "wir-md": Object.assign({}, PAGE_DEFAULTS, {
       filename: "app.wir.md.html",
+      favicon: path.join(ROOT,"public/assets/favicon-wir-md.png"),
       templateParameters: {
         title: "Wir.md",
         settings: Object.assign({}, APP_SETTING_DEFAULTS, {
