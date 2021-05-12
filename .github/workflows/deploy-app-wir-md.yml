@@ -145,7 +145,7 @@ jobs:
       - name: Install appcenter
         run: npm install appcenter
       - name: Codepush Android
-        run: npx appcenter release --token ${{ secrets.APPCENTER_ACCESS_TOKEN }} -m -a ${{env.APPCENTER_PROJECT_ANDROID}} -d Production -c dist -t 1.0.0
+        run: appcenter release --token ${{ secrets.APPCENTER_ACCESS_TOKEN }} -m -a ${{env.APPCENTER_PROJECT_ANDROID}} -d Production -c dist -t 1.0.0
 
   deploy-code-push-ios:
     environment: appcenter_deploy
@@ -161,7 +161,7 @@ jobs:
       - name: Install appcenter
         run: npm install appcenter
       - name: Codepush iOS
-        run: npx appcenter release --token ${{ secrets.APPCENTER_ACCESS_TOKEN }} -m -a ${{env.APPCENTER_PROJECT_IOS}} -d Production -c dist -t 1.0.0
+        run: appcenter release --token ${{ secrets.APPCENTER_ACCESS_TOKEN }} -m -a ${{env.APPCENTER_PROJECT_IOS}} -d Production -c dist -t 1.0.0
 
   deploy-ios-app:
     environment: appcenter_deploy
@@ -175,7 +175,7 @@ jobs:
       - name: Install appcenter
         run: npm install appcenter
       - name: Deploy to Test Group
-        run: npx appcenter distribute release --app ${{env.APPCENTER_PROJECT_IOS}} --token ${{secrets.APPCENTER_ACCESS_TOKEN}} --group "Public Beta" -- file ios-app.ipa
+        run: appcenter distribute release --app ${{env.APPCENTER_PROJECT_IOS}} --token ${{secrets.APPCENTER_ACCESS_TOKEN}} --group "Public Beta" -- file ios-app.ipa
 
   deploy-android-app:
     environment: appcenter_deploy
@@ -189,4 +189,4 @@ jobs:
       - name: Install appcenter
         run: npm install appcenter
       - name: Deploy to Store
-        run: npx appcenter distribute release --app ${{env.APPCENTER_PROJECT_ANDROID}} --token ${{secrets.APPCENTER_ACCESS_TOKEN}} --store "Production" --file app-release.aab
+        run: appcenter distribute release --app ${{env.APPCENTER_PROJECT_ANDROID}} --token ${{secrets.APPCENTER_ACCESS_TOKEN}} --store "Production" --file app-release.aab
