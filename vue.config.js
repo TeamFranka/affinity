@@ -48,7 +48,7 @@ module.exports = {
           PARSE_URL: "https://app.wir.md/parse",
           PARSE_LIVE_URL: "wss://app.wir.md/parse",
           ANDROID_INSTALL_URL: "https://play.google.com/store/apps/details?id=md.wir.app",
-          IOS_INSTALL_URL: "https://install.appcenter.ms/orgs/teamfranka/apps/wir.md-ios/distribution_groups/public%20beta"
+          IOS_INSTALL_URL: "https://apps.apple.com/us/app/wir-md-by-teamfranka/id1567204902"
         })
       }
     }),
