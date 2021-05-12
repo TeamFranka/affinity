@@ -22,7 +22,7 @@ jobs:
 
   release-build:
     runs-on: ubuntu-latest
-    # if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
     steps:
       - name: Download /dist
         uses: dawidd6/action-download-artifact@v2
@@ -130,10 +130,6 @@ jobs:
           name: ios-app
           path: |
             ios-app.ipa
-      - name: Deploy to App store
-        run: |
-          xcrun altool --validate-app --type ios --file ios-app.ipa --username ${{ secrets.APPLE_APP_USER_NAME }} --password ${{ secrets.APPLE_APP_SPECIFIC_PASSWORD }}
-          xcrun altool --upload-app --type ios --file ios-app.ipa --username ${{ secrets.APPLE_APP_USER_NAME }} --password ${{ secrets.APPLE_APP_SPECIFIC_PASSWORD }}
 
   deploy-code-push-android:
     environment: appcenter_deploy
