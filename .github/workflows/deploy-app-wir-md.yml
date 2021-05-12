@@ -143,7 +143,7 @@ jobs:
           name: dist-production
           path: dist
       - name: Install appcenter
-        run: npm install appcenter
+        run: npm install -g appcenter
       - name: Codepush Android
         run: appcenter release --token ${{ secrets.APPCENTER_ACCESS_TOKEN }} -m -a ${{env.APPCENTER_PROJECT_ANDROID}} -d Production -c dist -t 1.0.0
 
@@ -159,7 +159,7 @@ jobs:
           name: dist-production
           path: dist
       - name: Install appcenter
-        run: npm install appcenter
+        run: npm install -g appcenter
       - name: Codepush iOS
         run: appcenter release --token ${{ secrets.APPCENTER_ACCESS_TOKEN }} -m -a ${{env.APPCENTER_PROJECT_IOS}} -d Production -c dist -t 1.0.0
 
@@ -173,7 +173,7 @@ jobs:
         with:
           name: ios-app
       - name: Install appcenter
-        run: npm install appcenter
+        run: npm install -g appcenter
       - name: Deploy to Test Group
         run: appcenter distribute release --app ${{env.APPCENTER_PROJECT_IOS}} --token ${{secrets.APPCENTER_ACCESS_TOKEN}} --group "Public Beta" -- file ios-app.ipa
 
@@ -187,6 +187,6 @@ jobs:
         with:
           name: android-app
       - name: Install appcenter
-        run: npm install appcenter
+        run: npm install -g appcenter
       - name: Deploy to Store
         run: appcenter distribute release --app ${{env.APPCENTER_PROJECT_ANDROID}} --token ${{secrets.APPCENTER_ACCESS_TOKEN}} --store "Production" --file app-release.aab
