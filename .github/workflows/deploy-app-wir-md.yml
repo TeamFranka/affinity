@@ -2,7 +2,7 @@ name: "Deploy Wir.md App"
 on:
   workflow_run:
     workflows: [ "Deploy Parse" ]
-    branches: [ main ]
+    branches: [ main, ]
     types:
       - completed
 
@@ -117,12 +117,12 @@ jobs:
         with:
           project-path: apps/${{ env.CAP_PATH }}/ios/App/App.xcodeproj
           p12-base64: ${{ secrets.P12_BASE64 }}
-          mobileprovision-base64: ${{ secrets.MOBILEPROVISION_BASE64 }}
+          mobileprovision-base64: ${{ secrets.WIRMD_MOBILEPROVISION_BASE64 }}
           code-signing-identity: ${{ secrets.CODE_SIGNING_IDENTITY }}
           certificate-password: ${{ secrets.CREDENTIALS_PASSWORD }}
           team-id: ${{ secrets.TEAM_ID }}
           workspace-path: apps/${{ env.CAP_PATH }}/ios/App/App.xcworkspace # optional
-          export-method: ad-hoc
+          export-method: app-store
           output-path: 'ios-app.ipa'
       - name: Archive iOS App
         uses: actions/upload-artifact@v2
