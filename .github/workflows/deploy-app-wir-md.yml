@@ -1,8 +1,8 @@
 name: "Deploy Wir.md App"
 on:
   workflow_run:
-    workflows: [ "Deploy Parse" ]
-    branches: [ main ]
+    workflows: [ "Test App Build" ]
+    branches: [ main, ben-prepping-wir-md-releasing ]
     types:
       - completed
 
