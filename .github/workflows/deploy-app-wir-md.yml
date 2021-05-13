@@ -142,10 +142,11 @@ jobs:
         with:
           name: dist-production
           path: dist
-      - name: Install appcenter
-        run: npm install appcenter-cli
       - name: Codepush Android
-        run: npx appcenter release --token ${{ secrets.APPCENTER_ACCESS_TOKEN }} -m -a ${{env.APPCENTER_PROJECT_ANDROID}} -d Production -c dist -t 1.0.0
+        uses: joabalea/App-Center-action@v1.0.2
+        with:
+          command: appcenter release -m -a ${{env.APPCENTER_PROJECT_ANDROID}} -d Production -c dist -t 1.0.0
+          token: ${{ secrets.APPCENTER_ACCESS_TOKEN }}
 
   deploy-code-push-ios:
     environment: appcenter_deploy
@@ -158,10 +159,11 @@ jobs:
         with:
           name: dist-production
           path: dist
-      - name: Install appcenter
-        run: npm install appcenter-cli
       - name: Codepush iOS
-        run: npx appcenter release --token ${{ secrets.APPCENTER_ACCESS_TOKEN }} -m -a ${{env.APPCENTER_PROJECT_IOS}} -d Production -c dist -t 1.0.0
+        uses: joabalea/App-Center-action@v1.0.2
+        with:
+          command: appcenter release -m -a ${{env.APPCENTER_PROJECT_IOS}} -d Production -c dist -t 1.0.0
+          token: ${{ secrets.APPCENTER_ACCESS_TOKEN }}
 
   deploy-ios-app:
     environment: appcenter_deploy
@@ -172,10 +174,11 @@ jobs:
         uses: actions/download-artifact@v2
         with:
           name: ios-app
-      - name: Install appcenter
-        run: npm install appcenter-cli
       - name: Deploy to Test Group
-        run: npx appcenter distribute release --app ${{env.APPCENTER_PROJECT_IOS}} --token ${{secrets.APPCENTER_ACCESS_TOKEN}} --group "Public Beta" -- file ios-app.ipa
+        uses: joabalea/App-Center-action@v1.0.2
+        with:
+          command: appcenter distribute release --app ${{env.APPCENTER_PROJECT_IOS}} --group "Public Beta" -- file ios-app.ipa
+          token: ${{ secrets.APPCENTER_ACCESS_TOKEN }}
 
   deploy-android-app:
     environment: appcenter_deploy
@@ -186,7 +189,8 @@ jobs:
         uses: actions/download-artifact@v2
         with:
           name: android-app
-      - name: Install appcenter
-        run: npm install appcenter-cli
       - name: Deploy to Store
-        run: npx appcenter distribute release --app ${{env.APPCENTER_PROJECT_ANDROID}} --token ${{secrets.APPCENTER_ACCESS_TOKEN}} --store "Production" --file app-release.aab
+        uses: joabalea/App-Center-action@v1.0.2
+        with:
+          command: appcenter distribute release --app ${{env.APPCENTER_PROJECT_ANDROID}} --store "Production" --file app-release.aab
+          token: ${{ secrets.APPCENTER_ACCESS_TOKEN }}
