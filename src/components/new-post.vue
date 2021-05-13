@@ -11,14 +11,21 @@
           ></rich-editor>
           <p
             @click="showOptions = true"
-            v-if="canChangeVisiblity &&  !showOptions"
+            v-if="canChangeVisiblity && !showOptions"
             data-cy-role="editSettings"
           >
             {{ $t(`newPost.visibilities.${visibility}`) }}
-            <span v-if="showTypeSelector">{{ selectedType }}</span>
+            <span data-cy-role="postType" :data-cy-value="selectedType" v-if="showTypeSelector">
+              {{ $t(`post.types.${selectedType}`) }}
+            </span>
             <span v-if="showTeamSelector"
-              >to <avatar size="1.5em" :profile="selectedTeam" withName /></span
-            ><ion-button size="small" fill="clear"
+              >to <avatar size="1.5em" :profile="selectedTeam" withName />
+            </span>
+            <span v-if="showColorSelector">
+              <span :style="`background: ${backgroundColor}`" class="color-indicator" />
+              <span :style="`background: ${buttonColor}`" class="color-indicator" />
+            </span>
+            <ion-button size="small" fill="clear"
               ><ion-icon :icon="editIcon"
             /></ion-button>
           </p>
@@ -38,7 +45,7 @@
         </ion-col>
       </ion-row>
       <ion-row v-if="showOptions">
-        <ion-col size-md="4" size-xs="12" v-if="showTeamSelector">
+        <ion-col size-md="auto" size-xs="12" v-if="showTeamSelector">
           <selector
             label="Team"
             popoverTitle="Team"
@@ -59,46 +66,20 @@
                 />
               </ion-item>
             </template>
-          </selector> </ion-col
-        ><ion-col size-md="3" size-xs="12" v-if="showTypeSelector">
-          <selector
-            label="Type"
-            popoverTitle="Post Type"
-            @select="selectType($event)"
-            :items="selectableTypes"
-          >
-            <template #current>
-              <ion-label>
-                <ion-icon :icon="VERB_ICONS[selectedType]"></ion-icon>
-                {{ selectedType }}
-              </ion-label>
-            </template>
-            <template #item="sProps">
-              <ion-item
-                @click="sProps.select(sProps.item)"
-                :key="sProps.item"
-                button
-              >
-                <ion-icon slot="start" :icon="VERB_ICONS[sProps.item]" />
-                {{ sProps.item }}
-                <ion-icon
-                  v-if="sProps.item == selectedType"
-                  slot="end"
-                  :icon="selectedIcon"
-                />
-              </ion-item>
-            </template>
           </selector>
         </ion-col>
-        <ion-col size-md="4" size-xs="12" v-if="canChangeVisiblity">
+        <ion-col size-md="auto" size-xs="12" v-if="canChangeVisiblity">
           <selector
             @select="setVisibility($event)"
             popoverTitle="Visibility"
             :items="selectableVisibility"
           >
             <template #label>
-              <ion-icon :icon="eyeOutline" />
-              <ion-label>{{ $t("newPost.label.visibility") }}: </ion-label>
+              <ion-label
+                class="sc-ion-label-md-h sc-ion-label-md-s ion-color ion-color-dark md hydrated"
+                style="padding-right: 0.5em;"
+              >
+                <ion-icon :icon="eyeOutline" /> {{ $t("newPost.label.visibility") }}: </ion-label>
             </template>
             <template #current>
               <ion-label>
@@ -126,11 +107,86 @@
             </template>
           </selector>
         </ion-col>
+        <ion-col size-md="auto" size-xs="12" v-if="showTypeSelector" data-cy-role="selectType">
+          <selector
+            label="Type"
+            popoverTitle="Post Type"
+            @select="selectType($event)"
+            :items="selectableTypes"
+          >
+            <template #current>
+              <ion-label>
+                <ion-icon :icon="VERB_ICONS[selectedType]"></ion-icon>
+              {{ $t(`post.types.${selectedType}`) }}
+              </ion-label>
+            </template>
+            <template #item="sProps">
+              <ion-item
+                @click="sProps.select(sProps.item)"
+                :key="sProps.item"
+                :data-cy-select="sProps.item"
+                button
+              >
+                <ion-icon slot="start" :icon="VERB_ICONS[sProps.item]" />
+                  {{ $t(`post.types.${sProps.item}`) }}
+                <ion-icon
+                  v-if="sProps.item == selectedType"
+                  slot="end"
+                  :icon="selectedIcon"
+                />
+              </ion-item>
+            </template>
+          </selector>
+        </ion-col>
+        <ion-col size-md="auto" size-xs="12" v-if="showColorSelector" data-cy-role="selectColors">
+          <selector
+            popoverTitle="Background"
+            @select="setExtraStyle({background: $event})"
+            :items="SELECTABLE_BACKGROUND_STYLES"
+          >
+            <template #current>
+              <ion-label data-cy-role="selectBackgroundColor">
+                <span :style="`background: ${backgroundColor}`" class="color-indicator" />
+              </ion-label>
+            </template>
+            <template #item="sProps">
+              <span
+                @click="sProps.select(sProps.item)"
+                :key="sProps.item"
+                :data-cy-select="sProps.item"
+                :style="`background: ${sProps.item}`"
+                class="color-indicator"
+              />
+            </template>
+          </selector>
+
+          <selector
+            popoverTitle="Button Color"
+            @select="setExtraStyle({buttonColor: $event})"
+            :items="SELECTABLE_BUTTON_STYLES"
+          >
+            <template #current>
+              <ion-label data-cy-role="selectButtonColor">
+                <span :style="`background: ${buttonColor}`" class="color-indicator" />
+              </ion-label>
+            </template>
+            <template #item="sProps">
+              <span
+                @click="sProps.select(sProps.item)"
+                :key="sProps.item"
+                :data-cy-select="sProps.item"
+                :style="`background: ${sProps.item}`"
+                class="color-indicator"
+              />
+            </template>
+          </selector>
+        </ion-col>
         <ion-button
           :style="{ position: 'absolute', right: '1em', 'z-index': 1 }"
           size="small"
           fill="clear"
           @click="showOptions = false"
+          data-cy-role="closeSettings"
         >
           <ion-icon :icon="closeIcon" />
         </ion-button>
@@ -405,6 +461,23 @@ VISIBILITY_ICONS[Visibility.Members] = peopleOutline;
 VISIBILITY_ICONS[Visibility.Mods] = shieldCheckmarkOutline;
 VISIBILITY_ICONS[Visibility.Leaders] = rocketOutline;
 
+const SELECTABLE_BACKGROUND_STYLES = [
+  "var(--ion-color-primary)",
+  "var(--ion-color-secondary)",
+  "var(--ion-color-tertiary)",
+  "linear-gradient(to top right, var(--ion-color-primary), var(--ion-color-secondary))",
+  "linear-gradient(to top right, var(--ion-color-secondary), var(--ion-color-tertiary))",
+  "linear-gradient(to top right, var(--ion-color-primary), var(--ion-color-tertiary))",
+];
+
+const SELECTABLE_BUTTON_STYLES: string[] = [
+  "var(--ion-color-primary)",
+  "var(--ion-color-secondary)",
+  "var(--ion-color-tertiary)",
+  "#000000",
+  "#FFFFFF",
+];
+
 export default defineComponent({
   name: "DraftPost",
   emits: ["submitted"],
@@ -433,6 +506,8 @@ export default defineComponent({
       store,
       VERB_ICONS,
       VISIBILITY_ICONS,
+      SELECTABLE_BACKGROUND_STYLES,
+      SELECTABLE_BUTTON_STYLES,
       // generic
       text: computed(() => store.state.draft.text),
       selectedType: computed(() => store.getters["draft/selectedType"]),
@@ -450,7 +525,13 @@ export default defineComponent({
       selectedTeam: computed(() => store.getters["draft/selectedTeam"]),
       selectedTeamId: computed(() => store.getters["draft/selectedTeamId"]),
       showTypeSelector: computed(() => store.getters["draft/showTypeSelector"]),
+      showColorSelector: computed(() => store.getters["draft/selectedType"] == "announce" ),
 
+      backgroundColor: computed(() => (store.getters["draft/extraStyles"].background || "var(--ion-color-primary)")),
+      buttonColor: computed(() => (store.getters["draft/extraStyles"].buttonColor || "var(--ion-color-light)")),
+      setExtraStyle: (updates: any) => {
+        store.commit("draft/setExtraStyle", updates);
+      },
       // permissions
       selectableTypes: computed(() => store.getters["draft/selectableTypes"]),
       selectableVisibility: computed(
@@ -646,5 +727,17 @@ export default defineComponent({
 }
 ion-back-button{
   display: block;
+}
+.color-indicator {
+  display: inline-block;
+  height: 0.75rem;
+  width: 0.75rem;
+  border: 1px solid var(--ion-color-dark);
+  margin-left: 0.2rem;
+  border-radius: 0.2rem;
+}
+.popover-viewport .color-indicator {
+  height: 2rem;
+  width: 2rem;
 }
 </style>

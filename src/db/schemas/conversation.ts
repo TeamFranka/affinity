@@ -32,7 +32,9 @@ export const Conversation = {
     find: {
       requiresAuthentication: true,
     },
-    count: {},
+    count: {
+      "*": true,
+    },
     get: {
       requiresAuthentication: true,
     },

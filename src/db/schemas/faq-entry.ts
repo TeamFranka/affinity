@@ -1,4 +1,4 @@
-import { CommonFields, Interactable, ViewTracking } from "./common";
+import { CommonFields, Interactable, ViewTracking, Meta } from "./common";
 
 export const FaqEntry = {
   className: "FaqEntry",
@@ -32,13 +32,16 @@ export const FaqEntry = {
       },
     },
     Interactable,
-    ViewTracking
+    ViewTracking,
+    Meta,
   ),
   classLevelPermissions: {
     find: {
       "*": true,
     },
-    count: {},
+    count: {
+      "*": true,
+    },
     get: {
       "*": true,
     },

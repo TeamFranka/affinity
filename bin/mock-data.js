@@ -13,7 +13,6 @@ Parse.initialize(
 Parse.serverURL = process.env.VUE_APP_PARSE_URL;
 
 const mocks = require('./mock-data/index.ts');
-const { SSL_OP_SSLEAY_080_CLIENT_DH_BUG } = require("constants");
 const users = {};
 const userTokens = {};
 const teams = {};
@@ -82,25 +81,35 @@ console.log('myArgs: ', args);
         users[e.username] = u
     }));
 
-    console.info("Looking up Team(s)")
-    await Promise.all(mocks.Teams.map(async (data, index) => {
-        const Team = Parse.Object.extend("Team");
+    const Team = Parse.Object.extend("Team");
+    console.info("Looking up Team(s)");
+    const teamAutojoins = {};
+
+    for (let index = 0; index < mocks.Teams.length; index++) {
+        const data = mocks.Teams[index];
         let team = await (new Parse.Query(Team))
             .equalTo("slug", data.slug)
             .first({ useMasterKey: true });
+        if (data.params.autojoin && data.params.autojoin.length > 0) {
+            teamAutojoins[data.slug] = data.params.autojoin;
+        }
         if (!team) {
+            console.info(`Creating ${data.name}`)
             team = new Team(Object.assign({
                 slug: data.slug,
                 name: data.name,
                 admin: getUser(data.admin).id
-            }, remap(data.params)));
+            }, remap(data.params), {"autojoin": []}));
             await team.save(null, { useMasterKey: true });
         }
+
+        teams[data.slug] = team
+
         if (index === 0){
             defaultTeamId = team.id
         }
 
-        await Promise.all(["members", "leaders", "agents", "mods"].map( key => {
+        await Promise.all(["members", "leaders", "agents", "mods", "publishers"].map( key => {
             if(!data[key]) return Promise.resolve(key);
             console.info(`Updating membership ${data.name}'${key} adding: ${data[key]}`);
             const role = team.get(key);
@@ -108,16 +117,12 @@ console.log('myArgs: ', args);
             users.add(data[key].map(getUser));
             return role.save(null, { useMasterKey: true })
         }));
-
-        if (data.settings) {
-            console.info(`Setting ${data.name}' Team Settings`);
-            const settings = await (new Parse.Query("TeamSettings"))
-                .get(team.get("settings").id, { useMasterKey: true });
-
-            await settings.save(data.settings, {useMasterKey: true});
-        }
-
-        teams[data.slug] = team
+    }
+    console.info("Updating autojoins");
+    await Promise.all(Object.entries(teamAutojoins).map(async ([slug, values]) => {
+        const team = teams[slug];
+        const autojoin = values.map(getTeam);
+        await team.save({autojoin}, { useMasterKey: true })
     }));
 
     console.info("Ensuring Devices");
@@ -143,6 +148,10 @@ console.log('myArgs: ', args);
         const Activity = Parse.Object.extend("Activity");
         for (let i = 0; i < mocks.Posts.length; i++) {
             const username = mocks.Posts[i].author;
+            if (!username) {
+                console.warn("Username missing in", mocks.Posts[i]);
+                continue
+            }
             const data = remap(mocks.Posts[i]);
             const sessionToken = await getUserToken(username);
             if (data.objects) {
@@ -158,6 +167,7 @@ console.log('myArgs: ', args);
             } else {
                 data.objects = [];
             }
+            // console.log("Posting", username, data);
             await (new Activity(data)).save(null, {sessionToken});
         }
     }

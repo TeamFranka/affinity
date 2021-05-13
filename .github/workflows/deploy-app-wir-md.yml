@@ -1,0 +1,196 @@
+name: "Deploy Wir.md App"
+on:
+  workflow_run:
+    workflows: [ "Deploy Parse" ]
+    branches: [ main, ]
+    types:
+      - completed
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+env:
+  INDEX_HTML: app.wir.md.html
+  CAP_PROJECT: wir-md
+  CAP_PATH: wir-md
+  APPCENTER_PROJECT_ANDROID: TeamFranka/Wir.md-Android
+  APPCENTER_PROJECT_IOS: TeamFranka/Wir.md-iOS
+
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+
+  release-build:
+    runs-on: ubuntu-latest
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    steps:
+      - name: Download /dist
+        uses: dawidd6/action-download-artifact@v2
+        with:
+          workflow: deploying-to-parse.yml
+          name: dist-production
+          path: dist
+      - name: Patch dist
+        run: cp -f dist/${{env.INDEX_HTML}} dist/index.html
+      - name: Archive /dist
+        uses: actions/upload-artifact@v2
+        with:
+          name: dist-production
+          path: |
+            dist
+
+  android-app:
+    needs: release-build
+    environment: android_app
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Cache node modules
+        uses: actions/cache@v2
+        env:
+          cache-name: cache-node-modules
+        with:
+          path: './node_modules'
+          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-build-${{ env.cache-name }}-
+            ${{ runner.os }}-build-
+            ${{ runner.os }}-
+      - name: Install capacitor
+        run: npm install capacitor
+      - name: Download /dist
+        uses: actions/download-artifact@v2
+        with:
+          name: dist-production
+          path: dist
+      - name: Sync assets
+        run: npx ionic capacitor sync --no-build --project ${{ env.CAP_PROJECT }} --verbose android
+      - name: Build Android App
+        run: |
+          cd apps/${{ env.CAP_PATH }}/android
+          ./gradlew bundleRelease
+      - uses: r0adkll/sign-android-release@v1
+        name: Sign app Bundle
+        # ID used to access action output
+        id: sign_app
+        with:
+          releaseDirectory: apps/${{ env.CAP_PATH }}/android/app/build/outputs/bundle/release
+          signingKeyBase64: ${{ secrets.ANDROID_KEYSTORE }}
+          alias: ${{ secrets.ANDROID_KEY_ALIAS }}
+          keyStorePassword: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          keyPassword: ${{ secrets.ANDROID_KEY_PASSWORD }}
+      - name: Archive Android App
+        uses: actions/upload-artifact@v2
+        with:
+          name: android-app
+          path: ${{steps.sign_app.outputs.signedReleaseFile}}
+
+  ios-app:
+    environment: ios_app
+    runs-on: macos-latest
+    needs: release-build
+    steps:
+      - uses: actions/checkout@v2
+      - name: Download /dist
+        uses: actions/download-artifact@v2
+        with:
+          name: dist-production
+          path: dist
+      - name: Cache node modules
+        uses: actions/cache@v2
+        env:
+          cache-name: cache-node-modules
+        with:
+          path: './node_modules'
+          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-build-${{ env.cache-name }}-
+            ${{ runner.os }}-build-
+            ${{ runner.os }}-
+      - name: Install capacitor
+        run: npm install capacitor
+      - name: Sync assets
+        run: npx ionic capacitor sync --no-build --project ${{ env.CAP_PROJECT }} --verbose ios
+      - name: Build iOS App
+        uses: yukiarrr/ios-build-action@v1.3.2
+        continue-on-error: false
+        with:
+          project-path: apps/${{ env.CAP_PATH }}/ios/App/App.xcodeproj
+          p12-base64: ${{ secrets.P12_BASE64 }}
+          mobileprovision-base64: ${{ secrets.WIRMD_MOBILEPROVISION_BASE64 }}
+          code-signing-identity: ${{ secrets.CODE_SIGNING_IDENTITY }}
+          certificate-password: ${{ secrets.CREDENTIALS_PASSWORD }}
+          team-id: ${{ secrets.TEAM_ID }}
+          workspace-path: apps/${{ env.CAP_PATH }}/ios/App/App.xcworkspace # optional
+          export-method: app-store
+          output-path: 'ios-app.ipa'
+      - name: Archive iOS App
+        uses: actions/upload-artifact@v2
+        with:
+          name: ios-app
+          path: |
+            ios-app.ipa
+
+  deploy-code-push-android:
+    environment: appcenter_deploy
+    runs-on: ubuntu-latest
+    needs: [ android-app ]
+    if: "!contains(github.event.head_commit.message, '[ci skip deploy-app]')"
+    steps:
+      - name: Download /dist
+        uses: actions/download-artifact@v2
+        with:
+          name: dist-production
+          path: dist
+      - name: Codepush Android
+        uses: avocaddo/App-Center-action@v1.0.2
+        with:
+          command: appcenter release -m -a ${{env.APPCENTER_PROJECT_ANDROID}} -d Production -c dist -t 1.0.0
+          token: ${{ secrets.APPCENTER_ACCESS_TOKEN }}
+
+  deploy-code-push-ios:
+    environment: appcenter_deploy
+    runs-on: ubuntu-latest
+    needs: [ ios-app ]
+    if: "!contains(github.event.head_commit.message, '[ci skip deploy-app]')"
+    steps:
+      - name: Download /dist
+        uses: actions/download-artifact@v2
+        with:
+          name: dist-production
+          path: dist
+      - name: Codepush iOS
+        uses: avocaddo/App-Center-action@v1.0.2
+        with:
+          command: appcenter release -m -a ${{env.APPCENTER_PROJECT_IOS}} -d Production -c dist -t 1.0.0
+          token: ${{ secrets.APPCENTER_ACCESS_TOKEN }}
+
+  deploy-ios-app:
+    environment: appcenter_deploy
+    runs-on: ubuntu-latest
+    needs: [ deploy-code-push-ios, ios-app ]
+    steps:
+      - name: Download signed iOS App
+        uses: actions/download-artifact@v2
+        with:
+          name: ios-app
+      - name: Deploy to Test Group
+        uses: avocaddo/App-Center-action@v1.0.2
+        with:
+          command: appcenter distribute release --app ${{env.APPCENTER_PROJECT_IOS}} --group "Public Beta" -- file ios-app.ipa
+          token: ${{ secrets.APPCENTER_ACCESS_TOKEN }}
+
+  deploy-android-app:
+    environment: appcenter_deploy
+    runs-on: ubuntu-latest
+    needs: [ deploy-code-push-android, android-app ]
+    steps:
+      - name: Download signed Android App
+        uses: actions/download-artifact@v2
+        with:
+          name: android-app
+      - name: Deploy to Store
+        uses: avocaddo/App-Center-action@v1.0.2
+        with:
+          command: appcenter distribute release --app ${{env.APPCENTER_PROJECT_ANDROID}} --store "Production" --file app-release.aab
+          token: ${{ secrets.APPCENTER_ACCESS_TOKEN }}

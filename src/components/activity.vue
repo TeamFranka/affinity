@@ -22,23 +22,33 @@
           />
         </router-link>
       </div>
-      <div v-if="showAuthor" class="ion-padding-end">
-        {{ authorName
-        }}<span v-if="showTeam"
-          ><ion-icon :icon="teamSplitterIcon" />
-          <router-link :to="teamLink">{{ teamName }}</router-link></span
-        >
+      <div style="flex-grow: 2">
+        <div v-if="showAuthor" class="ion-padding-end">
+          {{ authorName
+          }}<span v-if="showTeam"
+            ><ion-icon :icon="teamSplitterIcon" />
+            <router-link :to="teamLink">{{ teamName }}</router-link></span
+          >
+        </div>
+        <div v-if="!showAuthor" class="ion-padding-end">
+          <router-link :to="teamLink">{{ teamName }}</router-link>
+        </div>
+        <i18n-t keypath="activity.shared" tag="ion-note" color="medium">
+          <template v-slot:since>
+            <router-link data-cy="activityLink" :to="link">{{
+              since
+            }}</router-link>
+          </template>
+        </i18n-t>
       </div>
-      <div v-if="!showAuthor" class="ion-padding-end">
-        <router-link :to="teamLink">{{ teamName }}</router-link>
+      <div>
+        <ion-button data-cy-role="bookmarked" @click="unbookmark"  v-if="isBookmarked" fill="clear" color="dark">
+          <ion-icon :icon="bookmarkIcon" />
+        </ion-button>
+        <ion-button data-cy-role="extra" v-if="showExtraActions" @click="openExtrasMenu" fill="clear" color="dark">
+          <ion-icon :icon="extraMenuIcon" />
+        </ion-button>
       </div>
-      <i18n-t keypath="activity.shared" tag="ion-note" color="medium">
-        <template v-slot:since>
-          <router-link data-cy="activityLink" :to="link">{{
-            since
-          }}</router-link>
-        </template>
-      </i18n-t>
     </ion-card-header>
     <!-- REGULAR FULL VIEW -->
     <ion-card-header v-else>
@@ -53,7 +63,7 @@
           <avatar :profile="team" :name="teamName" />
         </router-link>
       </div>
-      <div class="ion-padding-start">
+      <div style="flex-grow: 2" class="ion-padding-start">
         <div v-if="showAuthor">
           <span v-if="showTeam">
             <router-link :to="teamLink">
@@ -70,6 +80,14 @@
           <ion-note color="medium">{{ since }}</ion-note>
         </router-link>
       </div>
+      <div>
+        <ion-button data-cy-role="bookmarked" @click="unbookmark" v-if="isBookmarked" fill="clear" color="dark">
+          <ion-icon :icon="bookmarkIcon" />
+        </ion-button>
+        <ion-button data-cy-role="extra" v-if="showExtraActions" @click="openExtrasMenu" fill="clear" color="dark">
+          <ion-icon :icon="extraMenuIcon" />
+        </ion-button>
+      </div>
     </ion-card-header>
     <div data-cy-role="content">
       <div v-if="text" class="ion-padding">
@@ -83,19 +101,25 @@
   </ion-card>
 </template>
 <script lang="ts">
-import { IonCard, IonCardHeader, IonIcon, IonNote } from "@ionic/vue";
+import {
+  IonCard, IonCardHeader, IonIcon, IonNote, IonButton,
+  popoverController,
+} from "@ionic/vue";
 import {
   chevronForwardOutline as teamSplitterIcon,
   chatbubblesOutline,
   addOutline,
   arrowRedoOutline,
   heartOutline,
+  ellipsisVerticalOutline as extraMenuIcon,
+  bookmark as bookmarkIcon,
 } from "ionicons/icons";
 
 import Avatar from "./avatar.vue";
 import RenderObjects from "./render-objects.vue";
 import InteractionBar from "./interaction-bar.vue";
 import RenderMd from "./render-md.vue";
+import ActivityExtrasMenu from "./activity-extras-menu.vue";
 import { useStore } from "../stores/";
 import { defineComponent, computed } from "vue";
 import { Parse } from "../config/Consts";
@@ -122,7 +146,10 @@ export default defineComponent({
     const store = useStore();
     return {
       objs: computed(() => store.getters.objectsMap),
+      showExtraActions: computed(() => store.getters["auth/isLoggedIn"]),
       store,
+      bookmarkIcon,
+      extraMenuIcon,
       commentsIcon: chatbubblesOutline,
       teamSplitterIcon,
       shareIcon: arrowRedoOutline,
@@ -137,6 +164,9 @@ export default defineComponent({
         this.objects.length == 1 &&
         this.objects[0].className == "Link"
       );
+    },
+    isBookmarked(): boolean {
+      return !!this.activity.bookmarked
     },
     objectsClass(): string {
       return this.text != ""
@@ -202,6 +232,9 @@ export default defineComponent({
       );
       this.showComments = true;
     },
+    unbookmark() {
+      this.store.dispatch("auth/unbookmark", this.activity.toPointer());
+    },
     setDraft(text: string) {
       this.store.commit("comments/setDraft", {
         objectId: this.activity.objectId,
@@ -215,11 +248,25 @@ export default defineComponent({
         text,
       });
     },
+    async openExtrasMenu(ev: Event) {
+      const popover = await popoverController
+        .create({
+          component: ActivityExtrasMenu,
+          cssClass: 'my-custom-class',
+          componentProps: {
+            activity: this.activity,
+          },
+          event: ev,
+          translucent: true
+        })
+      await popover.present();
+    },
   },
   components: {
     IonCard,
     InteractionBar,
     IonCardHeader,
+    IonButton,
     IonIcon,
     IonNote,
     Avatar,

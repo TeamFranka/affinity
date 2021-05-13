@@ -40,7 +40,6 @@ export default defineComponent({
     return {
         login() {
             store.dispatch("auth/openLogin");
-            popoverController.dismiss();
         },
         notificationIcon, logInIcon
     }

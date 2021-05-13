@@ -1,4 +1,4 @@
-import { CommonFields, Interactable, ViewTracking } from "./common";
+import { CommonFields, Interactable, ViewTracking, Meta } from "./common";
 
 export const Link = {
   className: "Link",
@@ -38,13 +38,16 @@ export const Link = {
       },
     },
     Interactable,
-    ViewTracking
+    ViewTracking,
+    Meta,
   ),
   classLevelPermissions: {
     find: {
       "*": true,
     },
-    count: {},
+    count: {
+      "*": true,
+    },
     get: {
       "*": true,
     },

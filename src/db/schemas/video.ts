@@ -1,4 +1,4 @@
-import { CommonFields, Interactable, ViewTracking } from "./common";
+import { CommonFields, Interactable, ViewTracking, Meta } from "./common";
 
 export const Video = {
   className: "Video",
@@ -27,13 +27,16 @@ export const Video = {
       },
     },
     Interactable,
-    ViewTracking
+    ViewTracking,
+    Meta,
   ),
   classLevelPermissions: {
     find: {
       "*": true,
     },
-    count: {},
+    count: {
+      "*": true,
+    },
     get: {
       "*": true,
     },

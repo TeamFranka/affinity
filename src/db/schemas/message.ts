@@ -31,7 +31,7 @@ export const Message = {
       "*": true,
     },
     count: {
-      requiresAuthentication: true,
+      "*": true,
     },
     get: {
       "*": true,

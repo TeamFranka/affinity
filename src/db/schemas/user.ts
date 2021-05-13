@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/camelcase */
 // Follow the JSON structure from REST API https://docs.parseplatform.org/rest/guide/#schema
-import { CommonFields } from "./common";
+import { CommonFields, Meta } from "./common";
 
 export const User = {
   className: "_User",
@@ -17,7 +17,18 @@ export const User = {
     name: { type: "String" },
     avatar: { type: "File" },
     settings: { type: "Object" },
-  }),
+    info: {
+      type: "String",
+    },
+    socialLinks: {
+      type: "Array",
+    },
+    background: {
+      type: "File",
+    },
+  },
+  Meta
+  ),
   indexes: {
     username_1: {
       username: 1,

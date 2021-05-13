@@ -1,5 +1,5 @@
-import { Parse } from "../config/Consts";
-import { Conversation, Message, Notification } from "../db/models";
+import { Parse } from "@/config/Consts";
+import { Conversation, Message, Notification } from "@/db/models";
 
 export interface InboxT {
   loading: boolean;

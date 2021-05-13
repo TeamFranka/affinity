@@ -26,6 +26,7 @@ import {
   modalController,
   isPlatform,
   toastController,
+  popoverController,
 } from "@ionic/vue";
 import { logInOutline as logInIcon } from "ionicons/icons";
 import { defineComponent, computed, watch } from "vue";
@@ -35,6 +36,7 @@ import FooterMenu from "@/components/footer-menu.vue";
 import LoginModal from "@/components/login-modal.vue";
 import HeaderBar from "@/components/header-bar.vue";
 import { isMobileInstallation, setupNotificationActions } from "@/utils/setup";
+import { forceDarkTheme, automaticDarkMode } from "@/utils/theme";
 import {
   ActionPerformed,
   PushNotificationSchema,
@@ -79,8 +81,9 @@ export default defineComponent({
           component: LoginModal,
         });
         loginModal.present();
-        loginModal.onDidDismiss().then(() => {
+        loginModal.onWillDismiss().then((): void => {
           store.dispatch("auth/dismissLogin");
+          if (isPlatform("android") || isPlatform("ios")) popoverController.dismiss();
         });
       } else if (!newVal && loginModal) {
         loginModal.dismiss();
@@ -92,12 +95,16 @@ export default defineComponent({
     if (store.state.auth.wantsToLogin) {
       updateLoginModal(true, false);
     }
-        
+
     watch(
       () => store.state.auth.user,
       async (newVal, oldVal) => {
         if (newVal && newVal != oldVal) {
-          document.body.classList.toggle('dark', newVal?.settings?.forceDarkMode);
+          if(newVal?.settings?.forceDarkMode) {
+            forceDarkTheme(true);
+          } else {
+            automaticDarkMode();
+          }
           if (!newVal.emailVerified) {
             const inDanger = olderThanDays(newVal.createdAt, 5);
             const toast = await toastController.create({
@@ -150,7 +157,6 @@ export default defineComponent({
       teamStyles: computed(() => store.getters.defaultTeam?.customStyles),
       openLoginModal: () => store.dispatch("auth/openLogin"),
       loading: store.getters.isLoading,
-      // openLoginModal: () => store.dispatch("auth/openLogin"),
       fetchUser: () => store.dispatch("auth/fetchUser"),
     };
   },

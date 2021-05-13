@@ -9,20 +9,24 @@ dayjs.extend(LocalizedFormat);
 dayjs.extend(relativeTime);
 dayjs.extend(localeData);
 
-Parse.initialize(
-  process.env.VUE_APP_PARSE_APP_ID || "",
-  process.env.VUE_APP_PARSE_JS_KEY
-);
-Parse.serverURL =
-  process.env.VUE_APP_PARSE_URL || "http://localhost:1337/parse";
-if (process.env.VUE_APP_PARSE_LIVE_URL) {
-  Parse.liveQueryServerURL = process.env.VUE_APP_PARSE_LIVE_URL;
+declare global {
+  interface Window {
+    PARSE_APP_ID: string;
+    PARSE_JS_KEY: string;
+    PARSE_URL: string;
+    PARSE_LIVE_URL: string | null;
+    ANDROID_INSTALL_URL: string;
+    IOS_INSTALL_URL: string;
+  }
+}
+
+Parse.initialize(window.PARSE_APP_ID, window.PARSE_JS_KEY);
+Parse.serverURL = window.PARSE_URL;
+if (window.PARSE_LIVE_URL) {
+  Parse.liveQueryServerURL = window.PARSE_LIVE_URL;
 }
 // Parse.enableEncryptedUser();
 // Parse.enableLocalDatastore();
-
-export const VERSION = "0.0.1";
-export const DEFAULT_COMMUNITY = process.env.VUE_APP_DEFAULT_TEAM;
 
 export const Team = Models.Team;
 export const Activity = Models.Activity;
@@ -31,10 +35,8 @@ export const Comment = Models.Comment;
 export const ChatWidgetSettings = Models.ChatWidgetSettings;
 export const Conversation = Models.Conversation;
 
-export const ANDROID_INSTALL_URL =
-  "https://install.appcenter.ms/orgs/teamfranka/apps/affinity-live/distribution_groups/public%20beta";
-export const IOS_INSTALL_URL =
-  "https://install.appcenter.ms/orgs/teamfranka/apps/affinity-live-ios/distribution_groups/public%20beta";
+export const ANDROID_INSTALL_URL = window.ANDROID_INSTALL_URL;
+export const IOS_INSTALL_URL = window.IOS_INSTALL_URL;
 
 export enum Verb {
   Post = "post",
@@ -49,6 +51,15 @@ export enum Visibility {
   Mods = "mods",
   Leaders = "leaders",
 }
+
+export enum TeamMembershipAccess {
+  Open = "open",
+  ParentOpen = "parent_open",
+  Apply = "apply",
+  ParentApply = "parent_apply",
+  InviteOnly = "invite_only",
+}
+
 
 export interface ModelT {
   id: string;

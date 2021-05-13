@@ -1,53 +1,92 @@
 <template>
   <ion-page>
     <ion-content>
-      <ion-spinner v-if="loading" />
-      <template v-else>
-        <div class="ion-text-center">
-          <div class="profile-img">
-            <avatar :profile="user" />
-          </div>
+      <div class="wrap">
+        <div class="centralizeTotal" v-if="loading">
+          <ion-spinner />
         </div>
-      </template>
+        <template v-else>
+          <profile-card
+            :profile="user"
+            :can-edit="false"
+            :showMenu="false"
+            :showQr="false"
+            :seletedSegment="selectedSegment"
+            :segments="segments"
+          >
+            <template v-slot:menu>
+              <!-- FIXME: teams should go here -->
+            </template>
+          </profile-card>
+        </template>
+      </div>
     </ion-content>
   </ion-page>
 </template>
 
 <script lang="ts">
-import Avatar from "../components/avatar.vue";
+import ProfileCard from "@/components/profile-card.vue";
 import { IonContent, IonPage, IonSpinner } from "@ionic/vue";
-import { defineComponent, computed, ref } from "vue";
+import { defineComponent } from "vue";
+import { Model } from "@/utils/model";
 import { useStore } from "../stores/";
-import { useRoute } from "vue-router";
+import { absoluteUrl } from "@/utils/url";
 
 export default defineComponent({
   name: "ViewUser",
+  data() {
+    return {
+      selectedSegment: "posts",
+      loading: true,
+    }
+  },
+  watch: {
+    // call again the method if the route changes
+    $route: "fetchData",
+  },
   setup() {
     const store = useStore();
-    const route = useRoute();
-    const objectId: any = route.params.userId;
-    const loading = ref(true);
-    if (!store.getters.objectsMap[objectId]) {
-      store
-        .dispatch("fetchModel", {
+    return {
+      store,
+    };
+  },
+  computed: {
+    user(): Model {
+      const objectId: any = this.$route.params.userId;
+      return this.store.getters.objectsMap[objectId]
+    },
+    segments(): any[] {
+      return [
+        {value: "posts", title: this.$t("profile.tabs.posts")},
+        {value: "activities", title: this.$t("profile.tabs.activities")},
+      ]
+    },
+    fullLink(): string {
+      return absoluteUrl(this.$router, {
+        name: "ViewUser",
+        params: { userid: this.user.objectId, },
+      });
+    },
+  },
+  methods: {
+    async fetchData() {
+      const objectId: any = this.$route.params.userId;
+      this.loading = true;
+      if (!objectId) { return }
+      if (!this.store.getters.objectsMap[objectId]) {
+        await this.store.dispatch("fetchModel", {
           className: "User",
           objectId,
         })
-        .then(() => {
-          store.commit("doneLoading");
-          loading.value = false;
-        });
-    } else {
-      loading.value = false;
-    }
-    return {
-      user: computed(() => store.getters.objectsMap[objectId]),
-      loading,
-    };
+      }
+      this.loading = false;
+    },
   },
-  methods: {},
+  mounted() {
+    this.fetchData();
+  },
   components: {
-    Avatar,
+    ProfileCard,
     IonPage,
     IonContent,
     IonSpinner,

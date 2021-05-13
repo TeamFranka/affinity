@@ -1,5 +1,7 @@
-name: E2E Test
+name: Test E2E
 on:
+  push:
+    branches: [ main ]
   pull_request:
     branches: [ main ]
 
@@ -10,6 +12,7 @@ on:
 jobs:
   tests:
     runs-on: ubuntu-latest
+    environment: cypress_tests
 
     steps:
       - uses: actions/checkout@v2
@@ -33,7 +36,9 @@ jobs:
         run: npm install
       # Runs
       - name: Check docker
-        run: docker ps -a && docker-compose logs --tail 10
+        run: |
+          docker ps -a && docker-compose logs --tail 10
+          [ `docker ps -q --filter "name=parse" | wc -l` -eq 1 ]
       - name: Set up DB
         run: 'npm run ci:setup-db'
       - name: Running e2e with cypress
@@ -43,6 +48,12 @@ jobs:
           start: npm run serve
           # quote the url to be safe against YML parsing surprises
           wait-on: 'http://localhost:8080'
+        env:
+          # pass the Dashboard record key as an environment variable
+          CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
+          # Recommended: pass the GitHub token lets this action correctly
+          # determine the unique run id necessary to re-run the checks
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - uses: actions/upload-artifact@v2
         if: failure()
         with:

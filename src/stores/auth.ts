@@ -8,6 +8,23 @@ import { deviceLocale } from "@/utils/setup";
 import { dayjs } from "@/config/Consts";
 import i18n from "@/utils/i18n";
 
+import { genFeedState } from "./globals";
+
+const MODEL_KEYS = ["object"];
+
+// eslint-disable-next-line @typescript-eslint/no-empty-interface
+export interface NewsT { }
+
+export const Bookmarks = genFeedState({
+  keyword: "bookmarks",
+  fullQueryFn: () =>
+    new Parse.Query("Bookmark")
+      .include(MODEL_KEYS)
+      .descending("createdAt"),
+  ignoreTeamSelection: true,
+  keys: MODEL_KEYS
+});
+
 export interface AuthStateT {
   wantsToLogin: boolean;
   user: Model | null;
@@ -15,6 +32,7 @@ export interface AuthStateT {
   currentInstallationId: string | null;
   teams: Array<string>;
   teamPermissions: Record<string, any>;
+  selectedTeam: string | null;
 }
 
 function currentUser(): Model | null {
@@ -31,6 +49,9 @@ function setLocale(locale: string) {
 
 export const AuthState = {
   namespaced: true,
+  modules: {
+    bookmarks: Bookmarks
+  },
   state: () => {
     const user = currentUser();
     if (user && user.lang) {
@@ -48,6 +69,7 @@ export const AuthState = {
       installations: [],
       currentInstallationId: null,
       teamPermissions: {},
+      selectedTeam: null,
     };
   },
   getters: {
@@ -61,6 +83,7 @@ export const AuthState = {
       rootGetters: any
     ) => rootGetters["defaultTeam"],
     user: (state: AuthStateT) => state.user,
+    selectedTeam: (state: AuthStateT) => state.selectedTeam,
     wantsToLogin: (state: AuthStateT) => state.wantsToLogin,
     userPtr: (state: AuthStateT) => state.user?.toPointer(),
     myTeams: (
@@ -112,9 +135,19 @@ export const AuthState = {
   mutations: {
     setUser(state: AuthStateT, newUser: Model | null) {
       state.user = newUser;
-      if (newUser && newUser.lang) {
-        setLocale(newUser.lang);
+      if (newUser) {
+        if (newUser.lang) {
+          setLocale(newUser.lang);
+        }
+        if (newUser.settings && newUser.settings.teamTabs) {
+          if (newUser.settings.teamTabs.tabs && newUser.settings.teamTabs.tabs.length > 0) {
+            // FIXME: set first selector per default
+          }
+        }
       }
+    },
+    setSelectedTeam(state: AuthStateT, name: string | null) {
+      state.selectedTeam = name;
     },
     setInstallations(state: AuthStateT, installations: Model[]) {
       state.installations = installations;
@@ -137,10 +170,7 @@ export const AuthState = {
     },
     setTeams(state: AuthStateT, resp: any) {
       state.teams = resp.teams.map((x: any) => x.id);
-      state.teamPermissions = Object.assign(
-        state.teamPermissions,
-        resp.permissions
-      );
+      state.teamPermissions = Object.assign({}, resp.permissions);
     },
     addPermissions(state: AuthStateT, resp: any) {
       state.teamPermissions = Object.assign(
@@ -179,6 +209,9 @@ export const AuthState = {
     logout(context: any) {
       Parse.User.logOut();
       context.commit("setUser", null);
+    },
+    selectTeam(context: any, team: any) {
+      context.commit("setSelectedTeam", team);
     },
     openLogin(context: any) {
       context.commit("setWantsToLogin", true);
@@ -224,6 +257,12 @@ export const AuthState = {
       await user.save();
       context.commit("setUser", toModel(user));
     },
+    async setBackground(context: any, f: Parse.File) {
+      await f.save();
+      const user = context.state.user.prepareSave({ background: f }).toParse();
+      await user.save();
+      context.commit("setUser", toModel(user));
+    },
     async setLang(context: any, lang: string) {
       const user = context.state.user.prepareSave({ lang }).toParse();
       await user.save();
@@ -234,6 +273,23 @@ export const AuthState = {
       const user = context.state.user.prepareSave({ settings }).toParse();
       await user.save();
       context.commit("setUser", toModel(user));
+    },
+    async setUserData(context: any, userdata: any) {
+      const user = context.state.user.prepareSave(userdata).toParse();
+      await user.save();
+      context.commit("setUser", toModel(user));
+    },
+    async joinTeam(context: any, teamId: string) {
+      const resp = await Parse.Cloud.run("joinTeam", { teamId });
+      await context.commit("setItems", resp.teams, { root: true });
+      await context.commit("setTeams", resp);
+      context.dispatch("refreshRoot", null, { root: true });
+    },
+    async leaveTeam(context: any, teamId: string) {
+      const resp = await Parse.Cloud.run("leaveTeam", { teamId });
+      await context.commit("setItems", resp.teams, { root: true });
+      await context.commit("setTeams", resp);
+      context.dispatch("refreshRoot", null, { root: true });
     },
     async afterLogin(context: any) {
       if (context.getters["isLoggedIn"]) {
@@ -276,6 +332,24 @@ export const AuthState = {
           await context.commit("setItem", toModel(obj), { root: true });
         },
         (e: string) => console.warn("Aborted unliking: ", e)
+      );
+    },
+    async bookmark(context: any, params: any) {
+      return context.dispatch("afterLogin").then(
+        async () => {
+          const data = await Parse.Cloud.run("bookmark", params);
+          await context.commit("updateItem", data, { root: true });
+        },
+        (e: string) => console.warn("Aborted bookmarking: ", e)
+      );
+    },
+    async unbookmark(context: any, params: any) {
+      return context.dispatch("afterLogin").then(
+        async () => {
+          const data = await Parse.Cloud.run("unbookmark", params);
+          await context.commit("updateItem", data, { root: true });
+        },
+        (e: string) => console.warn("Aborted unbookmarking: ", e)
       );
     },
     async react(context: any, params: any) {

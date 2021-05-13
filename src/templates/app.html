@@ -2,7 +2,7 @@
 <html lang="en">
   <head>
     <meta charset="utf-8" />
-    <title>affinity</title>
+    <title><%= title %></title>
 
     <base href="/" />
 
@@ -22,17 +22,23 @@
     <meta name="format-detection" content="telephone=no" />
     <meta name="msapplication-tap-highlight" content="no" />
 
-    <link rel="shortcut icon" type="image/png" href="<%= BASE_URL %>assets/icon/favicon.png" />
+    <!-- extraMeta -->
 
     <!-- add to homescreen for ios -->
     <meta name="apple-mobile-web-app-capable" content="yes" />
-    <meta name="apple-mobile-web-app-title" content="Affinity" />
+    <meta name="apple-mobile-web-app-title" content="<%= title %>" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black" />
   </head>
 
   <body>
     <script>
-      window.AFFINITY_DEFAULT_TEAM = "<%= VUE_APP_DEFAULT_TEAM %>";
+      window.AFFINITY_DEFAULT_TEAM = "<%= settings.AFFINITY_DEFAULT_TEAM %>";
+      window.PARSE_APP_ID = "<%= settings.PARSE_APP_ID %>";
+      window.PARSE_JS_KEY = "<%= settings.PARSE_JS_KEY %>";
+      window.PARSE_URL = "<%= settings.PARSE_URL %>";
+      window.PARSE_LIVE_URL = "<%= settings.PARSE_LIVE_URL %>";
+      window.ANDROID_INSTALL_URL = "<%= settings.ANDROID_INSTALL_URL %>";
+      window.IOS_INSTALL_URL = "<%= settings.IOS_INSTALL_URL %>";
     </script>
     <div id="app"></div>
   </body>

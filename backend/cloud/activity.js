@@ -1,7 +1,7 @@
 /* global Parse */
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
-const Activity = require("./consts.js").Activity;
+const { Activity, Bookmark } = require("./consts.js");
 const common = require('./common');
 const fetchModel = common.fetchModel;
 const enforcACL = common.enforcACL;
@@ -19,21 +19,42 @@ Parse.Cloud.beforeSave(Activity, async (request) => {
     await team.fetchWithInclude(["members", "publishers", "agents", "mods", "leaders"], {useMasterKey: true})
     const verb = activity.get("verb");
 
-    console.log("can", verb, team);
-    if (verb == "post" && team.canDo(user, "canPost")) {
+
+    if (verb == "post" && await team.canDo(user, "canPost")) {
         // is okay
-    } else if (verb == "announce" && team.canDo(user, "canPublish")) {
+    } else if (verb == "announce" && await team.canDo(user, "canPublish")) {
         // also okay
     } else {
         // nope, sorry!
         throw "Sorry, I can't let you do " + verb + ", " + user.username
     }
-    console.log("enforcing acl", request, team);
+
     await enforcACL(request, team);
 
 }, {
     requireUser: true
 });
+
+Parse.Cloud.afterFind(Activity, async (request) => {
+    if (request.user) {
+        const ids = request.objects.map(model => model.id);
+        const bookmarks = {};
+        (await (new Parse.Query(Bookmark))
+            .equalTo("author", request.user)
+            .equalTo("on.className", "Activity")
+            .containedBy("on.objectId", ids)
+            .find({sessionToken: request.user.getSessionToken()})
+        ).map((b) => {
+            bookmarks[b.get("on").objectId] = true;
+        })
+
+        request.objects.forEach((x) => {
+            x.set("bookmarked", !!bookmarks[x.id])
+        })
+    }
+    return Promise.resolve(request.objects)
+})
+
 
 // const CHANNELS_MAP = {'announce': 'news', 'post': 'posts'};
 // // We want to push news and actiities
@@ -75,7 +96,7 @@ Parse.Cloud.beforeSave(Activity, async (request) => {
 //             notification.body = `${username}: ${body}`;
 //         }
 //     } else {
-//         console.log("Not pushing", activity);
+//
 //         return
 //     }
 
@@ -110,7 +131,7 @@ Parse.Cloud.beforeSave(Activity, async (request) => {
 //         message.where = query;
 //     }
 
-//     console.log("sending push notification", message);
+//
 
 //     return Parse.Push.send(message, { useMasterKey: true });
 // });

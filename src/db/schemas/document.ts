@@ -1,4 +1,4 @@
-import { CommonFields, Interactable, ViewTracking } from "./common";
+import { CommonFields, Interactable, ViewTracking, Meta } from "./common";
 
 export const Document = {
   className: "Document",
@@ -37,13 +37,16 @@ export const Document = {
       },
     },
     Interactable,
-    ViewTracking
+    ViewTracking,
+    Meta,
   ),
   classLevelPermissions: {
     find: {
       "*": true,
     },
-    count: {},
+    count: {
+      "*": true,
+    },
     get: {
       "*": true,
     },

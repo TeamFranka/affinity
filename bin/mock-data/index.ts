@@ -47,8 +47,33 @@ export const Users = [
     {
         username: "graham",
         password: "graham",
-        name: "Graham",
+        name: "graham",
         avatar: makeFile('graham.png')
+    },
+    {
+        username: "jack",
+        password: "jack",
+        name: "Jack Harness"
+    },
+    {
+        username: "gwen",
+        password: "gwen",
+        name: "Gwen Cooper"
+    },
+    {
+        username: "owen",
+        password: "owen",
+        name: "Owen Harper",
+    },
+    {
+        username: "toshiko",
+        password: "toshiko",
+        name: "Toshiko Sato",
+    },
+    {
+        username: "martha",
+        password: "martha",
+        name: "Martha Jones",
     }
 ]
 
@@ -132,7 +157,8 @@ export const Teams = [
         slug: "doctor-who",
         name: "Doctor Who",
         admin: 'river',
-        members: ['clara', 'graham', 'yaz'],
+        members: ['clara', 'graham', 'yaz', 'ryan', 'bill'],
+        publishers: ['clara'],
         agents: ['yaz'],
         params: {
             avatar: makeFile('doctor.png')
@@ -142,11 +168,50 @@ export const Teams = [
         slug: "team-earth",
         name: "Team Earth",
         admin: 'graham',
-        members: ['graham', 'yaz'],
+        members: ['graham', 'yaz', 'clara', 'ryan', 'bill'],
+        publishers: ['yaz'],
         agents: ['yaz'],
         params: {
+            visibility: "public",
             subOf: "doctor-who",
             avatar: makeFile('doctor.png')
+        }
+    },
+    { //non default top-level team
+        slug: "torchwood",
+        name: "Torchwood",
+        admin: 'jack',
+        members: ['jack', 'gwen', 'owen', 'toshiko', 'martha'],
+        publishers: ['gwen'],
+        agents: ['owen'],
+        params: {
+            autojoin: ["tw-cardiff"],
+            avatar: makeFile('team-torchwood.jpg')
+        }
+    },
+    { // auto-join subteam
+        slug: "tw-cardiff",
+        name: "Cardiff Base",
+        admin: 'jack',
+        members: ['jack', 'gwen', 'owen', 'toshiko', 'martha'],
+        publishers: ['gwen'],
+        agents: ['owen'],
+        params: {
+            subOf: "torchwood",
+            avatar: makeFile('team-torchwood.jpg')
+        }
+    },
+    { // non auto-join subteam that is public
+        slug: "tw-london",
+        name: "London Base",
+        admin: 'jack',
+        members: ['jack', 'gwen', 'owen', 'toshiko', 'martha'],
+        publishers: ['gwen'],
+        agents: ['owen'],
+        params: {
+            visibility: "public",
+            subOf: "torchwood",
+            avatar: makeFile('team-torchwood.jpg')
         }
     }
 ];
@@ -198,7 +263,7 @@ export const Posts = [
     {
         team: "team-earth",
         verb: "announce",
-        author: 'clara',
+        author: 'yaz',
         text: "Ein freundliches Hallo zu Doctor huge!!!",
         visibility: "public",
         objects: [
@@ -207,14 +272,20 @@ export const Posts = [
     }
 ]
 
-const randomUser = () => Users[Math.floor(Math.random() * Users.length)].username;
+const TeamsBySlug : Record<any, any> = {};
+Teams.forEach(t => {
+    TeamsBySlug[t.slug] = t
+});
+
+const randomEntry = (base: any[]) => base[Math.floor(Math.random() * base.length)];
+const randomTeam = () => randomEntry(Teams).slug;
 
 for (var i = 0; i < 100; i++) {
-    Posts.push({
-        team: i % 5 ? "team-earth" : "doctor-who",
-        verb: i % 7 ? "announce" :  "post",
-        author: i % 7 ? 'river' : randomUser(),
+    const team : string = i % 7 == 0 ? 'doctor-who' : randomTeam();
+    const verb : string = i % 7 == 0 ? "announce" :  "post";
+    const author = randomEntry(TeamsBySlug[team][verb == "announce" ? "publishers" : "members"])
+    Posts.push({team, verb, author,
         text: "This is post number " + i,
-        visibility: "public",
+        visibility: i % 3 == 0 ? "members" : "public",
     })
 }

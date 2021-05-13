@@ -14,14 +14,27 @@
 <script lang="ts">
 import { IonPage, IonContent, IonNote } from "@ionic/vue";
 import { defineComponent, watch } from "vue";
-import { useStore } from "../stores";
+import { Parse } from "@/config/Consts";
+import { DEBUG } from "@/utils/env";
+import { useStore } from "@/stores";
 
 export default defineComponent({
   name: "Login",
   mounted() {
     const store = useStore();
     const r: any = this.$route;
-    const forward = () => this.$router.replace(r.params.next || "/");
+    const next = r.params.next || r.query.next || "/";
+    const forward = () => this.$router.replace(next);
+
+    console.log("YAY", DEBUG, r.query.username)
+
+    // FOR TESTING PURPOSE ONLY.
+    if (DEBUG && r.query.username) {
+      const username = r.query.username;
+      Parse.User.logIn(username, username).then((newUser) => {
+        store.dispatch("auth/loggedIn", newUser);
+      });
+    }
 
     if (store.getters["auth/isLoggedIn"]) {
       forward();
