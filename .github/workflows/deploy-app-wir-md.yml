@@ -143,7 +143,7 @@ jobs:
           name: dist-production
           path: dist
       - name: Codepush Android
-        uses: avocaddo/App-Center-action@v1.0.2
+        uses: avocaddo/AppCenter-Github-Action@v1.0.2
         with:
           command: appcenter release -m -a ${{env.APPCENTER_PROJECT_ANDROID}} -d Production -c dist -t 1.0.0
           token: ${{ secrets.APPCENTER_ACCESS_TOKEN }}
@@ -160,7 +160,7 @@ jobs:
           name: dist-production
           path: dist
       - name: Codepush iOS
-        uses: avocaddo/App-Center-action@v1.0.2
+        uses: avocaddo/AppCenter-Github-Action@v1.0.2
         with:
           command: appcenter release -m -a ${{env.APPCENTER_PROJECT_IOS}} -d Production -c dist -t 1.0.0
           token: ${{ secrets.APPCENTER_ACCESS_TOKEN }}
@@ -175,7 +175,7 @@ jobs:
         with:
           name: ios-app
       - name: Deploy to Test Group
-        uses: avocaddo/App-Center-action@v1.0.2
+        uses: avocaddo/AppCenter-Github-Action@v1.0.2
         with:
           command: appcenter distribute release --app ${{env.APPCENTER_PROJECT_IOS}} --group "Public Beta" -- file ios-app.ipa
           token: ${{ secrets.APPCENTER_ACCESS_TOKEN }}
@@ -190,7 +190,7 @@ jobs:
         with:
           name: android-app
       - name: Deploy to Store
-        uses: avocaddo/App-Center-action@v1.0.2
+        uses: avocaddo/AppCenter-Github-Action@v1.0.2
         with:
           command: appcenter distribute release --app ${{env.APPCENTER_PROJECT_ANDROID}} --store "Production" --file app-release.aab
           token: ${{ secrets.APPCENTER_ACCESS_TOKEN }}
