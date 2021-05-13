@@ -1,14 +1,6 @@
 <template>
   <ion-page>
     <team-filter-header @team-selected="selectTeam($event)" />
-    <ion-searchbar
-      show-cancel-button="focus"
-      :placeholder="$t('gallery.search')"
-      inputmode="search"
-      enterkeyhint="search"
-      :value="searchValue"
-      @ion-change="searchValue = $event.target.value"
-    />
     <ion-content scroll-x="false" scroll-y="false" data-cy="activity-gallery">
       <ion-spinner v-if="loading" name="dots"></ion-spinner>
       <ion-grid v-else>
@@ -47,7 +39,6 @@ import {
   IonContent,
   IonPage,
   modalController,
-  IonSearchbar,
   IonCol,
   IonRow,
   IonGrid,
@@ -61,11 +52,6 @@ import PictureView from "../components/picture-view.vue";
 import TeamFilterHeader from "../components/team-filter-header.vue";
 export default defineComponent({
   name: "Gallery",
-  data() {
-    return {
-      searchValue: "",
-    };
-  },
   setup() {
     const store = useStore();
 
@@ -110,7 +96,6 @@ export default defineComponent({
     IonContent,
     IonPage,
     TeamFilterHeader,
-    IonSearchbar,
     IonCol,
     IonRow,
     IonGrid,
