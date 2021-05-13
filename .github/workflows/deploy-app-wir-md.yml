@@ -145,7 +145,7 @@ jobs:
       - name: Codepush Android
         uses: avocaddo/AppCenter-Github-Action@v1.0.2
         with:
-          command: appcenter release -m -a ${{env.APPCENTER_PROJECT_ANDROID}} -d Production -c dist -t 1.0.0
+          command: appcenter codepush release -m -a ${{env.APPCENTER_PROJECT_ANDROID}} -d Production -c dist -t 1.0.0
           token: ${{ secrets.APPCENTER_ACCESS_TOKEN }}
 
   deploy-code-push-ios:
@@ -162,7 +162,7 @@ jobs:
       - name: Codepush iOS
         uses: avocaddo/AppCenter-Github-Action@v1.0.2
         with:
-          command: appcenter release -m -a ${{env.APPCENTER_PROJECT_IOS}} -d Production -c dist -t 1.0.0
+          command: appcenter codepush release -m -a ${{env.APPCENTER_PROJECT_IOS}} -d Production -c dist -t 1.0.0
           token: ${{ secrets.APPCENTER_ACCESS_TOKEN }}
 
   deploy-ios-app:
