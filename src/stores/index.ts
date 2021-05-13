@@ -12,6 +12,7 @@ import { FeedT, Feed } from "./feed";
 import { NewsT, News } from "./news";
 import { InboxT, Inbox } from "./inbox";
 import { FaqT, Faq } from "./faq";
+import { GalleryT, Gallery } from "./gallery";
 import { TeamsT, Teams } from "./teams";
 import { CommentsT, Comments } from "./comments";
 import { DraftT, Draft } from "./draft";
@@ -22,6 +23,7 @@ export interface State {
   auth: AuthStateT;
   news: NewsT;
   faq: FaqT;
+  gallery: GalleryT;
   inbox: InboxT;
   teams: TeamsT;
   draft: DraftT;
@@ -45,6 +47,7 @@ export const store = createStore<State>({
     inbox: Inbox,
     draft: Draft,
     auth: AuthState,
+    gallery: Gallery,
   },
 });
 

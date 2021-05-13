@@ -23,7 +23,7 @@ export type QueryFeed = {
 
 type QueryUpdate = {
   feedId: string;
-  objectId: string; 
+  objectId: string;
 };
 
 export interface GlobalStateT {
@@ -294,6 +294,7 @@ export const GlobalState = {
       context.dispatch("news/refresh");
       context.dispatch("feed/refresh");
       context.dispatch("faq/refresh");
+      context.dispatch("gallery/refresh");
       context.dispatch("inbox/refresh");
     },
     init(context: any) {
