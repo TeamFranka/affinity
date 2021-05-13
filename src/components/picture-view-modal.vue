@@ -1,9 +1,10 @@
 <template>
   <div
-    class="slidebox shown"
+    :class="zIndex < indexValue ? 'slidebox shown' : 'slidebox ' + className "
     :style="extraStyle"
     @dblclick="like"
     ref="slideBox"
+    :id="'slider' + zIndex"
   >
     <span class="like-icon" ref="liker">
       <ion-icon :icon="likeIcon" />
@@ -68,6 +69,12 @@ export default defineComponent({
     },
     indexValue: {
       type: Number,
+    },
+    zIndex: {
+      type: Number
+    },
+    className: {
+      type: String
     }
   },
   components: {
@@ -136,7 +143,7 @@ export default defineComponent({
       return this.item.objects[0];
     },
     imageUrl(): string | null {
-      return this.image?.file.url;
+      return this.image?.file?.url;
     },
     extraStyle(): object {
       const style = {

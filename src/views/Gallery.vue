@@ -63,8 +63,8 @@ export default defineComponent({
     const pictureArr: any[] = [];
     
     return {
-      //  elem: computed(() => store.getters["feed/latestPosts"]), 
-       elem: computed(() => store.getters["gallery/entries"]), 
+       elem: computed(() => store.getters["feed/latestPosts"]), 
+      //  elem: computed(() => store.getters["gallery/entries"]), 
       store,
       pictureArr,
     };
@@ -72,11 +72,15 @@ export default defineComponent({
   computed: {
     filterPicture() {
       const pictureList: any[] = [];
+      console.log(this.elem);
+      if(!this.elem) {
+        return;
+      }
       this.elem.find((x: any) => {
         if (x.className == "Picture") {
           console.log("inside pic", x);
         } else {
-          if (x.objects[0]) {
+          if (x.objects[0] && x.objects[0].file) {
             pictureList.push(x.objects[0]);
           }
         }
@@ -103,6 +107,9 @@ export default defineComponent({
   },
   methods: {
     filterGallery() {
+      if(!this.elem) {
+        return;
+      }
       const pictureList: any[] = [];
       this.elem.find((x: any) => {
         if (x.objects[0]) {
@@ -111,22 +118,21 @@ export default defineComponent({
       });
     },
     async viewPicture(item: any, selectedImg: any) {
+      if(!this.elem) {
+        return;
+      }
       const tempData: any[] = [];
       this.elem.find((x: any) => {
-        if (x.objects[0]) {
+        if (x.objects[0] && x.objects[0].file) {
           tempData.push(x);
         }
       });
-
-      console.log("From gallery page : " , tempData.slice().reverse());
-      
-      
-      const popover = await modalController.create({
+        const popover = await modalController.create({
         component: PictureView,
         cssClass: "modalCss",
         componentProps: {
           imgDetails: tempData.slice().reverse(),
-          zIndex: selectedImg,
+          zIndex: (tempData.length - (selectedImg + 1)),
         },
       });
       await popover.present();

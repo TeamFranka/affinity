@@ -12,11 +12,14 @@
     </ion-header>
 
     <div class="flip-in" ref="box" v-if="imgDetails && imgDetails.length > 0">
-      <picture-view-modal 
+      <picture-view-modal
         v-for="(item, index) in imgDetails"
         :itemId="item"
-        :key="item"
+        :key="index"
         :z-index="index"
+        :indexValue="zIndex"
+        :zIndex="index"
+        :className=" (index === zIndex) ? 'shown' : 'hidden'"
       />
     </div>
   </ion-content>
@@ -58,12 +61,11 @@ export default defineComponent({
     IonContent
   },
 
-  setup(props: any) {
+  setup() {
     const store = useStore();
     return {
       closeIcon,
-      store,
-      currentIndex: props.zIndex
+      store
     };
   },
   
@@ -78,7 +80,6 @@ export default defineComponent({
     const c: any  = this.$refs.box;
     let prev: any, next: any;
 
-    console.log(c);
 
     const gesture = createGesture({
       el: c,
@@ -87,7 +88,7 @@ export default defineComponent({
       onStart: () => {
         const hidden = c.getElementsByClassName("hidden");
         const shown = c.getElementsByClassName("shown");
-        console.log("picking", hidden, shown);
+        console.log("picking", hidden, shown.length);
         if (hidden.length == 0) {
           prev = null;
         } else {
