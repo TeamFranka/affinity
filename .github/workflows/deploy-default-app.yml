@@ -68,7 +68,6 @@ jobs:
       - name: "Update Build Version"
         run: |
             /usr/libexec/PlistBuddy -c "Set :CFBundleVersion $GITHUB_RUN_NUMBER" "apps/${{ env.CAP_PATH }}/ios/App/App/Info.plist"
-            /usr/libexec/PlistBuddy -c "Set :CFBundleShortVersionString $GITHUB_RUN_NUMBER.0" "apps/${{ env.CAP_PATH }}/ios/App/App/Info.plist"
       - name: Build Android App
         run: |
           cd apps/${{ env.CAP_PATH }}/android
