@@ -64,9 +64,8 @@ jobs:
           git checkout -- apps/wir-md/ios/App/App/capacitor.config.json
       - name: "Update Build Version"
         run: |
-            export buildNumber=$(git rev-list HEAD | wc -l | tr -d ' ')
-            /usr/libexec/PlistBuddy -c "Set :CFBundleVersion $buildNumber" "apps/${{ env.CAP_PATH }}/ios/App/App/Info.plist"
-            /usr/libexec/PlistBuddy -c "Set :CFBundleShortVersionString $buildNumber.0" "apps/${{ env.CAP_PATH }}/ios/App/App/Info.plist"
+            /usr/libexec/PlistBuddy -c "Set :CFBundleVersion $GITHUB_RUN_NUMBER" "apps/${{ env.CAP_PATH }}/ios/App/App/Info.plist"
+            /usr/libexec/PlistBuddy -c "Set :CFBundleShortVersionString $GITHUB_RUN_NUMBER.0" "apps/${{ env.CAP_PATH }}/ios/App/App/Info.plist"
             git diff
       - name: Build iOS App
         uses: yukiarrr/ios-build-action@v1.3.2
