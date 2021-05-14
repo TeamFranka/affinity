@@ -10,7 +10,7 @@ jobs:
   test-case:
     environment: ios_app
     runs-on: macos-latest
-    needs: release-build
+
     steps:
       - uses: actions/checkout@v2
       - name: "Update Build Version"
