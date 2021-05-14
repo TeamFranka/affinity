@@ -58,12 +58,10 @@ jobs:
       - name: Install capacitor
         run: npm install capacitor
       - name: Sync assets
-        run: npx ionic capacitor sync --no-build --project ${{ env.CAP_PROJECT }} --verbose ios
-      - name: "Update Build Version"
         run: |
-            export buildNumber=$(git rev-list HEAD | wc -l | tr -d ' ')
-            /usr/libexec/PlistBuddy -c "Set :CFBundleVersion $buildNumber" "apps/${{ env.CAP_PATH }}/ios/App/App/Info.plist"
-            /usr/libexec/PlistBuddy -c "Set :CFBundleShortVersionString $buildNumber.0" "apps/${{ env.CAP_PATH }}/ios/App/App/Info.plist"
+            export CI_BUILD_NUMBER=$(git rev-list HEAD | wc -l | tr -d ' ')
+            npx ionic capacitor sync --no-build --project ${{ env.CAP_PROJECT }} --verbose ios
+            git diff
       - name: Build iOS App
         uses: yukiarrr/ios-build-action@v1.3.2
         continue-on-error: false

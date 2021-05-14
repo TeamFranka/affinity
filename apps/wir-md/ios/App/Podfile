@@ -9,7 +9,14 @@ install! 'cocoapods', :disable_input_output_paths => true
 def capacitor_pods
   pod 'Capacitor', :path => '../../../../node_modules/@capacitor/ios'
   pod 'CapacitorCordova', :path => '../../../../node_modules/@capacitor/ios'
-
+  pod 'CapacitorApp', :path => '../../../../node_modules/@capacitor/app'
+  pod 'CapacitorCamera', :path => '../../../../node_modules/@capacitor/camera'
+  pod 'CapacitorPushNotifications', :path => '../../../../node_modules/@capacitor/push-notifications'
+  pod 'CapacitorCommunityHttp', :path => '../../../../node_modules/@capacitor-community/http'
+  pod 'CapacitorDevice', :path => '../../../../node_modules/@capacitor/device'
+  pod 'CapacitorDialog', :path => '../../../../node_modules/@capacitor/dialog'
+  pod 'CapacitorFilesystem', :path => '../../../../node_modules/@capacitor/filesystem'
+  pod 'CapacitorCodepush', :path => '../../../../node_modules/capacitor-codepush'
 end
 
 target 'App' do
