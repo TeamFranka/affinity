@@ -68,7 +68,7 @@ jobs:
       - name: "Update Build Version"
         run: |
             export buildNumber=$(git rev-list HEAD | wc -l | tr -d ' ')
-            /usr/libexec/PlistBuddy -c "Set :CFBundleVersion $buildNumber" "apps/${{ env.CAP_PATH }}/ios/App/Info.plist"
+            /usr/libexec/PlistBuddy -c "Set :CFBundleVersion $buildNumber" "apps/${{ env.CAP_PATH }}/ios/App/App/Info.plist"
       - name: Build Android App
         run: |
           cd apps/${{ env.CAP_PATH }}/android
