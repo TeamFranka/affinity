@@ -34,7 +34,7 @@
           </ion-col>
         </template>
         <template v-else>
-          <ion-col>
+          <ion-col v-if="!isMobile">
             <router-link style="position: relative" to="/donate">
               <ion-icon size="large" :icon="donationsIcon" />
             </router-link>
@@ -106,6 +106,7 @@ import MyMenu from "@/components/my-menu.vue";
 import AnonMenu from "@/components/anon-menu.vue";
 import { defineComponent, computed } from "vue";
 import { useStore } from "@/stores/";
+import { isMobileInstallation } from "@/utils/setup";
 
 const SMALL_HEIGHT = 60;
 
@@ -117,6 +118,7 @@ export default defineComponent({
       isLoggedIn: computed(() => !!store.getters["auth/isLoggedIn"]),
       hasPush: computed(() => !!store.getters["auth/currentInstallation"]),
       user: computed(() => store.state.auth.user),
+      isMobile: isMobileInstallation(),
       homeIcon: planetOutline,
       feedIcon: peopleCircleOutline,
       donationsIcon: walletOutline,
