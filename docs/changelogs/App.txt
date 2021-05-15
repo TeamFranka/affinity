@@ -1,0 +1,2 @@
+* Improved usability, reduced clutter in tab
+* Fixed up App splash screen
