@@ -171,22 +171,22 @@ jobs:
   deploy-ios-app:
     environment: appcenter_deploy
     runs-on: ubuntu-latest
-    needs: [ deploy-code-push-ios, ios-app ]
+    needs: [ ios-app ]
     steps:
       - name: Download signed iOS App
         uses: actions/download-artifact@v2
         with:
           name: ios-app
-      - name: Deploy to Test Group
+      - name: Deploy to Store
         uses: avocaddo/AppCenter-Github-Action@v1.0.2
         with:
-          command: appcenter distribute release --release-notes-file docs/changelos/App.txt --app ${{env.APPCENTER_PROJECT_IOS}} --group "Public Beta" --file ios-app.ipa
+          command: appcenter distribute release --release-notes-file docs/changelogs/App.txt --app ${{env.APPCENTER_PROJECT_IOS}} --store Production --file ios-app.ipa
           token: ${{ secrets.APPCENTER_ACCESS_TOKEN }}
 
   deploy-android-app:
     environment: appcenter_deploy
     runs-on: ubuntu-latest
-    needs: [ deploy-code-push-android, android-app ]
+    needs: [ android-app ]
     steps:
       - name: Download signed Android App
         uses: actions/download-artifact@v2
@@ -195,5 +195,5 @@ jobs:
       - name: Deploy to Store
         uses: avocaddo/AppCenter-Github-Action@v1.0.2
         with:
-          command: appcenter distribute release --release-notes-file docs/changelos/App.txt --app ${{env.APPCENTER_PROJECT_ANDROID}} --store Production --file app-release.aab
+          command: appcenter distribute release --release-notes-file docs/changelogs/App.txt --app ${{env.APPCENTER_PROJECT_ANDROID}} --store Production --file app-release.aab
           token: ${{ secrets.APPCENTER_ACCESS_TOKEN }}

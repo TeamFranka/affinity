@@ -205,7 +205,7 @@ jobs:
             ${{ runner.os }}-build-
             ${{ runner.os }}-
       - name: Deploy to Test Group
-        run: npx appcenter distribute release --release-notes-file docs/changelos/App.txt --app ${{env.APPCENTER_PROJECT_IOS}} --token ${{secrets.APPCENTER_ACCESS_TOKEN}} --group "Public Beta" -- file ios-app.ipa
+        run: npx appcenter distribute release --release-notes-file docs/changelogs/App.txt --app ${{env.APPCENTER_PROJECT_IOS}} --token ${{secrets.APPCENTER_ACCESS_TOKEN}} --group "Public Beta" -- file ios-app.ipa
 
   deploy-android-app:
     environment: appcenter_deploy
@@ -227,5 +227,5 @@ jobs:
             ${{ runner.os }}-build-${{ env.cache-name }}-
             ${{ runner.os }}-build-
             ${{ runner.os }}-
-      - name: Deploy to Store
-        run: npx appcenter distribute release --release-notes-file docs/changelos/App.txt --app ${{env.APPCENTER_PROJECT_ANDROID}} --token ${{secrets.APPCENTER_ACCESS_TOKEN}} --store "Production" --file app-release.aab
+      - name: Deploy to Test Group
+        run: npx appcenter distribute release --release-notes-file docs/changelogs/App.txt --app ${{env.APPCENTER_PROJECT_ANDROID}} --token ${{secrets.APPCENTER_ACCESS_TOKEN}} --group "Public Beta" --file app-release.aab
