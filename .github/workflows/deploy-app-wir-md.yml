@@ -180,7 +180,7 @@ jobs:
       - name: Deploy to Test Group
         uses: avocaddo/AppCenter-Github-Action@v1.0.2
         with:
-          command: appcenter distribute release --app ${{env.APPCENTER_PROJECT_IOS}} --group "Public Beta" --file ios-app.ipa
+          command: appcenter distribute release --release-notes-file docs/changelos/App.txt --app ${{env.APPCENTER_PROJECT_IOS}} --group "Public Beta" --file ios-app.ipa
           token: ${{ secrets.APPCENTER_ACCESS_TOKEN }}
 
   deploy-android-app:
@@ -195,5 +195,5 @@ jobs:
       - name: Deploy to Store
         uses: avocaddo/AppCenter-Github-Action@v1.0.2
         with:
-          command: appcenter distribute release --app ${{env.APPCENTER_PROJECT_ANDROID}} --store Production --file app-release.aab
+          command: appcenter distribute release --release-notes-file docs/changelos/App.txt --app ${{env.APPCENTER_PROJECT_ANDROID}} --store Production --file app-release.aab
           token: ${{ secrets.APPCENTER_ACCESS_TOKEN }}

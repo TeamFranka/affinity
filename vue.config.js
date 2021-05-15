@@ -48,7 +48,7 @@ module.exports = {
           AFFINITY_DEFAULT_TEAM: "jZ4ZFLEnzO",
           PARSE_URL: "https://app.wir.md/parse",
           PARSE_LIVE_URL: "wss://app.wir.md/parse",
-          ANDROID_INSTALL_URL: "https://play.google.com/store/apps/details?id=md.wir.app",
+          ANDROID_INSTALL_URL: "https://play.google.com/store/apps/details?id=md.wir.app&hl=de_DES&gl=de",
           IOS_INSTALL_URL: "https://apps.apple.com/us/app/wir-md-by-teamfranka/id1567204902"
         })
       }
