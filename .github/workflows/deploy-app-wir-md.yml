@@ -140,6 +140,7 @@ jobs:
     needs: [ android-app ]
     if: "!contains(github.event.head_commit.message, '[ci skip deploy-app]')"
     steps:
+      - uses: actions/checkout@v2
       - name: Download /dist
         uses: actions/download-artifact@v2
         with:
@@ -157,6 +158,7 @@ jobs:
     needs: [ ios-app ]
     if: "!contains(github.event.head_commit.message, '[ci skip deploy-app]')"
     steps:
+      - uses: actions/checkout@v2
       - name: Download /dist
         uses: actions/download-artifact@v2
         with:
@@ -173,6 +175,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: [ ios-app ]
     steps:
+      - uses: actions/checkout@v2
       - name: Download signed iOS App
         uses: actions/download-artifact@v2
         with:
@@ -188,6 +191,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: [ android-app ]
     steps:
+      - uses: actions/checkout@v2
       - name: Download signed Android App
         uses: actions/download-artifact@v2
         with:
