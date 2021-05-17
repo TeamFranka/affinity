@@ -26,8 +26,11 @@ describe("FAQ", () => {
 
     cy.get("ion-modal").should("not.exist");
 
+    cy.get("[data-cy-role=search] input ").clear().type(testTitle);
+
     // find our new item
     cy.get("[data-cy-role=title]").contains(testTitle);
+    cy.get("[data-cy-role=title]").first().click(); // to open
     cy.get("[data-cy-role=desc]").contains(testDesc);
   });
 });

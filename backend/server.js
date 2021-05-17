@@ -7,7 +7,7 @@ global.Parse = Parse;
 
 const api = new ParseServer({
     "liveQuery": {
-        "classNames": ["Conversation", "Message", "Activity"]
+        "classNames": ["Conversation", "Message", "Activity", "FaqEntry", "Picture", "Bookmark", "Document", "Poll", "Link"]
     },
     "appId": "APPLICATION_ID",
     "masterKey": "MASTER_KEY",

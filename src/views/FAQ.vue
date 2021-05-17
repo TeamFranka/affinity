@@ -4,6 +4,7 @@
       <ion-searchbar
         :disabled="loading || entries.length === 0"
         :value="searchValue"
+        data-cy-role="search"
         placholder="Suchen"
         show-cancel-button="focus"
         @ion-change="searchValue = $event.target.value"
@@ -132,7 +133,7 @@ export default defineComponent({
     async intendToCreate() {
       await this.editModal(
         new FaqModel({
-          team: this.team,
+          team: this.team.toPointer(),
         }),
         "Erstellen"
       );
@@ -156,7 +157,6 @@ export default defineComponent({
           entry.set(key, value);
         });
         await entry.save();
-        this.refresh(); // FIXME: inefficient
         this.loading = false;
       }
       return null;
