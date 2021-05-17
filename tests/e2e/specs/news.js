@@ -4,7 +4,6 @@ describe("Visiting the public news", () => {
     cy.viewport("iphone-6", "portrait");
     cy.visit("/news");
 
-    // there is an element with the default sentence
     cy.get(".flip-in .shown").then((x) => {
       const before = x.length;
 

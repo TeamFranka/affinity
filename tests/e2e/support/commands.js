@@ -11,6 +11,7 @@ Cypress.Commands.add("signUpAsNewUser", (u) => {
   const username = u || `sontaran-${Math.floor(Math.random() * 1000000)}`;
 
   cy.visit("/news");
+  cy.clearNotification();
   cy.get("[data-cy-role=loginModal]").click();
   cy.get("ion-modal").within(() => {
     cy.wait(500);
@@ -32,6 +33,10 @@ Cypress.Commands.add("clearUser", () => {
     // resetting
     cy.removeLocalStorage(key);
   }
+})
+
+Cypress.Commands.add("clearNotification", () => {
+  cy.get(".toast-wrapper .toast-button-cancel", {includeShadowDom: true}).click();
 })
 
 Cypress.Commands.add("loggedInAs", (username) => {
