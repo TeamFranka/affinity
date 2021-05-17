@@ -22,7 +22,7 @@
         <ion-note>{{ $t("generic.underConstruction") }}</ion-note>
       </div>
       <div v-if="canCreate" class="ion-text-end">
-        <ion-button @click="intendToCreate">{{
+        <ion-button data-cy="addEntry" @click="intendToCreate">{{
           $t("generic.actions.add")
         }}</ion-button>
       </div>
@@ -34,10 +34,10 @@
           :tags="e.tags"
           @tag-selected="searchValue = $event"
         >
-          <render-md admin :source="e.text" />
+          <render-md data-cy-role="desc" admin :source="e.text" />
           <interaction-bar :object="e" link="">
-            <template v-slot:extraButtons>
-              <ion-button @click="intendToEdit(e)" fill="clear">{{
+            <template v-if="canCreate" v-slot:extraButtons>
+              <ion-button data-cy-role="edit" @click="intendToEdit(e)" fill="clear">{{
                 $t("generic.actions.edit")
               }}</ion-button>
             </template>

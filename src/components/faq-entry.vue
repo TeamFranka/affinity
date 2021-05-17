@@ -1,7 +1,7 @@
 <template>
   <ion-card>
     <ion-card-header>
-      <ion-card-title @click="opened = !opened"
+      <ion-card-title data-cy-role="title" @click="opened = !opened"
         ><ion-icon :icon="opened ? openedIcon : closedIcon" />
         {{ title }}</ion-card-title
       >
