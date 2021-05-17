@@ -3,6 +3,7 @@
     <ion-toolbar>
       <ion-input
         :value="title"
+        name="title"
         @ion-change="title = $event.target.value"
         :placeholder="$t('faq.title.placeholder')"
       />
@@ -32,6 +33,7 @@
   <ion-footer>
     <ion-toolbar>
       <ion-button
+        data-cy-role="submit"
         fill="outline"
         :disabled="!canSubmit"
         @click="saveAndClose"
