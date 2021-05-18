@@ -175,7 +175,7 @@ jobs:
   deploy-ios-app:
     environment: appcenter_deploy
     runs-on: ubuntu-latest
-    needs: [ ios-app ]
+    needs: [deploy-code-push-ios, ios-app ]
     steps:
       - uses: actions/checkout@v2
       - name: Download signed iOS App
@@ -191,7 +191,7 @@ jobs:
   deploy-android-app:
     environment: appcenter_deploy
     runs-on: ubuntu-latest
-    needs: [ android-app ]
+    needs: [ deploy-code-push-android, android-app ]
     steps:
       - uses: actions/checkout@v2
       - name: Download signed Android App

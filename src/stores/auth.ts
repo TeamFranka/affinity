@@ -224,12 +224,17 @@ export const AuthState = {
     async loggedIn(context: any, newUser: Parse.User) {
       const userPointer = newUser.toPointer();
       if (context.getters.currentInstallation && !context.state.user) {
-        const i = context.getters.currentInstallation.prepareSave({
+        const inst = context.getters.currentInstallation;
+        const params = {
+          installationId: inst.objectId,
           user: userPointer,
           setTeams: true,
-        });
+          defaultTeamId: context.getters.defaultTeam.objectId,
+          deviceToken: inst.deviceToken,
+        };
+        console.log("claiming", params);
         // fire and forget
-        Parse.Cloud.run("claimInstallation", i.toJSON()).then(
+        Parse.Cloud.run("claimInstallation", params).then(
           (response: any) => {
             context.commit("setInstallations", response.map(toModel));
           }
