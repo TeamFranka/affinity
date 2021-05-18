@@ -12,10 +12,10 @@ public class MainActivity extends BridgeActivity {
   public void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
 
-    // Initializes the Bridge
-    this.init(savedInstanceState, new ArrayList<Class<? extends Plugin>>() {{
-      // Additional plugins you've installed go here
-      // Ex: add(TotallyAwesomePlugin.class);
-    }});
+    registerPlugin(com.capacitorjs.plugins.app.AppPlugin.class);
+    registerPlugin(com.capacitorjs.plugins.device.DevicePlugin.class);
+    registerPlugin(com.capacitorjs.plugins.camera.CameraPlugin.class);
+    registerPlugin(com.capacitorjs.plugins.filesystem.FilesystemPlugin.class);
+    registerPlugin(com.capacitorjs.plugins.camera.CameraPlugin.class);
   }
 }
