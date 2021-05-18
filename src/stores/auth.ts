@@ -233,7 +233,6 @@ export const AuthState = {
           defaultTeamId: context.getters.defaultTeam.objectId,
           deviceToken: inst.deviceToken,
         };
-        console.log("claiming", params);
         // fire and forget
         Parse.Cloud.run("claimInstallation", params).then(
           (response: any) => {
