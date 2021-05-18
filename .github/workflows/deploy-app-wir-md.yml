@@ -69,6 +69,8 @@ jobs:
         run: |
           cd apps/${{ env.CAP_PATH }}/android
           ./gradlew bundleRelease
+        env:
+          BUILD_NUMBER: ${{GITHUB_RUN_NUMBER}}
       - uses: r0adkll/sign-android-release@v1
         name: Sign app Bundle
         # ID used to access action output
