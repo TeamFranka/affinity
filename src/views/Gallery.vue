@@ -68,6 +68,7 @@ export default defineComponent({
     };
   },
   mounted() {
+    console.log('entries response', this.entries);
     if (!this.loading && this.entries.length === 0) {
       this.refresh();
     }

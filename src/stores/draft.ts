@@ -69,6 +69,7 @@ export const Draft = {
       return state.objects;
     },
     selectedTeamId(state: DraftT, getters: any): string {
+      console.log(getters.selectedTeam);
       return getters.selectedTeam.objectId;
     },
     selectedTeamPerms(state: DraftT, getters: any, rootState: any): any {
