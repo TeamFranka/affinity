@@ -23,8 +23,8 @@ Parse.Cloud.define("claimInstallation", async (request) => {
   params.installationId = params.installationId.toLowerCase();
 
 
-  if (params.id) {
-    installation = await (new Parse.Query(Parse.Installation)).get(params.Id)
+  if (params.objectId) {
+    installation = await (new Parse.Query(Parse.Installation)).get(params.objectId, { useMasterKey: true})
   }
 
   if (!installation) {

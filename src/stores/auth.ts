@@ -226,7 +226,8 @@ export const AuthState = {
       if (context.getters.currentInstallation && !context.state.user) {
         const inst = context.getters.currentInstallation;
         const params = {
-          installationId: inst.objectId,
+          objectId: inst.objectId,
+          installationId: inst.installationId,
           user: userPointer,
           setTeams: true,
           defaultTeamId: context.getters.defaultTeam.objectId,
