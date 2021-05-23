@@ -100,13 +100,7 @@ export const AuthState = {
     ) => {
       const teams = state.teams.filter((x) => !!x);
       if (!teams.length) {
-        return [
-          {
-            __type: "Pointer",
-            className: "Team",
-            objectId: rootGetters.defaultTeamId,
-          },
-        ];
+        return rootGetters.defaultTeamPointers
       }
       return teams.map((objectId: string) => ({
         __type: "Pointer",
@@ -230,7 +224,7 @@ export const AuthState = {
           installationId: inst.installationId,
           user: userPointer,
           setTeams: true,
-          defaultTeamId: context.getters.defaultTeam.objectId,
+          defaultTeamIds: context.getters.defaultTeamPointers.map((o: any) => o.objectId),
           deviceToken: inst.deviceToken,
         };
         // fire and forget

@@ -65,13 +65,13 @@
       </div>
       <div style="flex-grow: 2" class="ion-padding-start">
         <div v-if="showAuthor">
+          {{ authorName }}
           <span v-if="showTeam">
+            <ion-icon :icon="teamSplitterIcon" />
             <router-link :to="teamLink">
               <avatar size="1.25em" :profile="team" :name="teamName" withName />
             </router-link>
-            <ion-icon :icon="teamSplitterIcon" />
           </span>
-          {{ authorName }}
         </div>
         <div v-else>
           <router-link :to="teamLink">{{ teamName }}</router-link>
