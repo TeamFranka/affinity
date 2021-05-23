@@ -224,7 +224,7 @@ export const AuthState = {
           installationId: inst.installationId,
           user: userPointer,
           setTeams: true,
-          defaultTeamId: context.getters.defaultTeam.objectId,
+          defaultTeamIds: context.getters.defaultTeamPointers.map((o: any) => o.objectId),
           deviceToken: inst.deviceToken,
         };
         // fire and forget
