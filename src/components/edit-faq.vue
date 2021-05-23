@@ -13,22 +13,48 @@
     </ion-toolbar>
   </ion-header>
   <ion-content>
+    <div>
+      <selector
+        label="Team"
+        popoverTitle="Team"
+        @select="team = $event"
+        :items="teams"
+        data-cy="selectTeam"
+      >
+        <template #current>
+          <avatar :profile="selectedTeam" size="2em" withName />
+        </template>
+        <template #item="sProps">
+          <ion-item @click="sProps.select(sProps.item)" button>
+            <avatar :profile="sProps.item" size="2em" withName />
+            <ion-icon
+              v-if="sProps.item.objectId == team.objectId"
+              slot="end"
+              :icon="selectedIcon"
+            />
+          </ion-item>
+        </template>
+      </selector>
+    </div>
+    <div>
+      <ion-chip v-for="(t, index) in tags" :key="t" @click="removeTag(index)">
+        {{ t }} <ion-icon :icon="removeIcon"></ion-icon>
+      </ion-chip>
+      <ion-input
+        v-model="newTag"
+        @keyup.enter="addTag"
+        :placeholder="$t('faq.addTag.placeholder')"
+      />
+      <ion-button @click="addTag" fill="clear" size="small">
+        <ion-icon :icon="addIcon"></ion-icon>
+      </ion-button>
+    </div>
+
     <rich-editor
       :enabledActions="AllActions"
       @change="(v) => (text = v)"
       :startText="text"
     />
-    <ion-chip v-for="(t, index) in tags" :key="t" @click="removeTag(index)">
-      {{ t }} <ion-icon :icon="removeIcon"></ion-icon>
-    </ion-chip>
-    <ion-input
-      v-model="newTag"
-      @keyup.enter="addTag"
-      :placeholder="$t('faq.addTag.placeholder')"
-    />
-    <ion-button @click="addTag" fill="clear" size="small">
-      <ion-icon :icon="addIcon"></ion-icon>
-    </ion-button>
   </ion-content>
   <ion-footer>
     <ion-toolbar>
@@ -54,6 +80,7 @@ import {
   IonIcon,
   IonButton,
   IonFooter,
+  IonItem,
   IonLabel,
   IonChip,
   modalController,
@@ -66,6 +93,8 @@ import {
 } from "ionicons/icons";
 import { defineComponent } from "vue";
 import { AllActions } from "./rich-editor.vue";
+import Avatar from "./avatar.vue";
+import Selector from "@/components/generic/selector.vue";
 import RichEditor from "./rich-editor.vue";
 
 export default defineComponent({
@@ -81,6 +110,9 @@ export default defineComponent({
     IonFooter,
     IonLabel,
     RichEditor,
+    Selector,
+    Avatar,
+    IonItem,
   },
   props: {
     saveLabel: {
@@ -88,6 +120,10 @@ export default defineComponent({
     },
     faq: {
       type: Object,
+      required: true,
+    },
+    teams: {
+      type: Array,
       required: true,
     },
   },
@@ -107,11 +143,13 @@ export default defineComponent({
     const tags = props.faq.tags || [];
     const text = props.faq.text || "";
     const title = props.faq.title || "";
+    const team = props.faq.team;
     const data: any = {
       newTag: "",
       tags,
       text,
       title,
+      team,
     };
     return data;
   },
@@ -119,6 +157,9 @@ export default defineComponent({
     canSubmit(): boolean {
       return this.title.length > 0 && this.text.length > 0;
     },
+    selectedTeam(): any{
+      return this.teams.find((x: any) => x.objectId == this.team.objectId)
+    }
   },
   methods: {
     addTag() {
@@ -132,7 +173,7 @@ export default defineComponent({
     },
     saveAndClose() {
       const data: any = {};
-      ["title", "text", "tags"].forEach((key) => {
+      ["title", "text", "tags", "team"].forEach((key) => {
         data[key] = this[key];
       });
       modalController.dismiss(data);
