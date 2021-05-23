@@ -47,6 +47,7 @@ module.exports = {
         title: "Wir.md",
         settings: Object.assign({}, APP_SETTING_DEFAULTS, {
           AFFINITY_DEFAULT_TEAM: "jZ4ZFLEnzO",
+          AFFINITY_EXTRA_TEAMS: "US2YJKbs7U",
           PARSE_URL: "https://app.wir.md/parse",
           PARSE_LIVE_URL: "wss://app.wir.md/parse",
           ANDROID_INSTALL_URL: "https://play.google.com/store/apps/details?id=md.wir.app&hl=de_DES&gl=de",
