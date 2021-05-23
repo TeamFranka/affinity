@@ -101,7 +101,7 @@ export default defineComponent({
   },
   computed: {
     showTeamsInStream(): boolean {
-      if (this.store.getters["auth/isLoggedin"]) {
+      if (this.store.getters["auth/isLoggedIn"]) {
         return this.showTeams
       }
       return this.store.getters["defaultTeamPointers"].length > 1
