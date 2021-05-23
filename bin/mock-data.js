@@ -32,7 +32,7 @@ const REMAPPINGS = {
     "author": getUser,
     "user": getUser,
     "team": getTeam,
-    "defaultTeamId": (x) => getTeam(x).id ,
+    "defaultTeamIds": (l) => l.map(x => getTeam(x).id),
     "subOf": getTeam,
     "channels": (channel) => {
         const splitted = channel.split(':', 1);
