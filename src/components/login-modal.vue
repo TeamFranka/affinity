@@ -21,7 +21,7 @@ export default defineComponent({
     const store = useStore();
     return {
       signUpExtra: computed(() => ({
-        signUpForTeams: [store.getters.defaultTeamId],
+        signUpForTeams: store.getters.defaultTeamPointers.map(({objectId}: any) => objectId),
       })),
       closeModal: () => modalController.dismiss(),
       userUpdated: (newUser: any) => store.dispatch("auth/loggedIn", newUser),
