@@ -95,7 +95,8 @@ Parse.Cloud.define("claimInstallation", async (request) => {
       required: true,
     },
     defaultTeamIds: {
-      type: Array,
+      // For some reason type: Array fails for arrays...
+      options: (x) => Array.isArray(x)
     }
   }
 });

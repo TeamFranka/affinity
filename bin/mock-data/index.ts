@@ -99,7 +99,7 @@ export const Devices = [
             "doctor-who:notifications",
             "doctor-who:news"
         ],
-        "defaultTeamIdss": ["doctor-who"],
+        "defaultTeamIds": ["doctor-who"],
         "user": "clara",
         "deviceName": "Galaxy A40",
         "deviceModel": "SM-A405FN",
