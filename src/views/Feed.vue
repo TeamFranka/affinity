@@ -20,7 +20,7 @@
         <transition-group name="list">
           <activity
             v-for="activity in latestPosts"
-            :showTeam="showTeams"
+            :showTeam="showTeamsInStream"
             :activity="activity"
             :key="activity.objectId"
           />
@@ -97,6 +97,14 @@ export default defineComponent({
       teamSplitter: caretForwardOutline,
       store,
       editIcon,
+    }
+  },
+  computed: {
+    showTeamsInStream(): boolean {
+      if (this.store.getters["auth/isLoggedin"]) {
+        return this.showTeams
+      }
+      return this.store.getters["defaultTeamPointers"].length > 1
     }
   },
   methods:{

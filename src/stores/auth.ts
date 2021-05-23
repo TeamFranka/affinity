@@ -100,13 +100,7 @@ export const AuthState = {
     ) => {
       const teams = state.teams.filter((x) => !!x);
       if (!teams.length) {
-        return [
-          {
-            __type: "Pointer",
-            className: "Team",
-            objectId: rootGetters.defaultTeamId,
-          },
-        ];
+        return rootGetters.defaultTeamPointers
       }
       return teams.map((objectId: string) => ({
         __type: "Pointer",

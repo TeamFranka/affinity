@@ -10,6 +10,7 @@ const PAGE_DEFAULTS = {
 };
 const APP_SETTING_DEFAULTS = {
   AFFINITY_DEFAULT_TEAM: process.env.VUE_APP_DEFAULT_TEAM,
+  AFFINITY_EXTRA_TEAMS: process.env.VUE_APP_EXTRA_TEAMS || "",
   PARSE_APP_ID: process.env.VUE_APP_PARSE_APP_ID || "",
   PARSE_JS_KEY: process.env.VUE_APP_PARSE_JS_KEY,
   PARSE_URL: process.env.VUE_APP_PARSE_URL || "http://localhost:1337/parse",
