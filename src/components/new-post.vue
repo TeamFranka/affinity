@@ -46,27 +46,12 @@
       </ion-row>
       <ion-row v-if="showOptions">
         <ion-col size-md="auto" size-xs="12" v-if="showTeamSelector">
-          <selector
-            label="Team"
-            popoverTitle="Team"
-            @select="selectTeam($event)"
-            :items="teams"
-            data-cy="selectTeam"
-          >
-            <template #current>
-              <avatar :profile="selectedTeam" size="2em" withName />
-            </template>
-            <template #item="sProps">
-              <ion-item @click="sProps.select(sProps.item)" button>
-                <avatar :profile="sProps.item" size="2em" withName />
-                <ion-icon
-                  v-if="sProps.item == selectedTeam"
-                  slot="end"
-                  :icon="selectedIcon"
-                />
-              </ion-item>
-            </template>
-          </selector>
+          <team-selector
+            :teams="teams"
+            currentShowName
+            @selectTeam="selectTeam($event)"
+            :selectedTeam="selectedTeam"
+          />
         </ion-col>
         <ion-col size-md="auto" size-xs="12" v-if="canChangeVisiblity">
           <selector
@@ -441,7 +426,7 @@ import {
   checkmarkOutline,
 } from "ionicons/icons";
 import { defineComponent, computed } from "vue";
-import Selector from "@/components/generic/selector.vue";
+import TeamSelector from "@/components/team-selector.vue";
 import Avatar from "./avatar.vue";
 import EditPoll from "./edit-poll.vue";
 import Poll from "./poll.vue";
@@ -603,7 +588,7 @@ export default defineComponent({
     IonRow,
     IonCol,
     IonSpinner,
-    Selector,
+    TeamSelector,
     Avatar,
     Poll,
     IonCard,

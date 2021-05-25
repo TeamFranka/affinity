@@ -1,6 +1,12 @@
 <template>
   <ion-page>
     <ion-content fullscreen>
+      <team-selector
+        v-if="showTeamSelector"
+        @selectTeam="selectTeam($event)"
+        :teams="myTeams"
+        :selectedTeam="selectedTeam"
+      />
       <ion-searchbar
         :disabled="loading || entries.length === 0"
         :value="searchValue"
@@ -83,6 +89,8 @@ import { Model } from "@/utils/model";
 import InteractionBar from "../components/interaction-bar.vue";
 import EditFaq from "../components/edit-faq.vue";
 import RenderMd from "../components/render-md.vue";
+import TeamSelector from "@/components/team-selector.vue";
+
 
 export default defineComponent({
   name: "Faq",
@@ -112,6 +120,9 @@ export default defineComponent({
     };
   },
   computed: {
+    showTeamSelector(): boolean {
+      return this.loggedIn && this.myTeams.length > 1
+    },
     canCreateInTeams(): Model[] {
       return this.myTeams.filter(({objectId}: Model) => this.store.getters["auth/teamPermissions"][objectId]?.canCreateFaqEntry)
     },
@@ -155,7 +166,6 @@ export default defineComponent({
       await this.editModal(entry, "Save");
     },
     async editModal(entry: Model, saveLabel: string): Promise<any> {
-      console.log(this.canCreateInTeams)
       const modal = await modalController.create({
         component: EditFaq,
         componentProps: {
@@ -228,6 +238,7 @@ export default defineComponent({
     FaqEntry,
     InteractionBar,
     RenderMd,
+    TeamSelector,
   },
 });
 </script>

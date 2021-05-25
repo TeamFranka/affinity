@@ -14,27 +14,7 @@
   </ion-header>
   <ion-content>
     <div>
-      <selector
-        label="Team"
-        popoverTitle="Team"
-        @select="team = $event"
-        :items="teams"
-        data-cy="selectTeam"
-      >
-        <template #current>
-          <avatar :profile="selectedTeam" size="2em" withName />
-        </template>
-        <template #item="sProps">
-          <ion-item @click="sProps.select(sProps.item)" button>
-            <avatar :profile="sProps.item" size="2em" withName />
-            <ion-icon
-              v-if="sProps.item.objectId == team.objectId"
-              slot="end"
-              :icon="selectedIcon"
-            />
-          </ion-item>
-        </template>
-      </selector>
+      <teams-selector :teams="teams" :selected="selectedTeam" currentShowName @selectTeam="team = $event" />
     </div>
     <div>
       <ion-chip v-for="(t, index) in tags" :key="t" @click="removeTag(index)">
@@ -80,7 +60,6 @@ import {
   IonIcon,
   IonButton,
   IonFooter,
-  IonItem,
   IonLabel,
   IonChip,
   modalController,
@@ -93,8 +72,6 @@ import {
 } from "ionicons/icons";
 import { defineComponent } from "vue";
 import { AllActions } from "./rich-editor.vue";
-import Avatar from "./avatar.vue";
-import Selector from "@/components/generic/selector.vue";
 import RichEditor from "./rich-editor.vue";
 
 export default defineComponent({
@@ -110,9 +87,6 @@ export default defineComponent({
     IonFooter,
     IonLabel,
     RichEditor,
-    Selector,
-    Avatar,
-    IonItem,
   },
   props: {
     saveLabel: {
