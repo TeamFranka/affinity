@@ -2,8 +2,15 @@
 
 The affinity progressive communities network app is a social network for progressive movements and initiatives and their followers.
 
+## Distribution
+
+We are currently automatically deploying the [Wir.md App](https://app.wir.md/) to Parse, the [Google Play Store](https://play.google.com/store/apps/details?id=md.wir.app&hl=de_DES&gl=de) and the [Apple AppStore](https://apps.apple.com/us/app/wir-md-by-teamfranka/id1567204902)
+
+![](./docs/static/wir-md-screenshots/1.png)![](./docs/static/wir-md-screenshots/2.png)![](./docs/static/wir-md-screenshots/3.png)
+
 ## Development
 
+See [docs.affinity.wtf](https://docs.affinity.wtf) for Developer Docs.
 
 
 ## Contributing

@@ -13,18 +13,19 @@ Parse.Cloud.define("getInstallations", async (request) => {
 
 Parse.Cloud.define("claimInstallation", async (request) => {
   const params = Object.assign({}, request.params);
-  const defaultTeamId = params.defaultTeamId;
+  const defaultTeamIds = (params.defaultTeamId ? [params.defaultTeamId] :  params.defaultTeamIds) || []
 
   let installation;
   let setTeams = params.setTeams || false;
 
+  delete params.defaultTeamIds;
   delete params.defaultTeamId;
   delete params.setTeams;
   params.installationId = params.installationId.toLowerCase();
 
 
-  if (params.id) {
-    installation = await (new Parse.Query(Parse.Installation)).get(params.Id)
+  if (params.objectId) {
+    installation = await (new Parse.Query(Parse.Installation)).get(params.objectId, { useMasterKey: true})
   }
 
   if (!installation) {
@@ -66,8 +67,8 @@ Parse.Cloud.define("claimInstallation", async (request) => {
       });
     }
 
-    if (channels.length === 0 && defaultTeamId) {
-      channels.push(defaultTeamId);
+    if (channels.length === 0 && defaultTeamIds.length) {
+      channels.concat(defaultTeamIds);
     }
 
     installation.set("channels", channels.map((x) => `${x}:news`));
@@ -93,9 +94,9 @@ Parse.Cloud.define("claimInstallation", async (request) => {
       type: String,
       required: true,
     },
-    defaultTeamId: {
-      type: String,
-      required: true,
+    defaultTeamIds: {
+      // For some reason type: Array fails for arrays...
+      options: (x) => Array.isArray(x)
     }
   }
 });

@@ -1,5 +1,5 @@
 <template>
-  <span @click="toggleLike()" :disabled="disabled">
+  <span @click="toggleLike()" data-cy-role="like" :data-cy-count="counter" :disabled="disabled">
     <ion-icon
       :icon="hasLiked ? hasLikedIcon : likeIcon"
       :color="hasLiked ? 'danger' : ''"

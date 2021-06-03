@@ -32,14 +32,14 @@ const REMAPPINGS = {
     "author": getUser,
     "user": getUser,
     "team": getTeam,
-    "defaultTeamId": (x) => getTeam(x).id ,
+    "defaultTeamIds": (l) => l.map(x => getTeam(x).id),
     "subOf": getTeam,
-    "channels": (channel) => {
+    "channels": (l) =>  l.map((channel) => {
         const splitted = channel.split(':', 1);
         const teamName = splitted[0];
         const item = splitted[1];
-        return `${getTeam(teamName)}:${item}`
-    },
+        return `${getTeam(teamName).id}:${item}`
+    }),
     "participants": (x) => x.map(getUser),
 };
 
@@ -127,9 +127,11 @@ console.log('myArgs: ', args);
 
     console.info("Ensuring Devices");
     for (let i = 0; i < mocks.Devices.length; i++) {
-        const d = mocks.Devices[i]
+        const d = mocks.Devices[i];
         const sessionToken = await getUserToken(d.user);
-        await Parse.Cloud.run("claimInstallation", d, {sessionToken});
+        const data = remap(d)
+        delete data.user;
+        await Parse.Cloud.run("claimInstallation", data, {sessionToken});
     }
 
 

@@ -168,13 +168,21 @@ export function genFeedState(opts: GenFeedOptions): any {
   };
 }
 
+const EXTRA_TEAM_POINTERS = (
+  (window as any).AFFINITY_EXTRA_TEAMS ? (window as any).AFFINITY_EXTRA_TEAMS.split(",") : []
+).filter((x:string) => x.length > 0).map((objectId: string)=> ({
+  __type: "Pointer",
+  className: "Team",
+  objectId,
+}))
+
 export const GlobalState = {
   state: () => ({
     loadingCounter: 0,
     objects: {},
     parseObjects: {},
     feeds: {},
-    defaultTeamId: (window as any) ? (window as any).AFFINITY_DEFAULT_TEAM : "",
+    defaultTeamId: (window as any).AFFINITY_DEFAULT_TEAM || "",
     teamsBySlug: {},
     globalError: null,
   }),
@@ -201,6 +209,13 @@ export const GlobalState = {
     },
     defaultTeamId(state: GlobalStateT): string {
       return state.defaultTeamId;
+    },
+    defaultTeamPointers(state: GlobalStateT): any[] {
+      return [{
+        __type: "Pointer",
+        className: "Team",
+        objectId: state.defaultTeamId,
+      }].concat(EXTRA_TEAM_POINTERS);
     },
     defaultTeam(state: GlobalStateT): Model | null {
       return state.objects[state.defaultTeamId];

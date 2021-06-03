@@ -1,0 +1,89 @@
+name: "Deploy Wir.md to AppStore Manually"
+on:
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+env:
+  INDEX_HTML: app.wir.md.html
+  CAP_PROJECT: wir-md
+  CAP_PATH: wir-md
+  APPCENTER_PROJECT_ANDROID: TeamFranka/Wir.md-Android
+  APPCENTER_PROJECT_IOS: TeamFranka/Wir.md-iOS
+
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+
+  release-build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download /dist
+        uses: dawidd6/action-download-artifact@v2
+        with:
+          workflow: deploying-to-parse.yml
+          name: dist-production
+          path: dist
+      - name: Patch dist
+        run: cp -f dist/${{env.INDEX_HTML}} dist/index.html
+      - name: Archive /dist
+        uses: actions/upload-artifact@v2
+        with:
+          name: dist-production
+          path: |
+            dist
+
+  ios-app:
+    environment: ios_app
+    runs-on: macos-latest
+    needs: release-build
+    steps:
+      - uses: actions/checkout@v2
+      - name: Download /dist
+        uses: actions/download-artifact@v2
+        with:
+          name: dist-production
+          path: dist
+      - name: Cache node modules
+        uses: actions/cache@v2
+        env:
+          cache-name: cache-node-modules
+        with:
+          path: './node_modules'
+          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-build-${{ env.cache-name }}-
+            ${{ runner.os }}-build-
+            ${{ runner.os }}-
+      - name: Install capacitor
+        run: npm install capacitor
+      - name: Sync assets
+        run: |
+          npx ionic capacitor sync --no-build --project ${{ env.CAP_PROJECT }} --verbose ios
+          # fixup faulty changes
+          git checkout -- apps/wir-md/ios/App/App/capacitor.config.json
+      - name: "Update Build Version"
+        run: |
+            /usr/libexec/PlistBuddy -c "Set :CFBundleVersion $GITHUB_RUN_NUMBER" "apps/${{ env.CAP_PATH }}/ios/App/App/Info.plist"
+      - name: Build iOS App
+        uses: yukiarrr/ios-build-action@v1.3.2
+        continue-on-error: false
+        with:
+          project-path: apps/${{ env.CAP_PATH }}/ios/App/App.xcodeproj
+          p12-base64: ${{ secrets.P12_BASE64 }}
+          mobileprovision-base64: ${{ secrets.WIRMD_MOBILEPROVISION_BASE64 }}
+          code-signing-identity: ${{ secrets.CODE_SIGNING_IDENTITY }}
+          certificate-password: ${{ secrets.CREDENTIALS_PASSWORD }}
+          team-id: ${{ secrets.TEAM_ID }}
+          workspace-path: apps/${{ env.CAP_PATH }}/ios/App/App.xcworkspace # optional
+          export-method: app-store
+          output-path: 'ios-app.ipa'
+      - name: Archive iOS App
+        uses: actions/upload-artifact@v2
+        with:
+          name: ios-app
+          path: |
+            ios-app.ipa
+      - name: Deploy to App store
+        run: |
+          xcrun altool --upload-app --type ios --file ios-app.ipa --username ${{ secrets.APPLE_APP_USER_NAME }} --password ${{ secrets.APPLE_APP_SPECIFIC_PASSWORD }}

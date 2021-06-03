@@ -1,10 +1,8 @@
 name: Deploy Affinity App
 on:
-  workflow_run:
-    workflows: [ "Deploy Parse" ]
-    branches: [ main ]
-    types:
-      - completed
+  push:
+    tags:
+      - production
 
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
@@ -19,17 +17,38 @@ env:
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
-
   release-build:
+    # onlyrun when we were successful
     runs-on: ubuntu-latest
-    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    environment: b4a_deploy
+
     steps:
-      - name: Download /dist
-        uses: dawidd6/action-download-artifact@v2
+      - uses: actions/checkout@v2
+      - name: Cache node modules
+        uses: actions/cache@v2
+        env:
+          cache-name: cache-node-modules
         with:
-          workflow: deploying-to-parse.yml
-          name: dist-production
-          path: dist
+          path: './node_modules'
+          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-build-${{ env.cache-name }}-
+            ${{ runner.os }}-build-
+            ${{ runner.os }}-
+      - name: Install ionic
+        run: npm install @ionic/cli
+      - name: Install dependencies
+        run: npm install
+      - name: Build locally
+        run: |
+          npm run build -- --prod
+
+        env:
+          VUE_APP_DEFAULT_TEAM: ${{ secrets.VUE_APP_DEFAULT_TEAM}}
+          VUE_APP_PARSE_APP_ID: ${{ secrets.VUE_APP_PARSE_APP_ID}}
+          VUE_APP_PARSE_JS_KEY: ${{ secrets.VUE_APP_PARSE_JS_KEY}}
+          VUE_APP_PARSE_URL: ${{ secrets.VUE_APP_PARSE_URL}}
+          VUE_APP_PARSE_LIVE_URL: ${{ secrets.VUE_APP_PARSE_LIVE_URL }}
       - name: Patch dist
         run: cp -f dist/${{env.INDEX_HTML}} dist/index.html
       - name: Archive /dist
@@ -65,17 +84,19 @@ jobs:
           path: dist
       - name: Sync assets
         run: npx ionic capacitor sync --no-build --project ${{ env.CAP_PROJECT }} --verbose android
+      - name: "Update Build Version"
+        run: |
+            /usr/libexec/PlistBuddy -c "Set :CFBundleVersion $GITHUB_RUN_NUMBER" "apps/${{ env.CAP_PATH }}/ios/App/App/Info.plist"
       - name: Build Android App
-        uses: sparkfabrik/android-build-action@v1.0.0
-        with:
-          project-path: apps/${{ env.CAP_PATH }}/android
-          output-path: android-app.apk
+        run: |
+          cd apps/${{ env.CAP_PATH }}/android
+          ./gradlew bundleRelease
       - uses: r0adkll/sign-android-release@v1
-        name: Sign app APK
+        name: Sign app Bundle
         # ID used to access action output
         id: sign_app
         with:
-          releaseDirectory: ./
+          releaseDirectory: apps/${{ env.CAP_PATH }}/android/app/build/outputs/bundle/release
           signingKeyBase64: ${{ secrets.ANDROID_KEYSTORE }}
           alias: ${{ secrets.ANDROID_KEY_ALIAS }}
           keyStorePassword: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
@@ -143,17 +164,24 @@ jobs:
         with:
           name: dist-production
           path: dist
-      - name: Codepush Android
-        uses: NishanthShankar/codepush-action@master
-        with:
-          args: release -m -a ${{env.APPCENTER_PROJECT_ANDROID}} -d Production -c dist -t 1.0.0
+      - name: Cache node modules
+        uses: actions/cache@v2
         env:
-          APPCENTER_ACCESS_TOKEN: ${{ secrets.APPCENTER_ACCESS_TOKEN }}
+          cache-name: cache-node-modules
+        with:
+          path: './node_modules'
+          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-build-${{ env.cache-name }}-
+            ${{ runner.os }}-build-
+            ${{ runner.os }}-
+      - name: Codepush Android
+        run: npx appcenter release --token ${{ secrets.APPCENTER_ACCESS_TOKEN }} -m -a ${{env.APPCENTER_PROJECT_ANDROID}} -d Production -c dist -t 1.0.0
 
   deploy-code-push-ios:
     environment: appcenter_deploy
     runs-on: ubuntu-latest
-    needs: [ release-build ]
+    needs: [ ios-app ]
     if: "!contains(github.event.head_commit.message, '[ci skip deploy-app]')"
     steps:
       - name: Download /dist
@@ -161,14 +189,21 @@ jobs:
         with:
           name: dist-production
           path: dist
-      - name: Codepush iOS
-        uses: NishanthShankar/codepush-action@master
-        with:
-          args: release -m -a ${{env.APPCENTER_PROJECT_IOS}} -d Production -c dist  -t 1.0.0
+      - name: Cache node modules
+        uses: actions/cache@v2
         env:
-          APPCENTER_ACCESS_TOKEN: ${{secrets.APPCENTER_ACCESS_TOKEN}}
+          cache-name: cache-node-modules
+        with:
+          path: './node_modules'
+          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-build-${{ env.cache-name }}-
+            ${{ runner.os }}-build-
+            ${{ runner.os }}-
+      - name: Codepush iOS
+        run: npx appcenter release --token ${{ secrets.APPCENTER_ACCESS_TOKEN }} -m -a ${{env.APPCENTER_PROJECT_IOS}} -d Production -c dist -t 1.0.0
 
-  deploy-ios-beta:
+  deploy-ios-app:
     environment: appcenter_deploy
     runs-on: ubuntu-latest
     needs: [ deploy-code-push-ios, ios-app ]
@@ -177,17 +212,21 @@ jobs:
         uses: actions/download-artifact@v2
         with:
           name: ios-app
-      - name: upload artefact to App Center
-        uses: wzieba/AppCenter-Github-Action@v1
+      - name: Cache node modules
+        uses: actions/cache@v2
+        env:
+          cache-name: cache-node-modules
         with:
-          appName: ${{env.APPCENTER_PROJECT_IOS}}
-          token: ${{secrets.APPCENTER_ACCESS_TOKEN}}
-          group: "Public Beta"
-          file: ios-app.ipa
-          notifyTesters: false
-          debug: false
+          path: './node_modules'
+          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-build-${{ env.cache-name }}-
+            ${{ runner.os }}-build-
+            ${{ runner.os }}-
+      - name: Deploy to Test Group
+        run: npx appcenter distribute release --release-notes-file docs/changelogs/App.txt --app ${{env.APPCENTER_PROJECT_IOS}} --token ${{secrets.APPCENTER_ACCESS_TOKEN}} --group "Public Beta" -- file ios-app.ipa
 
-  deploy-android-beta:
+  deploy-android-app:
     environment: appcenter_deploy
     runs-on: ubuntu-latest
     needs: [ deploy-code-push-android, android-app ]
@@ -196,30 +235,16 @@ jobs:
         uses: actions/download-artifact@v2
         with:
           name: android-app
-      - name: upload artefact to App Center
-        uses: wzieba/AppCenter-Github-Action@v1
+      - name: Cache node modules
+        uses: actions/cache@v2
+        env:
+          cache-name: cache-node-modules
         with:
-          appName: ${{env.APPCENTER_PROJECT_ANDROID}}
-          token: ${{secrets.APPCENTER_ACCESS_TOKEN}}
-          group: "Public Beta"
-          file: android-app-signed.apk
-          notifyTesters: false
-          debug: false
-
-  deploy-ios:
-    environment: ios_deploy
-    runs-on: macos-latest
-    needs: [ ios-app ]
-    if: false == true #  disabled until we've got it working.
-    steps:
-      - name: Download signed iOS App
-        uses: actions/download-artifact@v2
-        with:
-          name: ios-app
-      - name: 'Upload app to TestFlight'
-        uses: apple-actions/upload-testflight-build@v1
-        with:
-          app-path: ios-app.ipa
-          issuer-id: ${{ secrets.APPSTORE_ISSUER_ID }}
-          api-key-id: ${{ secrets.APPSTORE_API_KEY_ID }}
-          api-private-key: ${{ secrets.APPSTORE_API_PRIVATE_KEY }}
+          path: './node_modules'
+          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-build-${{ env.cache-name }}-
+            ${{ runner.os }}-build-
+            ${{ runner.os }}-
+      - name: Deploy to Test Group
+        run: npx appcenter distribute release --release-notes-file docs/changelogs/App.txt --app ${{env.APPCENTER_PROJECT_ANDROID}} --token ${{secrets.APPCENTER_ACCESS_TOKEN}} --group "Public Beta" --file app-release.aab

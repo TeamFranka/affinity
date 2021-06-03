@@ -102,13 +102,7 @@ export const AuthState: Module<AuthStateT, State> = {
     ) => {
       const teams = state.teams.filter((x) => !!x);
       if (!teams.length) {
-        return [
-          {
-            __type: "Pointer",
-            className: "Team",
-            objectId: rootGetters.defaultTeamId,
-          },
-        ];
+        return rootGetters.defaultTeamPointers
       }
       return teams.map((objectId: string) => ({
         __type: "Pointer",
@@ -226,12 +220,17 @@ export const AuthState: Module<AuthStateT, State> = {
     async loggedIn(context: any, newUser: Parse.User) {
       const userPointer = newUser.toPointer();
       if (context.getters.currentInstallation && !context.state.user) {
-        const i = context.getters.currentInstallation.prepareSave({
+        const inst = context.getters.currentInstallation;
+        const params = {
+          objectId: inst.objectId,
+          installationId: inst.installationId,
           user: userPointer,
           setTeams: true,
-        });
+          defaultTeamIds: context.getters.defaultTeamPointers.map((o: any) => o.objectId),
+          deviceToken: inst.deviceToken,
+        };
         // fire and forget
-        Parse.Cloud.run("claimInstallation", i.toJSON()).then(
+        Parse.Cloud.run("claimInstallation", params).then(
           (response: any) => {
             context.commit("setInstallations", response.map(toModel));
           }
