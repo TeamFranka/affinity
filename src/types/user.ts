@@ -1,14 +1,22 @@
-export default interface User extends Parse.Attributes {
-  createdAt: any;
-  email: string;
-  name: string;
-  sessionToken: string;
+import Parse from "parse";
+import { Model, MinimalModelData } from "./model";
+
+export interface UserData extends MinimalModelData {
+  username: string;
+}
+
+export default class User extends Model {
+  username: string;
+  email?: string;
+  name?: string;
+  sessionToken?: string;
   settings?: {
     welcomeDone?: boolean,
     [key: string]: any,
   };
-  updatedAt: any;
-  username: string;
-}
 
-export type ParseUser = Parse.User<User>
+  constructor(options: UserData) {
+    super(options);
+    this.username = options.username;
+  }
+}

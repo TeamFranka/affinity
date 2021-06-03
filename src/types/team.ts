@@ -9,11 +9,11 @@ export interface TeamData extends MinimalModelData {
 export class Team extends Model {
   name: string;
   slug: string;
-  leaders?: Parse.Pointer; // to Role
-  members?: Parse.Pointer; // to Role
-  mods?: Parse.Pointer; // to Role
-  agents?: Parse.Pointer; // to Role
-  publishers?: Parse.Pointer; // to Role
+  leaders?: Parse.Pointer | Parse.Role; // to Role
+  members?: Parse.Pointer | Parse.Role; // to Role
+  mods?: Parse.Pointer | Parse.Role; // to Role
+  agents?: Parse.Pointer | Parse.Role; // to Role
+  publishers?: Parse.Pointer | Parse.Role; // to Role
   subOf?: Parse.Pointer | Parse.Object<Team>; // to Team
   membershipAccess?: 'open' | 'parent_open' | 'apply' | ' parent_apply' | 'invite'; // open is default
   avatar?: Parse.File;
@@ -36,5 +36,5 @@ export class Team extends Model {
     super(options);
     this.name = options.name;
     this.slug = options.slug;
-}
+  }
 }
