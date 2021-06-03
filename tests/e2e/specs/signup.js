@@ -21,9 +21,9 @@ describe("Sign up", () => {
     cy.get('a[href="/t/torchwood"] + .header-content > ion-chip:not(.join)').should('exist').click();
 
     // check for doctor-who subteam and join
-    cy.get('ion-card-header:has( > a[href="/t/doctor-who"]) + ion-card-content > ion-chip.join').should('exist').click();
+    cy.get('ion-card-header:has( > a[href="/t/doctor-who"]) + ion-card-content > ion-chip.join').should('exist').first().click();
     // check for doctor-who subteam and leave
-    cy.get('ion-card-header:has( > a[href="/t/doctor-who"]) + ion-card-content > ion-chip.leave').should('exist').click();
+    cy.get('ion-card-header:has( > a[href="/t/doctor-who"]) + ion-card-content > ion-chip.leave').should('exist').first().click();
     // finish welcome dialog
     cy.get('ion-slide + ion-slide ion-button.done').should('exist').click();
 
