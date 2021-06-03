@@ -49,13 +49,9 @@ export default defineComponent({
     );
 
     onMounted(async () => {
-      try {
-        loading.value = true;
-        await dispatch("auth/fetchTeams");
-        loading.value = false;
-      } catch (error) {
-        console.log(error);
-      }
+      loading.value = true;
+      await dispatch("auth/fetchTeams");
+      loading.value = false;
     });
 
     return {
