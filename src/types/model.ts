@@ -7,6 +7,12 @@ export function cleanData(data: any): any {
   return data;
 }
 
+export interface MinimalModelData {
+  readonly className: string;
+  readonly objectId: string;
+  readonly data: any;
+}
+
 export class SaveModel {
   readonly className: string;
   readonly objectId: string;
@@ -57,10 +63,10 @@ export class Model {
   readonly updatedAt?: string;
   [attr: string]: any;
 
-  constructor(className: string, objectId: string, obj: any) {
-    this.className = className;
-    this.objectId = objectId;
-    Object.assign(this, cleanData(obj));
+  constructor(options: MinimalModelData) {
+    this.className = options.className;
+    this.objectId = options.objectId;
+    Object.assign(this, cleanData(options.data));
   }
 
   toPointer(): Parse.Pointer {
@@ -81,9 +87,9 @@ export class Model {
 }
 
 export function toModel(o: Parse.Object | Parse.User): Model {
-  return new Model(
-    o.className,
-    o.id ? o.id : (o as any).objectId,
-    o.toJSON ? o.toJSON() : o
-  );
+  return new Model({
+    className: o.className,
+    objectId: o.id ? o.id : (o as any).objectId,
+    data: o.toJSON ? o.toJSON() : o
+  });
 }

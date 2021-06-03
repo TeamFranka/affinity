@@ -61,7 +61,7 @@ import Reactions from "./reactions.vue";
 import Comment from "./comment.vue";
 import { useStore } from "../stores/";
 import { defineComponent, computed } from "vue";
-import { Model } from "@/utils/model";
+import { Model } from "@/types/model";
 
 export default defineComponent({
   name: "Activity",

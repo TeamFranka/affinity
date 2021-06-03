@@ -1,7 +1,7 @@
 import { Parse, Verb, Visibility } from "@/config/Consts";
 import { Activity, Message } from "@/db/models";
 import { takePicture, Photo } from "@/utils/camera";
-import { CreateModel } from "@/utils/model";
+import { CreateModel } from "@/types/model";
 import getUrls from "get-urls";
 
 type ExtraStyles = {

@@ -1,6 +1,6 @@
 import { Parse } from "@/config/Consts";
 import { isPlatform } from "@ionic/vue";
-import { Model, toModel } from "@/utils/model";
+import { Model, toModel } from "@/types/model";
 import { initInstallation } from "@/utils/setup";
 import { getCypressEntry } from "@/utils/env";
 import { watch } from "vue";

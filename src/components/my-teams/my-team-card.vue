@@ -47,7 +47,6 @@ import {
 } from "@ionic/vue";
 import { checkmarkOutline, addCircle, closeCircle, add } from "ionicons/icons";
 import { useStore } from "@/stores/";
-import TeamsStore from "@/stores/TeamsStore";
 import MyTeamSubteam from "./my-team-subteam.vue";
 import useHeaderStyles from "@/utils/hooks/useHeaderStyles";
 
@@ -71,12 +70,12 @@ export default defineComponent({
     MyTeamSubteam,
   },
   setup(props) {
-    const { state, dispatch } = useStore();
+    const { state, dispatch, getters } = useStore();
     const { teamId } = toRefs(props);
 
-    const team = computed(() => TeamsStore.team(teamId.value));
+    const team = computed(() => getters.objectsMap[teamId.value]);
     const headerStyles = useHeaderStyles(team);
-    const subteams = computed(() => TeamsStore.subTeams(teamId.value));
+    const subteams = computed(() => getters["teams/subTeams"][teamId.value]);
     const linkUrl = computed(() => `/t/${team.value?.slug}`);
     const avatarUrl = computed(() => team.value.avatar?.url() || null);
     const isMember = computed(

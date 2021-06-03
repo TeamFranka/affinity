@@ -1,7 +1,7 @@
 import { Parse, Verb } from "@/config/Consts";
-import { Activity, Team } from "@/db/models";
-import { TTeam } from "@/types/team";
-import { toModel, Model } from "@/utils/model";
+import { Activity, Team as ParseTeam } from "@/db/models";
+import { Team } from "@/types/team";
+import { toModel, Model } from "@/types/model";
 import { genFeedState } from "./globals";
 
 export interface TeamsT {
@@ -54,7 +54,7 @@ export const Teams = {
     ): string {
       return state.selectedTeam || rootGetters["auth/selectedTeam"]
     },
-    teams(state: TeamsT, getters: any, rootState: any, { objectsMap }: any): TTeam[] {
+    teams(state: TeamsT, getters: any, rootState: any, { objectsMap }: any): Team[] {
       return state.teamIds.map(x => objectsMap[x]);
     },
   },
@@ -92,14 +92,14 @@ export const Teams = {
       ])
     },
     async fetchSubteams(context: any, parentTeam: Parse.Pointer) {
-      const query = new Parse.Query(Team).equalTo("subOf", parentTeam);
+      const query = new Parse.Query(ParseTeam).equalTo("subOf", parentTeam);
       const teams = await query.find();
 
       await context.commit("setItems", teams.map(toModel), { root: true });
       await context.commit("setSubteams", teams.map((x: any) => x.id));
     },
     async createSubteam(context: any, data: any): Promise<Model> {
-      const team = new Team(data);
+      const team = new ParseTeam(data);
       await team.save();
       const converted = toModel(team);
       await context.commit("setItems", [converted], { root: true });

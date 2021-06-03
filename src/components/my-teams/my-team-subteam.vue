@@ -10,7 +10,6 @@ import { defineComponent, computed, toRefs } from "vue";
 import { IonChip, IonLabel, IonIcon } from "@ionic/vue";
 import { addCircle, closeCircle } from "ionicons/icons";
 import { useStore } from "@/stores/";
-import TeamsStore from "@/stores/TeamsStore";
 
 export default defineComponent({
   name: "my-team-subteam",
@@ -26,10 +25,10 @@ export default defineComponent({
     IonIcon,
   },
   setup(props) {
-    const { state, dispatch } = useStore();
+    const { state, dispatch, getters } = useStore();
     const { teamId } = toRefs(props);
 
-    const team = computed(() => TeamsStore.team(teamId.value));
+    const team = computed(() => getters.objectsMap[teamId.value]);
     const isMember = computed(
       () => state.auth.teamPermissions[teamId.value]?.isMember
     );

@@ -202,7 +202,7 @@ import { defineComponent, computed } from "vue";
 import { useStore } from "@/stores/";
 import Parse from "parse";
 import { takePicture, Photo } from "@/utils/camera";
-import { Model } from "@/utils/model";
+import { Model } from "@/types/model";
 import { absoluteUrl } from "@/utils/url";
 
 

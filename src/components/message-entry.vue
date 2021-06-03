@@ -12,7 +12,7 @@
 </template>
 <script lang="ts">
 import { defineComponent } from "vue";
-import { Model } from "@/utils/model";
+import { Model } from "@/types/model";
 import { smartTimestamp } from "@/utils/time";
 import { useStore } from "@/stores/";
 import Avatar from "./avatar.vue";

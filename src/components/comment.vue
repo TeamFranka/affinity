@@ -84,7 +84,7 @@ import Avatar from "./avatar.vue";
 import { useStore } from "../stores/";
 import { defineComponent, computed } from "vue";
 import { dayjs } from "../config/Consts";
-import { Model } from "@/utils/model";
+import { Model } from "@/types/model";
 import InlineText from "./inline-text.vue";
 
 export default defineComponent({

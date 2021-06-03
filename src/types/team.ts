@@ -1,15 +1,20 @@
 import Parse from "parse";
-import { TModel } from "./globals";
+import { Model, MinimalModelData } from "./model";
 
-export interface TTeam extends TModel {
+export interface TeamData extends MinimalModelData {
   name: string;
   slug: string;
-  leaders: Parse.Pointer; // to Role
-  members: Parse.Pointer; // to Role
-  mods: Parse.Pointer; // to Role
-  agents: Parse.Pointer; // to Role
-  publishers: Parse.Pointer; // to Role
-  subOf?: Parse.Pointer | Parse.Object<TTeam>; // to Team
+}
+
+export class Team extends Model {
+  name: string;
+  slug: string;
+  leaders?: Parse.Pointer; // to Role
+  members?: Parse.Pointer; // to Role
+  mods?: Parse.Pointer; // to Role
+  agents?: Parse.Pointer; // to Role
+  publishers?: Parse.Pointer; // to Role
+  subOf?: Parse.Pointer | Parse.Object<Team>; // to Team
   membershipAccess?: 'open' | 'parent_open' | 'apply' | ' parent_apply' | 'invite'; // open is default
   avatar?: Parse.File;
   background?: Parse.File;
@@ -26,6 +31,10 @@ export interface TTeam extends TModel {
   canEditFaqEntry?: string;
   socialLinks?: string[];
   footerLinks?: string[];
-}
 
-export type ParseTeam = Parse.Object<TTeam>;
+  constructor(options: TeamData) {
+    super(options);
+    this.name = options.name;
+    this.slug = options.slug;
+}
+}
