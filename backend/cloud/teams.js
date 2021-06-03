@@ -3,7 +3,7 @@
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const CONSTS = require("./consts.js");
 // eslint-disable-next-line @typescript-eslint/no-var-requires
-const { fetchMyTeams, joinTeam } = require("./utils.js");
+const { fetchMyTeams, fetchRoleIds, joinTeam } = require("./utils.js");
 const { Team, Conversation } = CONSTS;
 
 const ROLES = [
@@ -14,10 +14,6 @@ const ROLES = [
   "leaders",
 ]
 
-async function fetchRoles(user) {
-  return (await (new Parse.Query(Parse.Role)).equalTo("users", user).find({ useMasterKey: true })) || [];
-}
-
 function getPermissionsForTeam(roleIds, team) {
   const isMember = !!roleIds && !!team && roleIds.includes(team.get("members").id);
   const isLeader = !!roleIds && !!team && roleIds.includes(team.get("leaders").id);
@@ -25,16 +21,17 @@ function getPermissionsForTeam(roleIds, team) {
   const isPublisher = !!roleIds && !!team && roleIds.includes(team.get("publishers").id);
   const isAgent = !!roleIds && !!team && roleIds.includes(team.get("agents").id);
 
-  return {
+  const permissions = {
     isMember, isLeader, isMod, isPublisher, isAgent,
     ...team.genPermissions(isLeader, isMod, isAgent, isPublisher, isMember),
   };
+  return permissions
 }
 
 Parse.Cloud.define("getTeams", async (request) => {
   const user = request.user;
   const teams = await ((new Parse.Query(Team)).find(user ? { sessionToken: user.getSessionToken() } : null));
-  const roleIds = (await fetchRoles(request.user) || []).map(({ id }) => id);
+  const roleIds = user ? (await fetchRoleIds(user)) : [];
   const permissions = Object.assign({}, ...teams.map(team => ({ [team.id]: getPermissionsForTeam(roleIds, team) })));
 
   return { teams, permissions };
@@ -104,7 +101,7 @@ Parse.Cloud.define("getTeam", async (request) => {
     return Promise.reject(Parse.Error.OBJECT_NOT_FOUND);
   }
 
-  const roleIds = await fetchRoles(request.user);
+  const roleIds = user ? await fetchRoleIds(request.user) : [];
   const permissions = team ? { [team.id]: getPermissionsForTeam(roleIds, team) } : {};
 
   return { teams: [team], permissions };
