@@ -93,3 +93,16 @@ export function toModel(o: Parse.Object | Parse.User): Model {
     data: o.toJSON ? o.toJSON() : o
   });
 }
+
+
+export class File {
+  readonly objectId: string;
+  readonly url?: string;
+  readonly createdAt?: string;
+  readonly updatedAt?: string;
+
+  constructor(options: {objectId: string}) {
+    this.objectId = options.objectId;
+  }
+
+}

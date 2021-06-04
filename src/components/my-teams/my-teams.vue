@@ -50,7 +50,7 @@ export default defineComponent({
 
     onMounted(async () => {
       loading.value = true;
-      await dispatch("auth/fetchTeams");
+      await dispatch("teams/fetchTeams");
       loading.value = false;
     });
 

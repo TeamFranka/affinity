@@ -2,9 +2,7 @@
   <ion-card>
     <ion-card-header :style="headerStyles">
       <router-link :to="linkUrl">
-        <ion-avatar>
-          <img :src="avatarUrl" />
-        </ion-avatar>
+        <avatar :profile="team" />
       </router-link>
       <div class="header-content">
         <ion-card-title>
@@ -34,12 +32,11 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, computed, toRefs } from "vue";
+import { defineComponent } from "vue";
 import {
   IonCard,
   IonCardHeader,
   IonCardContent,
-  IonAvatar,
   IonCardTitle,
   IonChip,
   IonLabel,
@@ -47,8 +44,15 @@ import {
 } from "@ionic/vue";
 import { checkmarkOutline, addCircle, closeCircle, add } from "ionicons/icons";
 import { useStore } from "@/stores/";
+import { Team } from "@/types/team";
 import MyTeamSubteam from "./my-team-subteam.vue";
-import useHeaderStyles from "@/utils/hooks/useHeaderStyles";
+import Avatar from "@/components/avatar.vue";
+
+const DEFAULT_STYLES: Partial<CSSStyleDeclaration> = {
+  background: "transparent",
+  backgroundImage:
+    "linear-gradient(to right, var(--ion-color-secondary) 0%, var(--ion-color-primary) 100%)",
+};
 
 export default defineComponent({
   name: "my-team-card",
@@ -62,43 +66,49 @@ export default defineComponent({
     IonCard,
     IonCardHeader,
     IonCardContent,
-    IonAvatar,
+    Avatar,
     IonCardTitle,
     IonChip,
     IonLabel,
     IonIcon,
     MyTeamSubteam,
   },
-  setup(props) {
-    const { state, dispatch, getters } = useStore();
-    const { teamId } = toRefs(props);
-
-    const team = computed(() => getters.objectsMap[teamId.value]);
-    const headerStyles = useHeaderStyles(team);
-    const subteams = computed(() => getters["teams/subTeams"][teamId.value]);
-    const linkUrl = computed(() => `/t/${team.value?.slug}`);
-    const avatarUrl = computed(() => team.value.avatar?.url() || null);
-    const isMember = computed(
-      () => state.auth.teamPermissions[teamId.value]?.isMember
-    );
-
-    async function join() {
-      await dispatch("auth/joinTeam", teamId.value);
+  computed: {
+    team(): Team {
+      return this.store.getters.objectsMap[this.teamId]
+    },
+    subteams(): Team[] {
+      return this.store.getters["teams/subTeams"][this.teamId]
+    },
+    linkUrl(): string {
+      return `/t/${this.team.slug}`
+    },
+    headerStyles(): any {
+    const customStyles = this.team.customStyles;
+    const extraStyles: Partial<CSSStyleDeclaration> = {};
+    const backgroundImage = this.team.background;
+    if (backgroundImage) {
+      extraStyles.backgroundImage = `url(${ backgroundImage.url })`;
+      extraStyles.backgroundSize = "cover";
     }
-
-    async function leave() {
-      await dispatch("auth/leaveTeam", teamId.value);
+    return [DEFAULT_STYLES, customStyles, extraStyles];
+    },
+    isMember(): boolean {
+      return this.store.state.auth.teamPermissions[this.teamId]?.isMember
     }
-
+  },
+  actions: {
+    async join() {
+      await this.store.dispatch("auth/joinTeam", this.teamId);
+    },
+    async leave() {
+      await this.store.dispatch("auth/leaveTeam", this.teamId);
+    }
+  },
+  setup() {
+    const store = useStore();
     return {
-      headerStyles,
-      leave,
-      join,
-      linkUrl,
-      avatarUrl,
-      team,
-      subteams,
-      isMember,
+      store,
       add,
       checkmarkOutline,
       addCircle,

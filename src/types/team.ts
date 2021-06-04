@@ -1,5 +1,5 @@
 import Parse from "parse";
-import { Model, MinimalModelData } from "./model";
+import { Model, File, MinimalModelData } from "./model";
 
 export interface TeamData extends MinimalModelData {
   name: string;
@@ -14,10 +14,10 @@ export class Team extends Model {
   mods?: Parse.Pointer | Parse.Role; // to Role
   agents?: Parse.Pointer | Parse.Role; // to Role
   publishers?: Parse.Pointer | Parse.Role; // to Role
-  subOf?: Parse.Pointer | Parse.Object<Team>; // to Team
+  subOf?: Team | Model; // to Team
   membershipAccess?: 'open' | 'parent_open' | 'apply' | ' parent_apply' | 'invite'; // open is default
-  avatar?: Parse.File;
-  background?: Parse.File;
+  avatar?: File;
+  background?: File;
   customStyles?: Partial<CSSStyleDeclaration>;
   info?: string;
   canPost?: string;

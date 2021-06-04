@@ -8,7 +8,7 @@ export interface TeamsT {
   selectedTeam: string | null;
   news: {};
   feed: {};
-  subteams: Array<string>;
+  subteamIds: Record<string, Array<string>>;
   teamIds: string[];
 }
 
@@ -42,7 +42,7 @@ export const Teams = {
   },
   state: () => ({
     selectedTeam: null,
-    subteams: [],
+    subteamIds: {},
     teamIds: [],
   }),
   getters: {
@@ -57,6 +57,15 @@ export const Teams = {
     teams(state: TeamsT, getters: any, rootState: any, { objectsMap }: any): Team[] {
       return state.teamIds.map(x => objectsMap[x]);
     },
+    subteams(state: TeamsT, getters: any, rootState: any, { objectsMap }: any): Record<string, Team[]> {
+      const mapped: Record<string, Team[]> = {};
+      Object
+        .entries(state.subteamIds)
+        .forEach(([parentId, subIds]) => {
+          mapped[parentId] = subIds.map(x => objectsMap[x]);
+        });
+      return mapped;
+    },
   },
   mutations: {
     setTeams(state: TeamsT, teams: { id: string }[]) {
@@ -65,8 +74,8 @@ export const Teams = {
     setSelectedTeam(state: TeamsT, teamId: string) {
       state.selectedTeam = teamId;
     },
-    setSubteams(state: TeamsT, teams: Array<string>) {
-      state.subteams = teams;
+    setSubteams(state: TeamsT, subteamIds: any) {
+      Object.assign(state.subteamIds, subteamIds);
     }
   },
   actions: {
@@ -96,7 +105,7 @@ export const Teams = {
       const teams = await query.find();
 
       await context.commit("setItems", teams.map(toModel), { root: true });
-      await context.commit("setSubteams", teams.map((x: any) => x.id));
+      await context.commit("setSubteams", { [parentTeam.objectId]: teams.map((x: any) => x.id)});
     },
     async createSubteam(context: any, data: any): Promise<Model> {
       const team = new ParseTeam(data);
