@@ -7,6 +7,9 @@ services:
   parse:
     build: ./backend/
     image: "lightyear/affinity-backend:latest"
+    environment:
+      PUBLIC_PATH: "/public"
+      VUE_APP_PARSE_URL:
     command: "./server.js"
     volumes:
       - ./backend/cloud:/parse-server/cloud

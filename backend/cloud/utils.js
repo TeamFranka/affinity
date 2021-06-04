@@ -3,9 +3,17 @@
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const { Team } = require("./consts.js");
 
+
+async function fetchRoles(user) {
+  return (await (new Parse.Query(Parse.Role)).equalTo("users", user).find({ useMasterKey: true })) || [];
+}
+
+async function fetchRoleIds(user) {
+  return (await fetchRoles(user)).map(({ id }) => id);
+}
+
 async function fetchMyTeams(user) {
-  const roles = await (new Parse.Query(Parse.Role))
-    .equalTo("users", user).find({ useMasterKey: true });
+  const roles = await fetchRoles(user);
 
   const roleIds = roles.map(r => r.id);
   const teams = await ((new Parse.Query(Team))
@@ -16,7 +24,6 @@ async function fetchMyTeams(user) {
 }
 
 async function joinTeam(teamId, user) {
-  console.log(user.id, "wants to join", teamId);
   const sessionToken = user.getSessionToken();
   const team = await (new Parse.Query(Team)).get(teamId, {sessionToken});
 
@@ -43,5 +50,7 @@ async function joinTeam(teamId, user) {
 
 module.exports = {
   fetchMyTeams,
+  fetchRoleIds,
+  fetchRoles,
   joinTeam,
 };

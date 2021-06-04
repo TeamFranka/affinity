@@ -84,7 +84,7 @@
                   {{ $t("team.subteams.title") }}
                 </h2>
                 <ul
-                  v-if="!!subteams?.length"
+                  v-if="subteams"
                   class="subteams"
                   data-cy="subteams"
                 >
@@ -202,7 +202,7 @@ import { defineComponent, computed } from "vue";
 import { useStore } from "@/stores/";
 import Parse from "parse";
 import { takePicture, Photo } from "@/utils/camera";
-import { Model } from "@/utils/model";
+import { Team } from "@/types/team";
 import { absoluteUrl } from "@/utils/url";
 
 
@@ -235,7 +235,7 @@ export default defineComponent({
     $route: "fetchData",
   },
   computed: {
-    team(): Model {
+    team(): Team {
       const slug: any = this.$route.params.teamSlug;
       return this.store.getters.objectsMap[
         this.store.getters.teamsBySlug[slug]
@@ -249,15 +249,13 @@ export default defineComponent({
       return access === TeamMembershipAccess.Open;
     },
     canLeave(): boolean {
-      return !!this.store.getters["auth/teamPermissions"][this.team.objectId];
+      return this.store.getters["auth/teamPermissions"][this.team.objectId]?.isMember;
     },
-    subteams(): Model[] {
+    subteams(): Team[] {
       if (!this.team) {
         return [];
       }
-      return (this.store.state.teams.subteams || []).map(
-        (id: string) => this.store.getters["objectsMap"][id]
-      );
+      return (this.store.getters["teams/subteams"] || {})[this.team.objectId];
     },
     info(): string {
       return this.team.info || "";
@@ -268,8 +266,8 @@ export default defineComponent({
     footerLinks(): any[] {
       return this.team.footerLinks || [];
     },
-    subOf(): any {
-      return this.team.subOf.name || "";
+    subOf(): Team | null {
+      return this.store.getters.objectsMap[this.team.subOf?.id];
     },
     permissions(): any {
       return (
@@ -282,8 +280,8 @@ export default defineComponent({
     showSubteamsHeadline(): boolean {
       return !!this.subteams?.length || this.canEdit;
     },
-    logo(): string | null {
-      return this.team && this.team.avatar ? this.team.avatar.url : null;
+    logo(): string | undefined {
+      return this.team?.avatar?.url
     },
     segments(): any[] {
       return [
@@ -304,9 +302,7 @@ export default defineComponent({
       this.segmentSelected = ev.detail.value;
     },
     async fetchData() {
-      console.log(this.$route);
       const slug: any = this.$route.params.teamSlug;
-      console.log("switching to slug", slug);
       this.loading = true;
       if (!slug) { return }
       this.segmentSelected = "about";

@@ -28,7 +28,7 @@
 import ProfileCard from "@/components/profile-card.vue";
 import { IonContent, IonPage, IonSpinner } from "@ionic/vue";
 import { defineComponent } from "vue";
-import { Model } from "@/utils/model";
+import { Model } from "@/types/model";
 import { useStore } from "../stores/";
 import { absoluteUrl } from "@/utils/url";
 

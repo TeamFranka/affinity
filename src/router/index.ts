@@ -6,6 +6,7 @@ import App from "@/views/App.vue";
 import Inbox from "@/views/Inbox.vue";
 import CommunityOutlet from "@/views/CommunityOutlet.vue";
 import Feed from "@/views/Feed.vue";
+import WelcomePage from "@/views/WelcomePage.vue";
 import Faq from "@/views/FAQ.vue";
 import My from "@/views/my/Main.vue";
 import Bookmarks from "@/views/my/Bookmarks.vue";
@@ -86,6 +87,11 @@ const routes: Array<RouteRecordRaw> = [
     path: "/settings/",
     name: "Settings",
     component: Settings,
+  },
+  {
+    path: "/welcome",
+    name: "Welcome",
+    component: WelcomePage,
   },
   {
     path: "/",

@@ -113,7 +113,7 @@ import {
 } from "ionicons/icons";
 import InlineLinkList from "@/components/generic/inline-link-list.vue";
 import Avatar from "@/components/avatar.vue";
-import { Model } from "@/utils/model";
+import { Model } from "@/types/model";
 import RenderMd from "./render-md.vue";
 
 const DEFAULT_STYLES = {
