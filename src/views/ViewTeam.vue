@@ -249,7 +249,7 @@ export default defineComponent({
       return access === TeamMembershipAccess.Open;
     },
     canLeave(): boolean {
-      return !!this.store.getters["auth/teamPermissions"][this.team.objectId];
+      return this.store.getters["auth/teamPermissions"][this.team.objectId]?.isMember;
     },
     subteams(): Team[] {
       if (!this.team) {
@@ -302,9 +302,7 @@ export default defineComponent({
       this.segmentSelected = ev.detail.value;
     },
     async fetchData() {
-      console.log(this.$route);
       const slug: any = this.$route.params.teamSlug;
-      console.log("switching to slug", slug);
       this.loading = true;
       if (!slug) { return }
       this.segmentSelected = "about";
