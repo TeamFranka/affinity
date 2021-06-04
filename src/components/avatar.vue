@@ -119,6 +119,10 @@ ion-avatar {
   width: 100%;
   height: 100%;
 }
+ion-avatar img {
+  width: 100%;
+  height: 100%;
+}
 .spanWithName{
   margin-left: 5px;
 }

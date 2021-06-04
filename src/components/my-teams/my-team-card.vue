@@ -163,7 +163,4 @@ ion-chip ion-label {
   padding-top: 3px;
 }
 
-avatar img {
-  height: 100%;
-}
 </style>
