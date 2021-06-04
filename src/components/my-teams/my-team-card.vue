@@ -10,11 +10,11 @@
             {{ team?.name }}
           </router-link>
         </ion-card-title>
-        <ion-chip color="primary" v-if="isMember" class="leave" @click="leave">
+        <ion-chip :data-cy-team="team.slug" color="primary" v-if="isMember" class="leave" @click="leave">
           <ion-icon :icon="checkmarkOutline"></ion-icon>
           <ion-label>{{ $t("myTeams.button.leave") }}</ion-label>
         </ion-chip>
-        <ion-chip color="light" v-if="!isMember" class="join" @click="join">
+        <ion-chip :data-cy-team="team.slug" color="light" v-if="!isMember" class="join" @click="join">
           <ion-icon :icon="add"></ion-icon>
           <ion-label>{{ $t("myTeams.button.join") }}</ion-label>
         </ion-chip>
@@ -97,7 +97,7 @@ export default defineComponent({
       return this.store.state.auth.teamPermissions[this.teamId]?.isMember
     }
   },
-  actions: {
+  methods: {
     async join() {
       await this.store.dispatch("auth/joinTeam", this.teamId);
     },
@@ -155,26 +155,15 @@ ion-card-header ion-chip.join {
   background-color: var(--ion-color-base);
 }
 
-
-ion-avatar {
-  display: inline;
-  width: 30%;
-  height: 30%;
-  margin-right: 2em;
-}
-
-ion-avatar img {
-  border: 3px solid #fff;
-  background: #fff;
-  width: 25vw;
-  height: 25vw;
-}
-
 ion-card-content {
   padding: 13px;
 }
 
 ion-chip ion-label {
   padding-top: 3px;
+}
+
+avatar img {
+  height: 100%;
 }
 </style>

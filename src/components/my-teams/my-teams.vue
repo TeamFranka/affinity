@@ -30,7 +30,7 @@ export default defineComponent({
   setup() {
     const { state, dispatch, getters } = useStore();
     const loading = ref(true);
-    const teams = computed(() => getters["teams/teams"] as Team[]);
+    const teams = computed(() => getters["teams/rootTeams"] as Team[]);
     const query = ref("");
     const teamIds = computed(() =>
       teams.value

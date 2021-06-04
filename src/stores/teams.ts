@@ -8,8 +8,7 @@ export interface TeamsT {
   selectedTeam: string | null;
   news: {};
   feed: {};
-  subteamIds: Record<string, Array<string>>;
-  teamIds: string[];
+  teamsByParent: Record<string, Array<string>>;
 }
 
 const MODEL_KEYS = ["objects", "author", "team"];
@@ -42,8 +41,7 @@ export const Teams = {
   },
   state: () => ({
     selectedTeam: null,
-    subteamIds: {},
-    teamIds: [],
+    teamsByParent: {},
   }),
   getters: {
     selectedTeam(
@@ -54,13 +52,13 @@ export const Teams = {
     ): string {
       return state.selectedTeam || rootGetters["auth/selectedTeam"]
     },
-    teams(state: TeamsT, getters: any, rootState: any, { objectsMap }: any): Team[] {
-      return state.teamIds.map(x => objectsMap[x]);
+    rootTeams(state: TeamsT, getters: any, rootState: any, { objectsMap }: any): Team[] {
+      return (state.teamsByParent[''] || []).map((id: string) => objectsMap[id])
     },
     subteams(state: TeamsT, getters: any, rootState: any, { objectsMap }: any): Record<string, Team[]> {
       const mapped: Record<string, Team[]> = {};
       Object
-        .entries(state.subteamIds)
+        .entries(state.teamsByParent)
         .forEach(([parentId, subIds]) => {
           mapped[parentId] = subIds.map(x => objectsMap[x]);
         });
@@ -68,21 +66,30 @@ export const Teams = {
     },
   },
   mutations: {
-    setTeams(state: TeamsT, teams: { id: string }[]) {
-      state.teamIds = teams.map(({ id }) => id);
+    setTeams(state: TeamsT, teams: any) {
+      Object.assign(state.teamsByParent,
+        teams.reduce((acc : Record<string, string[]>, t : any) => {
+          console.log(t, acc);
+          const sub = t.subOf;
+          const list = (acc[sub] || []);
+          list.push(t.id);
+          acc[sub] = list;
+          return acc;
+        }, {})
+      );
     },
     setSelectedTeam(state: TeamsT, teamId: string) {
       state.selectedTeam = teamId;
     },
-    setSubteams(state: TeamsT, subteamIds: any) {
-      Object.assign(state.subteamIds, subteamIds);
+    setSubteams(state: TeamsT, teamsByParent: any) {
+      Object.assign(state.teamsByParent, teamsByParent);
     }
   },
   actions: {
     async fetchTeams(context: any) {
       const { teams, permissions } = await Parse.Cloud.run("getTeams");
       await context.commit("setItems", teams, { root: true });
-      await context.commit("setTeams", teams);
+      await context.commit("setTeams", teams.map((o: Parse.Object) => ({id: o.id, subOf: (o.get("subOf")?.id) || ''})));
       await context.commit("auth/addPermissions", permissions, { root: true });
     },
     async fetch(context: any, slug: string) {
