@@ -15,15 +15,16 @@ describe("Sign up", () => {
         expect(+translate[1]).to.be.greaterThan(0);
       });
 
-    // check for torchwood main team and join
-    cy.get('a[href="/t/torchwood"] + .header-content > ion-chip.join').should('exist').click();
-    // check for torchwood main team and leave
-    cy.get('a[href="/t/torchwood"] + .header-content > ion-chip:not(.join)').should('exist').click();
+    // check for doctor-who top team, we joined by default
+    cy.get('ion-chip[data-cy-team=doctor-who].leave').should('exist').first().click();
+    // after leave, try re-joining
+    cy.get('ion-chip[data-cy-team=doctor-who].join').should('exist').first().click();
 
-    // check for doctor-who subteam and join
-    cy.get('ion-card-header:has( > a[href="/t/doctor-who"]) + ion-card-content > ion-chip.join').should('exist').first().click();
-    // check for doctor-who subteam and leave
-    cy.get('ion-card-header:has( > a[href="/t/doctor-who"]) + ion-card-content > ion-chip.leave').should('exist').first().click();
+    // check for torchwood main team and join
+    cy.get('ion-chip[data-cy-team=torchwood].join').should('exist').click();
+    // check for torchwood main team and leave
+    cy.get('ion-chip[data-cy-team=torchwood].leave').should('exist').click();
+
     // finish welcome dialog
     cy.get('ion-slide + ion-slide ion-button.done').should('exist').click();
 
