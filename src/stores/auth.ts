@@ -284,10 +284,14 @@ export const AuthState: Module<AuthStateT, State> = {
       await dispatch('setSetting', { welcomeDone: true });
     },
     async joinTeam(context: any, teamId: string) {
-      const resp = await Parse.Cloud.run("joinTeam", { teamId });
-      await context.commit("setItems", resp.teams, { root: true });
-      await context.commit("setTeams", resp);
-      context.dispatch("refreshRoot", null, { root: true });
+      return context.dispatch("afterLogin").then(
+        async () => {
+          const resp = await Parse.Cloud.run("joinTeam", { teamId });
+          await context.commit("setItems", resp.teams, { root: true });
+          await context.commit("setTeams", resp);
+          context.dispatch("refreshRoot", null, { root: true });
+        }
+      );
     },
     async leaveTeam(context: any, teamId: string) {
       const resp = await Parse.Cloud.run("leaveTeam", { teamId });
