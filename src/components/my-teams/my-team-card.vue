@@ -78,7 +78,7 @@ export default defineComponent({
       return this.store.getters.objectsMap[this.teamId]
     },
     subteams(): Team[] {
-      return this.store.getters["teams/subTeams"][this.teamId]
+      return this.store.getters["teams/subteams"][this.teamId]
     },
     linkUrl(): string {
       return `/t/${this.team.slug}`
