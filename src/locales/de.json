@@ -2,6 +2,7 @@
   "activity.shared": "hat {since} geteilt",
   "activity.extras.bookmark": "Lesezeichen",
   "activity.extras.bookmarked": "Lesezeichen gesetzt",
+  "activity.unknownType": "Unbekannter Inhalt, bitte lade Dir die neue Version der App herunter:",
   "admin.createSubteam.button.create": "Erstellen",
   "admin.createSubteam.label.details": "Team Beschreibung",
   "admin.createSubteam.label.name": "Team Name",

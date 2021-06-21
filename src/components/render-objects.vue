@@ -32,7 +32,23 @@
         <ion-icon :icon="documentIcon" color="secondary"></ion-icon>
         <a :href="obj.url">{{ obj.title }}</a>
     </div>
-    <div v-else>{{ obj }}</div>
+    <div v-else>
+      {{ $t("activity.unknownType") }}
+      <ion-grid>
+        <ion-row>
+          <ion-col>
+            <ion-button fill="outline" :href="androidLink">{{
+              $t("appPage.button.android")
+            }}</ion-button>
+          </ion-col>
+          <ion-col>
+            <ion-button fill="outline" :href="iosLink">{{
+              $t("appPage.button.iOS")
+            }}</ion-button>
+          </ion-col>
+        </ion-row>
+      </ion-grid>
+    </div>
   </div>
 </div>
 </template>

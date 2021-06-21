@@ -24,6 +24,25 @@
     <template v-else-if="is('Picture')">
       <ion-img class="item-img" :src="imageUrl" />
     </template>
+    <template v-else>
+      <ion-card class="post-text ion-padding">
+        {{ $t("activity.unknownType") }}
+        <ion-grid>
+          <ion-row>
+            <ion-col>
+              <ion-button fill="outline" :href="androidLink">{{
+                $t("appPage.button.android")
+              }}</ion-button>
+            </ion-col>
+            <ion-col>
+              <ion-button fill="outline" :href="iosLink">{{
+                $t("appPage.button.iOS")
+              }}</ion-button>
+            </ion-col>
+          </ion-row>
+        </ion-grid>
+      </ion-card>
+    </template>
     <div v-if="!is('Post')" class="text">
       <render-md v-if="text" :source="text" />
       <p><reactions :item="interactivityObject" /></p>
@@ -179,7 +198,7 @@ export default defineComponent({
       const localStyle = {
         "z-index": this.zIndex,
       };
-      if (this.is("Poll") || this.is("Post")) {
+      if (!this.is("Picture")) {
         return Object.assign({}, style, localStyle, {
           display: "flex",
           justifyContent: "space-around",
