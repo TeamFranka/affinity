@@ -75,7 +75,7 @@ export default defineComponent({
           if (hidden.length == 0) {
             prev = null;
           } else {
-            prev = hidden[0];
+            prev = hidden[hidden.length - 1];
           }
 
           if (shown.length > 1) {
