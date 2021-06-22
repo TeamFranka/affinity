@@ -1,9 +1,9 @@
 name: Test E2E
 on:
   push:
-    branches: [ main ]
+    branches: [ main, production ]
   pull_request:
-    branches: [ main ]
+    branches: [ main, production ]
 
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:

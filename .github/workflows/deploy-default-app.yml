@@ -1,8 +1,10 @@
 name: Deploy Affinity App
 on:
-  push:
-    tags:
-      - production
+  workflow_run:
+    workflows: [ "Deploy Parse" ]
+    branches: [ production ]
+    types:
+      - completed
 
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
