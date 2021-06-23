@@ -2,7 +2,6 @@ name: Deploy Affinity App
 on:
   workflow_run:
     workflows: [ "Deploy Parse" ]
-    branches: [ production ]
     types:
       - completed
 
@@ -159,7 +158,8 @@ jobs:
     environment: appcenter_deploy
     runs-on: ubuntu-latest
     needs: [ android-app ]
-    if: "!contains(github.event.head_commit.message, '[ci skip deploy-app]')"
+    # we only want to actually deploy from production
+    if: github.ref == 'refs/heads/production' && !contains(github.event.head_commit.message, '[ci skip deploy]')"
     steps:
       - name: Download /dist
         uses: actions/download-artifact@v2
@@ -184,7 +184,8 @@ jobs:
     environment: appcenter_deploy
     runs-on: ubuntu-latest
     needs: [ ios-app ]
-    if: "!contains(github.event.head_commit.message, '[ci skip deploy-app]')"
+    # we only want to actually deploy from production
+    if: github.ref == 'refs/heads/production' && !contains(github.event.head_commit.message, '[ci skip deploy]')"
     steps:
       - name: Download /dist
         uses: actions/download-artifact@v2
