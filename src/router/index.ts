@@ -99,6 +99,12 @@ const routes: Array<RouteRecordRaw> = [
     component: ViewActivity,
   },
   {
+    path: "/t/:teamSlug",
+    name: "ViewTeam",
+    component: ViewTeam,
+    children: [],
+  },
+  {
     path: "/",
     name: "CommunityOutlet",
     component: CommunityOutlet,
@@ -117,12 +123,6 @@ const routes: Array<RouteRecordRaw> = [
         path: "/news",
         name: "News",
         component: News,
-      },
-      {
-        path: "t/:teamSlug",
-        name: "ViewTeam",
-        component: ViewTeam,
-        children: [],
       },
       {
         // FIXME: support username-based URLs
