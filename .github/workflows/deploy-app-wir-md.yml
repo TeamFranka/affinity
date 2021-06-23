@@ -2,7 +2,6 @@ name: "Deploy Wir.md App"
 on:
   workflow_run:
     workflows: [ "Deploy Parse" ]
-    branches: [ main, production ]
     types:
       - completed
 
