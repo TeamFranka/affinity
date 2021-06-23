@@ -105,6 +105,12 @@ const routes: Array<RouteRecordRaw> = [
     children: [],
   },
   {
+    // FIXME: support username-based URLs
+    path: "/u/:userId",
+    name: "ViewUser",
+    component: ViewUser,
+  },
+  {
     path: "/",
     name: "CommunityOutlet",
     component: CommunityOutlet,
@@ -123,12 +129,6 @@ const routes: Array<RouteRecordRaw> = [
         path: "/news",
         name: "News",
         component: News,
-      },
-      {
-        // FIXME: support username-based URLs
-        path: "u/:userId",
-        name: "ViewUser",
-        component: ViewUser,
       },
       {
         path: "feed",
