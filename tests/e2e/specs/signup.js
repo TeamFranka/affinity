@@ -3,6 +3,9 @@ describe("Sign up", () => {
   it("Applies for membership of default team", () => {
     cy.signUpAsNewUser({ handleWelcome: false });
 
+    // TODO: actual tests
+    cy.mhGetAllMails().should('have.length', 1);
+
     // check for welcome page
     // check if first slide is visible
     cy.get(".swiper-wrapper").should("exist").should('have.attr', 'style').should('contain', 'transform: translate3d(0px, 0px, 0px)');
