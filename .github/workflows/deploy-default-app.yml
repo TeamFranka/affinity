@@ -159,7 +159,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: [ android-app ]
     # we only want to actually deploy from production
-    if: github.ref == 'refs/heads/production' && !contains(github.event.head_commit.message, '[ci skip deploy]')"
+    if: "github.ref == 'refs/heads/production' && !contains(github.event.head_commit.message, '[ci skip deploy]')"
     steps:
       - name: Download /dist
         uses: actions/download-artifact@v2
@@ -185,7 +185,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: [ ios-app ]
     # we only want to actually deploy from production
-    if: github.ref == 'refs/heads/production' && !contains(github.event.head_commit.message, '[ci skip deploy]')"
+    if: "github.ref == 'refs/heads/production' && !contains(github.event.head_commit.message, '[ci skip deploy]')"
     steps:
       - name: Download /dist
         uses: actions/download-artifact@v2
