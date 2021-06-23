@@ -1,5 +1,6 @@
 <template>
   <ion-page>
+    <back-header />
     <ion-content>
       <div class="wrap">
         <activity
@@ -19,6 +20,7 @@ import { defineComponent, computed, ref } from "vue";
 import { useStore } from "../stores/";
 import { useRoute } from "vue-router";
 import Activity from "../components/activity.vue";
+import BackHeader from "@/components/generic/default-back-header.vue";
 
 export default defineComponent({
   name: "ViewActivity",
@@ -56,6 +58,7 @@ export default defineComponent({
     IonContent,
     IonPage,
     Activity,
+    BackHeader,
   },
 });
 </script>
