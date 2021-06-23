@@ -34,20 +34,15 @@
     </div>
     <div v-else>
       {{ $t("activity.unknownType") }}
-      <ion-grid>
-        <ion-row>
-          <ion-col>
-            <ion-button fill="outline" :href="androidLink">{{
-              $t("appPage.button.android")
-            }}</ion-button>
-          </ion-col>
-          <ion-col>
-            <ion-button fill="outline" :href="iosLink">{{
-              $t("appPage.button.iOS")
-            }}</ion-button>
-          </ion-col>
-        </ion-row>
-      </ion-grid>
+      <ion-button v-if="isPlatform('android')" fill="outline" :href="androidLink">{{
+        $t("appPage.button.android")
+      }}</ion-button>
+      <ion-button v-else-if="isPlatform('ios')" fill="outline" :href="iosLink">{{
+        $t("appPage.button.iOS")
+      }}</ion-button>
+      <ion-button v-else fill="outline" v-on:click="reload">{{
+        $t("appPage.button.refresh")
+      }}</ion-button>
     </div>
   </div>
 </div>
@@ -59,6 +54,7 @@ import {
   IonImg,
   IonIcon,
   IonThumbnail,
+  isPlatform
 } from "@ionic/vue";
 import {
   linkOutline as linkIcon,
@@ -85,6 +81,12 @@ export default defineComponent({
     IonIcon,
     IonThumbnail,
     Poll
+  },
+  methods: {
+    isPlatform: isPlatform,
+    reload() {
+      location.reload()
+    }
   }
 })
 </script>

@@ -27,20 +27,15 @@
     <template v-else>
       <ion-card class="post-text ion-padding">
         {{ $t("activity.unknownType") }}
-        <ion-grid>
-          <ion-row>
-            <ion-col>
-              <ion-button fill="outline" :href="androidLink">{{
-                $t("appPage.button.android")
-              }}</ion-button>
-            </ion-col>
-            <ion-col>
-              <ion-button fill="outline" :href="iosLink">{{
-                $t("appPage.button.iOS")
-              }}</ion-button>
-            </ion-col>
-          </ion-row>
-        </ion-grid>
+        <ion-button v-if="isPlatform('android')" fill="outline" :href="androidLink">{{
+          $t("appPage.button.android")
+        }}</ion-button>
+        <ion-button v-else-if="isPlatform('ios')" fill="outline" :href="iosLink">{{
+          $t("appPage.button.iOS")
+        }}</ion-button>
+        <ion-button v-else fill="outline" v-on:click="reload">{{
+          $t("appPage.button.refresh")
+        }}</ion-button>
       </ion-card>
     </template>
     <div v-if="!is('Post')" class="text">
@@ -80,7 +75,7 @@
 </template>
 
 <script lang="ts">
-import { IonLabel, IonIcon, IonImg, IonCard } from "@ionic/vue";
+import { IonLabel, IonIcon, IonImg, IonCard, isPlatform } from "@ionic/vue";
 import { createAnimation } from "@ionic/core";
 import {
   chatbubblesOutline as commentsIcon,
@@ -209,6 +204,7 @@ export default defineComponent({
     },
   },
   methods: {
+    isPlatform: isPlatform,
     is(type: string): boolean {
       if (!this.obj) {
         return type == "Post";
@@ -242,6 +238,9 @@ export default defineComponent({
     next(ev: Event) {
       console.log("would go to next", ev);
     },
+    reload() {
+      location.reload()
+    }
   },
 });
 </script>

@@ -13,6 +13,7 @@
   "admin.editLinks.title": "Links ändern",
   "appPage.button.android": "Android Version",
   "appPage.button.iOS": "iPhone/iPad Version",
+  "appPage.button.refresh": "Neu laden",
   "appPage.explainer": "Um diese zu installieren einfach den passenden QR-Code mit deinem Smartphone scannen, oder auf dem Smartphone den passenden Button klicken, und auf der folgenden Seite dann auf \"download\". Wenn die App herunter geladen wurde, diese ganz normal öffnen – euer Smartphone wird euch zwar warnen, dass diese Datei nicht bekannt sei, sollte aber nach eurem Einverständnis die Installation fortsetzten.",
   "appPage.intro": "Nun endlich gibt es die TeamFranka Community auch als App für das Smartphone, bisher aber noch in einer nicht über die App-Stores verfügbaren Beta-Version.",
   "appPage.support": "Bei Fragen oder Probleme, gerne über {link} den Kontakt aufnehmen!.",
