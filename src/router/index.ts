@@ -111,15 +111,15 @@ const routes: Array<RouteRecordRaw> = [
     component: ViewUser,
   },
   {
+    path: "/app",
+    name: "App",
+    component: App,
+  },
+  {
     path: "/",
     name: "CommunityOutlet",
     component: CommunityOutlet,
     children: [
-      {
-        path: "/app",
-        name: "App",
-        component: App,
-      },
       {
         path: "/faq",
         name: "FAQ",

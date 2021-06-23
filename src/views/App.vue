@@ -1,5 +1,6 @@
 <template>
   <ion-page>
+    <back-header />
     <ion-content>
       <h1>{{ $t("appPage.title") }}</h1>
       <p>
@@ -37,12 +38,20 @@
 <script lang="ts">
 import { ANDROID_INSTALL_URL, IOS_INSTALL_URL } from "@/config/Consts";
 import { IonPage, IonContent, IonRow, IonCol, IonButton } from "@ionic/vue";
+import BackHeader from "@/components/generic/default-back-header.vue";
 import Qrcode from "@/components/qrcode.vue";
 
 export default {
   name: "AppInstall",
-  components: { IonContent, IonPage, IonRow, IonCol, IonButton, Qrcode },
-
+  components: {
+    IonContent,
+    IonPage,
+    IonRow,
+    IonCol,
+    IonButton,
+    BackHeader,
+    Qrcode
+  },
   setup() {
     return {
       iosLogo: require("@/statics/logos/ios.png"),
