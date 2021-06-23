@@ -173,9 +173,12 @@ export default defineComponent({
       return {}
     },
     extraStyle(): object {
-      const style = (this.item.extra || {})["styles"] || {
-        background: "var(--ion-color-tertiary )",
-      };
+      const style = Object.assign(
+        {
+          background: "var(--ion-color-tertiary )",
+        },
+        (this.item.extra || {})["styles"]
+      );
       const localStyle = {
         "z-index": this.zIndex,
       };
