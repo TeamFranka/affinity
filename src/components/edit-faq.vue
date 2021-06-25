@@ -13,22 +13,28 @@
     </ion-toolbar>
   </ion-header>
   <ion-content>
+    <div>
+      <teams-selector :teams="teams" :selected="selectedTeam" currentShowName @selectTeam="team = $event" />
+    </div>
+    <div>
+      <ion-chip v-for="(t, index) in tags" :key="t" @click="removeTag(index)">
+        {{ t }} <ion-icon :icon="removeIcon"></ion-icon>
+      </ion-chip>
+      <ion-input
+        v-model="newTag"
+        @keyup.enter="addTag"
+        :placeholder="$t('faq.addTag.placeholder')"
+      />
+      <ion-button @click="addTag" fill="clear" size="small">
+        <ion-icon :icon="addIcon"></ion-icon>
+      </ion-button>
+    </div>
+
     <rich-editor
       :enabledActions="AllActions"
       @change="(v) => (text = v)"
       :startText="text"
     />
-    <ion-chip v-for="(t, index) in tags" :key="t" @click="removeTag(index)">
-      {{ t }} <ion-icon :icon="removeIcon"></ion-icon>
-    </ion-chip>
-    <ion-input
-      v-model="newTag"
-      @keyup.enter="addTag"
-      :placeholder="$t('faq.addTag.placeholder')"
-    />
-    <ion-button @click="addTag" fill="clear" size="small">
-      <ion-icon :icon="addIcon"></ion-icon>
-    </ion-button>
   </ion-content>
   <ion-footer>
     <ion-toolbar>
@@ -90,6 +96,10 @@ export default defineComponent({
       type: Object,
       required: true,
     },
+    teams: {
+      type: Array,
+      required: true,
+    },
   },
   setup() {
     return {
@@ -107,11 +117,13 @@ export default defineComponent({
     const tags = props.faq.tags || [];
     const text = props.faq.text || "";
     const title = props.faq.title || "";
+    const team = props.faq.team;
     const data: any = {
       newTag: "",
       tags,
       text,
       title,
+      team,
     };
     return data;
   },
@@ -119,6 +131,9 @@ export default defineComponent({
     canSubmit(): boolean {
       return this.title.length > 0 && this.text.length > 0;
     },
+    selectedTeam(): any{
+      return this.teams.find((x: any) => x.objectId == this.team.objectId)
+    }
   },
   methods: {
     addTag() {
@@ -132,7 +147,7 @@ export default defineComponent({
     },
     saveAndClose() {
       const data: any = {};
-      ["title", "text", "tags"].forEach((key) => {
+      ["title", "text", "tags", "team"].forEach((key) => {
         data[key] = this[key];
       });
       modalController.dismiss(data);
