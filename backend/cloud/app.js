@@ -65,6 +65,11 @@ app.get("/a/:id", makeWithOG(Activity, ["objects", "team"]));
 
 app.get("*", (req, res, next)=> {
    // fallback, try to deliver the host-specific index
+   if (req.path.match(/.*[request_password_reset|confirm_password_reset]$/i)) {
+     console.log(`'${req.path}' is native, continuing`);
+     next()
+     return
+   }
    const file = path.join(PUBLIC_PATH, `${req.hostname}.html`);
 
    function sendInjected(targetFile) {

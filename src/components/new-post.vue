@@ -434,7 +434,7 @@ import { useStore } from "../stores/";
 import { Verb, Visibility } from "../config/Consts";
 import { AllActions, DefaultActions } from "./rich-editor.vue";
 import RichEditor from "./rich-editor.vue";
-import { Model, CreateModel } from "@/utils/model";
+import { Model, CreateModel } from "@/types/model";
 
 const VERB_ICONS: Record<string, any> = {};
 VERB_ICONS[Verb.Post] = readerOutline;

@@ -77,7 +77,7 @@ import { defineComponent, computed } from "vue";
 import { useStore } from "../stores/";
 import RenderMd from "./render-md.vue";
 import Reactions from "./reactions.vue";
-import { Model } from "@/utils/model";
+import { Model } from "@/types/model";
 
 export default defineComponent({
   name: "NewsItem",
@@ -173,9 +173,12 @@ export default defineComponent({
       return {}
     },
     extraStyle(): object {
-      const style = (this.item.extra || {})["styles"] || {
-        background: "var(--ion-color-tertiary )",
-      };
+      const style = Object.assign(
+        {
+          background: "var(--ion-color-tertiary )",
+        },
+        (this.item.extra || {})["styles"]
+      );
       const localStyle = {
         "z-index": this.zIndex,
       };

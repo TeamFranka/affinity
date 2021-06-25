@@ -1,5 +1,5 @@
 import { Parse } from "@/config/Consts";
-import { Model, SaveModel, toModel } from "@/utils/model";
+import { Model, SaveModel, toModel } from "@/types/model";
 
 const ITEMS_PER_PAGE = 25;
 

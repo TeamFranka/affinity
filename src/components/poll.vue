@@ -168,7 +168,7 @@ import { cloneDeep } from "lodash";
 import RenderMd from "./render-md.vue";
 import EditPoll from "./edit-poll.vue";
 import { useStore } from "../stores/";
-import { toModel } from "@/utils/model";
+import { toModel } from "@/types/model";
 import { Parse } from "../config/Consts";
 import { until, hasPassed } from "../utils/time";
 import { defineComponent } from "vue";

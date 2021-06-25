@@ -124,7 +124,7 @@ import { useStore } from "../stores/";
 import { defineComponent, computed } from "vue";
 import { Parse } from "../config/Consts";
 import { since } from "../utils/time";
-import { Model } from "@/utils/model";
+import { Model } from "@/types/model";
 
 export default defineComponent({
   name: "Activity",

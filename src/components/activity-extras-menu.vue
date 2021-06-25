@@ -24,7 +24,7 @@ import {
 
 import { useStore } from "../stores/";
 import { defineComponent, computed } from "vue";
-import { Model } from "@/utils/model";
+import { Model } from "@/types/model";
 
 export default defineComponent({
   name: "ActivityExtrasMenu",

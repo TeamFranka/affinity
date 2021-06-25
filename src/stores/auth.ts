@@ -1,12 +1,14 @@
 import { Parse } from "@/config/Consts";
 import { isPlatform } from "@ionic/vue";
-import { Model, toModel } from "@/utils/model";
+import { Model, toModel } from "@/types/model";
 import { initInstallation } from "@/utils/setup";
 import { getCypressEntry } from "@/utils/env";
 import { watch } from "vue";
+import { Module } from "vuex";
 import { deviceLocale } from "@/utils/setup";
 import { dayjs } from "@/config/Consts";
 import i18n from "@/utils/i18n";
+import { State } from ".";
 
 import { genFeedState } from "./globals";
 
@@ -47,7 +49,7 @@ function setLocale(locale: string) {
   dayjs.locale(lang);
 }
 
-export const AuthState = {
+export const AuthState: Module<AuthStateT, State> = {
   namespaced: true,
   modules: {
     bookmarks: Bookmarks
@@ -166,10 +168,10 @@ export const AuthState = {
       state.teams = resp.teams.map((x: any) => x.id);
       state.teamPermissions = Object.assign({}, resp.permissions);
     },
-    addPermissions(state: AuthStateT, resp: any) {
+    addPermissions(state: AuthStateT, permissions: any) {
       state.teamPermissions = Object.assign(
         state.teamPermissions,
-        resp.permissions
+        permissions
       );
     },
   },
@@ -278,11 +280,18 @@ export const AuthState = {
       await user.save();
       context.commit("setUser", toModel(user));
     },
+    async setWelcomeDone({ dispatch }) {
+      await dispatch('setSetting', { welcomeDone: true });
+    },
     async joinTeam(context: any, teamId: string) {
-      const resp = await Parse.Cloud.run("joinTeam", { teamId });
-      await context.commit("setItems", resp.teams, { root: true });
-      await context.commit("setTeams", resp);
-      context.dispatch("refreshRoot", null, { root: true });
+      return context.dispatch("afterLogin").then(
+        async () => {
+          const resp = await Parse.Cloud.run("joinTeam", { teamId });
+          await context.commit("setItems", resp.teams, { root: true });
+          await context.commit("setTeams", resp);
+          context.dispatch("refreshRoot", null, { root: true });
+        }
+      );
     },
     async leaveTeam(context: any, teamId: string) {
       const resp = await Parse.Cloud.run("leaveTeam", { teamId });

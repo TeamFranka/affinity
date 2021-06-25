@@ -1,6 +1,6 @@
 <template>
   <ion-page>
-    <ion-content fullscreen>
+    <ion-content>
       <team-selector
         v-if="showTeamSelector"
         @selectTeam="selectTeam($event)"
@@ -85,7 +85,7 @@ import { chatbubbles } from "ionicons/icons";
 import { defineComponent, computed } from "vue";
 import { useStore } from "../stores/";
 import { Parse, FaqEntry as FaqModel } from "../db/models";
-import { Model } from "@/utils/model";
+import { Model } from "@/types/model";
 import InteractionBar from "../components/interaction-bar.vue";
 import EditFaq from "../components/edit-faq.vue";
 import RenderMd from "../components/render-md.vue";

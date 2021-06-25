@@ -3,7 +3,7 @@
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const CONSTS = require("./consts.js");
 // eslint-disable-next-line @typescript-eslint/no-var-requires
-const { fetchMyTeams, joinTeam } = require("./utils.js");
+const { fetchMyTeams, fetchRoleIds, joinTeam } = require("./utils.js");
 const { Team, Conversation } = CONSTS;
 
 const ROLES = [
@@ -14,39 +14,37 @@ const ROLES = [
   "leaders",
 ]
 
-async function myTeams(request) {
-  const {teams, roleIds} = await fetchMyTeams(request.user);
+function getPermissionsForTeam(roleIds, team) {
+  const isMember = !!roleIds && !!team && roleIds.includes(team.get("members").id);
+  const isLeader = !!roleIds && !!team && roleIds.includes(team.get("leaders").id);
+  const isMod = !!roleIds && !!team && roleIds.includes(team.get("mods").id);
+  const isPublisher = !!roleIds && !!team && roleIds.includes(team.get("publishers").id);
+  const isAgent = !!roleIds && !!team && roleIds.includes(team.get("agents").id);
 
-  const permissions = {};
-
-  for (let idx = 0; idx < teams.length; idx++) {
-    const team = teams[idx];
-    const isLeader = roleIds.includes(team.get("leaders").id);
-    const isMod = roleIds.includes(team.get("mods").id);
-    const isPublisher = roleIds.includes(team.get("publishers").id);
-    const isAgent = roleIds.includes(team.get("agents").id);
-
-    permissions[team.id] = Object.assign({
-        isMember: true,
-        isLeader: isLeader,
-        isMod: isMod,
-        isPublisher: isPublisher,
-        isAgent: isAgent,
-      },
-      team.genPermissions(isLeader, isMod, isAgent, isPublisher, true)
-    );
-  }
-
-  return {
-    teams: teams,
-    permissions: permissions,
-  }
+  const permissions = {
+    isMember, isLeader, isMod, isPublisher, isAgent,
+    ...team.genPermissions(isLeader, isMod, isAgent, isPublisher, isMember),
+  };
+  return permissions
 }
 
+Parse.Cloud.define("getTeams", async (request) => {
+  const user = request.user;
+  const teams = await ((new Parse.Query(Team)).find(user ? { sessionToken: user.getSessionToken() } : null));
+  const roleIds = user ? (await fetchRoleIds(user)) : [];
+  const permissions = Object.assign({}, ...teams.map(team => ({ [team.id]: getPermissionsForTeam(roleIds, team) })));
 
-Parse.Cloud.define("myTeams", myTeams, {
-  requireUser: true
+  return { teams, permissions };
 });
+
+async function myTeams(request) {
+  const { teams, roleIds } = await fetchMyTeams(request.user);
+  const permissions = Object.assign({}, ...teams.map(team => ({ [team.id]: getPermissionsForTeam(roleIds, team) })));
+
+  return { teams, permissions };
+}
+
+Parse.Cloud.define("myTeams", myTeams, { requireUser: true });
 
 Parse.Cloud.define("joinTeam", async (request) => {
 
@@ -61,14 +59,14 @@ Parse.Cloud.define("joinTeam", async (request) => {
       type: String,
     },
   },
-  requireUser: true
+  requireUser: true,
 });
 
 Parse.Cloud.define("leaveTeam", async (request) => {
   const user = request.user;
   const teamId = request.params.teamId;
   const sessionToken = user.getSessionToken();
-  const team = await (new Parse.Query(Team)).get(teamId, {sessionToken});
+  const team = await (new Parse.Query(Team)).get(teamId, { sessionToken });
   const rolesToUpdate = [];
   for (let index = 0; index < ROLES.length; index++) {
     const role = ROLES[index];
@@ -78,8 +76,8 @@ Parse.Cloud.define("leaveTeam", async (request) => {
       rolesToUpdate.push(rl);
     }
   }
-  if (rolesToUpdate.length > 0){
-    await Parse.Object.saveAll(rolesToUpdate, {useMasterKey: true});
+  if (rolesToUpdate.length > 0) {
+    await Parse.Object.saveAll(rolesToUpdate, { useMasterKey: true });
   }
   return myTeams(request)
 }, {
@@ -89,7 +87,7 @@ Parse.Cloud.define("leaveTeam", async (request) => {
       type: String,
     },
   },
-  requireUser: true
+  requireUser: true,
 });
 
 Parse.Cloud.define("getTeam", async (request) => {
@@ -97,40 +95,16 @@ Parse.Cloud.define("getTeam", async (request) => {
   const slug = request.params.slug;
   const team = await ((new Parse.Query(Team))
     .equalTo("slug", slug)
-    .first(user ? {sessionToken: user.getSessionToken()} : null));
+    .first(user ? { sessionToken: user.getSessionToken() } : null));
 
   if (!team) {
-    return Promise.reject(Parse.Error.OBJECT_NOT_FOUND)
+    return Promise.reject(Parse.Error.OBJECT_NOT_FOUND);
   }
 
-  const roles = await (new Parse.Query(Parse.Role))
-      .equalTo("users", user)
-      .find({ useMasterKey: true });
+  const roleIds = user ? await fetchRoleIds(request.user) : [];
+  const permissions = team ? { [team.id]: getPermissionsForTeam(roleIds, team) } : {};
 
-  const roleIds = roles.map(r => r.id);
-
-  const permissions = {};
-
-  const isMember = roleIds.includes(team.get("members").id);
-  const isLeader = roleIds.includes(team.get("leaders").id);
-  const isMod = roleIds.includes(team.get("mods").id);
-  const isPublisher = roleIds.includes(team.get("publishers").id);
-  const isAgent = roleIds.includes(team.get("agents").id);
-  permissions[team.id] = Object.assign({
-      isMember: isMember,
-      isLeader: isLeader,
-      isMod: isMod,
-      isPublisher: isPublisher,
-      isAgent: isAgent,
-    },
-    team.genPermissions(isLeader, isMod, isAgent, isPublisher, isMember)
-  );
-
-  return {
-    teams: [team],
-    permissions: permissions,
-  }
-
+  return { teams: [team], permissions };
 }, {
   fields: {
     slug: {
@@ -143,7 +117,6 @@ Parse.Cloud.define("getTeam", async (request) => {
   },
 });
 
-
 const CANT_BE_CHANGED = [
   "subOf", "slug", "ACL",
   "leaders", "mods", "agents", "publishers", "members"
@@ -152,15 +125,15 @@ const CANT_BE_CHANGED = [
 // Ensure the ACL are set correctly when created
 Parse.Cloud.beforeSave("Team", async (request) => {
   let user = request.user;
-  if (!user && request.master && request.object.get("admin")){
+  if (!user && request.master && request.object.get("admin")) {
     user = await (new Parse.Query(Parse.User))
-      .get(request.object.get("admin"), { useMasterKey:true });
+      .get(request.object.get("admin"), { useMasterKey: true });
     request.object.unset("admin");
   }
 
-  const slug = (request.object.get('slug')||"").toLowerCase().trim()
-      .replace(/&/g, '-and-')         // Replace & with 'and'
-      .replace(/[\s\W-]+/g, '-')      // Replace spaces, non-word characters and dashes with a single dash (-)
+  const slug = (request.object.get('slug') || "").toLowerCase().trim()
+    .replace(/&/g, '-and-')         // Replace & with 'and'
+    .replace(/[\s\W-]+/g, '-')      // Replace spaces, non-word characters and dashes with a single dash (-)
   if (!slug.length) {
     throw "Invalid slug";
   }

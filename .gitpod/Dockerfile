@@ -25,4 +25,6 @@ RUN sudo DEBIAN_FRONTEND=noninteractive apt-get install -y \
 
 RUN npm install -g @ionic/cli
 
+RUN npx cypress install
+
 USER root

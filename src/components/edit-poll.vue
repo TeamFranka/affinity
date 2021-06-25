@@ -186,7 +186,7 @@ import {
   addCircleOutline as addIcon,
 } from "ionicons/icons";
 import { defineComponent } from "vue";
-import { Model } from "@/utils/model";
+import { Model } from "@/types/model";
 import dayjs from "dayjs";
 import RichEditor from "./rich-editor.vue";
 

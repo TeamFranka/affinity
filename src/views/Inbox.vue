@@ -1,6 +1,6 @@
 <template>
   <ion-page>
-    <ion-content fullscreen>
+    <ion-content>
       <ion-list>
         <ion-list-header>
           <ion-segment

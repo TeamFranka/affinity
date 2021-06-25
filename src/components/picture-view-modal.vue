@@ -5,7 +5,7 @@
   </span>
 
     <ion-img class="item-img" :src="imageUrl" />
-  
+
    <div class="menu">
     <router-link :to="teamLink">
       <avatar size="4em" :profile="team" :name="teamName" />
@@ -32,9 +32,9 @@
           :counter="interactivityObject.likesCount || 0"
       />
     </div>
-  </div> 
-</div> 
- 
+  </div>
+</div>
+
 </template>
 
 <script lang="ts">
@@ -48,7 +48,7 @@ import { since } from '../utils/time';
 import Parse from "parse";
 import { defineComponent, computed } from 'vue';
 import { useStore } from '../stores/';
-import { Model } from '@/utils/model';
+import { Model } from '@/types/model';
 
 export default defineComponent({
   name: 'PictureViewModal',
@@ -65,19 +65,19 @@ export default defineComponent({
   components: {
     IonLabel, IonIcon,
     IonImg,
-    Avatar, ShareButton, LikeButton, 
+    Avatar, ShareButton, LikeButton,
   },
   setup(props: { itemId: string }) {
     const store = useStore();
-  
-    return {    
+
+    return {
       item: computed(() => store.getters.objectsMap[props.itemId]),
       objs: computed(() => store.getters.objectsMap),
       store, commentsIcon, likeIcon
     }
   },
   computed: {
-  
+
     link(): string {
       return '/a/' + this.item.objectId
     },
@@ -133,11 +133,11 @@ export default defineComponent({
         'z-index': this.indexValue,
       };
       return Object.assign({}, style, localStyle);
-    
+
     }
   },
   methods: {
-   
+
     async like(ev: MouseEvent) {
       if (!this.hasLiked) {
         this.store.dispatch("auth/like", Object.assign({}, this.interactivityObject.toPointer()));

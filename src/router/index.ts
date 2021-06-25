@@ -6,6 +6,7 @@ import App from "@/views/App.vue";
 import Inbox from "@/views/Inbox.vue";
 import CommunityOutlet from "@/views/CommunityOutlet.vue";
 import Feed from "@/views/Feed.vue";
+import WelcomePage from "@/views/WelcomePage.vue";
 import Faq from "@/views/FAQ.vue";
 import My from "@/views/my/Main.vue";
 import Bookmarks from "@/views/my/Bookmarks.vue";
@@ -88,15 +89,37 @@ const routes: Array<RouteRecordRaw> = [
     component: Settings,
   },
   {
+    path: "/welcome",
+    name: "Welcome",
+    component: WelcomePage,
+  },
+  {
+    path: "/a/:activityId",
+    name: "ViewActivity",
+    component: ViewActivity,
+  },
+  {
+    path: "/t/:teamSlug",
+    name: "ViewTeam",
+    component: ViewTeam,
+    children: [],
+  },
+  {
+    // FIXME: support username-based URLs
+    path: "/u/:userId",
+    name: "ViewUser",
+    component: ViewUser,
+  },
+  {
+    path: "/app",
+    name: "App",
+    component: App,
+  },
+  {
     path: "/",
     name: "CommunityOutlet",
     component: CommunityOutlet,
     children: [
-      {
-        path: "/app",
-        name: "App",
-        component: App,
-      },
       {
         path: "/faq",
         name: "FAQ",
@@ -106,23 +129,6 @@ const routes: Array<RouteRecordRaw> = [
         path: "/news",
         name: "News",
         component: News,
-      },
-      {
-        path: "t/:teamSlug",
-        name: "ViewTeam",
-        component: ViewTeam,
-        children: [],
-      },
-      {
-        path: "a/:activityId",
-        name: "ViewActivity",
-        component: ViewActivity,
-      },
-      {
-        // FIXME: support username-based URLs
-        path: "u/:userId",
-        name: "ViewUser",
-        component: ViewUser,
       },
       {
         path: "feed",
