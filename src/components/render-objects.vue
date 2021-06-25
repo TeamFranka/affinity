@@ -34,10 +34,10 @@
     </div>
     <div v-else>
       {{ $t("activity.unknownType") }}
-      <ion-button v-if="isPlatform('android')" fill="outline" :href="androidLink">{{
+      <ion-button v-if="isAnroid" fill="outline" :href="androidLink">{{
         $t("appPage.button.android")
       }}</ion-button>
-      <ion-button v-else-if="isPlatform('ios')" fill="outline" :href="iosLink">{{
+      <ion-button v-else-if="isIos" fill="outline" :href="iosLink">{{
         $t("appPage.button.iOS")
       }}</ion-button>
       <ion-button v-else fill="outline" v-on:click="reload">{{
@@ -60,6 +60,7 @@ import {
   linkOutline as linkIcon,
   documentOutline as documentIcon,
 } from "ionicons/icons";
+import { isAndroid, isIos } from "@/utils/platform";
 
 import Poll from "./poll.vue";
 
@@ -74,6 +75,8 @@ export default defineComponent({
     return {
       linkIcon,
       documentIcon,
+      isAndroid,
+      isIos,
     }
   },
   components: {

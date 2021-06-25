@@ -27,10 +27,10 @@
     <template v-else>
       <ion-card class="post-text ion-padding">
         {{ $t("activity.unknownType") }}
-        <ion-button v-if="isPlatform('android')" fill="outline" :href="androidLink">{{
+        <ion-button v-if="isAndroidd" fill="outline" :href="androidLink">{{
           $t("appPage.button.android")
         }}</ion-button>
-        <ion-button v-else-if="isPlatform('ios')" fill="outline" :href="iosLink">{{
+        <ion-button v-else-if="isIos" fill="outline" :href="iosLink">{{
           $t("appPage.button.iOS")
         }}</ion-button>
         <ion-button v-else fill="outline" v-on:click="reload">{{
@@ -75,7 +75,7 @@
 </template>
 
 <script lang="ts">
-import { IonLabel, IonIcon, IonImg, IonCard, isPlatform } from "@ionic/vue";
+import { IonLabel, IonIcon, IonImg, IonCard } from "@ionic/vue";
 import { createAnimation } from "@ionic/core";
 import {
   chatbubblesOutline as commentsIcon,
@@ -92,6 +92,7 @@ import { useStore } from "../stores/";
 import RenderMd from "./render-md.vue";
 import Reactions from "./reactions.vue";
 import { Model } from "@/types/model";
+import { isAndroid, isIos } from "@/utils/platform";
 
 export default defineComponent({
   name: "NewsItem",
@@ -125,6 +126,8 @@ export default defineComponent({
       store,
       commentsIcon,
       likeIcon,
+      isAndroid,
+      isIos,
     };
   },
   computed: {
@@ -204,7 +207,6 @@ export default defineComponent({
     },
   },
   methods: {
-    isPlatform: isPlatform,
     is(type: string): boolean {
       if (!this.obj) {
         return type == "Post";
