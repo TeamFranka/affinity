@@ -1,5 +1,6 @@
 <template>
   <ion-page>
+    <back-header />
     <ion-content>
       <div class="wrap">
         <div class="centralizeTotal" v-if="loading">
@@ -26,6 +27,7 @@
 
 <script lang="ts">
 import ProfileCard from "@/components/profile-card.vue";
+import BackHeader from "@/components/generic/default-back-header.vue";
 import { IonContent, IonPage, IonSpinner } from "@ionic/vue";
 import { defineComponent } from "vue";
 import { Model } from "@/types/model";
@@ -90,6 +92,7 @@ export default defineComponent({
     IonPage,
     IonContent,
     IonSpinner,
+    BackHeader,
   },
 });
 </script>
