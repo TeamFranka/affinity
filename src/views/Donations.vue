@@ -1,6 +1,6 @@
 <template>
   <ion-page>
-    <ion-content :fullscreen="true">
+    <ion-content>
       <ion-content overflow-scroll="true">
         <iframe
           src="https://franka.jetzt/spenden-fwd"

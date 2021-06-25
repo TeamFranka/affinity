@@ -1,6 +1,6 @@
 <template>
   <ion-page>
-    <ion-content fullscreen>
+    <ion-content>
       <ion-searchbar
         :disabled="loading || entries.length === 0"
         :value="searchValue"

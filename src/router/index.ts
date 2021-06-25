@@ -94,15 +94,32 @@ const routes: Array<RouteRecordRaw> = [
     component: WelcomePage,
   },
   {
+    path: "/a/:activityId",
+    name: "ViewActivity",
+    component: ViewActivity,
+  },
+  {
+    path: "/t/:teamSlug",
+    name: "ViewTeam",
+    component: ViewTeam,
+    children: [],
+  },
+  {
+    // FIXME: support username-based URLs
+    path: "/u/:userId",
+    name: "ViewUser",
+    component: ViewUser,
+  },
+  {
+    path: "/app",
+    name: "App",
+    component: App,
+  },
+  {
     path: "/",
     name: "CommunityOutlet",
     component: CommunityOutlet,
     children: [
-      {
-        path: "/app",
-        name: "App",
-        component: App,
-      },
       {
         path: "/faq",
         name: "FAQ",
@@ -112,23 +129,6 @@ const routes: Array<RouteRecordRaw> = [
         path: "/news",
         name: "News",
         component: News,
-      },
-      {
-        path: "t/:teamSlug",
-        name: "ViewTeam",
-        component: ViewTeam,
-        children: [],
-      },
-      {
-        path: "a/:activityId",
-        name: "ViewActivity",
-        component: ViewActivity,
-      },
-      {
-        // FIXME: support username-based URLs
-        path: "u/:userId",
-        name: "ViewUser",
-        component: ViewUser,
       },
       {
         path: "feed",

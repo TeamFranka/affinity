@@ -7,6 +7,9 @@ describe("Visiting the public news", () => {
     cy.get(".flip-in .shown").then((x) => {
       const before = x.length;
 
+      const secondPost = "This is post number 91"
+      const thirdPost = "This is post number 77"
+
       cy.swipeUp();
       cy.get(".flip-in .shown").should("have.length", before -1);
 
@@ -18,12 +21,11 @@ describe("Visiting the public news", () => {
 
       cy.swipeDown();
       cy.get(".flip-in .shown").should("have.length", before -2);
+      cy.get(".flip-in .shown:first").should("contain", thirdPost)
 
       cy.swipeDown();
       cy.get(".flip-in .shown").should("have.length", before -1);
-
-
+      cy.get(".flip-in .shown:first").should("contain", secondPost)
     });
-
   });
 });

@@ -1,5 +1,6 @@
 <template>
   <ion-page>
+    <back-header />
     <ion-content>
       <div class="wrap">
         <div class="centralizeTotal" v-if="loading">
@@ -175,6 +176,7 @@ import GenericEditorModal from "@/components/settings/generic-editor-modal.vue";
 import Activity from "@/components/activity.vue";
 import ProfileCard from "@/components/profile-card.vue";
 import Qrcode from "@/components/qrcode.vue";
+import BackHeader from "@/components/generic/default-back-header.vue";
 import {
   IonContent,
   IonPage,
@@ -504,6 +506,7 @@ export default defineComponent({
   },
   components: {
     Avatar,
+    BackHeader,
     Qrcode,
     InlineLinkList,
     RenderMd,
