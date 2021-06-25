@@ -75,7 +75,7 @@
 </template>
 
 <script lang="ts">
-import { IonLabel, IonIcon, IonImg, IonCard } from "@ionic/vue";
+import { IonLabel, IonIcon, IonImg, IonCard, IonButton } from "@ionic/vue";
 import { createAnimation } from "@ionic/core";
 import {
   chatbubblesOutline as commentsIcon,
@@ -111,6 +111,7 @@ export default defineComponent({
     IonIcon,
     IonCard,
     IonImg,
+    IonButton,
     Avatar,
     ShareButton,
     Reactions,
