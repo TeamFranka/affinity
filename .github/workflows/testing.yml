@@ -70,6 +70,7 @@ jobs:
     # onlyrun when we were successful
     if: "github.ref == 'refs/heads/production' && !contains(github.event.head_commit.message, '[ci skip deploy]')"
     runs-on: ubuntu-latest
+    needs: [ tests ]
 
     environment: b4a_deploy
 
