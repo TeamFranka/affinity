@@ -1,10 +1,7 @@
 name: Deploy Affinity App
 on:
-  workflow_run:
-    workflows: [ "Deploy Parse" ]
-    branches: [ main, production ]
-    types:
-      - completed
+  push:
+    tags: [ production ]
 
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
@@ -16,19 +13,16 @@ env:
   APPCENTER_PROJECT_ANDROID: TeamFranka/Affinity-Live
   APPCENTER_PROJECT_IOS: TeamFranka/Affinity-Live-iOS
 
-
-
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
 
   release-build:
     runs-on: ubuntu-latest
-    if: ${{ github.event.workflow_run.conclusion == 'success' }}
     steps:
       - name: Download /dist
         uses: dawidd6/action-download-artifact@v2
         with:
-          workflow: deploying-to-parse.yml
+          workflow: testing.yml
           name: dist-production
           path: dist
       - name: Patch dist
@@ -143,7 +137,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: [ android-app ]
     # we only want to actually deploy from production
-    if: "github.event.workflow_run.head_branch == 'production' && !contains(github.event.head_commit.message, '[ci skip deploy]')"
+    if: "github.ref == 'refs/tags/production' && !contains(github.event.head_commit.message, '[ci skip deploy]')"
     steps:
       - uses: actions/checkout@v2
       - name: Download /dist
@@ -162,7 +156,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: [ ios-app ]
     # we only want to actually deploy from production
-    if: "github.event.workflow_run.head_branch == 'production' && !contains(github.event.head_commit.message, '[ci skip deploy]')"
+    if: "github.ref == 'refs/tags/production' && !contains(github.event.head_commit.message, '[ci skip deploy]')"
     steps:
       - uses: actions/checkout@v2
       - name: Download /dist

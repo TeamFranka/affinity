@@ -65,3 +65,50 @@ jobs:
         with:
           name: 'Test Error Recordings'
           path: tests/e2e/videos
+
+  prepare-deployment:
+    # onlyrun when we were successful
+    if: "github.ref == 'refs/heads/production' && !contains(github.event.head_commit.message, '[ci skip deploy]')"
+    runs-on: ubuntu-latest
+
+    environment: b4a_deploy
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Cache node modules
+        uses: actions/cache@v2
+        env:
+          cache-name: cache-node-modules
+        with:
+          path: './node_modules'
+          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-build-${{ env.cache-name }}-
+            ${{ runner.os }}-build-
+            ${{ runner.os }}-
+      - name: Install ionic
+        run: npm install @ionic/cli
+      - name: Install dependencies
+        run: npm install
+      - name: Build locally
+        run: |
+          npm run build -- --prod
+
+        env:
+          VUE_APP_DEFAULT_TEAM: ${{ secrets.VUE_APP_DEFAULT_TEAM}}
+          VUE_APP_PARSE_APP_ID: ${{ secrets.VUE_APP_PARSE_APP_ID}}
+          VUE_APP_PARSE_JS_KEY: ${{ secrets.VUE_APP_PARSE_JS_KEY}}
+          VUE_APP_PARSE_URL: ${{ secrets.VUE_APP_PARSE_URL}}
+          VUE_APP_PARSE_LIVE_URL: ${{ secrets.VUE_APP_PARSE_LIVE_URL }}
+      - name: Archive /dist
+        uses: actions/upload-artifact@v2
+        with:
+          name: dist-production
+          path: |
+            dist
+      - name: tag production
+        run: |
+          git tag --force production
+      - uses: actions-ecosystem/action-push-tag@v1
+        with:
+          tag: production
