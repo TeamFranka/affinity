@@ -110,5 +110,5 @@ jobs:
       - name: tag production
         run: |
           git tag --force production
-          git push --force origin production
+          git push --tags --force
 
