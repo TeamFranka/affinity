@@ -110,6 +110,5 @@ jobs:
       - name: tag production
         run: |
           git tag --force production
-      - uses: actions-ecosystem/action-push-tag@v1
-        with:
-          tag: production
+          git push --force origin production
+
