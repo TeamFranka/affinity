@@ -2,6 +2,7 @@ name: Deploy Parse
 on:
   workflow_run:
     workflows: [ "Test E2E" ]
+    branches: [ main, production ]
     types:
       - completed
 
