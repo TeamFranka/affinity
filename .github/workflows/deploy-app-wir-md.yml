@@ -109,6 +109,8 @@ jobs:
             ${{ runner.os }}-
       - name: Install capacitor
         run: npm install capacitor
+      - name: Update fastlane
+        run: gem install fastlane
       - name: Sync assets
         run: npx ionic capacitor sync --no-build --project ${{ env.CAP_PROJECT }} --verbose ios
       - name: "Update Build Version"
