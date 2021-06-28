@@ -6,14 +6,46 @@ global.app = app;
 global.Parse = Parse;
 
 const config = {
-  "liveQuery": {
-    "classNames": ["Conversation", "Message", "Activity", "FaqEntry", "Picture", "Bookmark", "Document", "Poll", "Link"]
+  // Basics
+  appName: "Affinity",
+  appId: "APPLICATION_ID",
+  masterKey: "MASTER_KEY",
+  publicServerURL: "http://localhost:1337/parse",
+
+  // Specific for Dev
+  databaseURI: "mongodb://mongo/dev",
+  cloud: "/parse-server/cloud/main.js",
+
+  startLiveQueryServer: true,
+  liveQuery: {
+    classNames: [
+      "Conversation",
+      "Message",
+      "Activity",
+       "FaqEntry",
+       "Picture",
+       "Bookmark",
+       "Document",
+       "Poll",
+       "Link"
+    ]
   },
-  "appId": "APPLICATION_ID",
-  "masterKey": "MASTER_KEY",
-  "databaseURI": "mongodb://mongo/dev",
-  "cloud": "/parse-server/cloud/main.js",
-  "startLiveQueryServer": true
+
+
+  // E-Mail Stuff
+  verifyUserEmails: true,
+  emailVerifyTokenValidityDuration: 48 * 60 * 60,
+
+  emailAdapter: {
+    module: "simple-parse-smtp-adapter",
+    options: {
+        fromAddress: 'your@affinity.wtf',
+        user: 'affinity@mailhog.example',
+        password: 'whatever',
+        host: 'mailhog',
+        port: 1025
+    }
+  }
 }
 if (process.env.VUE_APP_PARSE_URL) config.publicServerURL = process.env.VUE_APP_PARSE_URL;
 const api = new ParseServer(config);
