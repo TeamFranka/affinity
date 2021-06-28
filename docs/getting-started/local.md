@@ -52,6 +52,8 @@ To start the local development frontend, it should open a webbrowser to the UI. 
 
 This is a live-server: whenever you make changes to the source code, the server recompiles and updates the website _live_. Observe the terminal closely to learn about any errors in it. You can stop it by pressing `CTRL+C`.
 
+You can test & see sent emails with MailHog, which is accessible in your browser at `http://localhost:8025/`
+
 ## Re-/Starting the application backend
 
 If it isn't running yet, start the local backend
