@@ -9,24 +9,38 @@
         :value="searchValue"
         @ion-change="searchValue = $event.target.value"
     />
-    <ion-content scroll-x="false" scroll-y="false">
-
-        <ion-grid>
-            <ion-row>
-                <ion-col size="3" v-for="(item, index) in filteredPictures" :key="index">
-                  <ion-thumbnail :key="index">
-                    <img :src="item.file?.url" @click="viewPicture(item,index)"/>
-                  </ion-thumbnail>
-                </ion-col>
-            </ion-row>
-        </ion-grid>
-        <ion-infinite-scroll @ionInfinite="loadMore($event)">
-          <ion-infinite-scroll-content
-              loading-spinner="crescent"
-              :loading-text="$t('generic.state.loadingMore')"
+    <ion-content>
+      <div class="wrap">
+        <ion-spinner v-if="loading" name="dots"></ion-spinner>
+        <ion-grid v-else>
+          <ion-row>
+            <ion-col
+              size="4"
+              size-lg="2"
+              size-md="3"
+              v-for="(picture, index) in filteredPictures"
+              :key="index"
             >
-          </ion-infinite-scroll-content>
-        </ion-infinite-scroll>
+              <div class="square"></div>
+              <div :key="index" class="gallery-img-wrap">
+                <img
+                  data-cy="image"
+                  class="gallery-img"
+                  :src="picture.file?.url"
+                  @click="viewPicture(picture, index)"
+                />
+              </div>
+            </ion-col>
+          </ion-row>
+        </ion-grid>
+      </div>
+      <ion-infinite-scroll @ionInfinite="loadMore($event)">
+        <ion-infinite-scroll-content
+          loading-spinner="crescent"
+          :loading-text="$t('generic.state.loadingMore')"
+        >
+        </ion-infinite-scroll-content>
+      </ion-infinite-scroll>
     </ion-content>
   </ion-page>
 </template>
@@ -34,7 +48,8 @@
 <script lang="ts">
 import {
   IonContent, IonPage,modalController,IonSearchbar,
-  IonCol,IonRow,IonGrid,IonThumbnail,
+  IonCol,IonRow,IonGrid,
+  IonSpinner,
   IonInfiniteScroll,
   IonInfiniteScrollContent,
 } from '@ionic/vue';
@@ -53,6 +68,7 @@ export default defineComponent({
    setup() {
     const store = useStore();
     return {
+      loading: computed(() => store.getters["feed/loading"]),
       latestPosts: computed(() => store.getters["feed/entries"]),
       store,
       loadMore: (ev: CustomEvent) => {
@@ -102,17 +118,34 @@ export default defineComponent({
 
   components: {
     IonContent, IonPage,TeamFilterHeader,IonSearchbar,
-    IonCol,IonRow,IonGrid,IonThumbnail,
+    IonCol,IonRow,IonGrid,
+    IonSpinner,
     IonInfiniteScroll,
     IonInfiniteScrollContent,
   },
 });
 </script>
 <style scoped>
-.flip-in {
-  width: 100%;
-  height: 100%;
-  overflow: hidden;
-}
-
+  .flip-in {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+  }
+  .gallery-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 5px;
+  }
+  .gallery-img-wrap {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    margin: 5px;
+  }
+  .square {
+    margin-top: 100%;
+  }
 </style>
