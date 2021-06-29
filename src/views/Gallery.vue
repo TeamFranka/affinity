@@ -13,7 +13,7 @@
 
         <ion-grid>
             <ion-row>
-                <ion-col size="3" v-for="(item, index) in filterPicture" :key="index">
+                <ion-col size="3" v-for="(item, index) in filteredPictures" :key="index">
                   <ion-thumbnail :key="index">
                     <img :src="item.file?.url" @click="viewPicture(item,index)"/>
                   </ion-thumbnail>
@@ -34,85 +34,50 @@ import {
 import { defineComponent, computed } from 'vue';
 import { useStore } from '../stores/';
 import PictureView from '../components/picture-view.vue';
-import { Model } from '@/types/model';
-// import PictureViewModal from '../components/picture-view-modal.vue';
 import TeamFilterHeader from '../components/team-filter-header.vue';
 
 export default defineComponent({
   name: 'Gallery',
   data(){
-      const pictureArray: any[] = [];
       return{
           searchValue:'',
-          selectedTeam:0,
-          pictureArray,
-          teamValue:''
       }
   },
    setup() {
     const store = useStore();
-    const pictureArr: any[]=[];
-    // const elem = store.getters["news/latest"];
     return {
-      elem: computed(() => store.getters["news/latest"]),
+      latestPosts: computed(() => store.getters["feed/entries"]),
       store,
-      pictureArr
     }
   },
   computed:{
-      filterPicture(){
-        const pictureList: any[] =[];
-        this.elem.find((x: any)=>{
-        const item = this.store.getters.objectsMap[x];
-         item.objects.find((x: Model) =>{ if(x.className == "Picture"){
-           pictureList.push(item.objects[0])
-          }});
-         });
+    filteredPosts(): any[] {
+      const postsWithPictures = this.latestPosts.filter((post: any) =>
+        post.objects.some((object: any) => object.className === "Picture")
+      );
 
         if (this.searchValue.length!==0 && this.searchValue!=='All' && this.searchValue!=='setting') {
-            const v = this.searchValue;
-            const foundIcons: any[] = [];
-
-            pictureList.forEach((g: any) => {
-                if(g.team.name.toLowerCase().indexOf(v.toLowerCase()) > -1){
-                  foundIcons.push(g)
-                }
-            })
-            return foundIcons
+          return postsWithPictures.filter((post: any) =>
+            post.team.name.toLowerCase().includes(this.searchValue.toLowerCase())
+          );
         }
         else{
-            return pictureList;
+            return postsWithPictures
         }
     },
-  },
-
-  created(){
-    this.filterGallery()
+    filteredPictures(): any[] {
+      return this.filteredPosts.flatMap((post: any) => post.objects)
+    },
   },
   methods:{
-   filterGallery(){
-      //  const pictureList: any[] =[];
-      this.elem.find((x: any)=>{
-         const item = this.store.getters.objectsMap[x];
-         item.objects.find((x: Model) =>{ if(x.className == "Picture"){
-           this.pictureArray.push(item.objects[0])
-          }});
-         });
-   },
-    async viewPicture (item: any,selectedImg: any) {
-      const pictureList: any[] =[];
-      this.elem.find((n: any)=>{
-         const item = this.store.getters.objectsMap[n];
-         item.objects.find((x: Model) =>{ if(x.className == "Picture"){pictureList.push(n)}});
-      });
-
+    async viewPicture (item: any,index: number) {
       const popover = await modalController
         .create({
           component: PictureView,
            cssClass:'modalCss',
            componentProps: {
-            imgDetails : pictureList,
-            zIndex: selectedImg
+            imgDetails: this.filteredPosts,
+            zIndex: index,
           },
         });
       await popover.present();
