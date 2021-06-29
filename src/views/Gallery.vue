@@ -20,8 +20,13 @@
                 </ion-col>
             </ion-row>
         </ion-grid>
-    </ion-content>
-    <ion-content>
+        <ion-infinite-scroll @ionInfinite="loadMore($event)">
+          <ion-infinite-scroll-content
+              loading-spinner="crescent"
+              :loading-text="$t('generic.state.loadingMore')"
+            >
+          </ion-infinite-scroll-content>
+        </ion-infinite-scroll>
     </ion-content>
   </ion-page>
 </template>
@@ -29,7 +34,9 @@
 <script lang="ts">
 import {
   IonContent, IonPage,modalController,IonSearchbar,
-  IonCol,IonRow,IonGrid,IonThumbnail
+  IonCol,IonRow,IonGrid,IonThumbnail,
+  IonInfiniteScroll,
+  IonInfiniteScrollContent,
 } from '@ionic/vue';
 import { defineComponent, computed } from 'vue';
 import { useStore } from '../stores/';
@@ -48,6 +55,11 @@ export default defineComponent({
     return {
       latestPosts: computed(() => store.getters["feed/entries"]),
       store,
+      loadMore: (ev: CustomEvent) => {
+        store.dispatch("feed/loadMore").then(() => {
+          (ev.target as any).complete();
+        });
+      },
     }
   },
   computed:{
@@ -90,7 +102,9 @@ export default defineComponent({
 
   components: {
     IonContent, IonPage,TeamFilterHeader,IonSearchbar,
-    IonCol,IonRow,IonGrid,IonThumbnail
+    IonCol,IonRow,IonGrid,IonThumbnail,
+    IonInfiniteScroll,
+    IonInfiniteScrollContent,
   },
 });
 </script>
