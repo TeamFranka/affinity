@@ -56,7 +56,9 @@ export const Activity = {
     create: {
       requiresAuthentication: true,
     },
-    update: {},
+    update: {
+      requiresAuthentication: true,
+    },
     delete: {},
     addField: {},
     protectedFields: {},

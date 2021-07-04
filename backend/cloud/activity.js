@@ -16,9 +16,17 @@ Parse.Cloud.beforeSave(Activity, async (request) => {
     // making sure the user can see the team
     const team = await fetchModel(request, activity.get("team").toPointer());
     // then pull the other necessary fields
-    await team.fetchWithInclude(["members", "publishers", "agents", "mods", "leaders"], {useMasterKey: true})
-    const verb = activity.get("verb");
+    await team.fetchWithInclude(["members", "publishers", "agents", "mods", "leaders"], {useMasterKey: true});
 
+    if (request.original) {
+        // only admin may update for now
+        if (!await team.isMember("leaders", user.id)) {
+            throw "Only Team Admins can update posts at the moment"
+        }
+        return
+    }
+
+    const verb = activity.get("verb");
 
     if (verb == "post" && await team.canDo(user, "canPost")) {
         // is okay
