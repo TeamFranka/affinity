@@ -14,11 +14,11 @@
         <ion-label color="danger"><i18n-t keypath="activity.extras.adminActions" /></ion-label>
       </ion-item-divider>
       <ion-item data-cy-role="published" button @click="bookmark">
-        <ion-label><i18n-t keypath="activity.extras.changePublishedAt" /></ion-label>
+      <ion-icon :icon="publishedIcon" slot="start" />
         <ion-datetime
           display-format="DD.MMM, YYYY HH:mm"
           :value="activity.publishedAt.iso"
-          doneText="Save"
+          :doneText="$t('activity.extras.adminActions.savePublishedAt')"
           @ion-change="dateUpdated($event.detail.value)"
         />
       </ion-item>
@@ -39,6 +39,7 @@ import {
 import {
   checkmarkOutline as check,
   bookmark as bookmarkIcon,
+  sendOutline as publishedIcon,
 } from "ionicons/icons";
 
 import { useStore } from "@/stores/";
@@ -60,6 +61,7 @@ export default defineComponent({
       isLoggedIn: computed(() => store.getters["auth/isLoggedIn"]),
       store,
       bookmarkIcon,
+      publishedIcon,
       check,
     };
   },

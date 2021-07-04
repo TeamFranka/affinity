@@ -1,5 +1,7 @@
 {
   "activity.shared": "shared {since}",
+  "activity.extras.adminActions": "Admin",
+  "activity.extras.adminActions.savePublishedAt": "Save updated publication time",
   "activity.extras.bookmark": "Bookmark",
   "activity.extras.bookmarked": "Bookmarked",
   "activity.unknownType": "Unknown content, please update your app:",
