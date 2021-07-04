@@ -155,7 +155,7 @@ export default defineComponent({
       return "/t/" + this.team.slug;
     },
     since(): string {
-      return since(this.item.createdAt);
+      return since(this.item.publishedAt.iso);
     },
     text(): string {
       return this.item.text || "";

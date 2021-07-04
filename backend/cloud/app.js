@@ -65,7 +65,7 @@ app.get("/a/:id", makeWithOG(Activity, ["objects", "team"]));
 
 app.get("*", (req, res, next)=> {
    // fallback, try to deliver the host-specific index
-   if (req.path.match(/.*[request_password_reset|confirm_password_reset]$/i)) {
+   if (req.path.match(/.*(request_password_reset|confirm_password_reset|verify_email|choose_password)/i)) {
      console.log(`'${req.path}' is native, continuing`);
      next()
      return

@@ -196,7 +196,7 @@ export default defineComponent({
       return this.objs[this.activity.author.objectId];
     },
     since(): string {
-      return since(this.activity.createdAt);
+      return since(this.activity.publishedAt.iso);
     },
     text(): string {
       return this.activity.text || "";
