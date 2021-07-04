@@ -14,6 +14,12 @@ export const CommonFields = {
   },
 };
 
+export const Publishing = {
+  publishedAt: {
+    type: "Date",
+  },
+};
+
 export const ViewTracking = {
   viewsCount: {
     type: "Number",

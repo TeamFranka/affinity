@@ -1,10 +1,13 @@
-import { CommonFields, Interactable, ViewTracking, Meta } from "./common";
+import {
+  CommonFields, Interactable, ViewTracking, Publishing, Meta
+} from "./common";
 
 export const Activity = {
   className: "Activity",
   fields: Object.assign(
     {},
     CommonFields,
+    Publishing,
     {
       author: {
         type: "Pointer",
@@ -53,7 +56,9 @@ export const Activity = {
     create: {
       requiresAuthentication: true,
     },
-    update: {},
+    update: {
+      requiresAuthentication: true,
+    },
     delete: {},
     addField: {},
     protectedFields: {},
