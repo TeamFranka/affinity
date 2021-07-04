@@ -1,2 +1,8 @@
+# 2021-07-04
+* Publication dates, #264
+* Blank on confirmation E-Mail, #262
+
+# 2021-06-25
+* New Splash Icon
 * Improved usability, reduced clutter in tab
 * Fixed up App splash screen
