@@ -15,7 +15,7 @@ Parse.Cloud.beforeSave(Activity, async (request) => {
     const activity = request.object;
 
     if (!activity.get("publishedAt")) {
-        activity.set("publishedAt", activity.get("createdAt"))
+        activity.set("publishedAt", (new Date()))
     }
     // making sure the user can see the team
     const team = await fetchModel(request, activity.get("team").toPointer());
