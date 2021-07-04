@@ -1,7 +1,7 @@
 name: "Deploy Wir.md App"
 on:
   push:
-    tags:
+    branches:
       - "production"
 
   # Allows you to run this workflow manually from the Actions tab
