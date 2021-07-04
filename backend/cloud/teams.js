@@ -141,14 +141,16 @@ Parse.Cloud.beforeSave("Team", async (request) => {
   if (request.original) {
     // enforce some fields can't be changed
     const team = request.original;
-    if (!request.master && !await team.isMember("leaders", user.id)) {
-      throw "Only admins can edit team"
-    }
-    CANT_BE_CHANGED.forEach(key => {
-      if (request.original.get(key) !== request.object.get(key)) {
-        request.object.set(key, request.original.get(key));
+    if (!request.master) {
+      if (!await team.isMember("leaders", user.id)) {
+        throw "Only admins can edit team"
       }
-    });
+      CANT_BE_CHANGED.forEach(key => {
+        if (request.original.get(key) !== request.object.get(key)) {
+          request.object.set(key, request.original.get(key));
+        }
+      });
+    }
   } else {
     // not applying an update
     const query = new Parse.Query(Team);
