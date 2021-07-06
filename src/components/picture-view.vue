@@ -15,7 +15,8 @@
             v-for="(item,index) in imgDetails"        
             :itemId="item.objectId"
             :key="item"
-            :z-index="index"
+            :zIndex="imgDetails.length - index"
+            :shown="index >= selectedIndex"
         />
       </div>
     </ion-content>
@@ -43,7 +44,7 @@ export default defineComponent({
         type: Array,
         required: true
     },
-    zIndex:{
+    selectedIndex:{
       type: Number,
     }
   },
@@ -89,11 +90,11 @@ export default defineComponent({
         if (hidden.length == 0) {
           prev = null;
         } else {
-          prev = hidden[0];
+          prev = hidden[hidden.length - 1];
         }
 
         if (shown.length > 1) {
-          next = shown[shown.length -1];
+          next = shown[0];
         } else {
           next = null;
         }

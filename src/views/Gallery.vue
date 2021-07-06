@@ -104,8 +104,8 @@ export default defineComponent({
           component: PictureView,
            cssClass:'modalCss',
            componentProps: {
-            imgDetails: this.filteredPosts,
-            zIndex: index,
+            imgDetails: this.filteredPictures,
+            selectedIndex: index,
           },
         });
       await popover.present();

@@ -1,5 +1,5 @@
 <template>
- <div class="slidebox shown" :style="extraStyle" @dblclick="like" ref="slideBox">
+ <div class="slidebox" :class="shown ? 'shown' : 'hidden'" :style="extraStyle" @dblclick="like" ref="slideBox">
   <span class="like-icon" ref="liker">
     <ion-icon :icon="likeIcon"  />
   </span>
@@ -58,8 +58,13 @@ export default defineComponent({
       type: String,
       required: true
     },
-    indexValue:{
+    zIndex:{
       type: Number,
+      required: true
+    },
+    shown: {
+      type: Boolean,
+      required: true
     }
   },
   components: {
@@ -119,18 +124,15 @@ export default defineComponent({
     pointer(): Parse.Pointer {
       return this.item?.toPointer()
     },
-    image(): Model | null {
-        return this.item.objects.find((x: Model) => x.className == "Picture");
-    },
     imageUrl(): string | null {
-        return this.image?.file.url
+        return this.item.file.url
     },
     extraStyle(): object {
       const style =  {
         'background': "var(--ion-color-tertiary )"
       };
       const localStyle = {
-        'z-index': this.indexValue,
+        'z-index': this.zIndex,
       };
       return Object.assign({}, style, localStyle);
 
