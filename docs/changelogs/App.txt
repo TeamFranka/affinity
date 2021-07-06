@@ -1,3 +1,6 @@
+# 2021-07-06
+* Fix Image selecting on Android, #268
+
 # 2021-07-04
 * Publication dates, #264
 * Blank on confirmation E-Mail, #262
