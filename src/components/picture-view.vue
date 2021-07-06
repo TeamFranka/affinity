@@ -5,8 +5,7 @@
          <ion-header>
         <ion-toolbar>
             <ion-button class="closeIcon" color="dark" fill="clear" slot="start">
-              <ion-back-button @click="closeModal"/>
-              <ion-label>{{$t('pictureView.back')}}</ion-label>
+              <ion-back-button @click="closeModal" :text="$t('pictureView.back')"/>
             </ion-button>
         </ion-toolbar>
     </ion-header>
@@ -14,7 +13,7 @@
       <div class="flip-in" ref="box" v-if="imgDetails">
           <picture-view-modal 
             v-for="(item,index) in imgDetails"        
-            :itemId="item"
+            :itemId="item.objectId"
             :key="item"
             :z-index="index"
         />
@@ -26,7 +25,6 @@
 <script lang="ts">
 import { modalController,
 IonBackButton,
-IonLabel,
 IonToolbar,
 IonHeader,
 IonButton,
@@ -52,7 +50,6 @@ export default defineComponent({
   components: {
     PictureViewModal,
     IonBackButton,
-    IonLabel,
     IonToolbar,
     IonHeader,
     IonButton,
