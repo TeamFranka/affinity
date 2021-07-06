@@ -68,34 +68,37 @@ export default defineComponent({
    setup() {
     const store = useStore();
     return {
-      loading: computed(() => store.getters["feed/loading"]),
-      latestPosts: computed(() => store.getters["feed/entries"]),
+      loading: computed(() => store.getters["gallery/loading"]),
+      pictures: computed(() => store.getters["gallery/entries"]),
       store,
       loadMore: (ev: CustomEvent) => {
-        store.dispatch("feed/loadMore").then(() => {
+        store.dispatch("gallery/loadMore").then(() => {
           (ev.target as any).complete();
         });
+      },
+      refresh() {
+        store.dispatch("gallery/refresh");
       },
     }
   },
   computed:{
-    filteredPosts(): any[] {
-      const postsWithPictures = this.latestPosts.filter((post: any) =>
-        post.objects.some((object: any) => object.className === "Picture")
-      );
-
-        if (this.searchValue.length!==0 && this.searchValue!=='All' && this.searchValue!=='setting') {
-          return postsWithPictures.filter((post: any) =>
-            post.team.name.toLowerCase().includes(this.searchValue.toLowerCase())
-          );
-        }
-        else{
-            return postsWithPictures
-        }
-    },
     filteredPictures(): any[] {
-      return this.filteredPosts.flatMap((post: any) => post.objects)
+      if (
+        this.searchValue.length!==0 &&
+        this.searchValue!=='All' &&
+        this.searchValue!=='setting'
+      ) {
+        return this.pictures.filter((post: any) =>
+          post.team.name.toLowerCase().includes(this.searchValue.toLowerCase())
+        );
+      }
+      else{
+          return this.pictures
+      }
     },
+  },
+  mounted(){
+    this.refresh()
   },
   methods:{
     async viewPicture (item: any,index: number) {
