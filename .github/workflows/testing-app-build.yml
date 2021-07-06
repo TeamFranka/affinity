@@ -1,9 +1,9 @@
 name: Test App Build
 on:
   pull_request:
-    branches: [ main, production ]
+    branches: [ main ]
   push:
-    branches: [ main, production ]
+    branches: [ main ]
 
 env:
   CAP_PROJECT: affinity-app
