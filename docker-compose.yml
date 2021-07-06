@@ -16,13 +16,28 @@ services:
       - ./dist:/parse-server/cloud/public
       - ./backend/server.js:/parse-server/server.js
     ports:
-      - 1337:1337
+      - "1337:1337"
     links:
       - mongo
+      - mailhog
+
   dashboard:
     image: parseplatform/parse-dashboard
-    command: --dev --appId APPLICATION_ID --masterKey MASTER_KEY --serverURL "${VUE_APP_PARSE_URL}" --appName affinity
+    command: --dev --appId APPLICATION_ID --masterKey MASTER_KEY  --appName affinity
     ports:
-      - 4040:4040
+      - "4040:4040"
     links:
       - parse
+
+  mailhog:
+    image: mailhog/mailhog:latest
+    ports:
+      - "8025:8025"
+      - "1025:1025"
+    environment:
+      MH_STORAGE: maildir
+      MH_MAILDIR_PATH: /tmp
+    volumes:
+      - maildir:/tmp
+volumes:
+  maildir:

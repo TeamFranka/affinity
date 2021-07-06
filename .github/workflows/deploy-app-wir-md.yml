@@ -1,11 +1,11 @@
 name: "Deploy Wir.md App"
 on:
-  push:
-    tags:
-      - "production"
+  workflow_run:
+    workflows: [ "Test E2E" ]
+    branches: [ main, production ]
+    types:
+      - completed
 
-  # Allows you to run this workflow manually from the Actions tab
-  workflow_dispatch:
 
 env:
   INDEX_HTML: app.wir.md.html
@@ -20,6 +20,7 @@ jobs:
 
   release-build:
     runs-on: ubuntu-latest
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
     steps:
       - name: Download /dist
         uses: dawidd6/action-download-artifact@v2

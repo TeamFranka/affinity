@@ -5,6 +5,7 @@ export const olderThanDays = (dt: any, days: number) =>
 export const since = (dt: any) => dayjs(dt).fromNow();
 export const until = (dt: any) => dayjs(dt).fromNow();
 export const hasPassed = (dt: any) => dayjs(dt) < dayjs();
+export const makeJsDate = (dt:string) => dayjs(dt).toDate();
 export const smartTimestamp = (dt: any) => {
   const now = dayjs();
   const then = dayjs(dt);

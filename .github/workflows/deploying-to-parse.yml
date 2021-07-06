@@ -1,11 +1,10 @@
 name: Deploy Parse
 on:
-  push:
-    tags:
-      - "production"
-
-  # Allows you to run this workflow manually from the Actions tab
-  workflow_dispatch:
+  workflow_run:
+    workflows: [ "Test E2E" ]
+    branches: [ main, production ]
+    types:
+      - completed
 
 jobs:
 
@@ -13,7 +12,7 @@ jobs:
     environment: b4a_deploy
     runs-on: ubuntu-latest
     # we only want to actually deploy from production
-    if: "github.ref == 'refs/tags/production' && !contains(github.event.head_commit.message, '[ci skip deploy]')"
+    if: "github.event.workflow_run.conclusion == 'success' && github.ref == 'refs/tags/production' && !contains(github.event.head_commit.message, '[ci skip deploy]')"
     steps:
       - uses: actions/checkout@v2
       - name: Install Back4Appp

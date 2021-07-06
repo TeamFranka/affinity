@@ -3,6 +3,20 @@ describe("Sign up", () => {
   it("Applies for membership of default team", () => {
     cy.signUpAsNewUser({ handleWelcome: false });
 
+    // check email verification process
+    cy.mhGetAllMails().then((emails) => {
+      const latestEmail = emails.sort(
+        (a, b) => new Date(b.Created) - new Date(a.Created)
+      )[0]
+      const link = latestEmail.Content.Body.replace("?=", "?").replace(/=3D/g, "=") // there's some weird encoding going on
+
+      // verify email
+      cy.request(link)
+        .its('body')
+        .should('include', 'Successfully verified your email!')
+    })
+
+
     // check for welcome page
     // check if first slide is visible
     cy.get(".swiper-wrapper").should("exist").should('have.attr', 'style').should('contain', 'transform: translate3d(0px, 0px, 0px)');

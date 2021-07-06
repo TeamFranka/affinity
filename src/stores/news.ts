@@ -12,7 +12,7 @@ export const News = genFeedState({
             .equalTo("verb", Verb.Announce)
             .include(MODEL_KEYS)
             .containedIn("team", teams)
-            .descending("createdAt"),
+            .descending("publishedAt"),
   ignoreTeamSelection: true,
   keys: MODEL_KEYS
 });

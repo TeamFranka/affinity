@@ -13,7 +13,10 @@ export const takePicture = async () => {
     popCypressEntry("nextImage") ||
     (await Camera.getPhoto({
       quality: 90,
-      allowEditing: true,
+      // FIXME it appear this is broken on various android devices
+      //   https://github.com/ionic-team/capacitor/issues/2994
+      //   https://github.com/ionic-team/capacitor-plugins/issues/307
+      // allowEditing: true,
       resultType: CameraResultType.DataUrl,
     }));
   return image as Photo;

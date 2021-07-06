@@ -1,4 +1,5 @@
 import "cypress-localstorage-commands";
+import 'cypress-mailhog'
 
 const LOGINS = {};
 

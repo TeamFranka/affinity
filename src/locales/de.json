@@ -1,5 +1,7 @@
 {
   "activity.shared": "hat {since} geteilt",
+  "activity.extras.adminActions": "Admin",
+  "activity.extras.adminActions.savePublishedAt": "Veröffentlichkeitszeit speichern",
   "activity.extras.bookmark": "Lesezeichen",
   "activity.extras.bookmarked": "Lesezeichen gesetzt",
   "activity.unknownType": "Unbekannter Inhalt, bitte lade Dir die neue Version der App herunter:",
@@ -87,6 +89,9 @@
   "generic.state.empty": "Nichts gefunden",
   "generic.state.loadingMore": "weitere werden geladen",
   "generic.underConstruction": "Im Aufbau",
+  "inbox.notifications.liked": "gefällt",
+  "inbox.notifications.commented": "hat kommentiert",
+  "inbox.notifications.reacted": "hat reagiert",
   "inbox.state.noConversation": "Keine Unterhaltungen",
   "inbox.state.noNotifications": "Keine Benachrichtigungen",
   "inbox.tabs.conversation": "Unterhaltungen",
@@ -227,5 +232,7 @@
   "teamFilter.button.save": "Speichern",
   "teamFilter.showTeamName": "Teamnamen anzeigen",
   "teamFilter.title": "Teamfilter bearbeiten",
+  "user.modal.button.save": "Speichern",
+  "user.modal.editName.title": "Name ändern",
   "": ""
 }

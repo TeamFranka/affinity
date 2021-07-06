@@ -19,7 +19,7 @@ export const news = genFeedState({
   baseQueryFn: () =>new Parse.Query(Activity)
             .equalTo("verb", Verb.Announce)
             .include(MODEL_KEYS)
-            .descending("createdAt"),
+            .descending("publishedAt"),
   keys: MODEL_KEYS,
 });
 
@@ -29,7 +29,7 @@ export const feed = genFeedState({
   baseQueryFn: () => new Parse.Query(Activity)
             .equalTo("verb", Verb.Post) // the single team feed doesn't contains announcements
             .include(MODEL_KEYS)
-            .descending("createdAt"),
+            .descending("publishedAt"),
   keys: MODEL_KEYS,
 });
 

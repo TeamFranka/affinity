@@ -1,5 +1,7 @@
 {
   "activity.shared": "shared {since}",
+  "activity.extras.adminActions": "Admin",
+  "activity.extras.adminActions.savePublishedAt": "Save updated publication time",
   "activity.extras.bookmark": "Bookmark",
   "activity.extras.bookmarked": "Bookmarked",
   "activity.unknownType": "Unknown content, please update your app:",
@@ -87,6 +89,9 @@
   "generic.state.empty": "Nothing found",
   "generic.state.loadingMore": "loading more",
   "generic.underConstruction": "Under construction",
+  "inbox.notifications.liked": "liked",
+  "inbox.notifications.commented": "commented",
+  "inbox.notifications.reacted": "reacted",
   "inbox.state.noConversation": "No Conversations yet",
   "inbox.state.noNotifications": "No Notifications yet",
   "inbox.tabs.conversation": "Conversations",
@@ -226,5 +231,7 @@
   "teamFilter.button.save": "Save",
   "teamFilter.showTeamName": "Show Team Names",
   "teamFilter.title": "Edit Team Filter",
+  "user.modal.button.save": "Save",
+  "user.modal.editName.title": "Change Your Name",
   "": ""
 }
