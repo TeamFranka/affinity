@@ -1,14 +1,7 @@
 <template>
   <ion-page>
-    <team-filter-header  @team-selected="searchValue = $event"/>
-    <ion-searchbar
-        show-cancel-button="focus"
-        :placeholder="$t('gallery.search')"
-        inputmode="search"
-        enterkeyhint="search"
-        :value="searchValue"
-        @ion-change="searchValue = $event.target.value"
-    />
+    <team-filter-header  @team-selected="selectTeam($event)"/>
+
     <ion-content>
       <div class="wrap">
         <ion-spinner v-if="loading" name="dots"></ion-spinner>
@@ -18,7 +11,7 @@
               size="4"
               size-lg="2"
               size-md="3"
-              v-for="(picture, index) in filteredPictures"
+              v-for="(picture, index) in pictures"
               :key="index"
             >
               <div class="square"></div>
@@ -47,7 +40,7 @@
 
 <script lang="ts">
 import {
-  IonContent, IonPage,modalController,IonSearchbar,
+  IonContent, IonPage,modalController,
   IonCol,IonRow,IonGrid,
   IonSpinner,
   IonInfiniteScroll,
@@ -60,11 +53,6 @@ import TeamFilterHeader from '../components/team-filter-header.vue';
 
 export default defineComponent({
   name: 'Gallery',
-  data(){
-      return{
-          searchValue:'',
-      }
-  },
    setup() {
     const store = useStore();
     return {
@@ -79,23 +67,10 @@ export default defineComponent({
       refresh() {
         store.dispatch("gallery/refresh");
       },
+      selectTeam: async (name: string) => {
+        await store.dispatch("gallery/selectTeam", name === "ALL" ? null : name);
+      },
     }
-  },
-  computed:{
-    filteredPictures(): any[] {
-      if (
-        this.searchValue.length!==0 &&
-        this.searchValue!=='All' &&
-        this.searchValue!=='setting'
-      ) {
-        return this.pictures.filter((post: any) =>
-          post.team.name.toLowerCase().includes(this.searchValue.toLowerCase())
-        );
-      }
-      else{
-          return this.pictures
-      }
-    },
   },
   mounted(){
     this.refresh()
@@ -107,7 +82,7 @@ export default defineComponent({
           component: PictureView,
            cssClass:'modalCss',
            componentProps: {
-            imgDetails: this.filteredPictures,
+            imgDetails: this.pictures,
             selectedIndex: index,
           },
         });
@@ -120,7 +95,7 @@ export default defineComponent({
   },
 
   components: {
-    IonContent, IonPage,TeamFilterHeader,IonSearchbar,
+    IonContent, IonPage,TeamFilterHeader,
     IonCol,IonRow,IonGrid,
     IonSpinner,
     IonInfiniteScroll,
