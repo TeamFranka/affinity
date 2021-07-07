@@ -1,4 +1,4 @@
-name: Tag for production
+name: Tag for Production
 on:
   workflow_run:
     workflows: [ "Test E2E" ]

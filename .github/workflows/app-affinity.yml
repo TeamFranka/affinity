@@ -1,4 +1,4 @@
-name: "Deploy Wir.md App"
+name: "Build (and deploy) Affinity App"
 on:
   push:
     branches: [ main ]
@@ -7,13 +7,13 @@ on:
     branches: [ main ]
 
 env:
-  INDEX_HTML: app.wir.md.html
-  CAP_PROJECT: wir-md
-  CAP_PATH: wir-md
-  APPCENTER_PROJECT_ANDROID: TeamFranka/Wir.md-Android
-  APPCENTER_PROJECT_IOS: TeamFranka/Wir.md-iOS
+  INDEX_HTML: community.affinity.wtf.html
+  CAP_PROJECT: affinity-app
+  CAP_PATH: affinity
+  APPCENTER_PROJECT_ANDROID: TeamFranka/Affinity-Live
+  APPCENTER_PROJECT_IOS: TeamFranka/Affinity-Live-iOS
 
-
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
 
   release-build:
