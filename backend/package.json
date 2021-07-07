@@ -3,6 +3,7 @@
   "version": "0.0.1",
   "private": true,
   "dependencies": {
+    "mobile-detect": "^1.4.5",
     "simple-parse-smtp-adapter": "^1.0.9"
   }
 }

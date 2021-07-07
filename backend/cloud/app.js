@@ -4,6 +4,8 @@ let express = require("express");
 let path = require("path");
 let { opengraphImage } = require("./services/imaging.js");
 let { Activity, Team, User } = require("./models");
+const config = require('../vue.config.js')
+const MobileDetect = require('mobile-detect')
 
 const PUBLIC_PATH = path.join(__dirname, 'public');
 const OG_REPLACE_KEY = '<base href="/">';
@@ -62,6 +64,27 @@ app.get("/t/:slug", async function inner(req, res, next) {
 });
 app.get("/u/:id", makeWithOG(User, []));
 app.get("/a/:id", makeWithOG(Activity, ["objects", "team"]));
+
+app.get("/app-redir", (req, res) => {
+  const hostname = req.hostname
+  const pageConfig = Object.values(config.pages).find((page) =>
+    page.templateParameters.settings.PARSE_URL.includes(hostname)
+  )
+  const pageSettings = pageConfig.templateParameters.settings
+
+  const md = new MobileDetect(req.headers['user-agent']);
+  switch (md.os()) {
+    case "AndroidOS":
+      res.redirect(pageSettings.ANDROID_INSTALL_URL)
+      break
+    case "iOS":
+      res.redirect(pageSettings.IOS_INSTALL_URL)
+      break
+    default:
+      res.redirect("/")
+      break
+  }
+})
 
 app.get("*", (req, res, next)=> {
    // fallback, try to deliver the host-specific index

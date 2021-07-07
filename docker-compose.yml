@@ -15,6 +15,7 @@ services:
       - ./backend/cloud:/parse-server/cloud
       - ./dist:/parse-server/cloud/public
       - ./backend/server.js:/parse-server/server.js
+      - ./vue.config.js:/parse-server/vue.config.js
     ports:
       - "1337:1337"
     links:
