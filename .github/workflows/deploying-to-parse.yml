@@ -1,18 +1,54 @@
 name: Deploy Parse
 on:
-  workflow_run:
-    workflows: [ "Test E2E" ]
-    branches: [ main, production ]
-    types:
-      - completed
+  push:
+    tags:
+      - production
 
 jobs:
+
+  dist-production:
+    # only run when we were successful
+    runs-on: ubuntu-latest
+    environment: b4a_deploy
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Cache node modules
+        uses: actions/cache@v2
+        env:
+          cache-name: cache-node-modules
+        with:
+          path: './node_modules'
+          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-build-${{ env.cache-name }}-
+            ${{ runner.os }}-build-
+            ${{ runner.os }}-
+      - name: Install ionic
+        run: npm install @ionic/cli
+      - name: Install dependencies
+        run: npm install
+      - name: Build locally
+        run: |
+          npm run build -- --prod
+
+        env:
+          VUE_APP_DEFAULT_TEAM: ${{ secrets.VUE_APP_DEFAULT_TEAM}}
+          VUE_APP_PARSE_APP_ID: ${{ secrets.VUE_APP_PARSE_APP_ID}}
+          VUE_APP_PARSE_JS_KEY: ${{ secrets.VUE_APP_PARSE_JS_KEY}}
+          VUE_APP_PARSE_URL: ${{ secrets.VUE_APP_PARSE_URL}}
+          VUE_APP_PARSE_LIVE_URL: ${{ secrets.VUE_APP_PARSE_LIVE_URL }}
+      - name: Archive /dist
+        uses: actions/upload-artifact@v2
+        with:
+          name: dist-production
+          path: |
+            dist
 
   deploy-parse:
     environment: b4a_deploy
     runs-on: ubuntu-latest
-    # we only want to actually deploy from production
-    if: "github.event.workflow_run.conclusion == 'success' && github.ref == 'refs/tags/production' && !contains(github.event.head_commit.message, '[ci skip deploy]')"
+    needs: [ "prepare-deployment" ]
     steps:
       - uses: actions/checkout@v2
       - name: Install Back4Appp
@@ -35,9 +71,8 @@ jobs:
       - name: Install dependencies
         run: npm install
       - name: Download /dist
-        uses: dawidd6/action-download-artifact@v2
+        uses: actions/download-artifact@v2
         with:
-          workflow: testing.yml
           name: dist-production
           path: backend/public
       - name: Deploy db
