@@ -12,6 +12,7 @@ env:
   CAP_PATH: affinity
   APPCENTER_PROJECT_ANDROID: TeamFranka/Affinity-Live
   APPCENTER_PROJECT_IOS: TeamFranka/Affinity-Live-iOS
+  VERSION_PRE: 68
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
@@ -83,7 +84,7 @@ jobs:
         run: npx ionic capacitor sync --no-build --project ${{ env.CAP_PROJECT }} --verbose android
       - name: Build Android App
         run: |
-          export BUILD_NUMBER=$GITHUB_RUN_NUMBER
+          export BUILD_NUMBER=$(($GITHUB_RUN_NUMBER + $VERSION_PRE))
           cd apps/${{ env.CAP_PATH }}/android
           ./gradlew bundleRelease
       - uses: r0adkll/sign-android-release@v1
