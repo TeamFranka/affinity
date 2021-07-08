@@ -24,7 +24,7 @@
           />
           <template v-else>
             <ion-icon :icon="entry.icon" />
-              <ion-label class="ion-margin-start" v-if="showName">{{entry.title}}</ion-label>
+              <ion-label class="ion-margin-auto" v-if="showName">{{entry.title}}</ion-label>
           </template>
         </ion-segment-button>
 

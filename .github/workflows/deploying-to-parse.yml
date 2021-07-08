@@ -48,7 +48,7 @@ jobs:
   deploy-parse:
     environment: b4a_deploy
     runs-on: ubuntu-latest
-    needs: [ "prepare-deployment" ]
+    needs: [ "dist-production" ]
     steps:
       - uses: actions/checkout@v2
       - name: Install Back4Appp

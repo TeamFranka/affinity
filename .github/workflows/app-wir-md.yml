@@ -1,4 +1,4 @@
-name: "Deploy Wir.md App"
+name: "Build (and deploy) Wir.md App"
 on:
   push:
     branches: [ main ]
