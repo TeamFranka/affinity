@@ -51,7 +51,7 @@
           </div>
           <ion-item
             button
-            details="false"
+            detail="false"
             v-for="n in notifications"
             :key="n.objectId"
             lines="none"
