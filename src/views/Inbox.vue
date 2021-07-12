@@ -57,19 +57,9 @@
             lines="none"
           >
             <avatar size="2em" with-name :profile="n.by" />
-            <i18n-t
-              v-if="n.verb == 'react'"
-              keypath="inbox.notifications.reacted"
-              tag="div"
-              class="ion-padding-start"
-            >
-              <template slot:reaction>{{
-                (n.specifics || {})["reaction"]
-              }}</template>
-              <template slot:objectLink>
-                <object-link mine :object="n.objects[0]" />
-              </template>
-            </i18n-t>
+            <div v-if="n.verb == 'react'" tag="div" class="ion-padding-start">
+              {{ (n.specifics || {})["reaction"] }}
+            </div>
             <i18n-t
               tag="div"
               keypath="inbox.notifications.liked"
@@ -92,6 +82,10 @@
             </i18n-t>
             <div v-else>
               {{ n }}
+            </div>
+            <div>
+              &nbsp;
+              {{ $t(`inbox.notifications.reference.${n.objects[0].verb}`) }}
             </div>
             <span class="meta" slot="start">{{
               smartTimestamp(n.createdAt)
