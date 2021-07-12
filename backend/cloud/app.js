@@ -67,9 +67,7 @@ app.get("/a/:id", makeWithOG(Activity, ["objects", "team"]));
 
 app.get("/app-redir", (req, res) => {
   const hostname = req.hostname
-  const pageConfig = Object.values(config.pages).find((page) =>
-    page.templateParameters.settings.PARSE_URL.includes(hostname)
-  )
+  const pageConfig = config.pages[hostname]
   const pageSettings = pageConfig.templateParameters.settings
 
   const md = new MobileDetect(req.headers['user-agent']);

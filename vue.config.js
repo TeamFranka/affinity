@@ -29,7 +29,7 @@ module.exports = {
         })
       }
     }),
-    "affinity": Object.assign({}, PAGE_DEFAULTS, {
+    "community.affinity.wtf": Object.assign({}, PAGE_DEFAULTS, {
       filename: "community.affinity.wtf.html",
       templateParameters: {
         title: "Affinity Community Organising",
@@ -40,7 +40,7 @@ module.exports = {
         })
       }
     }),
-    "wir-md": Object.assign({}, PAGE_DEFAULTS, {
+    "app.wir.md": Object.assign({}, PAGE_DEFAULTS, {
       filename: "app.wir.md.html",
       favicon: path.join(ROOT,"public/assets/favicon-wir-md.png"),
       templateParameters: {
