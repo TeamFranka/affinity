@@ -16,9 +16,13 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
-        with:
-          token: ${{ secrets.PTA}}
+
       - name: tag production
         run: |
           git tag --force production
-          git push --tags --force
+      - name: Push tag
+        uses: ad-m/github-push-action@master
+        with:
+          github_token: ${{ secrets.PTA }}
+          force: true
+          tags: true
