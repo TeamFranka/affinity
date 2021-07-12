@@ -11,7 +11,14 @@
               <ion-label>{{ $t("inbox.tabs.conversation") }}</ion-label>
             </ion-segment-button>
             <ion-segment-button value="notifications">
-              <ion-label>{{ $t("inbox.tabs.notifications") }}</ion-label>
+              <ion-label
+                >{{ $t("inbox.tabs.notifications")
+                }}{{
+                  unreadNotifications.length > 0
+                    ? `&nbsp;(${unreadNotifications.length})`
+                    : ""
+                }}</ion-label
+              >
             </ion-segment-button>
           </ion-segment>
         </ion-list-header>
@@ -55,6 +62,7 @@
             v-for="n in notifications"
             :key="n.objectId"
             lines="none"
+            v-bind:class="{ unread: !n.seenAt }"
           >
             <avatar size="2em" with-name :profile="n.by" />
             <div v-if="n.verb == 'react'" tag="div" class="ion-padding-start">
@@ -87,7 +95,7 @@
               &nbsp;
               {{ $t(`inbox.notifications.reference.${n.objects[0].verb}`) }}
             </div>
-            <span class="meta" slot="start">{{
+            <span class="meta" slot="end">{{
               smartTimestamp(n.createdAt)
             }}</span>
           </ion-item>
@@ -146,6 +154,13 @@ export default defineComponent({
       mail: mailOutline,
     };
   },
+  computed: {
+    unreadNotifications(): Array<object> {
+      return this.notifications.filter(
+        (notification: any) => !notification.seenAt
+      );
+    },
+  },
   methods: {
     selectConversation(conversationId: string) {
       this.$router.push({ name: "Conversation", params: { conversationId } });
@@ -178,5 +193,9 @@ export default defineComponent({
 .meta {
   font-size: 0.8em;
   color: var(--ion-color-medium);
+}
+
+.unread {
+  --background: red; /* TODO: actual highlight color */
 }
 </style>
