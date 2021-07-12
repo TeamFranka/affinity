@@ -4,7 +4,7 @@ let express = require("express");
 let path = require("path");
 let { opengraphImage } = require("./services/imaging.js");
 let { Activity, Team, User } = require("./models");
-const config = require('../vue.config.js')
+const config = require('./config.js')
 const MobileDetect = require('mobile-detect')
 
 const PUBLIC_PATH = path.join(__dirname, 'public');
