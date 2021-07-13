@@ -54,7 +54,7 @@
             <ion-note>{{ $t("inbox.state.noNotifications") }}</ion-note>
           </div>
           <ion-item
-            button
+            :href="linkTo(n)"
             detail="false"
             v-for="n in notifications"
             :key="n.objectId"
@@ -62,35 +62,15 @@
             v-bind:class="{ unread: unreadNotifications.includes(n) }"
           >
             <avatar size="2em" with-name :profile="n.by" />
-            <div v-if="n.verb == 'react'" tag="div" class="ion-padding-start">
-              {{ (n.specifics || {})["reaction"] }}
+            <div v-if="n.verb == 'react'" class="ion-padding-start">
+              {{ $t("inbox.notifications.reacted") }}
+              &nbsp;{{ (n.specifics || {})["reaction"] }}
             </div>
-            <i18n-t
-              tag="div"
-              keypath="inbox.notifications.liked"
-              v-else-if="n.verb == 'like'"
-              class="ion-padding-start"
-            >
-              <template slot:objectLink>
-                <object-link mine :object="n.objects[0]" />
-              </template>
-            </i18n-t>
-            <i18n-t
-              tag="div"
-              keypath="inbox.notifications.commented"
-              v-else-if="n.verb == 'comment'"
-              class="ion-padding-start"
-            >
-              <template slot:objectLink>
-                <object-link mine :object="n.objects[0]" />
-              </template>
-            </i18n-t>
-            <div v-else>
-              {{ n }}
+            <div v-else-if="n.verb == 'like'" class="ion-padding-start">
+              {{ $t("inbox.notifications.liked") }}
             </div>
-            <div>
-              &nbsp;
-              {{ $t(`inbox.notifications.reference.${n.objects[0].verb}`) }}
+            <div v-else-if="n.verb == 'comment'" class="ion-padding-start">
+              {{ $t("inbox.notifications.commented") }}
             </div>
             <span class="meta" slot="end">{{
               smartTimestamp(n.createdAt)
@@ -124,7 +104,6 @@ import {
 import { defineComponent, computed } from "vue";
 import ConversationEntry from "../components/conversation-entry.vue";
 import Avatar from "../components/avatar.vue";
-import ObjectLink from "../components/object-link.vue";
 import { useStore } from "../stores/";
 import { smartTimestamp } from "../utils/time";
 
@@ -167,6 +146,14 @@ export default defineComponent({
         this.store.dispatch("inbox/markNotificationsRead");
       }
     },
+    linkTo(notification: any) {
+      const id = notification.objects
+        .map((object: any) =>
+          object.className === "Comment" ? object.on.objectId : object.objectId
+        )
+        .find(Boolean);
+      return `/a/${id}`;
+    },
   },
   mounted() {
     if (!this.loading && this.convos.length === 0) {
@@ -180,7 +167,6 @@ export default defineComponent({
     IonNote,
     ConversationEntry,
     Avatar,
-    ObjectLink,
     IonSegment,
     IonSegmentButton,
     IonLabel,
