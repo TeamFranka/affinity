@@ -59,7 +59,7 @@
             v-for="n in notifications"
             :key="n.objectId"
             lines="none"
-            v-bind:class="{ unread: !n.seenAt }"
+            v-bind:class="{ unread: unreadNotifications.includes(n) }"
           >
             <avatar size="2em" with-name :profile="n.by" />
             <div v-if="n.verb == 'react'" tag="div" class="ion-padding-start">
@@ -145,19 +145,15 @@ export default defineComponent({
       },
       convos: computed(() => store.getters["inbox/latest"]),
       notifications: computed(() => store.getters["inbox/notifications"]),
+      unreadNotifications: computed(
+        () => store.getters["inbox/unreadNotifications"]
+      ),
       chatbubbles,
       logoWhatsapp,
       isNew: folderOpenOutline,
       mail: mailOutline,
       store: store,
     };
-  },
-  computed: {
-    unreadNotifications(): Array<object> {
-      return this.notifications.filter(
-        (notification: any) => !notification.seenAt
-      );
-    },
   },
   methods: {
     selectConversation(conversationId: string) {

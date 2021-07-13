@@ -25,7 +25,7 @@
               <notification-dot v-if="false" color="warning" slot="start" />
               <ion-icon size="large" :icon="chatIcon" />
               <notification-dot
-                v-if="hasUnreadNotifications"
+                v-if="unreadNotifications.length > 0"
                 color="danger"
                 slot="end"
               />
@@ -133,7 +133,9 @@ export default defineComponent({
       newChatIcon: chatbubbleEllipsesOutline,
       meIcon: personCircleOutline,
       settingsIcon,
-      notifications: computed(() => store.getters["inbox/notifications"]),
+      unreadNotifications: computed(
+        () => store.getters["inbox/unreadNotifications"]
+      ),
     };
   },
   components: {
@@ -144,13 +146,6 @@ export default defineComponent({
     IonCol,
     NotificationDot,
     Avatar,
-  },
-  computed: {
-    hasUnreadNotifications(): boolean {
-      return this.notifications.some(
-        (notification: any) => !notification.seenAt
-      );
-    },
   },
   methods: {
     async openUserPopover(ev: Event) {
