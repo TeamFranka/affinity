@@ -91,7 +91,7 @@
   "generic.underConstruction": "Under construction",
   "inbox.notifications.liked": "liked",
   "inbox.notifications.commented": "commented",
-  "inbox.notifications.reacted": "reacted with",
+  "inbox.notifications.reacted": "reacted",
   "inbox.state.noConversation": "No Conversations yet",
   "inbox.state.noNotifications": "No Notifications yet",
   "inbox.tabs.conversation": "Conversations",
