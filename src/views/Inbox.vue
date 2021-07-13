@@ -3,10 +3,7 @@
     <ion-content>
       <ion-list>
         <ion-list-header>
-          <ion-segment
-            @ion-change="selectedSegment = $event.target.value"
-            :value="selectedSegment"
-          >
+          <ion-segment @ion-change="switchTabs" :value="selectedSegment">
             <ion-segment-button value="convos">
               <ion-label>{{ $t("inbox.tabs.conversation") }}</ion-label>
             </ion-segment-button>
@@ -152,6 +149,7 @@ export default defineComponent({
       logoWhatsapp,
       isNew: folderOpenOutline,
       mail: mailOutline,
+      store: store,
     };
   },
   computed: {
@@ -164,6 +162,14 @@ export default defineComponent({
   methods: {
     selectConversation(conversationId: string) {
       this.$router.push({ name: "Conversation", params: { conversationId } });
+    },
+    switchTabs(event: any) {
+      const selectedSegment = event.target.value;
+      this.selectedSegment = selectedSegment;
+
+      if (selectedSegment === "notifications") {
+        this.store.dispatch("inbox/markNotificationsRead");
+      }
     },
   },
   mounted() {

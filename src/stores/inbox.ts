@@ -32,6 +32,15 @@ export const Inbox = {
 
       return state.notifications.map((id) => objs[id]);
     },
+    unreadNotifications(
+      state: InboxT,
+      getters: any,
+      rootState: any,
+      rootGetters: any
+    ) {
+      const notifications = rootGetters["inbox/notifications"]
+      return notifications.filter((notification: any) => !notification.seenAt)
+    },
     messages(state: InboxT) {
       return state.messages;
     },
@@ -170,5 +179,16 @@ export const Inbox = {
       );
       context.commit("setConvos", feed);
     },
+    async markNotificationsRead(context: any){
+      const unreadNotifications = context.rootGetters["inbox/unreadNotifications"]
+      unreadNotifications.forEach(async (notification: any) => {
+        const query = new Parse.Query(Notification).equalTo("objectId", notification.objectId)
+        const object = await query.first()
+        if (object) {
+          object.set("seenAt", new Date())
+          object.save()
+        }
+      })
+    }
   },
 };
