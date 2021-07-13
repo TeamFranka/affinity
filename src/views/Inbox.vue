@@ -198,6 +198,6 @@ export default defineComponent({
 }
 
 .unread {
-  --background: red; /* TODO: actual highlight color */
+  --background: var(--ion-color-primary);
 }
 </style>
