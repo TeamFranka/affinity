@@ -68,15 +68,18 @@ app.get("/a/:id", makeWithOG(Activity, ["objects", "team"]));
 app.get("/app-redir", (req, res) => {
   const hostname = req.hostname
   const pageConfig = config.pages[hostname]
-  const pageSettings = pageConfig.templateParameters.settings
+  if (!pageConfig) {
+    res.redirect("/");
+    return
+  }
 
   const md = new MobileDetect(req.headers['user-agent']);
   switch (md.os()) {
     case "AndroidOS":
-      res.redirect(pageSettings.ANDROID_INSTALL_URL)
+      res.redirect(pageConfig.ANDROID_INSTALL_URL)
       break
     case "iOS":
-      res.redirect(pageSettings.IOS_INSTALL_URL)
+      res.redirect(pageConfig.IOS_INSTALL_URL)
       break
     default:
       res.redirect("/")
@@ -86,37 +89,32 @@ app.get("/app-redir", (req, res) => {
 
 app.get("*", (req, res, next)=> {
    // fallback, try to deliver the host-specific index
-   if (req.path.match(/.*(request_password_reset|confirm_password_reset|verify_email|choose_password)/i)) {
+  if (req.path.match(/.*(request_password_reset|confirm_password_reset|verify_email|choose_password)/i)) {
      console.log(`'${req.path}' is native, continuing`);
      next()
      return
-   }
-   const file = path.join(PUBLIC_PATH, `${req.hostname}.html`);
+  }
 
-   function sendInjected(targetFile) {
-     if (req.ogInject) { // a previous match put us up to inject OpenGraphData
-        readFile(targetFile, 'utf8' , (err, data) => {
-          if (err) {
-            console.error(err)
-            next(err)
-          } else {
-            res.send(data.replace(OG_REPLACE_KEY, req.ogInject));
-          }
-        })
-     } else {
-      // regular send file is good enough
-      res.sendFile(targetFile)
-     }
-   }
+  const hostname = req.hostname
+  const pageConfig = config.pages[hostname]
+  let targetFile = path.join(PUBLIC_PATH, 'index.html');
 
-   // Check if the file is readable.
-   access(file, constants.R_OK, (err) => {
+  if (pageConfig && pageConfig.filename) {
+    // we have a specific page config filename, use that instead.
+    targetFile = path.join(PUBLIC_PATH, pageConfig.filename);
+  }
+
+  if (req.ogInject) { // a previous match put us up to inject OpenGraphData
+    readFile(targetFile, 'utf8' , (err, data) => {
       if (err) {
-         console.warn(`Server request ${req.hostname}, failed: ${err}.`);
-         sendInjected(path.join(PUBLIC_PATH, 'index.html'));
+        console.error(err)
+        next(err)
       } else {
-         sendInjected(file);
+        res.send(data.replace(OG_REPLACE_KEY, req.ogInject));
       }
-   });
-
+    })
+  } else {
+    // regular send file is good enough
+    res.sendFile(targetFile)
+  }
 });
