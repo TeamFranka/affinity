@@ -6,7 +6,6 @@
     "@codepunkt/wasm-layout-text": "^3.0.0",
     "jimp": "^0.16.1",
     "hbs": "^4.1.2",
-    "node-fetch": "^2.6.1",
     "metascraper": "^5.22.2",
     "metascraper-author": "^5.22.2",
     "metascraper-date": "^5.22.2",
@@ -14,10 +13,12 @@
     "metascraper-image": "^5.22.2",
     "metascraper-logo": "^5.22.2",
     "metascraper-logo-favicon": "^5.22.2",
-    "metascraper-video": "^5.22.2",
-    "metascraper-soundcloud": "^5.22.2",
     "metascraper-publisher": "^5.22.2",
+    "metascraper-soundcloud": "^5.22.2",
     "metascraper-title": "^5.22.2",
-    "metascraper-url": "^5.22.2"
+    "metascraper-url": "^5.22.2",
+    "metascraper-video": "^5.22.2",
+    "mobile-detect": "^1.4.5",
+    "node-fetch": "^2.6.1"
   }
 }

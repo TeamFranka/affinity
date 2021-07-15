@@ -1,4 +1,3 @@
-import Parse from "parse";
 import { Model, MinimalModelData } from "./model";
 
 export interface UserData extends MinimalModelData {
