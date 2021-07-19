@@ -62,7 +62,9 @@
             v-bind:class="{ unread: unreadNotifications.includes(n) }"
           >
             <avatar size="2em" :profile="n.by" />
-            <ion-label>
+            <ion-label
+              v-bind:class="{ 'ion-text-wrap': expandedComment === n.objectId }"
+            >
               <div class="ion-padding-start">
                 <div>
                   {{ n.by.name || n.by.username }}
@@ -81,7 +83,16 @@
               <p class="ion-padding-start">
                 {{ n.objects[0].text }}
               </p>
-              <p v-if="n.verb == 'comment'" class="ion-padding-start">
+              <p
+                v-if="n.verb == 'comment'"
+                class="ion-padding-start"
+                v-on:click="toggleComment(n.objectId, $event)"
+              >
+                <ion-icon
+                  :icon="
+                    expandedComment === n.objectId ? openedIcon : closedIcon
+                  "
+                />
                 {{
                   n.objects.find((object) => object.className === "Comment")
                     .text
@@ -116,6 +127,8 @@ import {
   logoWhatsapp,
   folderOpenOutline,
   mailOutline,
+  chevronDownOutline as openedIcon,
+  chevronForwardOutline as closedIcon,
 } from "ionicons/icons";
 import { defineComponent, computed } from "vue";
 import ConversationEntry from "../components/conversation-entry.vue";
@@ -128,6 +141,7 @@ export default defineComponent({
   data() {
     return {
       selectedSegment: "convos",
+      expandedComment: "",
     };
   },
   setup() {
@@ -148,6 +162,8 @@ export default defineComponent({
       isNew: folderOpenOutline,
       mail: mailOutline,
       store: store,
+      openedIcon,
+      closedIcon,
     };
   },
   methods: {
@@ -169,6 +185,10 @@ export default defineComponent({
         )
         .find(Boolean);
       return `/a/${id}`;
+    },
+    toggleComment(objectId: string, event: Event) {
+      event.preventDefault();
+      this.expandedComment = this.expandedComment !== objectId ? objectId : "";
     },
   },
   mounted() {
