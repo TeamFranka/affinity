@@ -99,6 +99,14 @@
                 }}
               </p>
             </ion-label>
+            <img
+              v-if="n.objects.some((object) => object.className === 'Picture')"
+              v-bind:src="
+                n.objects.find((object) => object.className === 'Picture').file
+                  .url
+              "
+              class="img-preview"
+            />
             <span class="meta" slot="end">{{
               smartTimestamp(n.createdAt)
             }}</span>
@@ -221,5 +229,9 @@ export default defineComponent({
 
 .unread {
   --background: var(--ion-color-primary);
+}
+
+.img-preview {
+  height: 1.5em;
 }
 </style>
