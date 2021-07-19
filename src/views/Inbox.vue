@@ -61,23 +61,32 @@
             lines="inset"
             v-bind:class="{ unread: unreadNotifications.includes(n) }"
           >
-            <avatar size="2em" with-name :profile="n.by" />
+            <avatar size="2em" :profile="n.by" />
             <ion-label>
               <div class="ion-padding-start">
-                <div v-if="n.verb == 'react'">
-                  {{ $t("inbox.notifications.reacted") }}
-                  &nbsp;{{ (n.specifics || {})["reaction"] }}
-                </div>
-                <div v-else-if="n.verb == 'like'">
-                  {{ $t("inbox.notifications.liked") }}
-                </div>
-                <div v-else-if="n.verb == 'comment'">
-                  {{ $t("inbox.notifications.commented") }}
+                <div>
+                  {{ n.by.name || n.by.username }}
+                  <span v-if="n.verb == 'react'">
+                    {{ $t("inbox.notifications.reacted") }}
+                    &nbsp;{{ (n.specifics || {})["reaction"] }}
+                  </span>
+                  <span v-else-if="n.verb == 'like'">
+                    {{ $t("inbox.notifications.liked") }}
+                  </span>
+                  <span v-else-if="n.verb == 'comment'">
+                    {{ $t("inbox.notifications.commented") }}
+                  </span>
                 </div>
               </div>
-              <div v-if="n.verb == 'comment'">
-                {{ n.objects.find((object) => !!object.text).text }}
-              </div>
+              <p class="ion-padding-start">
+                {{ n.objects[0].text }}
+              </p>
+              <p v-if="n.verb == 'comment'" class="ion-padding-start">
+                {{
+                  n.objects.find((object) => object.className === "Comment")
+                    .text
+                }}
+              </p>
             </ion-label>
             <span class="meta" slot="end">{{
               smartTimestamp(n.createdAt)
