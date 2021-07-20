@@ -111,6 +111,16 @@
               smartTimestamp(n.createdAt)
             }}</span>
           </ion-item>
+          <ion-infinite-scroll
+            @ionInfinite="loadMoreNotifications($event)"
+            threshold="5%"
+          >
+            <ion-infinite-scroll-content
+              loading-spinner="crescent"
+              :loading-text="$t('generic.state.loadingMore')"
+            >
+            </ion-infinite-scroll-content>
+          </ion-infinite-scroll>
         </template>
       </ion-list>
     </ion-content>
@@ -158,12 +168,13 @@ export default defineComponent({
       smartTimestamp,
       loading: computed(() => store.getters["inbox/loading"]),
       refresh() {
+        store.dispatch("notifications/refresh");
         store.dispatch("inbox/refresh");
       },
       convos: computed(() => store.getters["inbox/latest"]),
-      notifications: computed(() => store.getters["inbox/notifications"]),
+      notifications: computed(() => store.getters["notifications/entries"]),
       unreadNotifications: computed(
-        () => store.getters["inbox/unreadNotifications"]
+        () => store.getters["notifications/unread"]
       ),
       chatbubbles,
       logoWhatsapp,
@@ -172,6 +183,11 @@ export default defineComponent({
       store: store,
       openedIcon,
       closedIcon,
+      loadMoreNotifications: (ev: CustomEvent) => {
+        store.dispatch("notifications/loadMore").then(() => {
+          (ev.target as any).complete();
+        });
+      },
     };
   },
   methods: {
@@ -183,7 +199,7 @@ export default defineComponent({
       this.selectedSegment = selectedSegment;
 
       if (selectedSegment === "notifications") {
-        this.store.dispatch("inbox/markNotificationsRead");
+        this.store.dispatch("notifications/markRead");
       }
     },
     linkTo(notification: any) {
@@ -200,9 +216,7 @@ export default defineComponent({
     },
   },
   mounted() {
-    if (!this.loading && this.convos.length === 0) {
-      this.refresh();
-    }
+    this.refresh();
   },
   components: {
     IonContent,

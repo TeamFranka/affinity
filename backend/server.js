@@ -27,7 +27,8 @@ const config = {
        "Bookmark",
        "Document",
        "Poll",
-       "Link"
+       "Link",
+       "Notification"
     ]
   },
 

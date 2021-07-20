@@ -34,6 +34,7 @@ export const Picture = Models.Picture;
 export const Comment = Models.Comment;
 export const ChatWidgetSettings = Models.ChatWidgetSettings;
 export const Conversation = Models.Conversation;
+export const Notification = Models.Notification
 
 export const ANDROID_INSTALL_URL = window.ANDROID_INSTALL_URL;
 export const IOS_INSTALL_URL = window.IOS_INSTALL_URL;

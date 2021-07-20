@@ -16,6 +16,7 @@ import { TeamsT, Teams } from "./teams";
 import { CommentsT, Comments } from "./comments";
 import { DraftT, Draft } from "./draft";
 import { GalleryT, Gallery } from "./gallery"
+import { NotificationsT, Notifications } from "./notifications";
 
 export interface State {
   global: GlobalStateT;
@@ -28,6 +29,7 @@ export interface State {
   draft: DraftT;
   feed: FeedT;
   gallery: GalleryT;
+  notification: NotificationsT
 }
 
 // define injection key
@@ -48,6 +50,7 @@ export const store = createStore<State>({
     inbox: Inbox,
     draft: Draft,
     auth: AuthState,
+    notifications: Notifications
   },
 });
 

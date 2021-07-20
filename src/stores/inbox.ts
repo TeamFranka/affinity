@@ -1,10 +1,9 @@
 import { Parse } from "@/config/Consts";
-import { Conversation, Message, Notification } from "@/db/models";
+import { Conversation, Message } from "@/db/models";
 
 export interface InboxT {
   loading: boolean;
   latest: Array<string>;
-  notifications: Array<string>;
   messages: Record<string, string[]>;
 }
 
@@ -13,7 +12,6 @@ export const Inbox = {
   state: () => ({
     loading: true,
     latest: [],
-    notifications: [],
     messages: {},
   }),
   getters: {
@@ -21,25 +19,6 @@ export const Inbox = {
       const objs = rootGetters["objectsMap"];
 
       return state.latest.map((id) => objs[id]);
-    },
-    notifications(
-      state: InboxT,
-      getters: any,
-      rootState: any,
-      rootGetters: any
-    ) {
-      const objs = rootGetters["objectsMap"];
-
-      return state.notifications.map((id) => objs[id]);
-    },
-    unreadNotifications(
-      state: InboxT,
-      getters: any,
-      rootState: any,
-      rootGetters: any
-    ) {
-      const notifications = rootGetters["inbox/notifications"]
-      return notifications.filter((notification: any) => !notification.seenAt)
     },
     messages(state: InboxT) {
       return state.messages;
@@ -59,9 +38,6 @@ export const Inbox = {
         }
       }
       state.latest.unshift(c.id);
-    },
-    setNotifications(state: InboxT, items: Array<Parse.Object>) {
-      state.notifications = items.map((x) => x.id);
     },
     setConvos(state: InboxT, items: Array<Parse.Object>) {
       items.forEach((c) => {
@@ -127,37 +103,15 @@ export const Inbox = {
         context.commit("setConvos", []);
         context.commit("setLoading", false);
         context.dispatch("unsubscribe", "conversations", { root: true });
-        context.dispatch("unsubscribe", "notifications", { root: true });
         return;
       }
       context.commit("setLoading", true);
       await Promise.all([
         context.dispatch("refreshConvos"),
-        context.dispatch("refreshNotifications"),
       ]);
       context.commit("setLoading", false);
     },
-    async refreshNotifications(context: any) {
-      const keys = ["by", "objects"];
-      const query = new Parse.Query(Notification)
-        .include(keys)
-        .descending("createdAt");
-      const feed = await query.find();
 
-      await context.dispatch("addItems", { keys, items: feed }, { root: true });
-      context.dispatch(
-        "subscribe",
-        {
-          id: "notifications",
-          keys,
-          query,
-          addCb: "inbox/newNotification",
-          full: true,
-        },
-        { root: true }
-      );
-      context.commit("setNotifications", feed);
-    },
     async refreshConvos(context: any) {
       const keys = ["participants", "team", "latestMessage"];
       const query = new Parse.Query(Conversation)
@@ -179,16 +133,5 @@ export const Inbox = {
       );
       context.commit("setConvos", feed);
     },
-    async markNotificationsRead(context: any){
-      const unreadNotifications = context.rootGetters["inbox/unreadNotifications"]
-      unreadNotifications.forEach(async (notification: any) => {
-        const query = new Parse.Query(Notification).equalTo("objectId", notification.objectId)
-        const object = await query.first()
-        if (object) {
-          object.set("seenAt", new Date())
-          object.save()
-        }
-      })
-    }
   },
 };

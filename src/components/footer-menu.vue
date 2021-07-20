@@ -134,7 +134,7 @@ export default defineComponent({
       meIcon: personCircleOutline,
       settingsIcon,
       unreadNotifications: computed(
-        () => store.getters["inbox/unreadNotifications"]
+        () => store.getters["notifications/unread"]
       ),
     };
   },
