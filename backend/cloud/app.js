@@ -4,8 +4,8 @@ let express = require("express");
 let path = require("path");
 let { opengraphImage } = require("./services/imaging.js");
 let { Activity, Team, User } = require("./models");
-const config = require('./config.js')
-const MobileDetect = require('mobile-detect')
+const config = require('./config.js');
+const MobileDetect = require('mobile-detect');
 
 const PUBLIC_PATH = path.join(__dirname, 'public');
 const OG_REPLACE_KEY = '<base href="/">';
@@ -96,7 +96,7 @@ app.get("*", (req, res, next)=> {
   }
 
   const hostname = req.hostname
-  const pageConfig = config.pages[hostname]
+  const pageConfig = config[hostname]
   let targetFile = path.join(PUBLIC_PATH, 'index.html');
 
   if (pageConfig && pageConfig.filename) {
