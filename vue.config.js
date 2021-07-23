@@ -34,7 +34,8 @@ module.exports = {
       templateParameters: {
         title: AffinityDefault.title,
         settings: Object.assign({}, APP_SETTING_DEFAULTS, {
-          AFFINITY_DEFAULT_TEAM: AffinityDefault.DEFAULT_TEAM,
+          AFFINITY_DEFAULT_TEAM: AffinityDefault.AFFINITY_DEFAULT_TEAM,
+          AFFINITY_EXTRA_TEAMS: WirMD.AFFINITY_EXTRA_TEAMS,
           PARSE_URL: AffinityDefault.PARSE_URL,
           PARSE_LIVE_URL: AffinityDefault.PARSE_LIVE_URL,
         }),
@@ -46,8 +47,8 @@ module.exports = {
       templateParameters: {
         title: WirMD.title,
         settings: Object.assign({}, APP_SETTING_DEFAULTS, {
-          AFFINITY_DEFAULT_TEAM: WirMD.DEFAULT_TEAM,
-          AFFINITY_EXTRA_TEAMS: WirMD.EXTRA_TEAMS,
+          AFFINITY_DEFAULT_TEAM: WirMD.AFFINITY_DEFAULT_TEAM,
+          AFFINITY_EXTRA_TEAMS: WirMD.AFFINITY_EXTRA_TEAMS,
           PARSE_URL: WirMD.PARSE_URL,
           PARSE_LIVE_URL: WirMD.PARSE_LIVE_URL,
           ANDROID_INSTALL_URL: WirMD.ANDROID_INSTALL_URL,
