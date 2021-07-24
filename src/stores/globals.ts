@@ -329,7 +329,7 @@ export const GlobalState = {
       }
       context.commit("setError", error);
     },
-    addItems(context: any, inp: any) {
+    async addItems(context: any, inp: any) {
       const { items, key, keys } = inp;
       const found: Array<Parse.Object | Model> = [];
       const toLookUp: Record<string, Array<string>> = {};
@@ -356,17 +356,17 @@ export const GlobalState = {
       });
 
       if (found.length > 0) {
-        context.commit("setItems", found);
+        await context.commit("setItems", found);
       }
 
-      Object.keys(toLookUp).forEach((k) => {
+      await Promise.all(Object.keys(toLookUp).map((k) =>
         new Parse.Query(k)
           .containedIn("id", toLookUp[k])
           .find()
-          .then((resp) => {
-            context.commit("setItems", resp);
-          });
-      });
+          .then((resp) =>
+            context.commit("setItems", resp)
+          )
+      ));
     },
     async updateModel(context: any, info: SaveModel) {
       const model = info.toParse();
