@@ -5,8 +5,10 @@
       outline
       :color="showComments ? 'dark' : 'light'"
     >
-      <ion-icon :icon="commentsIcon" size="small" />
-      <ion-label>{{ object.commentsCount }}</ion-label>
+      <span class="interaction-button">
+        <ion-icon :icon="commentsIcon" size="small" />
+        <ion-label>{{ object.commentsCount }}</ion-label>
+      </span>
     </ion-chip>
     <ion-chip outline color="light">
       <share-button
@@ -190,9 +192,9 @@ export default defineComponent({
     margin-top: 2px;
     padding-right: 6px !important;
   }
-  ion-chip ion-label {
-    position: absolute;
-    top: 0;
-    margin-top: 9px;
+
+  .interaction-button {
+    display: flex;
+    align-items: center;
   }
 </style>
