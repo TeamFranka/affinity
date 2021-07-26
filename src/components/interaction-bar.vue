@@ -4,6 +4,7 @@
       @click="toggleComments()"
       outline
       :color="showComments ? 'dark' : 'light'"
+      data-cy-role="toggleComments"
     >
       <ion-icon :icon="commentsIcon" size="small" />
       <ion-label>{{ object.commentsCount }}</ion-label>
@@ -33,6 +34,7 @@
       placeholder="comment here"
       @submit="submitComment()"
       @changed="setDraft($event)"
+      data-cy="comment"
     />
     <ion-grid>
       <comment

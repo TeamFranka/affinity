@@ -15,6 +15,7 @@
     fill="clear"
     color="medium"
     class="plusButton"
+    data-cy="reaction"
   >
     <ion-icon :icon="plusIcon" size="small" />
   </ion-button>
