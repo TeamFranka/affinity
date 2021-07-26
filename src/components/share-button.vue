@@ -1,5 +1,5 @@
 <template>
-  <span @click="shareEntry()" :disabled="disabled">
+  <span @click="shareEntry()" :disabled="disabled" class="interaction-button">
     <ion-icon :icon="shareIcon" :size="iconSize" />
     <ion-label>{{ counter }}</ion-label>
   </span>
