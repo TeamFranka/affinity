@@ -1,5 +1,6 @@
 import { Parse } from "@/config/Consts";
 import { Model, SaveModel, toModel } from "@/types/model";
+import { Team } from '@/db/models'
 
 const ITEMS_PER_PAGE = 25;
 
@@ -62,6 +63,10 @@ export interface GenFeedOptions {
    * Ignore team selection changes
    */
   ignoreTeamSelection?: boolean;
+  /**
+   * Include content from teams that are direct subteams of the selected team
+   */
+  includeSubTeams?: boolean;
 }
 
 /**
@@ -79,16 +84,28 @@ export function genFeedState(opts: GenFeedOptions): any {
   }
   const queryFn = fullQueryFn ?
     fullQueryFn :
-    (selectedTeam: string | null, teamPointers: any): Parse.Query => {
+    async (selectedTeam: string | null, teamPointers: any): Promise<Parse.Query> => {
       // eslint-disable-next-line
       const baseQuery = (baseQueryFn!)();
-      const query = selectedTeam ?
-        baseQuery.equalTo("team", {
-            __type: "Pointer",
-            className: "Team",
+
+      let teamsToInclude = selectedTeam
+        ? [{
+            __type: 'Pointer',
+            className: 'Team',
             objectId: selectedTeam,
-          }) :
-        baseQuery.containedIn("team", teamPointers);
+          }]
+        : teamPointers
+
+      if (opts.includeSubTeams) {
+        teamsToInclude = await Promise.all(teamsToInclude.flatMap(async (team: any) => {
+          const subteams = await(
+            new Parse.Query(Team).equalTo('subOf', team).find()
+          )
+          return [team, ...subteams.map((subteam: any) => subteam.toPointer())]
+        }))
+      }
+
+      const query = baseQuery.containedIn("team", teamsToInclude);
       return query
     };
 
@@ -155,7 +172,7 @@ export function genFeedState(opts: GenFeedOptions): any {
         async refresh(context: any) {
           const selectedTeam = context.getters.selectedTeam;
           const teamPointers = context.rootGetters["auth/teamPointers"];
-          const query = queryFn(selectedTeam, teamPointers);
+          const query = await queryFn(selectedTeam, teamPointers);
 
           await context.dispatch("queryFeed", {
             id: context.getters.feedId, keys, query,

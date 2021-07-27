@@ -13,5 +13,6 @@ export const Feed = genFeedState({
             .containedIn("verb", [Verb.Post, Verb.Announce])
             .include(MODEL_KEYS)
             .descending("publishedAt"),
-  keys: MODEL_KEYS
+  keys: MODEL_KEYS,
+  includeSubTeams: true
 });
