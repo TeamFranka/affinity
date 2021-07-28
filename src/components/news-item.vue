@@ -10,18 +10,18 @@
       <ion-icon :icon="likeIcon" />
     </span>
 
-    <template v-if="is('Poll')">
+    <template v-if="isPoll">
       <ion-card>
         <poll :poll="obj" />
       </ion-card>
     </template>
-    <template v-else-if="is('Post')">
+    <template v-else-if="isPost">
       <ion-card class="post-text ion-padding" data-cy-role="content">
         <render-md :source="text" />
         <p><reactions :item="interactivityObject" /></p>
       </ion-card>
     </template>
-    <template v-else-if="is('Picture')">
+    <template v-else-if="isPicture">
       <ion-img class="item-img" :src="imageUrl" />
     </template>
     <template v-else>
@@ -38,7 +38,7 @@
         }}</ion-button>
       </ion-card>
     </template>
-    <div v-if="!is('Post')" class="text">
+    <div v-if="!isPost" class="text">
       <render-md v-if="text" :source="text" />
       <p><reactions :item="interactivityObject" /></p>
     </div>
@@ -190,6 +190,15 @@ export default defineComponent({
       }
       return {}
     },
+    isPost(): boolean {
+      return this.is("Post")
+    },
+    isPoll(): boolean {
+      return this.is("Poll")
+    },
+    isPicture(): boolean {
+      return this.is("Picture")
+    },
     extraStyle(): object {
       const style = Object.assign(
         {
@@ -272,8 +281,11 @@ export default defineComponent({
 }
 .slidebox > .text {
   position: absolute;
-  bottom: 1em;
+  height: 3em;
+  padding-top: 0;
+  bottom: 0;
   color: white;
+  text-shadow: 1px 1px #000;
   left: 1em;
   right: calc(0.5em + 65px);
 }
