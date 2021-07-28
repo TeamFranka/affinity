@@ -54,7 +54,8 @@ import {
   IonImg,
   IonIcon,
   IonThumbnail,
-  isPlatform
+  isPlatform,
+  IonButton,
 } from "@ionic/vue";
 import {
   linkOutline as linkIcon,
@@ -81,6 +82,7 @@ export default defineComponent({
   },
   components: {
     IonImg,
+    IonButton,
     IonIcon,
     IonThumbnail,
     Poll

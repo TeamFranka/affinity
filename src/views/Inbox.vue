@@ -139,6 +139,8 @@ import {
   IonItem,
   IonSpinner,
   IonNote,
+  IonInfiniteScroll,
+  IonInfiniteScrollContent
 } from "@ionic/vue";
 import {
   chatbubbles,
@@ -244,6 +246,8 @@ export default defineComponent({
     IonList,
     IonListHeader,
     IonItem,
+    IonInfiniteScroll,
+    IonInfiniteScrollContent,
   },
 });
 </script>
