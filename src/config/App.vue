@@ -24,7 +24,6 @@ import {
   IonProgressBar,
   IonContent,
   modalController,
-  isPlatform,
   toastController,
   popoverController,
 } from "@ionic/vue";
@@ -48,6 +47,7 @@ import i18n from "@/utils/i18n";
 
 import { codePush } from "capacitor-codepush";
 import { App, AppState } from "@capacitor/app";
+import { isAndroid, isMobile, isIos } from "@/utils/platform";
 
 if (isMobileInstallation()) {
   App.addListener("appStateChange", (state: AppState) => {
@@ -83,7 +83,7 @@ export default defineComponent({
         loginModal.present();
         loginModal.onWillDismiss().then((): void => {
           store.dispatch("auth/dismissLogin");
-          if (isPlatform("android") || isPlatform("ios")) popoverController.dismiss();
+          if (isMobile.value) popoverController.dismiss();
         });
       } else if (!newVal && loginModal) {
         loginModal.dismiss();
@@ -149,7 +149,6 @@ export default defineComponent({
 
     return {
       logInIcon,
-      onDesktop: isPlatform("desktop"),
       user: computed(() => store.state.auth.user),
       loginModalOpened: computed(() => {
         return store.state.auth.wantsToLogin;
@@ -174,7 +173,7 @@ export default defineComponent({
 
       const buttons: any[] = [];
 
-      if (isPlatform("android")) {
+      if (isAndroid.value) {
         const text = this.$t("install.toast.action");
         buttons.push({
           side: "end",
@@ -184,7 +183,7 @@ export default defineComponent({
             window.open(ANDROID_INSTALL_URL);
           },
         });
-      } else if (isPlatform("ios")) {
+      } else if (isIos.value) {
         const text = this.$t("install.toast.action");
         buttons.push({
           side: "end",

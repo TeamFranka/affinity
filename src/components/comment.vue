@@ -4,7 +4,7 @@
     – <avatar size="1.25rem" :profile="author" with-name />&nbsp;<ion-note color="medium">{{ since }}</ion-note>
   </div>
   <ion-row v-else>
-    <ion-col size="1" class="text-center">
+    <ion-col size="1" class="text-center avatar-col">
       <avatar size="2.5rem" :profile="author" />
     </ion-col>
     <ion-col size="10">
@@ -239,4 +239,9 @@ ion-card-header {
 .sub-comments-box {
   border-left: 2px solid var(--ion-color-light);
 }
+
+  .avatar-col {
+    min-width: 2.75rem;
+  }
+
 </style>

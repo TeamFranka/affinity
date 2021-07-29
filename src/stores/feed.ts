@@ -12,6 +12,6 @@ export const Feed = genFeedState({
   baseQueryFn: () => new Parse.Query(Activity)
             .containedIn("verb", [Verb.Post, Verb.Announce])
             .include(MODEL_KEYS)
-            .descending("createdAt"),
+            .descending("publishedAt"),
   keys: MODEL_KEYS
 });

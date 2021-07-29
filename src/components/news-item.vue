@@ -24,6 +24,20 @@
     <template v-else-if="is('Picture')">
       <ion-img class="item-img" :src="imageUrl" />
     </template>
+    <template v-else>
+      <ion-card class="post-text ion-padding">
+        {{ $t("activity.unknownType") }}
+        <ion-button v-if="isAndroidd" fill="outline" :href="androidLink">{{
+          $t("appPage.button.android")
+        }}</ion-button>
+        <ion-button v-else-if="isIos" fill="outline" :href="iosLink">{{
+          $t("appPage.button.iOS")
+        }}</ion-button>
+        <ion-button v-else fill="outline" v-on:click="reload">{{
+          $t("appPage.button.refresh")
+        }}</ion-button>
+      </ion-card>
+    </template>
     <div v-if="!is('Post')" class="text">
       <render-md v-if="text" :source="text" />
       <p><reactions :item="interactivityObject" /></p>
@@ -61,7 +75,7 @@
 </template>
 
 <script lang="ts">
-import { IonLabel, IonIcon, IonImg, IonCard } from "@ionic/vue";
+import { IonLabel, IonIcon, IonImg, IonCard, IonButton } from "@ionic/vue";
 import { createAnimation } from "@ionic/core";
 import {
   chatbubblesOutline as commentsIcon,
@@ -78,6 +92,7 @@ import { useStore } from "../stores/";
 import RenderMd from "./render-md.vue";
 import Reactions from "./reactions.vue";
 import { Model } from "@/types/model";
+import { isAndroid, isIos } from "@/utils/platform";
 
 export default defineComponent({
   name: "NewsItem",
@@ -96,6 +111,7 @@ export default defineComponent({
     IonIcon,
     IonCard,
     IonImg,
+    IonButton,
     Avatar,
     ShareButton,
     Reactions,
@@ -111,6 +127,8 @@ export default defineComponent({
       store,
       commentsIcon,
       likeIcon,
+      isAndroid,
+      isIos,
     };
   },
   computed: {
@@ -137,7 +155,7 @@ export default defineComponent({
       return "/t/" + this.team.slug;
     },
     since(): string {
-      return since(this.item.createdAt);
+      return since(this.item.publishedAt.iso);
     },
     text(): string {
       return this.item.text || "";
@@ -182,7 +200,7 @@ export default defineComponent({
       const localStyle = {
         "z-index": this.zIndex,
       };
-      if (this.is("Poll") || this.is("Post")) {
+      if (!this.is("Picture")) {
         return Object.assign({}, style, localStyle, {
           display: "flex",
           justifyContent: "space-around",
@@ -226,6 +244,9 @@ export default defineComponent({
     next(ev: Event) {
       console.log("would go to next", ev);
     },
+    reload() {
+      location.reload()
+    }
   },
 });
 </script>

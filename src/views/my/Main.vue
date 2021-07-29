@@ -66,7 +66,7 @@ import {
   notificationsOutline as notificationIcon,
   globeOutline as generalIcon,
   bookmarkOutline as bookmarkIcon,
-  peopleCircleOutline as teamsIcons,
+  peopleCircleOutline as teamsIcon  ,
 } from "ionicons/icons";
 import { defineComponent, computed } from "vue";
 import { useStore } from "@/stores/";
@@ -94,7 +94,7 @@ export default defineComponent({
       generalIcon,
       notificationIcon,
       bookmarkIcon,
-      teamsIcons,
+      teamsIcon ,
     };
   },
   computed: {

@@ -1,5 +1,5 @@
 <template>
-  <span @click="toggleLike()" data-cy-role="like" :data-cy-count="counter" :disabled="disabled">
+  <span @click="toggleLike()" data-cy-role="like" :data-cy-count="counter" :disabled="disabled" class="interaction-button">
     <ion-icon
       :icon="hasLiked ? hasLikedIcon : likeIcon"
       :color="hasLiked ? 'danger' : ''"
@@ -63,5 +63,3 @@ export default defineComponent({
   },
 });
 </script>
-
-

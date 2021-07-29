@@ -1,18 +1,15 @@
 name: Test E2E
 on:
   push:
-    branches: [ main, production ]
+    branches: [ main ]
   pull_request:
-    branches: [ main, production ]
+    branches: [ main ]
 
-  # Allows you to run this workflow manually from the Actions tab
-  workflow_dispatch:
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
   tests:
     runs-on: ubuntu-latest
-    environment: cypress_tests
     if: "!contains(github.event.head_commit.message, '[ci skip]')"
 
     steps:
@@ -49,12 +46,6 @@ jobs:
           start: npm run serve
           # quote the url to be safe against YML parsing surprises
           wait-on: 'http://localhost:8080'
-        env:
-          # pass the Dashboard record key as an environment variable
-          CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
-          # Recommended: pass the GitHub token lets this action correctly
-          # determine the unique run id necessary to re-run the checks
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - uses: actions/upload-artifact@v2
         if: failure()
         with:

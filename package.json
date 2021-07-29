@@ -29,6 +29,7 @@
     "dev:refresh-parse": "npm run dev:build-parse && npm run dev:restart-parse",
     "dev:restart-parse": "docker-compose stop parse && docker-compose up -d && docker-compose logs -f --tail 10 parse",
     "dev:run-parse": "docker-compose up -d && docker-compose logs -f --tail 30 parse",
+    "dev:full-reset": "docker-compose stop && docker-compose pull && npm run dev:build-parse &&  npm run dev:db:reset",
     "i18n:report": "vue-cli-service i18n:report --src \"./src/**/*.?(js|vue)\" --locales \"./src/locales/**/*.json\" --output locales-report.json"
   },
   "dependencies": {
@@ -46,8 +47,8 @@
     "@types/parse": "^2.18.4",
     "@types/pell": "^1.0.0",
     "@types/turndown": "^5.0.0",
-    "affinity-backend": "file:backend/cloud",
     "core-js": "^3.9.0",
+    "cypress-mailhog": "^1.3.0",
     "dayjs": "^1.10.4",
     "easyqrcodejs": "^4.3.2",
     "get-urls": "git+https://github.com/gnunicorn/get-urls.git",
@@ -87,7 +88,7 @@
     "@vue/compiler-sfc": "^3.0.6",
     "@vue/eslint-config-typescript": "^5.0.2",
     "@vue/test-utils": "^2.0.0-rc.1",
-    "appcenter": "^4.1.0",
+    "appcenter": "^4.2.0",
     "capacitor-codepush": "git+https://github.com/mapiacompany/capacitor-codepush.git",
     "cypress": "^7.1.0",
     "cypress-fail-fast": "^2.3.2",

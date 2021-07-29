@@ -1,0 +1,30 @@
+name: Tag for Production
+on:
+  workflow_run:
+    workflows: [ "Test E2E" ]
+    branches: [ main ]
+    types:
+      - completed
+
+jobs:
+
+  push-tag:
+    # only run when we were successful
+    if: "${{ github.event.workflow_run.conclusion == 'success' }} && contains(github.event.head_commit.message, '[ci deploy production]')"
+    runs-on: ubuntu-latest
+    environment: github_access
+
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          token: ${{ secrets.PTA }}
+
+      - name: tag production
+        run: |
+          git tag --force production
+      - name: Push tag
+        uses: ad-m/github-push-action@master
+        with:
+          github_token: ${{ secrets.PTA }}
+          force: true
+          tags: true

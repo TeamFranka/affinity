@@ -23,6 +23,7 @@ import "./gestures";
 // Alternatively you can use CommonJS syntax:
 // require('./commands')
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 Cypress.on('uncaught:exception', (err, runnable) => {
   if (err.message.includes("Cannot read property 'dismiss' of undefined")) {
     /// this is an ionic internal error,
