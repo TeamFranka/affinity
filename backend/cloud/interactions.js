@@ -55,9 +55,7 @@ Parse.Cloud.afterSave(Comment, async (request) => {
       for: forUser,
       by: user,
       verb: "comment",
-      objects: [
-        pointer, request.object.toPointer()
-      ]
+      objects: [request.object.toPointer(), onObj.toPointer()],
     })).save(null, { useMasterKey: true });
   }
 }, {

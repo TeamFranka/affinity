@@ -206,10 +206,10 @@ export default defineComponent({
     },
     linkTo(notification: any) {
       const id = notification.objects
-        .map((object: any) =>
-          object.className === "Comment" ? object.on.objectId : object.objectId
+        .find((object: any) =>
+          object.className === "Activity"
         )
-        .find(Boolean);
+
       return `/a/${id}`;
     },
     toggleComment(objectId: string, event: Event) {
