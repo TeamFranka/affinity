@@ -174,8 +174,7 @@ export default defineComponent({
         store.dispatch("inbox/refresh");
       },
       convos: computed(() => store.getters["inbox/latest"]),
-      rawNotifications: computed(() => store.getters["notifications/entries"]),
-      notifications: [],
+      notifications: computed(() => store.getters["notifications/entries"]),
       unreadNotifications: computed(
         () => store.getters["notifications/unread"]
       ),
@@ -193,18 +192,6 @@ export default defineComponent({
       },
     };
   },
-  watch: {
-    rawNotifications: function() {
-      this.notifications =  this.rawNotifications.map((notification: any) => {
-        return {...notification, objects: notification.objects.map((object: any) => {
-          if (object.__type === "Pointer") {
-            return this.store.getters.objectsMap[object.objectId]
-          }
-          return object
-        })}
-      })
-    }
-  },
   methods: {
     selectConversation(conversationId: string) {
       this.$router.push({ name: "Conversation", params: { conversationId } });
@@ -220,7 +207,7 @@ export default defineComponent({
     linkTo(notification: any) {
       const id = notification.objects
         .map((object: any) =>
-          object.className === "Comment" ? object?.on?.objectId : object.objectId
+          object.className === "Comment" ? object.on.objectId : object.objectId
         )
         .find(Boolean);
       return `/a/${id}`;
