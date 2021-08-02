@@ -81,7 +81,7 @@
                 </div>
               </div>
               <p class="ion-padding-start">
-                {{ n.objects[0].text }}
+                {{ n.objects.find(object => object.className === "Activity")?.text }}
               </p>
               <p
                 v-if="n.verb == 'comment'"
