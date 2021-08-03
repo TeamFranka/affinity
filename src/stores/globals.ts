@@ -84,11 +84,11 @@ export function genFeedState(opts: GenFeedOptions): any {
   }
   const queryFn = fullQueryFn ?
     fullQueryFn :
-    async (selectedTeam: string | null, teamPointers: any): Promise<Parse.Query> => {
+    (selectedTeam: string | null, teamPointers: any): Parse.Query => {
       // eslint-disable-next-line
       const baseQuery = (baseQueryFn!)();
 
-      let teamsToInclude = selectedTeam
+      const teamsToInclude = selectedTeam
         ? [{
             __type: 'Pointer',
             className: 'Team',
@@ -96,17 +96,18 @@ export function genFeedState(opts: GenFeedOptions): any {
           }]
         : teamPointers
 
-      if (opts.includeSubTeams) {
-        teamsToInclude = await Promise.all(teamsToInclude.flatMap(async (team: any) => {
-          const subteams = await(
-            new Parse.Query(Team).equalTo('subOf', team).find()
-          )
-          return [team, ...subteams.map((subteam: any) => subteam.toPointer())]
-        }))
-      }
+      const teamQuery = baseQuery.containedIn('team', teamsToInclude)
+      const subTeamQuery = baseQuery.matchesQuery(
+        'team',
+        new Parse.Query(Team).containedIn('subOf', teamsToInclude)
+      )
 
-      const query = baseQuery.containedIn("team", teamsToInclude);
-      return query
+      if (opts.includeSubTeams) {
+        return subTeamQuery
+        // return Parse.Query.or(teamQuery, subTeamQuery)
+      } else {
+        return teamQuery
+      }
     };
 
   return {
@@ -172,7 +173,7 @@ export function genFeedState(opts: GenFeedOptions): any {
         async refresh(context: any) {
           const selectedTeam = context.getters.selectedTeam;
           const teamPointers = context.rootGetters["auth/teamPointers"];
-          const query = await queryFn(selectedTeam, teamPointers);
+          const query = queryFn(selectedTeam, teamPointers);
 
           await context.dispatch("queryFeed", {
             id: context.getters.feedId, keys, query,
