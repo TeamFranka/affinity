@@ -122,7 +122,7 @@
         </ion-button>
       </ion-item>
       <ion-item class="ion-hide-sm-up" lines="none">
-        <ion-button @click="passwortReset" slot="end" fill="none" color="light">
+        <ion-button @click="passwortReset" slot="end" fill="none" color="medium">
           {{ $t("auth.button.resetPassword") }}
         </ion-button>
       </ion-item>

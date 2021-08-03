@@ -3,14 +3,14 @@
     <ion-chip
       @click="toggleComments()"
       outline
-      :color="showComments ? 'dark' : 'light'"
+      :color="showComments ? 'dark' : 'medium'"
     >
       <span class="interaction-button">
         <ion-icon :icon="commentsIcon" size="small" />
         <ion-label>{{ object.commentsCount }}</ion-label>
       </span>
     </ion-chip>
-    <ion-chip outline color="light">
+    <ion-chip outline color="medium">
       <share-button
         :link="fullLink"
         :pointer="pointer"
@@ -132,7 +132,7 @@ export default defineComponent({
       return [];
     },
     likedColor(): string {
-      return this.hasLiked ? "danger" : "light";
+      return this.hasLiked ? "danger" : "medium";
     },
   },
   methods: {

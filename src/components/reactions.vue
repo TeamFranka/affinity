@@ -56,7 +56,7 @@ export default defineComponent({
     },
     unselectedColor: {
       type: String,
-      default: "light",
+      default: "medium",
     },
     item: {
       type: Object,
