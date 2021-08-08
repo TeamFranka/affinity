@@ -15,7 +15,7 @@
         {{ text }}
       </div>
       <div>
-        <ion-chip @click="showInput = !showInput" outline :color="showInput? 'medium' : 'light'">
+        <ion-chip @click="showInput = !showInput" outline :color="showInput? 'dark' : 'medium'">
           <ion-icon :icon="replyIcon" size="small" />
         </ion-chip>
 
@@ -32,7 +32,7 @@
           <ion-label>{{ r.key }}</ion-label>
           <ion-label>{{ r.count }}</ion-label>
         </ion-chip>
-        <ion-chip outline color="light">
+        <ion-chip outline color="medium">
           <ion-icon :icon="plusIcon" size="small" />
         </ion-chip>
       </div>
@@ -153,7 +153,7 @@ export default defineComponent({
       );
     },
     likedColor(): string {
-      return this.hasLiked ? "danger" : "light";
+      return this.hasLiked ? "danger" : "medium";
     },
     authorName(): string {
       const author = this.author;
@@ -166,7 +166,7 @@ export default defineComponent({
           key,
           color:
             reactors.indexOf(this.store.getters["auth/myId"]) === -1
-              ? "light"
+              ? "medium"
               : "dark",
           count: reactors.length,
         };
@@ -237,7 +237,7 @@ ion-card-header {
   align-items: center;
 }
 .sub-comments-box {
-  border-left: 2px solid var(--ion-color-light);
+  border-left: 2px solid var(--ion-color-medium);
 }
 
   .avatar-col {

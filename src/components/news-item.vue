@@ -10,38 +10,57 @@
       <ion-icon :icon="likeIcon" />
     </span>
 
-    <template v-if="is('Poll')">
-      <ion-card>
-        <poll :poll="obj" />
-      </ion-card>
+    <template v-if="withSlides">
+      <ion-slides :pager="true" :options="slideOpts">
+        <ion-slide v-for="obj in item.objects" :key="obj.id">
+          <ion-card v-if="obj.className == 'Poll'">
+            <poll :poll="obj" />
+          </ion-card>
+          <ion-img
+            v-else-if="obj.className == 'Picture'"
+            class="item-img"
+            :src="imageUrl"
+          />
+        </ion-slide>
+        <ion-slide v-if="text">
+          <ion-card class="post-text ion-padding" data-cy-role="content">
+            <render-md :source="text" />
+            <p><reactions :item="interactivityObject" /></p>
+          </ion-card>
+        </ion-slide>
+      </ion-slides>
     </template>
-    <template v-else-if="is('Post')">
-      <ion-card class="post-text ion-padding" data-cy-role="content">
-        <render-md :source="text" />
-        <p><reactions :item="interactivityObject" /></p>
-      </ion-card>
+    <template v-else >
+
+      <template v-if="isPoll">
+        <ion-card>
+          <poll :poll="obj" />
+        </ion-card>
+      </template>
+      <template v-else-if="isPost">
+        <ion-card class="post-text ion-padding" data-cy-role="content">
+          <render-md :source="text" />
+          <p><reactions :item="interactivityObject" /></p>
+        </ion-card>
+      </template>
+      <template v-else-if="isPicture">
+        <ion-img class="item-img" :src="imageUrl" />
+      </template>
+      <template v-else>
+        <ion-card class="post-text ion-padding">
+          {{ $t("activity.unknownType") }}
+          <ion-button v-if="isAndroidd" fill="outline" :href="androidLink">{{
+            $t("appPage.button.android")
+          }}</ion-button>
+          <ion-button v-else-if="isIos" fill="outline" :href="iosLink">{{
+            $t("appPage.button.iOS")
+          }}</ion-button>
+          <ion-button v-else fill="outline" v-on:click="reload">{{
+            $t("appPage.button.refresh")
+          }}</ion-button>
+        </ion-card>
+      </template>
     </template>
-    <template v-else-if="is('Picture')">
-      <ion-img class="item-img" :src="imageUrl" />
-    </template>
-    <template v-else>
-      <ion-card class="post-text ion-padding">
-        {{ $t("activity.unknownType") }}
-        <ion-button v-if="isAndroidd" fill="outline" :href="androidLink">{{
-          $t("appPage.button.android")
-        }}</ion-button>
-        <ion-button v-else-if="isIos" fill="outline" :href="iosLink">{{
-          $t("appPage.button.iOS")
-        }}</ion-button>
-        <ion-button v-else fill="outline" v-on:click="reload">{{
-          $t("appPage.button.refresh")
-        }}</ion-button>
-      </ion-card>
-    </template>
-    <div v-if="!is('Post')" class="text">
-      <render-md v-if="text" :source="text" />
-      <p><reactions :item="interactivityObject" /></p>
-    </div>
     <div class="menu">
       <router-link :to="teamLink">
         <avatar size="4em" :profile="team" :name="teamName" />
@@ -75,7 +94,15 @@
 </template>
 
 <script lang="ts">
-import { IonLabel, IonIcon, IonImg, IonCard, IonButton } from "@ionic/vue";
+import {
+  IonLabel,
+  IonIcon,
+  IonImg,
+  IonCard,
+  IonButton,
+  IonSlides,
+  IonSlide,
+} from "@ionic/vue";
 import { createAnimation } from "@ionic/core";
 import {
   chatbubblesOutline as commentsIcon,
@@ -112,6 +139,8 @@ export default defineComponent({
     IonCard,
     IonImg,
     IonButton,
+    IonSlides,
+    IonSlide,
     Avatar,
     ShareButton,
     Reactions,
@@ -121,7 +150,11 @@ export default defineComponent({
   },
   setup(props: { itemId: string }) {
     const store = useStore();
+    const slideOpts = {
+      grabCursor: true
+    };
     return {
+      slideOpts,
       item: computed(() => store.getters.objectsMap[props.itemId]),
       objs: computed(() => store.getters.objectsMap),
       store,
@@ -157,6 +190,16 @@ export default defineComponent({
     since(): string {
       return since(this.item.publishedAt.iso);
     },
+    withSlides(): boolean {
+      const counter = (this.item.objects || []).length;
+      if (counter > 1) {
+        return true
+      } else if (counter == 0) {
+        return false
+      } else {
+        return this.text.length > 0
+      }
+    },
     text(): string {
       return this.item.text || "";
     },
@@ -189,6 +232,15 @@ export default defineComponent({
         }
       }
       return {}
+    },
+    isPost(): boolean {
+      return this.is("Post")
+    },
+    isPoll(): boolean {
+      return this.is("Poll")
+    },
+    isPicture(): boolean {
+      return this.is("Picture")
     },
     extraStyle(): object {
       const style = Object.assign(
@@ -272,8 +324,11 @@ export default defineComponent({
 }
 .slidebox > .text {
   position: absolute;
-  bottom: 1em;
+  height: 3em;
+  padding-top: 0;
+  bottom: 0;
   color: white;
+  text-shadow: 1px 1px #000;
   left: 1em;
   right: calc(0.5em + 65px);
 }

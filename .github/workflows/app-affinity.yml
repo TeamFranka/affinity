@@ -1,10 +1,13 @@
 name: "Build (and deploy) Affinity App"
 on:
-  push:
-    branches: [ main ]
-    tags: [ production ]
-  pull_request:
-    branches: [ main ]
+  # push:
+  #   branches: [ main ]
+  #   tags: [ production ]
+  # pull_request:
+  #   branches: [ main ]
+
+  # Allows you to run this workflow manually from the Actions tab only
+  workflow_dispatch:
 
 env:
   INDEX_HTML: community.affinity.wtf.html

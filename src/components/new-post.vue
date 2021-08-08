@@ -528,7 +528,7 @@ export default defineComponent({
       showColorSelector: computed(() => store.getters["draft/selectedType"] == "announce" ),
 
       backgroundColor: computed(() => (store.getters["draft/extraStyles"].background || "var(--ion-color-primary)")),
-      buttonColor: computed(() => (store.getters["draft/extraStyles"].buttonColor || "var(--ion-color-light)")),
+      buttonColor: computed(() => (store.getters["draft/extraStyles"].buttonColor || "var(--ion-color-medium)")),
       setExtraStyle: (updates: any) => {
         store.commit("draft/setExtraStyle", updates);
       },

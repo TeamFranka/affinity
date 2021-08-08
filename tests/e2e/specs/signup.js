@@ -19,15 +19,11 @@ describe("Sign up", () => {
 
     // check for welcome page
     // check if first slide is visible
-    cy.get(".swiper-wrapper").should("exist").should('have.attr', 'style').should('contain', 'transform: translate3d(0px, 0px, 0px)');
-    // turn to second slide
+    cy.get(".swiper-wrapper").should("exist");
+    cy.get(".swiper-wrapper .swiper-slide-prev").should("not.exist");
     cy.get("[data-cy=welcome-slide1-next-button]").should("exist").click();
     // check if second slide is visible (at least swiped some amount)
-    cy.get(".swiper-wrapper").should('have.attr', 'style')
-      .should((style) => {
-        const translate = style.match(/.*translate3d\(-(\d+)px.*/);
-        expect(+translate[1]).to.be.greaterThan(0);
-      });
+    cy.get(".swiper-wrapper .swiper-slide-prev").should("exist");
 
     // check for doctor-who top team, we joined by default
     cy.get('ion-chip[data-cy-team=doctor-who].leave').should('exist').first().click();
