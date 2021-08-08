@@ -81,7 +81,7 @@
                 </div>
               </div>
               <p class="ion-padding-start">
-                {{ n.objects.find(object => object.className === "Activity")?.text }}
+                {{ n.objects.find(object => ["Activity", "Comment"].includes(object.className))?.text }}
               </p>
               <p
                 v-if="n.verb == 'comment'"

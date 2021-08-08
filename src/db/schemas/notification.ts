@@ -20,7 +20,7 @@ export const Notification = {
       required: true,
     },
     objects: {
-      // any Post, Picture,
+      // any Post, Picture, Comment
       type: "Array",
       required: true,
     },
