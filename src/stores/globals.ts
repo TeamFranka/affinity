@@ -96,17 +96,13 @@ export function genFeedState(opts: GenFeedOptions): any {
           }]
         : teamPointers
 
-      const teamQuery = baseQuery.containedIn('team', teamsToInclude)
-      const subTeamQuery = baseQuery.matchesQuery(
-        'team',
-        new Parse.Query(Team).containedIn('subOf', teamsToInclude)
-      )
-
       if (opts.includeSubTeams) {
-        return subTeamQuery
-        // return Parse.Query.or(teamQuery, subTeamQuery)
+        return baseQuery.matchesQuery(
+          'team',
+          new Parse.Query(Team).containedIn('subOf', teamsToInclude)
+        )
       } else {
-        return teamQuery
+        return baseQuery.containedIn('team', teamsToInclude)
       }
     };
 
