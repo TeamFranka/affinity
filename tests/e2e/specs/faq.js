@@ -8,7 +8,7 @@ describe("FAQ", () => {
     cy.get("[data-cy=addEntry]").should("not.exist");
   });
 
-  it.only("create FAQ item", () => {
+  it("create FAQ item", () => {
     cy.loggedInAs("river");
     cy.viewport("iphone-6", "portrait");
     cy.visit("/faq");
