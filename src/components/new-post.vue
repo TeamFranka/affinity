@@ -57,7 +57,7 @@
               <avatar :profile="selectedTeam" size="2em" withName />
             </template>
             <template #item="sProps">
-              <ion-item @click="sProps.select(sProps.item)" button>
+              <ion-item @click="sProps.select(sProps.item)" button :data-cy="`selectTeam-${sProps.item.slug}`">
                 <avatar :profile="sProps.item" size="2em" withName />
                 <ion-icon
                   v-if="sProps.item == selectedTeam"

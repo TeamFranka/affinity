@@ -38,7 +38,7 @@ describe("Filtering the feed by teams", () => {
 
     cy.get("[data-cy=team-filter] [data-cy-entry=doctor-who]").click();
     cy.get("[data-cy-type=activity][data-cy-team=team-earth]")
-      .should("not.exist", "");
+      .should("exist", "");
     cy.get("[data-cy-type=activity][data-cy-team=doctor-who]")
       .should("exist");
 
