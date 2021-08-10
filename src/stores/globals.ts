@@ -99,7 +99,10 @@ export function genFeedState(opts: GenFeedOptions): any {
       if (opts.includeSubTeams) {
         return baseQuery.matchesQuery(
           'team',
-          new Parse.Query(Team).containedIn('subOf', teamsToInclude)
+          Parse.Query.or(
+            new Parse.Query(Team).containedIn('objectId', teamsToInclude.map((t: any) => t.objectId)),
+            new Parse.Query(Team).containedIn('subOf', teamsToInclude)
+          )
         )
       } else {
         return baseQuery.containedIn('team', teamsToInclude)
