@@ -1,6 +1,12 @@
 <template>
   <ion-page>
     <ion-content>
+      <team-selector
+        v-if="showTeamSelector"
+        @selectTeam="selectTeam($event)"
+        :teams="myTeams"
+        :selectedTeam="selectedTeam"
+      />
       <ion-searchbar
         :disabled="loading || entries.length === 0"
         :value="searchValue"
@@ -83,6 +89,8 @@ import { Model } from "@/types/model";
 import InteractionBar from "../components/interaction-bar.vue";
 import EditFaq from "../components/edit-faq.vue";
 import RenderMd from "../components/render-md.vue";
+import TeamSelector from "@/components/team-selector.vue";
+
 
 export default defineComponent({
   name: "Faq",
@@ -91,14 +99,15 @@ export default defineComponent({
     return {
       store,
       chatbubbles,
+      loggedIn: computed(() => store.getters["auth/isLoggedIn"]),
       loading: computed(() => store.getters["faq/loading"]),
       teamId: computed(() => store.getters["defaultTeamId"]),
       team: computed(() => store.getters["defaultTeam"]),
-      canCreate: computed(
-        () =>
-          store.getters["auth/teamPermissions"][store.getters["defaultTeamId"]]
-            ?.canCreateFaqEntry
-      ),
+      myTeams: computed(() => store.getters["auth/myTeams"]),
+      selectedTeam: computed(()=> store.getters["faq/selectedTeam"]),
+      selectTeam: async (name: string) => {
+        await store.dispatch("faq/selectTeam", name === "ALL" ? null : name);
+      },
       refresh() {
         store.dispatch("faq/refresh");
       },
@@ -111,6 +120,21 @@ export default defineComponent({
     };
   },
   computed: {
+    showTeamSelector(): boolean {
+      return this.loggedIn && this.myTeams.length > 1
+    },
+    canCreateInTeams(): Model[] {
+      return this.myTeams.filter(({objectId}: Model) => this.store.getters["auth/teamPermissions"][objectId]?.canCreateFaqEntry)
+    },
+    canCreate(): boolean {
+      if (!this.loggedIn) {
+        return false
+      }
+      if (this.selectedTeam){
+        return this.store.getters["auth/teamPermissions"][this.selectedTeam]?.canCreateFaqEntry
+      }
+      return this.canCreateInTeams.length > 0
+    },
     visibleEntries(): any[] {
       if (!this.searchValue) {
         return this.entries;
@@ -133,7 +157,7 @@ export default defineComponent({
     async intendToCreate() {
       await this.editModal(
         new FaqModel({
-          team: this.team.toPointer(),
+          team: (this.selectedTeam || this.team).toPointer(),
         }),
         "Erstellen"
       );
@@ -145,7 +169,8 @@ export default defineComponent({
       const modal = await modalController.create({
         component: EditFaq,
         componentProps: {
-          faq: entry,
+          teams: this.canCreateInTeams,
+          faq: entry.toJSON(),
           saveLabel,
         },
       });
@@ -153,10 +178,7 @@ export default defineComponent({
       const res = await modal.onDidDismiss();
       if (res.data) {
         this.loading = true;
-        Object.entries(res.data).forEach(([key, value]: [any, any]) => {
-          entry.set(key, value);
-        });
-        await entry.save();
+        await entry.save(res.data);
         this.loading = false;
       }
       return null;
@@ -216,6 +238,7 @@ export default defineComponent({
     FaqEntry,
     InteractionBar,
     RenderMd,
+    TeamSelector,
   },
 });
 </script>
